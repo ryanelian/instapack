@@ -33,19 +33,18 @@ var source = require('vinyl-source-stream');
 var buffer = require('vinyl-buffer');
 var uglify = require('gulp-uglify');
 
-function compileJs(endless) {
+var bundler = browserify({
+    cache: {},
+    packageCache: {},
+    entries: [jsFolder],
+    plugin: [watchify]
+});
+
+bundler.on('update', compileJs);
+bundler.on('log', gutil.log);
+
+function compileJs() {
     gutil.log('Compiling JavaScript files...');
-
-    var bundler = browserify({
-        entries: [jsFolder]
-    });
-
-    if (endless) {
-        bundler.plugin = [watchify];
-    }
-
-    bundler.on('update', compileJs);
-    bundler.on('log', gutil.log);
 
     return bundler.bundle()                 // Browserify compile assets/js/index.js
         .on('error', gutil.log)
@@ -55,11 +54,13 @@ function compileJs(endless) {
         .pipe(sourcemaps.init())
         .pipe(uglify())                     // Minify
         .pipe(sourcemaps.write('./'))
-        .pipe(gulp.dest(targetFolder + 'js'));     // Done!
+        .pipe(gulp.dest(targetFolder + 'js'));
 }
 
 gulp.task('js', ['lint', 'angular-templates'], function () {
-    return compileJs(false);
+    return compileJs().on('end', function () {
+        bundler.close();
+    });
 });
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -85,7 +86,7 @@ var postcss = require('gulp-postcss');
 var autoprefixer = require('autoprefixer');
 var path = require('path');
 
-var sassCompile = function () {
+function sassCompile() {
     var cssProcessors = [
         autoprefixer({
             browsers: ['ie >= 9', 'Android >= 4', 'last 2 versions']
@@ -107,7 +108,7 @@ var sassCompile = function () {
         .pipe(postcss(cssProcessors))
         .pipe(sourcemaps.write('./'))
         .pipe(gulp.dest(targetFolder + 'css'));
-};
+}
 
 gulp.task('sass', function () {
     return sassCompile();
@@ -138,16 +139,12 @@ var htmlminOptions = {
     sortClassName: true                     // Improves gzip
 };
 
-function templatesCompile() {
+gulp.task('angular-templates', function () {
     return gulp.src(templatesSource)
         .pipe(plumber(plumberSettings))
         .pipe(htmlmin(htmlminOptions))
         .pipe(templateCache())
         .pipe(gulp.dest(jsFolder));
-}
-
-gulp.task('angular-templates', function () {
-    return templatesCompile();
 });
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -156,14 +153,14 @@ gulp.task('angular-templates', function () {
 
 gulp.task('watch', ['sass', 'angular-templates'], function () {
     watch(cssFolder + '**/*.scss', function () {
-        return sassCompile();
+        gulp.start('sass');
     });
 
     watch(templatesSource, function () {
-        return templatesCompile();
+        gulp.start('angular-templates');
     });
 
-    compileJs(true);
+    compileJs();
 });
 
 gulp.task('default', ['watch'], function () { });

@@ -1,0 +1,41 @@
+{
+  "name": "aspnet",
+  "version": "1.0.0",
+  "description": "Ryan's awesome client-side application compiler suite for Angular and SASS, using Browserify!",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ryan Elian",
+  "license": "MIT",
+  "dependencies": {
+    "angular": "^1.5.8",
+    "bootstrap-sass": "^3.3.7",
+    "jquery": "^3.1.0",
+    "jquery-validation": "1.15.0",
+    "jquery-validation-unobtrusive": "^3.2.6",
+    "lodash": "^4.15.0",
+    "moment": "^2.14.1",
+    "mustache": "^2.2.1",
+    "urijs": "^1.18.1"
+  },
+  "devDependencies": {
+    "autoprefixer": "^6.4.0",
+    "browserify": "^13.1.0",
+    "gulp": "^3.9.1",
+    "gulp-angular-templatecache": "^2.0.0",
+    "gulp-htmlmin": "^2.0.0",
+    "gulp-jshint": "^2.0.1",
+    "gulp-plumber": "^1.1.0",
+    "gulp-postcss": "^6.1.1",
+    "gulp-sass": "^2.3.2",
+    "gulp-sourcemaps": "^1.6.0",
+    "gulp-uglify": "^2.0.0",
+    "gulp-util": "^3.0.7",
+    "gulp-watch": "^4.3.9",
+    "jshint": "^2.9.2",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0",
+    "watchify": "^3.7.0"
+  }
+}

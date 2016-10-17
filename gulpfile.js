@@ -14,7 +14,7 @@ var jsFolder = './assets/js/';
 var cssFolder = './assets/css/';
 var templatesSource = './assets/templates/**/*.html';
 
-gutil.log("Loading Ryan's Awesome Compiler Suite! " + __dirname);
+gutil.log("Loading Ryan's Awesome Compiler! " + __dirname);
 
 var plumberSettings = {
     errorHandler: function (error) {
@@ -27,40 +27,50 @@ var plumberSettings = {
 // Ryan's Awesome JavaScript Compiler
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-var watchify = require('watchify');
 var browserify = require('browserify');
+var watchify = require('watchify');
 var source = require('vinyl-source-stream');
 var buffer = require('vinyl-buffer');
 var uglify = require('gulp-uglify');
 
-var bundler = browserify({
-    cache: {},
-    packageCache: {},
-    entries: [jsFolder],
-    plugin: [watchify]
-});
+function bundlerFactory(watch) {
+    var bundleConfig = {
+        cache: {},
+        packageCache: {},
+        entries: [jsFolder],
+        plugin: [],
+        debug: true
+    };
 
-bundler.on('update', compileJs);
-bundler.on('log', gutil.log);
+    if (watch) {
+        bundleConfig.plugin.push(watchify);
+    }
 
-function compileJs() {
-    gutil.log('Compiling JavaScript files...');
+    var bundler = browserify(bundleConfig);
+    bundler.on('log', gutil.log);
+    bundler.compile = function () {
+        gutil.log('Compiling JavaScript files...');
 
-    return bundler.bundle()                 // Browserify compile assets/js/index.js
-        .on('error', gutil.log)
-        .pipe(source(targetJs))             // Bundle to virtual file bundle.js
-        .pipe(buffer())
-        .pipe(plumber(plumberSettings))
-        .pipe(sourcemaps.init())
-        .pipe(uglify())                     // Minify
-        .pipe(sourcemaps.write('./'))
-        .pipe(gulp.dest(targetFolder + 'js'));
+        return bundler.bundle()                                 // Browserify compile assets/js/index.js
+            .on('error', gutil.log)
+            .pipe(source(targetJs))                             // Bundle to virtual file bundle.js
+            .pipe(buffer())
+            .pipe(plumber(plumberSettings))
+            .pipe(sourcemaps.init({ loadMaps: true }))
+            .pipe(uglify())                                     // Minify
+            .pipe(sourcemaps.write('./'))
+            .pipe(gulp.dest(targetFolder + 'js'));
+    };
+
+    if (watch){
+        bundler.on('update', bundler.compile);
+    }
+
+    return bundler;
 }
 
 gulp.task('js', ['lint', 'angular-templates'], function () {
-    return compileJs().on('end', function () {
-        bundler.close();
-    });
+    return bundlerFactory(false).compile();
 });
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -68,12 +78,14 @@ gulp.task('js', ['lint', 'angular-templates'], function () {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 var jshint = require('gulp-jshint');
+var flow = require('gulp-flowtype');
 
 gulp.task('lint', function () {
     var excludeAngularTemplate = '!' + jsFolder + 'templates.js';
 
     return gulp.src(['gulpfile.js', jsFolder + '**/*.js', excludeAngularTemplate])
         .pipe(jshint())
+        .pipe(flow())
         .pipe(jshint.reporter('default'));
 });
 
@@ -89,16 +101,16 @@ var path = require('path');
 function sassCompile() {
     var cssProcessors = [
         autoprefixer({
-            browsers: ['ie >= 9', 'Android >= 4', 'last 2 versions']
+            browsers: ['ie >= 9', 'Android >= 4', 'last 3 versions']
         })
     ];
 
+    var npmPath = path.join(__dirname, 'node_modules');
+    var bowerPath = path.join(__dirname, 'bower_components'); // Excluded because nobody use bower anymore lol.
+
     var sassOptions = {
         outputStyle: 'compressed',
-        includePaths: [
-            path.join(__dirname, 'bower_components'),   // bower
-            path.join(__dirname, 'node_modules')        // npm
-        ]
+        includePaths: [npmPath]
     };
 
     return gulp.src(cssFolder + mainCss)
@@ -143,7 +155,9 @@ gulp.task('angular-templates', function () {
     return gulp.src(templatesSource)
         .pipe(plumber(plumberSettings))
         .pipe(htmlmin(htmlminOptions))
-        .pipe(templateCache())
+        .pipe(templateCache({
+            moduleSystem: 'Browserify'
+        }))
         .pipe(gulp.dest(jsFolder));
 });
 
@@ -160,7 +174,7 @@ gulp.task('watch', ['sass', 'angular-templates'], function () {
         gulp.start('angular-templates');
     });
 
-    compileJs();
+    return bundlerFactory(true).compile();
 });
 
 gulp.task('default', ['watch'], function () { });

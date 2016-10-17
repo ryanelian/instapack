@@ -1,0 +1,9 @@
+﻿<div ng-show="me.input.$dirty" class="field-validation-error" ng-messages="me.input.$error" role="alert">
+    <div ng-message="required">{{me.display}} field is required.</div>
+    <div ng-message="email">Value of {{me.display}} field is not a valid email.</div>
+    <div ng-message="min">{{me.display}} field {{me.minDesc}}.</div>
+    <div ng-message="max">{{me.display}} field {{me.maxDesc}}.</div>
+    <div ng-message="minlength">{{me.display}} field {{me.minLengthDesc}}.</div>
+    <div ng-message="maxlength">{{me.display}} field {{me.maxLengthDesc}}.</div>
+    <div ng-message="pattern">{{me.display}} field {{me.mismatch}}.</div>
+</div>

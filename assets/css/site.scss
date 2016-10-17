@@ -1,6 +1,7 @@
 ﻿@import 'bootstrap-sass/assets/stylesheets/bootstrap';
 
-.field-validation-error {
-    color: red;
-    font-style: italic;
-}
+@import 'angular-ui-bootstrap/dist/ui-bootstrap-csp';
+@import 'alertifyjs/build/css/alertify';
+@import 'alertifyjs/build/css/themes/default';
+
+@import 'ryan-defaults';

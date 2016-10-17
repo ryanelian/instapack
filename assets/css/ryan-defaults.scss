@@ -1,0 +1,29 @@
+﻿.field-validation-error {
+    color: red;
+    font-style: italic;
+}
+
+input.ng-dirty.ng-invalid, input.input-validation-error {
+    border-color: red;
+    outline-color: red;
+}
+
+.modal-content {
+    padding: 16px;
+}
+
+.tab-content {
+    padding-top: 16px;
+}
+
+.navbar {
+    border-radius: 0;
+}
+
+body {
+    min-height: 100vh;
+}
+
+body.breathable {
+    padding-bottom: 96px;
+}

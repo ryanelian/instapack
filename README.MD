@@ -2,6 +2,8 @@
 
 > Ryan's awesome client-side application compiler suite for Angular using TypeScript + Browserify, and SASS.
 
+![screenshot](https://raw.githubusercontent.com/ryanelian/ryan-compiler/master/screenshot.png)
+
 ## Getting Started
 
 Supported NodeJS version: 6.9.1 LTS
@@ -32,6 +34,22 @@ _.padStart("Hello TypeScript!", 20, " ");
 ```
 
 [Read more](https://blogs.msdn.microsoft.com/typescript/2016/06/15/the-future-of-declaration-files/) about @types.
+
+## Known Quirk: JavaScript Compilation Delay
+
+Something to know to save you from mashing `CTRL+F5` on your Google Chrome. When compiling JavaScript, these lines may appear:
+
+```
+[12:47:22] Compiling JavaScript...
+[12:47:28] 5112898 bytes written (2.63 seconds)
+```
+
+However the file isn't actually being written until these lines appear!
+
+```
+[12:47:36] bundle.js.map 2.67 MB
+[12:47:36] bundle.js 439.87 kB
+```
 
 ## gulp angular-templates
 

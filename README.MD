@@ -6,13 +6,15 @@
 
 ## Getting Started
 
-Supported NodeJS version: 6.9.1 LTS
+Supported NodeJS version: [6.9.1 LTS](https://nodejs.org/en/download/)
 
 Install [TypeScript for Visual Studio 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48593).
 
-Make sure [gulp](https://github.com/gulpjs/gulp/blob/master/docs/getting-started.md) is installed in your computer. `npm install --global gulp-cli`
+Make sure [gulp-cli](https://github.com/gulpjs/gulp/blob/master/docs/getting-started.md) is installed in your computer. `npm install --global gulp-cli`
 
 Copy everything inside `ryan-compiler` subfolder into your project, then run package restore: `npm update`.
+
+Run `gulp` and watch the magic happens!
 
 ## Node Module vs TypeScript Module
 

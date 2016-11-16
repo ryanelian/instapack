@@ -1,6 +1,6 @@
 # Ryan's Awesome Compiler 2
 
-> Ryan's awesome client-side application compiler suite for Angular using TypeScript + Browserify, and SASS.
+> Ryan's awesome client-side application compiler for Angular and SASS, using Browserify + TypeScript!
 
 ![screenshot](https://raw.githubusercontent.com/ryanelian/ryan-compiler/master/screenshot.PNG)
 

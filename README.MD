@@ -1,18 +1,37 @@
-# Ryan's Awesome Compiler!
+# Ryan's Awesome Compiler 2
 
-> Ryan's awesome client-side application compiler suite for Angular using Browserify, and SASS.
+> Ryan's awesome client-side application compiler suite for Angular using TypeScript + Browserify, and SASS.
 
-## Using it in your project...
+## Getting Started
 
-Copy `assets` folder, `.jshintrc`, `gulpfile.js` and `package.json`.
+Supported NodeJS version: 6.9.1 LTS
 
-Make sure Node.js and a global `gulp` command line tool is installed in your computer.
+Install [TypeScript for Visual Studio 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48593).
 
-## gulp lint
+Make sure [gulp](https://www.npmjs.com/package/gulp) is installed in your computer.
 
-Perform JavaScript checking on the `gulpfile.js` and `assets/js/**/*.js` files except `assets/js/templates.js` using [jshint](http://jshint.com/about/) (with Browserify settings in `.jshintrc`).
+Copy everything inside `ryan-compiler` subfolder into your project, then run package restore: `npm update`.
 
-Performs static type checking using [Facebook's Flow](https://flowtype.org/).
+## Node Module vs TypeScript Module
+
+This compiler still supports importing module from `node_modules` by using CommonJS `require()` syntax, however you do not get Visual Studio Intellisense.
+
+For enhanced developing experience, it is recommended to use TypeScript definition installed from [@types](http://microsoft.github.io/TypeSearch/) when available.
+
+Installing @types will give you Visual Studio Intellisense when you use [TypeScript Import](https://www.typescriptlang.org/docs/handbook/modules.html) syntax. Then the imported module will be converted to CommonJS syntax, which then will be used by `Browserify` to resolve the dependency from `node_modules`.
+
+For example, if I want to use Lodash while getting Intellisense, I would do this:
+
+`npm install --save @types/lodash lodash`
+
+Then later in my source code I can do this:
+
+```typescript
+import * as _ from "lodash"; // Will be transpiled into require('lodash') and then resolved.
+_.padStart("Hello TypeScript!", 20, " ");
+```
+
+[Read more](https://blogs.msdn.microsoft.com/typescript/2016/06/15/the-future-of-declaration-files/) about @types.
 
 ## gulp angular-templates
 
@@ -22,7 +41,7 @@ Compiles and minify all `./assets/templates/**/*.html` files using [gulp-angular
 
 Compiles and minify an `index.js` entry point in `assets/js` folder using [Browserify](https://github.com/substack/node-browserify) then outputs the result as `wwwroot/js/bundle.js` (plus its source maps).
 
-In addition, uses `gulp lint` and `gulp angular-templates` prior compilation.
+Also runs `gulp angular-templates` prior compilation.
 
 ## gulp sass
 

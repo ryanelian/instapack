@@ -1,20 +1,21 @@
 ﻿'use strict';
 
 var gulp = require('gulp');
+var sourcemaps = require('gulp-sourcemaps');
 var gutil = require('gulp-util');       // Mostly used for logging.
 var watch = require('gulp-watch');      // File watcher that actually works.
 var plumber = require('gulp-plumber');  // Prevents gulp-watch from stopping on compilation error!
-var sourcemaps = require('gulp-sourcemaps');
+var size = require('gulp-size');
 
 var mainCss = 'site.scss';
 var targetJs = 'bundle.js';
 var targetFolder = './wwwroot/';
 
-var jsFolder = './assets/js/';
-var cssFolder = './assets/css/';
-var templatesSource = './assets/templates/**/*.html';
+var jsFolder = './client/js/';
+var cssFolder = './client/css/';
+var templatesSource = './client/templates/**/*.html';
 
-gutil.log("Loading Ryan's Awesome Compiler! " + __dirname);
+gutil.log("Ryan's Awesome Compiler 2 running at " + __dirname);
 
 var plumberSettings = {
     errorHandler: function (error) {
@@ -23,35 +24,45 @@ var plumberSettings = {
     }
 };
 
+var sizeOptions = {
+    showFiles: true,
+    showTotal: false
+};
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Ryan's Awesome JavaScript Compiler
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 var browserify = require('browserify');
+var tsify = require('tsify');
 var watchify = require('watchify');
 var source = require('vinyl-source-stream');
 var buffer = require('vinyl-buffer');
 var uglify = require('gulp-uglify');
 
-function bundlerFactory(watch) {
-    var bundleConfig = {
-        cache: {},
-        packageCache: {},
-        entries: [jsFolder],
-        plugin: [],
+function jsCompiler() {
+    var compiler = {};
+
+    compiler.config = {
+        entries: [jsFolder + 'index.ts'],
+        plugin: [tsify],
         debug: true
     };
 
-    if (watch) {
-        bundleConfig.plugin.push(watchify);
-    }
+    compiler.rearm = function(){
+        compiler.bundler = browserify(compiler.config);
+    };
 
-    var bundler = browserify(bundleConfig);
-    bundler.on('log', gutil.log);
-    bundler.compile = function () {
-        gutil.log('Compiling JavaScript files...');
+    compiler.bundler = browserify(compiler.config);
 
-        return bundler.bundle()                                 // Browserify compile assets/js/index.js
+    compiler.compile = function () {
+        if (!compiler.bundler){
+            compiler.rearm();
+        }
+
+        gutil.log('Compiling JavaScript...');
+
+        return compiler.bundler.bundle()             // Browserify compile client/js/index.js
             .on('error', gutil.log)
             .pipe(source(targetJs))                             // Bundle to virtual file bundle.js
             .pipe(buffer())
@@ -59,34 +70,27 @@ function bundlerFactory(watch) {
             .pipe(sourcemaps.init({ loadMaps: true }))
             .pipe(uglify())                                     // Minify
             .pipe(sourcemaps.write('./'))
+            .pipe(size(sizeOptions))
             .pipe(gulp.dest(targetFolder + 'js'));
     };
 
-    if (watch){
-        bundler.on('update', bundler.compile);
-    }
+    compiler.watch = function(){
+        compiler.config.cache = {};
+        compiler.config.packageCache = {};
+        compiler.config.plugin.push(watchify);
 
-    return bundler;
+        compiler.rearm();
+        compiler.bundler.on('update', compiler.compile);
+        compiler.bundler.on('log', gutil.log);
+
+        return compiler.compile();
+    };
+
+    return compiler;
 }
 
-gulp.task('js', ['lint', 'angular-templates'], function () {
-    return bundlerFactory(false).compile();
-});
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Ryan's Awesome JavaScript Checker
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-var jshint = require('gulp-jshint');
-var flow = require('gulp-flowtype');
-
-gulp.task('lint', function () {
-    var excludeAngularTemplate = '!' + jsFolder + 'templates.js';
-
-    return gulp.src(['gulpfile.js', jsFolder + '**/*.js', excludeAngularTemplate])
-        .pipe(jshint())
-        .pipe(flow())
-        .pipe(jshint.reporter('default'));
+gulp.task('js', ['angular-templates'], function () {
+    return jsCompiler().compile();
 });
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -119,6 +123,7 @@ function sassCompile() {
         .pipe(sass(sassOptions))
         .pipe(postcss(cssProcessors))
         .pipe(sourcemaps.write('./'))
+        .pipe(size(sizeOptions))
         .pipe(gulp.dest(targetFolder + 'css'));
 }
 
@@ -158,6 +163,7 @@ gulp.task('angular-templates', function () {
         .pipe(templateCache({
             moduleSystem: 'Browserify'
         }))
+        .pipe(size(sizeOptions))
         .pipe(gulp.dest(jsFolder));
 });
 
@@ -174,7 +180,7 @@ gulp.task('watch', ['sass', 'angular-templates'], function () {
         gulp.start('angular-templates');
     });
 
-    return bundlerFactory(true).compile();
+    return jsCompiler().watch();
 });
 
 gulp.task('default', ['watch'], function () { });

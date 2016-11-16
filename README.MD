@@ -2,7 +2,7 @@
 
 > Ryan's awesome client-side application compiler suite for Angular using TypeScript + Browserify, and SASS.
 
-![screenshot](https://raw.githubusercontent.com/ryanelian/ryan-compiler/master/screenshot.png)
+![screenshot](https://raw.githubusercontent.com/ryanelian/ryan-compiler/master/screenshot.PNG)
 
 ## Getting Started
 

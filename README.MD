@@ -10,7 +10,7 @@ Supported NodeJS version: 6.9.1 LTS
 
 Install [TypeScript for Visual Studio 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48593).
 
-Make sure [gulp](https://www.npmjs.com/package/gulp) is installed in your computer.
+Make sure [gulp](https://github.com/gulpjs/gulp/blob/master/docs/getting-started.md) is installed in your computer. `npm install --global gulp-cli`
 
 Copy everything inside `ryan-compiler` subfolder into your project, then run package restore: `npm update`.
 

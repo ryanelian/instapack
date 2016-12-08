@@ -1,5 +1,5 @@
 "use strict";
-var angular = require('angular');
+var angular = require("angular");
 var angularMessages = require('angular-messages');
 var validator = angular.module('ryan-angular-validator', [angularMessages]);
 var validatorController = [function () {

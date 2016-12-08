@@ -6,38 +6,40 @@
 
 ## Getting Started
 
-Supported NodeJS version: [6.9.1 LTS](https://nodejs.org/en/download/)
+Supported NodeJS version: [6.9 LTS](https://nodejs.org/en/download/)
 
-Install [TypeScript for Visual Studio 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48593).
+Install [TypeScript 2.1 for Visual Studio 2015](https://blogs.msdn.microsoft.com/typescript/2016/12/07/announcing-typescript-2-1/).
 
-Make sure [gulp-cli](https://github.com/gulpjs/gulp/blob/master/docs/getting-started.md) is installed in your computer. `npm install --global gulp-cli`
+Install [gulp-cli](https://github.com/gulpjs/gulp/blob/master/docs/getting-started.md): `npm install -g gulp-cli`
 
-Copy everything inside `ryan-compiler` subfolder into your project, then run package restore: `npm update`.
+If you're running Windows, make sure that the Command Prompt is opened in Administrator Mode then install [windows-build-tools](https://www.npmjs.com/package/windows-build-tools): `npm install -g windows-build-tools` (Installs [Python 2](https://www.python.org/downloads/) and [Visual C++ Build Tools 2015](http://landinghub.visualstudio.com/visual-cpp-build-tools)).
+
+Copy everything inside `ryan-compiler` subfolder into your project, then run package restore: `npm update`. Also, it is recommended that you are using [npm-check](https://www.npmjs.com/package/npm-check) to manage your `package.json` dependencies.
 
 Run `gulp` and watch the magic happens!
 
-## Node Module vs TypeScript Module
+## Importing Node Modules via TypeScript
 
-This compiler still supports importing module from `node_modules` by using CommonJS `require()` syntax, however you do not get Visual Studio Intellisense.
+As of [TypeScript 2.1](https://blogs.msdn.microsoft.com/typescript/2016/12/07/announcing-typescript-2-1/), you can import any packages in `node_modules` using the `import` syntax. However, like the usual Browserify CommonJS `require()` syntax, you do not get Visual Studio Intellisense.
 
 For enhanced developing experience, it is recommended to use TypeScript definition installed from [@types](http://microsoft.github.io/TypeSearch/) when available.
 
 Installing @types will give you Visual Studio Intellisense when you use [TypeScript Import](https://www.typescriptlang.org/docs/handbook/modules.html) syntax. Then the imported module will be converted to CommonJS syntax, which then will be used by `Browserify` to resolve the dependency from `node_modules`.
 
-For example, if I want to use Lodash while getting Intellisense, I would do this:
+For example, if you want to use Lodash while getting Intellisense, do this:
 
 `npm install --save @types/lodash lodash`
 
-Then later in my source code I can do this:
+Then later in your source code, do this:
 
 ```typescript
-import * as _ from "lodash"; // Will be transpiled into require('lodash') and then resolved.
+import * as _ from "lodash"; // Will be compiled into require('lodash') and then resolved by Browserify.
 _.padStart("Hello TypeScript!", 20, " ");
 ```
 
 [Read more](https://blogs.msdn.microsoft.com/typescript/2016/06/15/the-future-of-declaration-files/) about @types.
 
-## Known Quirk: JavaScript Compilation Delay
+## Known Quirks: JavaScript Compilation Delay
 
 Something to know to save you from mashing `CTRL+F5` on your Google Chrome. When compiling JavaScript, these lines may appear:
 

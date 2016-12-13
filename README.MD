@@ -10,7 +10,7 @@
 
 - [TypeScript](https://www.typescriptlang.org/) is glorious but stupid at the same time. It compiles the JavaScript files but does not actually merge them and requires us to stitch them together using other tooling such as Browserify or WebPack or SystemJS or RequireJS, which brings us back to the first point.
 
-- [AngularJS](https://angularjs.org/) `templateUrl` is wonderful until our site is being slowed down by dozens of mini HTML templates being loaded remotely. And there's no easy way to bundle them together without using third-party tools such as Gulp, which brings us back to the first point again. (Yes, I'm aware React TSX solved this by embedding the HTML inside the JavaScript, but TypeScript + Angular 2 is probably the future.)
+- [AngularJS](https://angularjs.org/) `templateUrl` is wonderful until our site is being slowed down by dozens of mini HTML templates being loaded remotely. And there are no easy ways to bundle them together without using third-party tools such as Gulp, which brings us back to the first point again. (Yes, I'm aware React TSX solved this by embedding the HTML inside the JavaScript, but TypeScript + Angular 2 is probably the future.)
 
 - Other tooling and bundling issues such as SASS importing files from `node_modules` or `bower_components`, Source Maps output, etc.
 

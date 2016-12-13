@@ -1,2 +1,4 @@
 node_modules
 wwwroot
+ryan-compiler/client/js/*.js
+ryan-compiler/js/*.map

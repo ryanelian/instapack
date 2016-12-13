@@ -74,10 +74,6 @@ function jsCompiler() {
     };
 
     compiler.compile = function () {
-        if (!compiler.bundler){
-            compiler.rearm();
-        }
-
         gutil.log('Compiling JavaScript...');
 
         return compiler.bundler.bundle()                  // Browserify compile client/js/index.js
@@ -104,6 +100,7 @@ function jsCompiler() {
         return compiler.compile();
     };
 
+    compiler.rearm();
     return compiler;
 }
 

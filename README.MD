@@ -4,6 +4,20 @@
 
 ![screenshot](https://raw.githubusercontent.com/ryanelian/ryan-compiler/master/screenshot.PNG)
 
+## Why Should I Use This?
+
+- [Modern JavaScript is convenient, but stupid](https://hackernoon.com/how-it-feels-to-learn-javascript-in-2016-d3a717dd577f#.wm43f7wca). We need to set up the project 'makefiles' for hours before we even can start coding, if we want to use modern JavaScript features.
+
+- [TypeScript](https://www.typescriptlang.org/) is glorious but stupid at the same time. It compiles the JavaScript files but does not actually merge them and requires us to stitch them together using other tooling such as Browserify or WebPack or SystemJS or RequireJS, which brings us back to the first point.
+
+- [AngularJS](https://angularjs.org/) `templateUrl` is wonderful until our site is being slowed down by dozens of mini HTML templates being loaded remotely. And there's no easy way to bundle them together without using third-party tools such as Gulp, which brings us back to the first point again. (Yes, I'm aware React TSX solved this by embedding the HTML inside the JavaScript, but TypeScript + Angular 2 is probably the future.)
+
+- Other tooling and bundling issues such as SASS importing files from `node_modules` or `bower_components`, Source Maps output, etc.
+
+This project attempts to alleviate those burdens away from the developer. By plugging this compiler into our project, we can immediately start coding Angular 1.X applications using TypeScript with a resulting bundle that is easily debuggable under Google Chrome!
+
+In addition, this project is configured to output the bundled files into `wwwroot` folder, which is used for placing ASP.NET Core MVC static files.
+
 ## Getting Started
 
 Supported NodeJS version: [6.9 LTS](https://nodejs.org/en/download/)
@@ -12,7 +26,7 @@ Install [TypeScript 2.1 for Visual Studio 2015](https://blogs.msdn.microsoft.com
 
 Install [gulp-cli](https://github.com/gulpjs/gulp/blob/master/docs/getting-started.md): `npm install -g gulp-cli`
 
-If you're running Windows, make sure that the Command Prompt is opened in Administrator Mode then install [windows-build-tools](https://www.npmjs.com/package/windows-build-tools): `npm install -g windows-build-tools` (Installs [Python 2](https://www.python.org/downloads/) and [Visual C++ Build Tools 2015](http://landinghub.visualstudio.com/visual-cpp-build-tools)).
+If running Node on Windows, make sure that the Command Prompt is opened in Administrator Mode then install [windows-build-tools](https://www.npmjs.com/package/windows-build-tools): `npm install -g windows-build-tools` (Installs [Python 2](https://www.python.org/downloads/) and [Visual C++ Build Tools 2015](http://landinghub.visualstudio.com/visual-cpp-build-tools)).
 
 Copy everything inside `ryan-compiler` subfolder into your project, then run package restore: `npm update`. Also, it is recommended that you are using [npm-check](https://www.npmjs.com/package/npm-check) to manage your `package.json` dependencies.
 
@@ -60,7 +74,7 @@ However the file isn't actually being written until these lines appear!
 By default, the tool is configured to run in DEBUG mode for increased development speed. The resulting JavaScript bundle will NOT be minified, but is compiled in 2-3 seconds.
 
 By providing `--release` or `-r` flag to the command line, the tool will run in RELEASE mode, which minifies the JavaScript bundle but adds 10 seconds or more to the compilation time. 
-(By the way, minification of default modules shipped with this compiler will shrink the bundle down from 5.23 MB to 445 KB. Impressive huh?)
+(Fun fact: minification of default modules shipped with this compiler will shrink the bundle down from 5.23 MB to 445 KB. Isn't that just impressive?)
 
 Make sure to do a RELEASE mode build before you are pushing your bundle into your source control repository, for reduced upload size. 
 

@@ -1,4 +1,4 @@
-# Ryan's Awesome Compiler 2
+# Ryan's Awesome Compiler 2.1
 
 > Ryan's awesome client-side application compiler for Angular and SASS, using Browserify + TypeScript!
 
@@ -54,6 +54,15 @@ However the file isn't actually being written until these lines appear!
 [12:47:36] bundle.js.map 2.67 MB
 [12:47:36] bundle.js 439.87 kB
 ```
+
+## DEBUG Mode vs RELEASE Mode
+
+By default, the tool is configured to run in DEBUG mode for increased development speed. The resulting JavaScript bundle will NOT be minified, but is compiled in 2-3 seconds.
+
+By providing `--release` or `-r` flag to the command line, the tool will run in RELEASE mode, which minifies the JavaScript bundle but adds 10 seconds or more to the compilation time. 
+(By the way, minification of default modules shipped with this compiler will shrink the bundle down from 5.23 MB to 445 KB. Impressive huh?)
+
+Make sure to do a RELEASE mode build before you are pushing your bundle into your source control repository, for reduced upload size. 
 
 ## gulp angular-templates
 

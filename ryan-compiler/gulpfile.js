@@ -1,10 +1,30 @@
 ﻿'use strict';
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Core Modules
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 var gulp = require('gulp');
-var sourcemaps = require('gulp-sourcemaps');
 var gutil = require('gulp-util');       // Mostly used for logging.
+var yargs = require('yargs').argv;
+
+gutil.log("Ryan's Awesome Compiler 2.1"); // Running at __dirname
+
+var RELEASE = (yargs.release || yargs.r);
+if (RELEASE) {
+    gutil.log("RELEASE mode detected: JS bundle will be minified SLOWLY.");
+} else {
+    gutil.log("DEBUG mode detected: JS bundle is NOT minified in exchange for development speed!");
+    gutil.log("Use --release flag for switching to RELEASE mode, which enables JS minification.");
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Shared Modules & Settings
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 var watch = require('gulp-watch');      // File watcher that actually works.
 var plumber = require('gulp-plumber');  // Prevents gulp-watch from stopping on compilation error!
+var sourcemaps = require('gulp-sourcemaps');
 var size = require('gulp-size');
 
 var mainCss = 'site.scss';
@@ -14,8 +34,6 @@ var targetFolder = './wwwroot/';
 var jsFolder = './client/js/';
 var cssFolder = './client/css/';
 var templatesSource = './client/templates/**/*.html';
-
-gutil.log("Ryan's Awesome Compiler 2 running at " + __dirname);
 
 var plumberSettings = {
     errorHandler: function (error) {
@@ -39,6 +57,7 @@ var watchify = require('watchify');
 var source = require('vinyl-source-stream');
 var buffer = require('vinyl-buffer');
 var uglify = require('gulp-uglify');
+var gulpif = require('gulp-if');
 
 function jsCompiler() {
     var compiler = {};
@@ -46,14 +65,13 @@ function jsCompiler() {
     compiler.config = {
         entries: [jsFolder + 'index.ts'],
         plugin: [tsify],
-        debug: true
+        debug: true,
+        noParse: ['angular', 'jquery']  // Skipping parse of two gigantic libraries. Not sure if this actually has any effects...
     };
 
     compiler.rearm = function(){
         compiler.bundler = browserify(compiler.config);
     };
-
-    compiler.bundler = browserify(compiler.config);
 
     compiler.compile = function () {
         if (!compiler.bundler){
@@ -62,13 +80,13 @@ function jsCompiler() {
 
         gutil.log('Compiling JavaScript...');
 
-        return compiler.bundler.bundle()             // Browserify compile client/js/index.js
+        return compiler.bundler.bundle()                  // Browserify compile client/js/index.js
             .on('error', gutil.log)
-            .pipe(source(targetJs))                             // Bundle to virtual file bundle.js
+            .pipe(source(targetJs))                       // Bundle to virtual file bundle.js
             .pipe(buffer())
             .pipe(plumber(plumberSettings))
             .pipe(sourcemaps.init({ loadMaps: true }))
-            .pipe(uglify())                                     // Minify
+            .pipe(gulpif(RELEASE, uglify()))              // Minify if RELEASE mode
             .pipe(sourcemaps.write('./'))
             .pipe(size(sizeOptions))
             .pipe(gulp.dest(targetFolder + 'js'));
@@ -110,7 +128,7 @@ function sassCompile() {
     ];
 
     var npmPath = path.join(__dirname, 'node_modules');
-    var bowerPath = path.join(__dirname, 'bower_components'); // Excluded because nobody use bower anymore lol.
+    var bowerPath = path.join(__dirname, 'bower_components'); // Excluded because nobody use bower anymore LOL.
 
     var sassOptions = {
         outputStyle: 'compressed',
@@ -172,6 +190,8 @@ gulp.task('angular-templates', function () {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 gulp.task('watch', ['sass', 'angular-templates'], function () {
+    gutil.log("Endless Mode: Source code changes will be automatically compiled.");
+    
     watch(cssFolder + '**/*.scss', function () {
         gulp.start('sass');
     });

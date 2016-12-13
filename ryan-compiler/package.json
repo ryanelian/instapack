@@ -9,7 +9,7 @@
   "author": "Ryan Elian",
   "license": "MIT",
   "dependencies": {
-    "@types/angular": "^1.5.20",
+    "@types/angular": "^1.5.21",
     "@types/jquery": "^2.0.34",
     "@types/lodash": "^4.14.43",
     "@types/node": "^6.0.51",
@@ -17,7 +17,7 @@
     "angular": "^1.6.0",
     "angular-animate": "^1.6.0",
     "angular-messages": "^1.6.0",
-    "angular-ui-bootstrap": "^2.3.0",
+    "angular-ui-bootstrap": "^2.3.1",
     "bootstrap-sass": "^3.3.7",
     "jquery": "^3.1.1",
     "jquery-validation": "1.15.0",
@@ -27,14 +27,15 @@
     "mustache": "^2.3.0"
   },
   "devDependencies": {
-    "autoprefixer": "^6.5.3",
+    "autoprefixer": "^6.5.4",
     "browserify": "^13.1.1",
     "gulp": "^3.9.1",
     "gulp-angular-templatecache": "^2.0.0",
     "gulp-htmlmin": "^3.0.0",
+    "gulp-if": "^2.0.2",
     "gulp-plumber": "^1.1.0",
     "gulp-postcss": "^6.2.0",
-    "gulp-sass": "^2.3.2",
+    "gulp-sass": "^3.0.0",
     "gulp-size": "^2.1.0",
     "gulp-sourcemaps": "^2.2.1",
     "gulp-uglify": "^2.0.0",
@@ -44,6 +45,7 @@
     "typescript": "^2.1.4",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
-    "watchify": "^3.7.0"
+    "watchify": "^3.7.0",
+    "yargs": "^6.5.0"
   }
 }

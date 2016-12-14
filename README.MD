@@ -84,13 +84,13 @@ Compiles and minify an `index.js` entry point in `assets/js` folder using [Brows
 
 Also runs `gulp angular-templates` prior compilation.
 
-### gulp sass
+### gulp css
 
 Compiles and minify a `site.scss` entry point in `assets/css` folder using [libsass](https://github.com/sass/libsass), then outputs the result as `wwwroot/css/site.css` (plus its source maps).
 
 Applies [autoprefixer](https://github.com/postcss/autoprefixer) with following browsers parameter: `['ie >= 9', 'Android >= 4', 'last 3 versions']`
 
-Can also be called using `gulp css`.
+Can also be called using `gulp sass`.
 
 ### gulp watch
 

@@ -29,6 +29,7 @@
   "devDependencies": {
     "autoprefixer": "^6.5.4",
     "browserify": "^13.1.1",
+    "cssnano": "^3.9.1",
     "gulp": "^3.9.1",
     "gulp-angular-templatecache": "^2.0.0",
     "gulp-htmlmin": "^3.0.0",

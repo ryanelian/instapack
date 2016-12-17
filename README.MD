@@ -28,9 +28,20 @@ Install [gulp-cli](https://github.com/gulpjs/gulp/blob/master/docs/getting-start
 
 If running Node on Windows, make sure that the Command Prompt is opened in Administrator Mode then install [windows-build-tools](https://www.npmjs.com/package/windows-build-tools): `npm install -g windows-build-tools` (Installs [Python 2](https://www.python.org/downloads/) and [Visual C++ Build Tools 2015](http://landinghub.visualstudio.com/visual-cpp-build-tools)).
 
-Copy everything inside `ryan-compiler` subfolder into our project, then run package restore: `npm update`. Also, it is recommended that we use [npm-check](https://www.npmjs.com/package/npm-check) for managing `package.json` dependencies.
+Copy everything inside `ryan-compiler` subfolder into our project, then run package restore: `npm update`. You should probably use `yarn` instead though (read below).
 
 Run `gulp` and watch the magic happens!
+
+## Yarn vs NPM
+
+It is recommended to use [Yarn](https://yarnpkg.com/) instead of NPM for managing packages. [Read more about Yarn here](https://code.facebook.com/posts/1840075619545360).
+
+- Yarn generates lockfile not unlike ASP.NET `project.json` for added reliability.
+- Yarn has built-in interactive package upgrade command. (`yarn upgrade-interactive`)
+- Yarn has can install packages previously installed (cached offline) via `--prefer-offline` flag.
+- Yarn automatically saves package install to `package.json` without `--save` flag via `yarn add` command. (You may add `--dev` flag for saving `devDependencies`)  
+
+If you prefer to not to use Yarn, it is recommended to use [npm-check](https://www.npmjs.com/package/npm-check) for checking outdated packages and interactively upgrading them.
 
 ## Importing Node Modules via TypeScript
 

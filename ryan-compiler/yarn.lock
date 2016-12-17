@@ -3641,9 +3641,9 @@ tsconfig@^5.0.3:
     strip-bom "^2.0.0"
     strip-json-comments "^2.0.0"
 
-tsify@^2.0.3:
-  version "2.0.6"
-  resolved "https://registry.yarnpkg.com/tsify/-/tsify-2.0.6.tgz#d7edbb21826e2887a7aa4e8d27448ab268d4bc17"
+tsify@^2.0.7:
+  version "2.0.7"
+  resolved "https://registry.yarnpkg.com/tsify/-/tsify-2.0.7.tgz#81db1ec5f463aa5a435925a5ebb65c124066af59"
   dependencies:
     convert-source-map "^1.1.0"
     fs.realpath "^1.0.0"

@@ -108,3 +108,38 @@ Can also be called using `gulp sass`.
 Perform endless Browserify, Angular template caches, SASS compilation using `watchify` and `gulp-watch`.
 
 Can also be called using `gulp`.
+
+## Ryan's Angular Validation Message
+
+As demonstration of the compiler's capabilities, my custom Angular input validation message component (written in TypeScript) is added and configured into the project. It allows automatic validation message output using [Angular's input directive](https://docs.angularjs.org/api/ng/directive/input).
+
+Usage example:
+
+```typescript
+import ryanValidator from './ryan-validator';
+// Simply then add ryanValidator into your Angular application module.
+```
+
+```html
+<form id="MyForm" name="MyForm">
+    <div class="form-group">
+        <label for="Name">Name</label>
+        <input class="form-control" id="Name" name="Name" ng-model="NameValue" required="required" minlength="2" maxlength="64" />
+        <validation-message input="MyForm.Name"></validation-message>
+    </div>
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+</form>
+```
+
+Validation messages shown:
+- required
+- email (when using `type=email`)
+- min
+- max
+- minlength
+- maxlength
+- pattern (provide `mismatch` attribute to the component for customizing the message)
+
+You may provide `title` attribute to the component for customizing the field name displayed.

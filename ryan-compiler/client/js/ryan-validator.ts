@@ -1,49 +1,98 @@
 ﻿import * as angular from 'angular';
+import * as angularMessages from 'angular-messages';
 
-let angularMessages : string = require('angular-messages');
-let validator = angular.module('ryan-angular-validator', [angularMessages]);
+let ryanValidator = angular.module('ryan-angular-validator', [angularMessages]);
 
-let validatorController = [function () {
-    let me = this;
-    me.display = me.input.$name;
-    me.minDesc = 'input value needs to be higher';
-    me.maxDesc = 'input value needs to be lower';
-    me.minLengthDesc = 'input length needs to be longer';
-    me.maxLengthDesc = 'input length needs to be shorter';
+class ValidatorController {
+    title: string;
+    minDesc: string;
+    maxDesc: string;
+    minLengthDesc: string;
+    maxLengthDesc: string;
+    mismatch: string;
+    input: angular.IFormController;
 
-    if (!me.mismatch) {
-        me.mismatch = 'input pattern mismatched.';
+    constructor() {
     }
 
-    if (!me.inputId) return;
-    let control = window.document.getElementById(me.inputId);
-    if (!control) return;
+    public $onInit() {
+        var control = window.document.getElementsByName(this.input.$name)[0];
 
-    let title = control.getAttribute('title');
-    if (title) me.display = title;
+        this.SetFieldTitle();
+        this.SetMinErrorMessage(control);
+        this.SetMaxErrorMessage(control);
+        this.SetMinLengthErrorMessage(control);
+        this.SetMaxLengthErrorMessage(control);
+        this.SetPatternMismatchMessage();
+    }
 
-    let min = control.getAttribute('min');
-    if (min) me.minDesc = 'minimum input value is ' + min;
+    public SetFieldTitle() {
+        if (!this.title) {
+            this.title = this.input.$name;
+        }
+    }
 
-    let max = control.getAttribute('max');
-    if (max) me.maxDesc = 'maximum input value is ' + max;
+    public SetMinErrorMessage(control: HTMLElement) {
+        this.minDesc = 'input value needs to be higher';
 
-    let minlength = control.getAttribute('minlength');
-    if (minlength) me.minLengthDesc = 'minimum input length is ' + minlength + ' characters';
+        if (control) {
+            let min = control.getAttribute('min') || control.getAttribute('ng-min');
+            if (min) {
+                this.minDesc = 'minimum input value is ' + min;
+            }
+        }
+    }
 
-    let maxlength = control.getAttribute('maxlength');
-    if (maxlength) me.maxLengthDesc = 'maximum input length is ' + maxlength + ' characters';
-}];
+    public SetMaxErrorMessage(control: HTMLElement) {
+        this.maxDesc = 'input value needs to be lower';
 
-validator.component('validationMessage', {
-    templateUrl: 'validationMessage.html',
-    bindings: {
+        if (control) {
+            let max = control.getAttribute('max') || control.getAttribute('ng-max');
+            if (max) {
+                this.maxDesc = 'maximum input value is ' + max;
+            }
+        }
+    }
+
+    public SetMinLengthErrorMessage(control: HTMLElement) {
+        this.minLengthDesc = 'input length needs to be longer';
+
+        if (control) {
+            let minlength = control.getAttribute('minlength') || control.getAttribute('ng-minlength');
+            if (minlength) {
+                this.minLengthDesc = 'minimum input length is ' + minlength + ' characters';
+            }
+        }
+    }
+
+    public SetMaxLengthErrorMessage(control: HTMLElement) {
+        this.maxLengthDesc = 'input length needs to be shorter';
+
+        if (control) {
+            let maxlength = control.getAttribute('maxlength') || control.getAttribute('ng-maxlength');
+            if (maxlength) {
+                this.maxLengthDesc = 'maximum input length is ' + maxlength + ' characters';
+            }
+        }
+    }
+
+    public SetPatternMismatchMessage() {
+        if (!this.mismatch) {
+            this.mismatch = 'input pattern mismatched.';
+        }
+    }
+}
+
+class ValidatorComponent implements angular.IComponentOptions {
+    public templateUrl = 'validationMessage.html';
+    public bindings = {
         input: '=',
-        inputId: '@',
+        title: '@',
         mismatch: '@'
-    },
-    controller: validatorController,
-    controllerAs: 'me'
-});
+    };
+    public controller = [ValidatorController];
+    public controllerAs = 'me';
+}
 
-export default (validator.name);
+ryanValidator.component('validationMessage', new ValidatorComponent());
+export default (ryanValidator.name);

@@ -3,7 +3,7 @@ import * as angularMessages from 'angular-messages';
 
 let ryanValidator = angular.module('ryan-angular-validator', [angularMessages]);
 
-class ValidatorController {
+class ValidatorController implements angular.IController {
     title: string;
     minDesc: string;
     maxDesc: string;

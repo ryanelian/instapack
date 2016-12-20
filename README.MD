@@ -1,4 +1,4 @@
-# Ryan's Awesome Compiler 2.1
+# Ryan's Awesome Compiler 2.2
 
 > Ryan's awesome client-side application compiler for Angular and SASS, using Browserify + TypeScript!
 
@@ -58,56 +58,31 @@ _.padStart("Hello TypeScript!", 20, " ");
 
 [Read more](https://blogs.msdn.microsoft.com/typescript/2016/06/15/the-future-of-declaration-files/) about @types.
 
-## DEBUG Mode vs RELEASE Mode
-
-By default, the tool is configured to run in DEBUG mode for increased development speed. The resulting JavaScript bundle will NOT be minified, but is compiled in 2-3 seconds.
-
-By providing `--release` or `-r` flag to the command line, the tool will run in RELEASE mode, which minifies the JavaScript bundle but adds 10 seconds or more to the compilation time. 
-(Fun fact: minification of default modules shipped with this compiler will shrink the bundle down from 5.23 MB to 445 KB. Isn't that just impressive?)
-
-Make sure to do a RELEASE mode build before you push your bundle into your source control repository, for reduced upload size. 
-
-## Known Quirks: JavaScript Compilation Delay
-
-Something to know to save you from mashing `CTRL+F5` on your Browser. When compiling JavaScript, these lines may appear:
-
-```
-[12:47:22] Compiling JavaScript...
-[12:47:28] 5112898 bytes written (2.63 seconds)
-```
-
-However the file isn't actually being written until these lines appear!
-
-```
-[12:47:36] bundle.js.map 2.67 MB
-[12:47:36] bundle.js 439.87 kB
-```
-
 ## Command List
-
-### gulp angular-templates
-
-Compiles and minify all `./assets/templates/**/*.html` files using [gulp-angular-templatecache](https://github.com/miickel/gulp-angular-templatecache) into `assets/js/templates.js`.
 
 ### gulp js
 
-Compiles and minify an `index.js` entry point in `assets/js` folder using [Browserify](https://github.com/substack/node-browserify) then outputs the result as `wwwroot/js/bundle.js` (plus its source maps).
+Compiles an `index.js` entry point in `assets/js` folder using [Browserify](https://github.com/substack/node-browserify) then outputs the result as `wwwroot/js/bundle.js` (plus its source maps).
 
-Also runs `gulp angular-templates` prior compilation.
+If there are requires that are pointed to `html` files, the said files will be minified and then converted into string. Handy for Angular's component / directive template parameter.
 
-### gulp css
+### gulp sass
 
-Compiles and minify a `site.scss` entry point in `assets/css` folder using [libsass](https://github.com/sass/libsass), then outputs the result as `wwwroot/css/site.css` (plus its source maps).
+Compiles a `site.scss` entry point in `assets/css` folder using [libsass](https://github.com/sass/libsass), then outputs the result as `wwwroot/css/site.css` (plus its source maps).
 
 Applies [autoprefixer](https://github.com/postcss/autoprefixer) with following browsers parameter: `['ie >= 9', 'Android >= 4', 'last 3 versions']`
 
-Can also be called using `gulp sass`.
+### --watch
 
-### gulp watch
+Providing this flag will enable WATCH mode, which enables automatic compilation on source code changes.
 
-Perform endless Browserify, Angular template caches, SASS compilation using `watchify` and `gulp-watch`.
+### --release
 
-Can also be called using `gulp`.
+By default, DEBUG mode is used for increased development speed. JavaScript bundle will NOT be minified, but can be compiled in 2-3 seconds.
+
+By providing this flag, bundle minification will be enabled, which uses [gulp-uglify](https://www.npmjs.com/package/gulp-uglify) and [`cssnano`](https://www.npmjs.com/package/cssnano) but adds 10 seconds or more to the compilation time. 
+
+Make sure to do a RELEASE mode build before pushing your bundle into your source control repository or production environment!
 
 ## Ryan's Angular Validation Message
 
@@ -135,11 +110,18 @@ import ryanValidator from './ryan-validator';
 
 Validation messages shown:
 - required
-- email (when using `type=email`)
 - min
 - max
 - minlength
 - maxlength
 - pattern (provide `mismatch` attribute to the component for customizing the message)
+- date (when using `type=date`)
+- datetimelocal (when using `type=datetime-local`)
+- email (when using `type=email`)
+- month (when using `type=month`)
+- number (when using `type=number`)
+- time (when using `type=time`)
+- url (when using `type=url`)
+- week (when using `type=week`)
 
 You may provide `title` attribute to the component for customizing the field name displayed.

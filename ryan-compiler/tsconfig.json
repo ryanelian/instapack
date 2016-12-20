@@ -2,8 +2,8 @@
   "compilerOptions": {
     "noImplicitAny": false,
     "noEmitOnError": true,
-    "removeComments": false,
-    "sourceMap": true,
+    "removeComments": true,
+    "sourceMap": false,
     "target": "es5",
     "moduleResolution": "node",
     "module": "commonjs",

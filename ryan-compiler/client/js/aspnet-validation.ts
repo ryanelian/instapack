@@ -3,8 +3,8 @@ import * as $ from 'jquery';
 window['$'] = window['jQuery'] = $;
 
 // Hack: currently jquery-validation version higher than 1.15.0 breaks Browserify!
-require('jquery-validation');
-require('jquery-validation-unobtrusive');
+import 'jquery-validation';
+import 'jquery-validation-unobtrusive';
 
 // Bonus: Enables JavaScript-enabled Bootstrap components
-require('bootstrap-sass/assets/javascripts/bootstrap');
+import 'bootstrap-sass/assets/javascripts/bootstrap';

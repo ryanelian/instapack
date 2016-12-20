@@ -16,7 +16,7 @@ class ValidatorController implements angular.IController {
     }
 
     public $onInit() {
-        var control = window.document.getElementsByName(this.input.$name)[0];
+        let control = window.document.getElementsByName(this.input.$name)[0];
 
         this.SetFieldTitle();
         this.SetMinErrorMessage(control);
@@ -84,7 +84,7 @@ class ValidatorController implements angular.IController {
 }
 
 class ValidatorComponent implements angular.IComponentOptions {
-    public templateUrl = 'validationMessage.html';
+    public template: string = require('./validationMessage.html');
     public bindings = {
         input: '=',
         title: '@',

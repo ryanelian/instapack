@@ -12,7 +12,7 @@ gutil.log("Ryan's Awesome Compiler 2.2"); // Running at __dirname
 
 var RELEASE = yargs.release || yargs.r;
 if (RELEASE) {
-    gutil.log("RELEASE mode detected: Bundles will be minified. SLOWLY.");
+    gutil.log("RELEASE mode detected: Bundles will be minified, slowly.");
 } else {
     gutil.log("DEBUG mode detected: Bundles are NOT minified in exchange for development speed!");
     gutil.log("Use --release flag for switching to RELEASE mode, which enables JS minification.");

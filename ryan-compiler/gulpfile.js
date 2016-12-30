@@ -4,13 +4,13 @@
 // Core Modules
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-var gulp = require('gulp');
-var gutil = require('gulp-util');       // Mostly used for logging.
-var yargs = require('yargs').argv;
+let gulp = require('gulp');
+let gutil = require('gulp-util');       // Mostly used for logging.
+let yargs = require('yargs').argv;
 
 gutil.log("Ryan's Awesome Compiler 2.2"); // Running at __dirname
 
-var RELEASE = yargs.release || yargs.r;
+let RELEASE = yargs.release || yargs.r;
 if (RELEASE) {
     gutil.log("RELEASE mode detected: Bundles will be minified, slowly.");
 } else {
@@ -18,7 +18,7 @@ if (RELEASE) {
     gutil.log("Use --release flag for switching to RELEASE mode, which enables JS minification.");
 }
 
-var WATCH = yargs.watch || yargs.w;
+let WATCH = yargs.watch || yargs.w;
 if (WATCH) {
     gutil.log("WATCH mode detected. Source codes will be automatically be compiled on changes.");
 } else {
@@ -31,26 +31,26 @@ gulp.task('default', ['js', 'sass']);
 // Shared Modules & Settings
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-var watch = require('gulp-watch');      // File watcher that actually works.
-var plumber = require('gulp-plumber');  // Prevents gulp-watch from stopping on compilation error!
-var sourcemaps = require('gulp-sourcemaps');
-var size = require('gulp-size');
+let watch = require('gulp-watch');      // File watcher that actually works.
+let plumber = require('gulp-plumber');  // Prevents gulp-watch from stopping on compilation error!
+let sourcemaps = require('gulp-sourcemaps');
+let size = require('gulp-size');
 
-var mainCss = 'site.scss';
-var targetJs = 'bundle.js';
-var targetFolder = './wwwroot/';
+let mainCss = 'site.scss';
+let targetJs = 'bundle.js';
+let targetFolder = './wwwroot/';
 
-var jsFolder = './client/js/';
-var cssFolder = './client/css/';
+let jsFolder = './client/js/';
+let cssFolder = './client/css/';
 
-var plumberSettings = {
+let plumberSettings = {
     errorHandler: function (error) {
         gutil.log(error);
         this.emit('end');
     }
 };
 
-var sizeOptions = {
+let sizeOptions = {
     showFiles: true,
     showTotal: false
 };
@@ -59,17 +59,19 @@ var sizeOptions = {
 // Ryan's Awesome JavaScript Compiler
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-var browserify = require('browserify');
-var tsify = require('tsify');
-var watchify = require('watchify');
-var stringify = require('./ryan-modules/stringify');
+let browserify = require('browserify');
+let tsify = require('tsify');
+let watchify = require('watchify');
+let stringify = require('./ryan-modules/stringify');
 
-var source = require('vinyl-source-stream');
-var buffer = require('vinyl-buffer');
-var uglify = require('gulp-uglify');
-var gulpif = require('gulp-if');
+let source = require('vinyl-source-stream');
+let buffer = require('vinyl-buffer');
 
-var bundler = browserify({
+let minifier = require('gulp-uglify/minifier');
+let uglify = require('uglify-js');
+let gulpif = require('gulp-if');
+
+let bundler = browserify({
     debug: true,
     noParse: ['angular', 'jquery'],
     cache: {},
@@ -84,6 +86,11 @@ if (WATCH) {
     // bundler.on('log', gutil.log);
 }
 
+let minifyPipe = minifier({
+    acorn: true
+}, uglify);
+let minifyRELEASE = gulpif(RELEASE, minifyPipe);
+
 function compileJs() {
     gutil.log('Compiling JavaScript...');
 
@@ -93,7 +100,7 @@ function compileJs() {
         .pipe(buffer())
         .pipe(plumber(plumberSettings))
         .pipe(sourcemaps.init({ loadMaps: true }))
-        .pipe(gulpif(RELEASE, uglify({ acorn: true })))
+        .pipe(minifyRELEASE)
         .pipe(sourcemaps.write('./'))
         .pipe(size(sizeOptions))
         .pipe(gulp.dest(targetFolder + 'js'));
@@ -105,20 +112,20 @@ gulp.task('js', compileJs);
 // Ryan's Awesome CSS Compiler
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-var sass = require('gulp-sass');
-var postcss = require('gulp-postcss');
-var autoprefixer = require('autoprefixer');
-var path = require('path');
-var cssnano = require('cssnano');
+let sass = require('gulp-sass');
+let postcss = require('gulp-postcss');
+let autoprefixer = require('autoprefixer');
+let path = require('path');
+let cssnano = require('cssnano');
 
-var cssProcessors = [
+let cssProcessors = [
     autoprefixer({
         browsers: ['ie >= 9', 'Android >= 4', 'last 3 versions']
     })
 ];
 
 if (RELEASE) {
-    var nanoOptions = {
+    let nanoOptions = {
         discardComments: {
             removeAll: true
         }
@@ -127,10 +134,10 @@ if (RELEASE) {
 }
 
 function sassCompile() {
-    var npmPath = path.join(__dirname, 'node_modules');
-    var bowerPath = path.join(__dirname, 'bower_components'); // Excluded because nobody use bower anymore LOL.
+    let npmPath = path.join(__dirname, 'node_modules');
+    let bowerPath = path.join(__dirname, 'bower_components'); // Excluded because nobody use bower anymore LOL.
 
-    var sassOptions = {
+    let sassOptions = {
         includePaths: [npmPath]
     };
 

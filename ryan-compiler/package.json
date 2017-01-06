@@ -9,10 +9,10 @@
   "author": "Ryan Elian",
   "license": "MIT",
   "dependencies": {
-    "@types/angular": "^1.5.22",
-    "@types/jquery": "^2.0.34",
-    "@types/lodash": "^4.14.45",
-    "@types/node": "^6.0.55",
+    "@types/angular": "^1.5.23",
+    "@types/jquery": "^2.0.39",
+    "@types/lodash": "^4.14.46",
+    "@types/node": "^6.0.58",
     "alertifyjs": "^1.8.0",
     "angular": "^1.6.1",
     "angular-animate": "^1.6.1",
@@ -22,15 +22,15 @@
     "jquery": "^3.1.1",
     "jquery-validation": "1.15.0",
     "jquery-validation-unobtrusive": "^3.2.6",
-    "lodash": "^4.17.3",
+    "lodash": "^4.17.4",
     "moment": "^2.17.1",
     "mustache": "^2.3.0"
   },
   "devDependencies": {
-    "autoprefixer": "^6.6.0",
-    "browserify": "^13.1.1",
+    "autoprefixer": "^6.6.1",
+    "browserify": "^13.3.0",
     "browserify-transform-tools": "^1.7.0",
-    "cssnano": "^3.9.1",
+    "cssnano": "^3.10.0",
     "gulp": "^3.9.1",
     "gulp-if": "^2.0.2",
     "gulp-plumber": "^1.1.0",
@@ -48,6 +48,6 @@
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
     "watchify": "^3.7.0",
-    "yargs": "^6.5.0"
+    "yargs": "^6.6.0"
   }
 }

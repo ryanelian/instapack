@@ -12,15 +12,15 @@ gutil.log("Ryan's Awesome Compiler 2.2"); // Running at __dirname
 
 let RELEASE = yargs.release || yargs.r;
 if (RELEASE) {
-    gutil.log("RELEASE mode detected: Bundles will be minified, slowly.");
+    gutil.log("RELEASE mode: Bundles will be minified, slowly.");
 } else {
-    gutil.log("DEBUG mode detected: Bundles are NOT minified in exchange for development speed!");
+    gutil.log("DEBUG mode: Bundles are NOT minified in exchange for development speed!");
     gutil.log("Use --release flag for switching to RELEASE mode, which enables JS minification.");
 }
 
 let WATCH = yargs.watch || yargs.w;
 if (WATCH) {
-    gutil.log("WATCH mode detected. Source codes will be automatically be compiled on changes.");
+    gutil.log("WATCH mode: Source codes will be automatically be compiled on changes.");
 } else {
     gutil.log("Use --watch flag for switching to WATCH mode for automatic compilation on source changes.");
 }

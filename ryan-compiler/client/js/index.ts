@@ -8,4 +8,5 @@
 // https://www.microsoft.com/en-us/download/details.aspx?id=48593
 
 import './aspnet-validation';
+import 'bootstrap-sass';
 import './aspnet-angular';

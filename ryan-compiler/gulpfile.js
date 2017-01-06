@@ -86,13 +86,13 @@ if (WATCH) {
     // bundler.on('log', gutil.log);
 }
 
-let minifyPipe = minifier({
-    acorn: true
-}, uglify);
-let minifyRELEASE = gulpif(RELEASE, minifyPipe);
-
 function compileJs() {
     gutil.log('Compiling JavaScript...');
+
+    let minifyPipe = minifier({
+        acorn: true
+    }, uglify);
+    let minifyRELEASE = gulpif(RELEASE, minifyPipe);
 
     return bundler.bundle()
         .on('error', gutil.log)

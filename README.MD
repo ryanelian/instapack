@@ -1,4 +1,4 @@
-# Ryan's Awesome Compiler 2.2
+# Ryan's Awesome Compiler 2.2.3
 
 > Ryan's awesome client-side application compiler for Angular and SASS, using Browserify + TypeScript!
 
@@ -20,15 +20,15 @@ In addition, this project is configured to output the bundled files into `wwwroo
 
 ## Getting Started
 
-Supported NodeJS version: [6.9 LTS](https://nodejs.org/en/download/)
+Supported NodeJS version: [6.X LTS](https://nodejs.org/en/download/)
 
-Install [TypeScript 2.1 for Visual Studio 2015](https://blogs.msdn.microsoft.com/typescript/2016/12/07/announcing-typescript-2-1/).
+Install [TypeScript 2 for Visual Studio 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48593).
 
 Install [gulp-cli](https://github.com/gulpjs/gulp/blob/master/docs/getting-started.md): `npm install -g gulp-cli`
 
 If running Node on Windows, make sure that the Command Prompt is opened in Administrator Mode then install [windows-build-tools](https://www.npmjs.com/package/windows-build-tools): `npm install -g windows-build-tools` (Installs [Python 2](https://www.python.org/downloads/) and [Visual C++ Build Tools 2015](http://landinghub.visualstudio.com/visual-cpp-build-tools)).
 
-Copy everything inside `ryan-compiler` subfolder into our project, then run package restore: `npm update`. You should probably use `yarn` instead though (read below).
+Copy everything inside `ryan-compiler` subfolder into our project, then run package restore: `npm update` or `yarn`.
 
 Run `gulp` and watch the magic happens!
 
@@ -36,7 +36,7 @@ Run `gulp` and watch the magic happens!
 
 It is recommended to use [Yarn](https://yarnpkg.com/) instead of NPM for managing packages. [Read more about Yarn here](https://code.facebook.com/posts/1840075619545360).
 
-- Yarn generates lockfile not unlike ASP.NET `project.json` for added reliability.
+- Yarn generates packages lockfile similar to ASP.NET `project.json` for added reliability.
 - Yarn has built-in interactive package upgrade command. (`yarn upgrade-interactive`)
 - Yarn has can install packages previously installed (cached offline) via `--prefer-offline` flag.
 - Yarn automatically saves package install to `package.json` without `--save` flag via `yarn add` command. (You may add `--dev` flag for saving `devDependencies`)  
@@ -45,7 +45,7 @@ If you prefer to not to use Yarn, it is recommended to use [npm-check](https://w
 
 ## Importing Node Modules via TypeScript
 
-As of [TypeScript 2.1](https://blogs.msdn.microsoft.com/typescript/2016/12/07/announcing-typescript-2-1/), we can import any packages in `node_modules` using the `import` syntax. However, like importing using Browserify CommonJS `require()` syntax, we do not get Visual Studio Intellisense.
+As of [TypeScript 2.1](https://blogs.msdn.microsoft.com/typescript/2016/12/07/announcing-typescript-2-1/), any packages can be imported from `node_modules` using the `import` syntax. However, like importing using Browserify CommonJS `require()` syntax, we do not get Visual Studio Intellisense.
 
 For enhanced developing experience, it is recommended to use TypeScript definition installed from [@types](http://microsoft.github.io/TypeSearch/) when available. Installing @types for a library will provide Visual Studio Intellisense when the library is being imported using [TypeScript Import](https://www.typescriptlang.org/docs/handbook/modules.html) syntax. For example:
 
@@ -72,21 +72,25 @@ Compiles a `site.scss` entry point in `assets/css` folder using [libsass](https:
 
 Applies [autoprefixer](https://github.com/postcss/autoprefixer) with following browsers parameter: `['ie >= 9', 'Android >= 4', 'last 3 versions']`
 
-### --watch
+### --watch / -w
 
 Providing this flag will enable WATCH mode, which enables automatic compilation on source code changes.
 
-### --release
+### --release / -r
 
 By default, DEBUG mode is used for increased development speed. JavaScript bundle will NOT be minified, but can be compiled in 2-3 seconds.
 
-By providing this flag, bundle minification will be enabled, which uses [gulp-uglify](https://www.npmjs.com/package/gulp-uglify) and [`cssnano`](https://www.npmjs.com/package/cssnano) but adds 10 seconds or more to the compilation time. 
+By providing this flag, bundle minification will be enabled, which uses [gulp-uglify](https://www.npmjs.com/package/gulp-uglify) and [`cssnano`](https://www.npmjs.com/package/cssnano) but adds few seconds to the compilation time. 
 
 Make sure to do a RELEASE mode build before pushing your bundle into your source control repository or production environment!
 
+## -rw
+
+Shorthand flag for invoking RELEASE and WATCH mode.
+
 ## Ryan's Angular Validation Message
 
-As demonstration of the compiler's capabilities, my custom Angular input validation message component (written in TypeScript) is added and configured into the project. It allows automatic validation message output using [Angular's input directive](https://docs.angularjs.org/api/ng/directive/input).
+As demonstration of the compiler's capabilities, a custom Angular input validation message component (written in TypeScript) is added and configured into the project. It allows automatic validation message output using [Angular's input directive](https://docs.angularjs.org/api/ng/directive/input).
 
 Usage example:
 

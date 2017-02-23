@@ -72,6 +72,12 @@ Compiles a `site.scss` entry point in `assets/css` folder using [libsass](https:
 
 Applies [autoprefixer](https://github.com/postcss/autoprefixer) with following browsers parameter: `['ie >= 9', 'Android >= 4', 'last 3 versions']`
 
+### gulp
+
+Perform both js and sass compilation.
+
+## Flag List
+
 ### --watch / -w
 
 Providing this flag will enable WATCH mode, which enables automatic compilation on source code changes.
@@ -84,7 +90,7 @@ By providing this flag, bundle minification will be enabled, which uses [gulp-ug
 
 Make sure to do a RELEASE mode build before pushing your bundle into your source control repository or production environment!
 
-## -rw
+### -rw
 
 Shorthand flag for invoking RELEASE and WATCH mode.
 

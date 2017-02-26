@@ -8,7 +8,7 @@ let gulp = require('gulp');
 let gutil = require('gulp-util');       // Mostly used for logging.
 let yargs = require('yargs').argv;
 
-gutil.log("Ryan's Awesome Compiler 2.2"); // Running at __dirname
+gutil.log("Ryan's Awesome Compiler 2.2.4"); // Running at __dirname
 
 let RELEASE = yargs.release || yargs.r;
 if (RELEASE) {

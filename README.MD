@@ -1,4 +1,4 @@
-# Ryan's Awesome Compiler 2.2.3
+# Ryan's Awesome Compiler 2.2.4
 
 > Ryan's awesome client-side application compiler for Angular and SASS, using Browserify + TypeScript!
 

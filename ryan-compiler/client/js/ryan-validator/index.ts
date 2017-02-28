@@ -4,6 +4,8 @@ import * as angularMessages from 'angular-messages';
 let ryanValidator = angular.module('ryan-angular-validator', [angularMessages]);
 
 class ValidatorController implements angular.IController {
+    static $inject = [];
+
     title: string;
     minDesc: string;
     maxDesc: string;
@@ -15,7 +17,7 @@ class ValidatorController implements angular.IController {
     constructor() {
     }
 
-    public $onInit() {
+    $onInit() {
         let control = window.document.getElementsByName(this.input.$name)[0];
 
         this.SetFieldTitle();
@@ -26,13 +28,13 @@ class ValidatorController implements angular.IController {
         this.SetPatternMismatchMessage();
     }
 
-    public SetFieldTitle() {
+    SetFieldTitle() {
         if (!this.title) {
             this.title = this.input.$name;
         }
     }
 
-    public SetMinErrorMessage(control: HTMLElement) {
+    SetMinErrorMessage(control: HTMLElement) {
         this.minDesc = 'input value needs to be higher';
 
         if (control) {
@@ -43,7 +45,7 @@ class ValidatorController implements angular.IController {
         }
     }
 
-    public SetMaxErrorMessage(control: HTMLElement) {
+    SetMaxErrorMessage(control: HTMLElement) {
         this.maxDesc = 'input value needs to be lower';
 
         if (control) {
@@ -54,7 +56,7 @@ class ValidatorController implements angular.IController {
         }
     }
 
-    public SetMinLengthErrorMessage(control: HTMLElement) {
+    SetMinLengthErrorMessage(control: HTMLElement) {
         this.minLengthDesc = 'input length needs to be longer';
 
         if (control) {
@@ -65,7 +67,7 @@ class ValidatorController implements angular.IController {
         }
     }
 
-    public SetMaxLengthErrorMessage(control: HTMLElement) {
+    SetMaxLengthErrorMessage(control: HTMLElement) {
         this.maxLengthDesc = 'input length needs to be shorter';
 
         if (control) {
@@ -76,7 +78,7 @@ class ValidatorController implements angular.IController {
         }
     }
 
-    public SetPatternMismatchMessage() {
+    SetPatternMismatchMessage() {
         if (!this.mismatch) {
             this.mismatch = 'input pattern mismatched.';
         }
@@ -84,14 +86,14 @@ class ValidatorController implements angular.IController {
 }
 
 class ValidatorComponent implements angular.IComponentOptions {
-    public template: string = require('./validationMessage.html');
-    public bindings = {
+    template: string = require('./validationMessage.html');
+    bindings = {
         input: '=',
         title: '@',
         mismatch: '@'
     };
-    public controller = [ValidatorController];
-    public controllerAs = 'me';
+    controller = ValidatorController;
+    controllerAs = 'me';
 }
 
 ryanValidator.component('validationMessage', new ValidatorComponent());

@@ -27,7 +27,7 @@
     "mustache": "^2.3.0"
   },
   "devDependencies": {
-    "autoprefixer": "^6.7.5",
+    "autoprefixer": "^6.7.6",
     "browserify": "^14.1.0",
     "browserify-transform-tools": "^1.7.0",
     "cssnano": "^3.10.0",
@@ -41,10 +41,10 @@
     "gulp-uglify": "^2.0.1",
     "gulp-util": "^3.0.8",
     "gulp-watch": "^4.3.11",
-    "html-minifier": "^3.3.3",
+    "html-minifier": "^3.4.0",
     "tsify": "^3.0.1",
     "typescript": "^2.2.1",
-    "uglify-js": "^2.7.5",
+    "uglify-js": "^2.8.1",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
     "watchify": "^3.9.0",

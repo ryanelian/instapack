@@ -44,10 +44,10 @@
     "html-minifier": "^3.4.0",
     "tsify": "^3.0.1",
     "typescript": "^2.2.1",
-    "uglify-js": "^2.8.4",
+    "uglify-js": "^2.8.7",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
     "watchify": "^3.9.0",
-    "yargs": "^6.6.0"
+    "yargs": "^7.0.1"
   }
 }

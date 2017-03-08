@@ -67,21 +67,21 @@ amdefine@>=0.0.4:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/amdefine/-/amdefine-1.0.1.tgz#4a5282ac164729e93619bcfd3ad151f817ce91f5"
 
-angular-animate@^1.6.2:
-  version "1.6.2"
-  resolved "https://registry.yarnpkg.com/angular-animate/-/angular-animate-1.6.2.tgz#def2a8b9ede53b4b6e234c25f5c64e4b4385df15"
+angular-animate@^1.6.3:
+  version "1.6.3"
+  resolved "https://registry.yarnpkg.com/angular-animate/-/angular-animate-1.6.3.tgz#d228a14f47a4e50bea44ed15bbc4651d44d194f5"
 
-angular-messages@^1.6.2:
-  version "1.6.2"
-  resolved "https://registry.yarnpkg.com/angular-messages/-/angular-messages-1.6.2.tgz#03838b7ec5cc8671153035a59068f2fbd4e37ce4"
+angular-messages@^1.6.3:
+  version "1.6.3"
+  resolved "https://registry.yarnpkg.com/angular-messages/-/angular-messages-1.6.3.tgz#7cbdeee209d5e2d19dcc96ab73ac46a168a11db1"
 
 angular-ui-bootstrap@^2.5.0:
   version "2.5.0"
   resolved "https://registry.yarnpkg.com/angular-ui-bootstrap/-/angular-ui-bootstrap-2.5.0.tgz#2facefb915386655dc5f44150258032517236d01"
 
-angular@^1.6.2:
-  version "1.6.2"
-  resolved "https://registry.yarnpkg.com/angular/-/angular-1.6.2.tgz#d0b677242ac4bf9ae81424297c6320973af4bb5a"
+angular@^1.6.3:
+  version "1.6.3"
+  resolved "https://registry.yarnpkg.com/angular/-/angular-1.6.3.tgz#5d34b799234e8fa17c6a3a14e0258733935f43e7"
 
 ansi-regex@^2.0.0:
   version "2.0.0"
@@ -3603,9 +3603,17 @@ uglify-js@2.7.5:
     uglify-to-browserify "~1.0.0"
     yargs "~3.10.0"
 
-uglify-js@2.8.x, uglify-js@^2.8.8:
+uglify-js@2.8.x:
   version "2.8.8"
   resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-2.8.8.tgz#1a5cd145eb528b606fa2b86e578885272b597cd7"
+  dependencies:
+    source-map "~0.5.1"
+    uglify-to-browserify "~1.0.0"
+    yargs "~3.10.0"
+
+uglify-js@^2.8.9:
+  version "2.8.9"
+  resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-2.8.9.tgz#01194b91cc0795214093c05594ef5ac1e0b2e900"
   dependencies:
     source-map "~0.5.1"
     uglify-to-browserify "~1.0.0"

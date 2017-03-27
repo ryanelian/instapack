@@ -1,9 +1,6 @@
 ﻿import * as angular from 'angular';
-import * as angularMessages from 'angular-messages';
 
-let ryanValidator = angular.module('ryan-angular-validator', [angularMessages]);
-
-class ValidatorController implements angular.IController {
+export class ValidatorController implements angular.IController {
     static $inject = [];
 
     title: string;
@@ -85,7 +82,7 @@ class ValidatorController implements angular.IController {
     }
 }
 
-class ValidatorComponent implements angular.IComponentOptions {
+export class ValidatorComponent implements angular.IComponentOptions {
     template: string = require('./validationMessage.html');
     bindings = {
         input: '=',
@@ -95,6 +92,3 @@ class ValidatorComponent implements angular.IComponentOptions {
     controller = ValidatorController;
     controllerAs = 'me';
 }
-
-ryanValidator.component('validationMessage', new ValidatorComponent());
-export default (ryanValidator.name);

@@ -1,0 +1,10 @@
+{
+    "jquery-bootstrap": [
+        "jquery",
+        "bootstrap-sass"
+    ],
+    "aspnet-validator": [
+        "jquery-validation",
+        "jquery-validation-unobtrusive"
+    ]
+}

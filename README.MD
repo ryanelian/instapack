@@ -1,4 +1,4 @@
-# Ryan's Awesome Compiler 2.2.10
+# Ryan's Awesome Compiler 3.0.0
 
 > Ryan's awesome client-side application compiler for Angular and SASS, using Browserify + TypeScript!
 
@@ -8,27 +8,29 @@
 
 - [Modern JavaScript is convenient, but stupid](https://hackernoon.com/how-it-feels-to-learn-javascript-in-2016-d3a717dd577f#.wm43f7wca). We need to set up the project 'makefiles' for hours before we even can start coding, if we want to use modern JavaScript features.
 
-- [TypeScript](https://www.typescriptlang.org/) is glorious but stupid at the same time. It compiles the JavaScript files but does not actually merge them and requires us to stitch them together using other tooling such as Browserify or WebPack or SystemJS or RequireJS, which brings us back to the first point.
+- [TypeScript](https://www.typescriptlang.org/) is glorious but stupid at the same time. It compiles the JavaScript files but does not actually merge them. Therefore requires us to stitch them together using other tools such as Browserify or WebPack or SystemJS or RequireJS. (Which brings us back to the first point.)
 
-- [AngularJS](https://angularjs.org/) `templateUrl` is wonderful until our site is being slowed down by dozens of mini HTML templates being loaded remotely. And there are no easy ways to bundle them together without using third-party tools such as Gulp, which brings us back to the first point again.
+- [AngularJS](https://angularjs.org/) `templateUrl` is wonderful until our site is being slowed down by dozens of mini HTML templates being loaded remotely. And there are no easy ways to bundle them together without using third-party tools such as Gulp. (Noticed a pattern here?)
 
-- Other tooling and bundling issues such as SASS importing files from `node_modules` or `bower_components`, Source Maps output, and so on.
+- Other tooling and bundling issues such as Sass importing files from `node_modules` or `bower_components`, Source Maps output, and so on.
 
-This project attempts to alleviate those burdens away from the developer. By plugging this compiler into our project, we can immediately start coding Angular 1.X applications using TypeScript with a resulting bundle that is easily debuggable under Google Chrome!
+This project attempts to alleviate those burdens away from the developer. By plugging this compiler into our project, we can immediately start coding Angular 1.X applications using TypeScript with a resulting bundle that is easily debuggable under **Google Chrome**!
 
-In addition, this project is configured to output the bundled files into `wwwroot` folder, which is used for placing ASP.NET Core MVC static files.
+In addition, this project is configured to output the bundled files into `wwwroot` folder, which is used by default for placing **ASP.NET Core MVC** static files.
 
 ## Getting Started
 
 Supported NodeJS version: [6.X LTS](https://nodejs.org/en/download/)
 
-Install [TypeScript 2 for Visual Studio 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48593).
+Install [TypeScript 2 for Visual Studio 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48593). Or if you use Visual Studio, simply select
 
 Install [gulp-cli](https://github.com/gulpjs/gulp/blob/master/docs/getting-started.md): `npm install -g gulp-cli`
 
-If running Node on Windows, make sure that the Command Prompt is opened in Administrator Mode then install [windows-build-tools](https://www.npmjs.com/package/windows-build-tools): `npm install -g windows-build-tools` (Installs [Python 2](https://www.python.org/downloads/) and [Visual C++ Build Tools 2015](http://landinghub.visualstudio.com/visual-cpp-build-tools)).
+Optional but highly recommended:
+-  If running Node on Windows, make sure that the Command Prompt is opened in Administrator Mode then install [windows-build-tools](https://www.npmjs.com/package/windows-build-tools): `npm install -g windows-build-tools` (Installs [Python 2](https://www.python.org/downloads/) and [Visual C++ Build Tools 2015](http://landinghub.visualstudio.com/visual-cpp-build-tools)).
+- Use Yarn to manage your packages. Install: https://github.com/yarnpkg/yarn/releases
 
-Copy everything inside `ryan-compiler` subfolder into our project, then run package restore: `npm update` or `yarn`.
+Copy everything inside `ryan-compiler` subfolder into our project, then run package restore: `yarn` or `npm update`.
 
 Run `gulp` and watch the magic happens!
 
@@ -72,9 +74,46 @@ Compiles a `site.scss` entry point in `assets/css` folder using [libsass](https:
 
 Applies [autoprefixer](https://github.com/postcss/autoprefixer) with following browsers parameter: `['ie >= 9', 'Android >= 4', 'last 3 versions']`
 
+### gulp concat
+
+Unlike Angular modules, certain jQuery modules / plugins requires globally defined `$` or `jQuery` variable, such as: **ASP.NET jQuery Validation Unobtrusive**. This may pose compatibility problem when the jQuery and its plugins are imported via TypeScript / Browserify.
+
+Therefore, a `concat.json` is provided to bundle (and minify) together jQuery modules directly from `node_modules` for convenience and maintainability. This file will be parsed and used to concatenate those files, which will be outputted into the `wwwroot/js/`.
+
+For example, this file is provided by default with this compiler:
+
+```json
+{
+    "jquery-bootstrap": [
+        "jquery",
+        "bootstrap-sass"
+    ],
+    "aspnet-validator": [
+        "jquery-validation",
+        "jquery-validation-unobtrusive"
+    ]
+}
+```
+
+... which will result in `wwwroot/js/jquery-bootstrap.js` and `wwwroot/js/aspnet-validator.js`. By including these files using `<script>` **BEFORE** the resulting `bundle.js` from `gulp js` task, the plugins can be correctly loaded and can be used to code the application using TypeScript!
+
+For example:
+
+```typescript
+let $ : any = window['$'];
+
+$(document).ready(function(){
+
+});
+```
+
+Due to the nature of the hack, it is recommended to **only use concatenation against library / plugin files** instead of application source code. By grouping libraries to be concatenated, it is possible to load the libraries only on pages that actually require them. For example:
+- `jquery-bootstrap.js` can be included everywhere if the application uses Bootstrap's JavaScript extensively. For example, dropdown in navbar.
+- However, `aspnet-validator.js` can be included only when you need to perform validation using Razor's Data Annotation by clever use of `ViewBag`. (For example: `ViewBag.Validation = true;`)
+
 ### gulp
 
-Perform both js and sass compilation.
+Perform both TypeScript, Sass, and concatenation targets compilation.
 
 ## Flag List
 
@@ -99,11 +138,6 @@ Shorthand flag for invoking RELEASE and WATCH mode.
 As demonstration of the compiler's capabilities, a custom Angular input validation message component (written in TypeScript) is added and configured into the project. It allows automatic validation message output using [Angular's input directive](https://docs.angularjs.org/api/ng/directive/input).
 
 Usage example:
-
-```typescript
-import ryanValidator from './ryan-validator';
-// Simply then add ryanValidator into your Angular application module.
-```
 
 ```html
 <form id="MyForm" name="MyForm">

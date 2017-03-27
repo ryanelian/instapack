@@ -68,6 +68,8 @@ Compiles an `index.js` entry point in `assets/js` folder using [Browserify](http
 
 If there are requires that are pointed to `html` files, the said files will be minified and then converted into string. Handy for Angular's component / directive template parameter.
 
+You may block TypeScript compilation in a Visual Studio 2017 project during Solution Rebuild by adding `<TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>` to the `csproj` in the first `<PropertyGroup>`.
+
 ### gulp sass
 
 Compiles a `site.scss` entry point in `assets/css` folder using [libsass](https://github.com/sass/libsass), then outputs the result as `wwwroot/css/site.css` (plus its source maps).

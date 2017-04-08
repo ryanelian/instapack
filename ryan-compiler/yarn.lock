@@ -2,9 +2,16 @@
 # yarn lockfile v1
 
 
-"@types/angular@^1.6.10":
-  version "1.6.10"
-  resolved "https://registry.yarnpkg.com/@types/angular/-/angular-1.6.10.tgz#1c6a458305c85b16c98fe5173b843a836dbc2b67"
+"@gulp-sourcemaps/map-sources@1.X":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@gulp-sourcemaps/map-sources/-/map-sources-1.0.0.tgz#890ae7c5d8c877f6d384860215ace9d7ec945bda"
+  dependencies:
+    normalize-path "^2.0.1"
+    through2 "^2.0.3"
+
+"@types/angular@^1.6.14":
+  version "1.6.14"
+  resolved "https://registry.yarnpkg.com/@types/angular/-/angular-1.6.14.tgz#6923ba9f325b80fd9546c856d147782b551f637a"
   dependencies:
     "@types/jquery" "*"
 
@@ -12,13 +19,13 @@
   version "2.0.41"
   resolved "https://registry.yarnpkg.com/@types/jquery/-/jquery-2.0.41.tgz#b87ba051011f99edbe586d8f97282e7786e01a6d"
 
-"@types/lodash@^4.14.58":
-  version "4.14.58"
-  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.58.tgz#18d45863b6119c1ffffe935c1f51fe044c8c4102"
+"@types/lodash@^4.14.62":
+  version "4.14.62"
+  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.62.tgz#8674f9861582148a60b7a89cb260f11378d11683"
 
-"@types/node@^7.0.11":
-  version "7.0.11"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-7.0.11.tgz#55680189f2335f080f0aeb57871f0b9823646d89"
+"@types/node@^7.0.12":
+  version "7.0.12"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-7.0.12.tgz#ae5f67a19c15f752148004db07cbbb372e69efc9"
 
 JSONStream@^1.0.3:
   version "1.3.0"
@@ -67,21 +74,21 @@ amdefine@>=0.0.4:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/amdefine/-/amdefine-1.0.1.tgz#4a5282ac164729e93619bcfd3ad151f817ce91f5"
 
-angular-animate@^1.6.3:
-  version "1.6.3"
-  resolved "https://registry.yarnpkg.com/angular-animate/-/angular-animate-1.6.3.tgz#d228a14f47a4e50bea44ed15bbc4651d44d194f5"
+angular-animate@^1.6.4:
+  version "1.6.4"
+  resolved "https://registry.yarnpkg.com/angular-animate/-/angular-animate-1.6.4.tgz#d3eb906d39834f2dfbdd982e6b8d7a3b4d9001d2"
 
-angular-messages@^1.6.3:
-  version "1.6.3"
-  resolved "https://registry.yarnpkg.com/angular-messages/-/angular-messages-1.6.3.tgz#7cbdeee209d5e2d19dcc96ab73ac46a168a11db1"
+angular-messages@^1.6.4:
+  version "1.6.4"
+  resolved "https://registry.yarnpkg.com/angular-messages/-/angular-messages-1.6.4.tgz#9ec9c1393293b14de54161d2f849776489e980fe"
 
 angular-ui-bootstrap@^2.5.0:
   version "2.5.0"
   resolved "https://registry.yarnpkg.com/angular-ui-bootstrap/-/angular-ui-bootstrap-2.5.0.tgz#2facefb915386655dc5f44150258032517236d01"
 
-angular@^1.6.3:
-  version "1.6.3"
-  resolved "https://registry.yarnpkg.com/angular/-/angular-1.6.3.tgz#5d34b799234e8fa17c6a3a14e0258733935f43e7"
+angular@^1.6.4:
+  version "1.6.4"
+  resolved "https://registry.yarnpkg.com/angular/-/angular-1.6.4.tgz#03b7b15c01a0802d7e2cf593240e604054dc77fb"
 
 ansi-regex@^2.0.0:
   version "2.0.0"
@@ -380,7 +387,7 @@ browserify-zlib@~0.1.2:
   dependencies:
     pako "~0.2.0"
 
-browserify@^14.0.0, browserify@^14.1.0:
+browserify@^14.0.0:
   version "14.1.0"
   resolved "https://registry.yarnpkg.com/browserify/-/browserify-14.1.0.tgz#0508cc1e7bf4c152312c2fa523e676c0b0b92311"
   dependencies:
@@ -404,6 +411,58 @@ browserify@^14.0.0, browserify@^14.1.0:
     has "^1.0.0"
     htmlescape "^1.1.0"
     https-browserify "~0.0.0"
+    inherits "~2.0.1"
+    insert-module-globals "^7.0.0"
+    labeled-stream-splicer "^2.0.0"
+    module-deps "^4.0.8"
+    os-browserify "~0.1.1"
+    parents "^1.0.1"
+    path-browserify "~0.0.0"
+    process "~0.11.0"
+    punycode "^1.3.2"
+    querystring-es3 "~0.2.0"
+    read-only-stream "^2.0.0"
+    readable-stream "^2.0.2"
+    resolve "^1.1.4"
+    shasum "^1.0.0"
+    shell-quote "^1.6.1"
+    stream-browserify "^2.0.0"
+    stream-http "^2.0.0"
+    string_decoder "~0.10.0"
+    subarg "^1.0.0"
+    syntax-error "^1.1.1"
+    through2 "^2.0.0"
+    timers-browserify "^1.0.1"
+    tty-browserify "~0.0.0"
+    url "~0.11.0"
+    util "~0.10.1"
+    vm-browserify "~0.0.1"
+    xtend "^4.0.0"
+
+browserify@^14.3.0:
+  version "14.3.0"
+  resolved "https://registry.yarnpkg.com/browserify/-/browserify-14.3.0.tgz#fd003a2386ac1aec127f097885a3cc6373b745c4"
+  dependencies:
+    JSONStream "^1.0.3"
+    assert "^1.4.0"
+    browser-pack "^6.0.1"
+    browser-resolve "^1.11.0"
+    browserify-zlib "~0.1.2"
+    buffer "^5.0.2"
+    cached-path-relative "^1.0.0"
+    concat-stream "~1.5.1"
+    console-browserify "^1.1.0"
+    constants-browserify "~1.0.0"
+    crypto-browserify "^3.0.0"
+    defined "^1.0.0"
+    deps-sort "^2.0.0"
+    domain-browser "~1.1.0"
+    duplexer2 "~0.1.2"
+    events "~1.1.0"
+    glob "^7.1.0"
+    has "^1.0.0"
+    htmlescape "^1.1.0"
+    https-browserify "^1.0.0"
     inherits "~2.0.1"
     insert-module-globals "^7.0.0"
     labeled-stream-splicer "^2.0.0"
@@ -1486,10 +1545,11 @@ gulp-size@^2.1.0:
     stream-counter "^1.0.0"
     through2 "^2.0.0"
 
-gulp-sourcemaps@^2.4.1:
-  version "2.4.1"
-  resolved "https://registry.yarnpkg.com/gulp-sourcemaps/-/gulp-sourcemaps-2.4.1.tgz#8f65dc5c0d07b2fd5c88bc60ec7f13e56716bf74"
+gulp-sourcemaps@^2.5.1:
+  version "2.5.1"
+  resolved "https://registry.yarnpkg.com/gulp-sourcemaps/-/gulp-sourcemaps-2.5.1.tgz#773b6d7c3b25eeff64b3cb34c091681aeb89fea6"
   dependencies:
+    "@gulp-sourcemaps/map-sources" "1.X"
     acorn "4.X"
     convert-source-map "1.X"
     css "2.X"
@@ -1497,7 +1557,7 @@ gulp-sourcemaps@^2.4.1:
     detect-newline "2.X"
     graceful-fs "4.X"
     source-map "0.X"
-    strip-bom "3.X"
+    strip-bom-string "1.X"
     through2 "2.X"
     vinyl "1.X"
 
@@ -1682,6 +1742,10 @@ http-signature@~1.1.0:
     assert-plus "^0.2.0"
     jsprim "^1.2.2"
     sshpk "^1.7.0"
+
+https-browserify@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/https-browserify/-/https-browserify-1.0.0.tgz#ec06c10e0a34c0f2faf199f7fd7fc78fffd03c73"
 
 https-browserify@~0.0.0:
   version "0.0.1"
@@ -3491,9 +3555,9 @@ strip-bom-stream@^2.0.0:
     first-chunk-stream "^2.0.0"
     strip-bom "^2.0.0"
 
-strip-bom@3.X:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/strip-bom/-/strip-bom-3.0.0.tgz#2334c18e9c759f7bdd56fdef7e9ae3d588e68ed3"
+strip-bom-string@1.X:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/strip-bom-string/-/strip-bom-string-1.0.0.tgz#e5211e9224369fbb81d633a2f00044dc8cedad92"
 
 strip-bom@^1.0.0:
   version "1.0.0"
@@ -3590,7 +3654,7 @@ ternary-stream@^2.0.1:
     merge-stream "^1.0.0"
     through2 "^2.0.1"
 
-through2@2.X, through2@^2, through2@^2.0.0, through2@^2.0.1:
+through2@2.X, through2@^2, through2@^2.0.0, through2@^2.0.1, through2@^2.0.3:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/through2/-/through2-2.0.3.tgz#0004569b37c7c74ba39c43f3ced78d1ad94140be"
   dependencies:
@@ -3674,13 +3738,22 @@ typedarray@~0.0.5:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
 
-typescript@^2.2.1:
-  version "2.2.1"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.2.1.tgz#4862b662b988a4c8ff691cc7969622d24db76ae9"
+typescript@^2.2.2:
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.2.2.tgz#606022508479b55ffa368b58fee963a03dfd7b0c"
 
-uglify-js@2.8.x, uglify-js@^2.8.16, uglify-js@~2.8.10:
+uglify-js@2.8.x, uglify-js@~2.8.10:
   version "2.8.16"
   resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-2.8.16.tgz#d286190b6eefc6fd65eb0ecac6551e0b0e8839a4"
+  dependencies:
+    source-map "~0.5.1"
+    yargs "~3.10.0"
+  optionalDependencies:
+    uglify-to-browserify "~1.0.0"
+
+uglify-js@^2.8.21:
+  version "2.8.21"
+  resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-2.8.21.tgz#1733f669ae6f82fc90c7b25ec0f5c783ee375314"
   dependencies:
     source-map "~0.5.1"
     yargs "~3.10.0"

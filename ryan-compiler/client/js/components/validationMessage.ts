@@ -1,6 +1,6 @@
 ﻿import * as angular from 'angular';
 
-export class ValidatorController implements angular.IController {
+export class ValidationMessageController implements angular.IController {
     static $inject = [];
 
     title: string;
@@ -82,13 +82,15 @@ export class ValidatorController implements angular.IController {
     }
 }
 
-export class ValidatorComponent implements angular.IComponentOptions {
-    template: string = require('./validationMessage.html');
-    bindings = {
+let ValidationMessageComponent = {
+    template: require('./validationMessage.html'),
+    bindings: {
         input: '=',
         title: '@',
         mismatch: '@'
-    };
-    controller = ValidatorController;
-    controllerAs = 'me';
-}
+    },
+    controller: ValidationMessageController,
+    controllerAs: 'me'
+};
+
+export { ValidationMessageComponent };

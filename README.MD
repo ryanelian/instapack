@@ -22,12 +22,12 @@ In addition, this project is configured to output the bundled files into `wwwroo
 
 Supported NodeJS version: [6.X LTS](https://nodejs.org/en/download/)
 
-Install [TypeScript 2 for Visual Studio 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48593). Or if you use Visual Studio, simply select
+Install [TypeScript 2 for Visual Studio 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48593). Or if you use Visual Studio 2017, simply select **TypeScript 2 SDK** from the component list during setup.
 
 Install [gulp-cli](https://github.com/gulpjs/gulp/blob/master/docs/getting-started.md): `npm install -g gulp-cli`
 
 Optional but highly recommended:
--  If running Node on Windows, make sure that the Command Prompt is opened in Administrator Mode then install [windows-build-tools](https://www.npmjs.com/package/windows-build-tools): `npm install -g windows-build-tools` (Installs [Python 2](https://www.python.org/downloads/) and [Visual C++ Build Tools 2015](http://landinghub.visualstudio.com/visual-cpp-build-tools)).
+-  If running Node on Windows, make sure that the Command Prompt is opened in Administrator Mode then install [windows-build-tools](https://www.npmjs.com/package/windows-build-tools): `npm install -g windows-build-tools`. (Installs [Python 2](https://www.python.org/downloads/) and [Visual C++ Build Tools 2015](http://landinghub.visualstudio.com/visual-cpp-build-tools). Please manually install them if the `windows-build-tools` failed to register Python into environment PATH.)
 - Use Yarn to manage your packages. Install: https://github.com/yarnpkg/yarn/releases
 
 Copy everything inside `ryan-compiler` subfolder into our project, then run package restore: `yarn` or `npm update`.

@@ -1,0 +1,18 @@
+﻿<div ng-show="me.input.$dirty" class="field-validation-error" ng-messages="me.input.$error" role="alert">
+    <!-- Validation based on input type -->
+    <div ng-message="date">Value of {{me.title}} field is not a valid date.</div>
+    <div ng-message="datetimelocal">Value of {{me.title}} field is not a valid date-time.</div>
+    <div ng-message="email">Value of {{me.title}} field is not a valid email.</div>
+    <div ng-message="month">Value of {{me.title}} field is not a valid month.</div>
+    <div ng-message="number">Value of {{me.title}} field is not a valid number.</div>
+    <div ng-message="time">Value of {{me.title}} field is not a valid time.</div>
+    <div ng-message="url">Value of {{me.title}} field is not a valid url.</div>
+    <div ng-message="week">Value of {{me.title}} field is not a valid week.</div>
+    <!-- Validation based on input attributes -->
+    <div ng-message="required">{{me.title}} field is required.</div>
+    <div ng-message="min">{{me.title}} field {{me.minDesc}}.</div>
+    <div ng-message="max">{{me.title}} field {{me.maxDesc}}.</div>
+    <div ng-message="minlength">{{me.title}} field {{me.minLengthDesc}}.</div>
+    <div ng-message="maxlength">{{me.title}} field {{me.maxLengthDesc}}.</div>
+    <div ng-message="pattern">{{me.title}} field {{me.mismatch}}.</div>
+</div>

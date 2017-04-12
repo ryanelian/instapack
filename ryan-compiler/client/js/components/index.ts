@@ -1,1 +1,1 @@
-export * from './validationMessage';
+export * from './ValidationMessage';

@@ -33,9 +33,9 @@
   version "4.14.62"
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.62.tgz#8674f9861582148a60b7a89cb260f11378d11683"
 
-"@types/node@^7.0.12":
-  version "7.0.12"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-7.0.12.tgz#ae5f67a19c15f752148004db07cbbb372e69efc9"
+"@types/node@^7.0.13":
+  version "7.0.13"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-7.0.13.tgz#1b0a53fe9ef9c3a5d061b126cc9b915bca43a3f5"
 
 JSONStream@^1.0.3:
   version "1.3.0"
@@ -68,9 +68,9 @@ acorn@^5.0.3:
   version "5.0.3"
   resolved "https://registry.yarnpkg.com/acorn/-/acorn-5.0.3.tgz#c460df08491463f028ccb82eab3730bf01087b3d"
 
-alertifyjs@^1.9.0:
-  version "1.9.0"
-  resolved "https://registry.yarnpkg.com/alertifyjs/-/alertifyjs-1.9.0.tgz#d2b6269ce98c266df39cb5fe007618522ea0b4b9"
+alertifyjs@^1.10.0:
+  version "1.10.0"
+  resolved "https://registry.yarnpkg.com/alertifyjs/-/alertifyjs-1.10.0.tgz#a49f18cb06e52650e06ef8cfb7514da78c8d0cef"
 
 align-text@^0.1.1, align-text@^0.1.3:
   version "0.1.4"
@@ -3694,9 +3694,9 @@ typedarray@~0.0.5:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
 
-typescript@^2.2.2:
-  version "2.2.2"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.2.2.tgz#606022508479b55ffa368b58fee963a03dfd7b0c"
+typescript@2.3.0:
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.3.0.tgz#2e63e09284392bc8158a2444c33e2093795c0418"
 
 uglify-js@^2.8.22, uglify-js@~2.8.10, uglify-js@~2.8.22:
   version "2.8.22"
@@ -3989,9 +3989,9 @@ yargs@^4.7.1:
     y18n "^3.2.1"
     yargs-parser "^2.4.1"
 
-yargs@^7.0.2:
-  version "7.0.2"
-  resolved "https://registry.yarnpkg.com/yargs/-/yargs-7.0.2.tgz#115b97df1321823e8b8648e8968c782521221f67"
+yargs@^7.1.0:
+  version "7.1.0"
+  resolved "https://registry.yarnpkg.com/yargs/-/yargs-7.1.0.tgz#6ba318eb16961727f5d284f8ea003e8d6154d0c8"
   dependencies:
     camelcase "^3.0.0"
     cliui "^3.2.0"

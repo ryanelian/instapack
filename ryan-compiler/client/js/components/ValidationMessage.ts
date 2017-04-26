@@ -1,4 +1,4 @@
-﻿export class ValidationMessageController implements angular.IController {
+﻿class ValidationMessageController implements angular.IController {
     static $inject = [];
 
     title: string;

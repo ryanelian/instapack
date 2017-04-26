@@ -15,21 +15,21 @@
     $onInit() {
         let control = window.document.getElementsByName(this.input.$name)[0];
 
-        this.SetFieldTitle();
-        this.SetMinErrorMessage(control);
-        this.SetMaxErrorMessage(control);
-        this.SetMinLengthErrorMessage(control);
-        this.SetMaxLengthErrorMessage(control);
-        this.SetPatternMismatchMessage();
+        this.setFieldTitle();
+        this.setMinErrorMessage(control);
+        this.setMaxErrorMessage(control);
+        this.setMinLengthErrorMessage(control);
+        this.setMaxLengthErrorMessage(control);
+        this.setPatternMismatchMessage();
     }
 
-    SetFieldTitle() {
+    setFieldTitle() {
         if (!this.title) {
             this.title = this.input.$name;
         }
     }
 
-    SetMinErrorMessage(control: HTMLElement) {
+    setMinErrorMessage(control: HTMLElement) {
         this.minDesc = 'input value needs to be higher';
 
         if (control) {
@@ -40,7 +40,7 @@
         }
     }
 
-    SetMaxErrorMessage(control: HTMLElement) {
+    setMaxErrorMessage(control: HTMLElement) {
         this.maxDesc = 'input value needs to be lower';
 
         if (control) {
@@ -51,7 +51,7 @@
         }
     }
 
-    SetMinLengthErrorMessage(control: HTMLElement) {
+    setMinLengthErrorMessage(control: HTMLElement) {
         this.minLengthDesc = 'input length needs to be longer';
 
         if (control) {
@@ -62,7 +62,7 @@
         }
     }
 
-    SetMaxLengthErrorMessage(control: HTMLElement) {
+    setMaxLengthErrorMessage(control: HTMLElement) {
         this.maxLengthDesc = 'input length needs to be shorter';
 
         if (control) {
@@ -73,7 +73,7 @@
         }
     }
 
-    SetPatternMismatchMessage() {
+    setPatternMismatchMessage() {
         if (!this.mismatch) {
             this.mismatch = 'input pattern mismatched.';
         }

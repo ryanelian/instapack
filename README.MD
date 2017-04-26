@@ -1,4 +1,4 @@
-# Ryan's Awesome Compiler 3.0.0
+# Ryan's Awesome Compiler 3.0.1
 
 > Ryan's awesome client-side application compiler for Angular and SASS, using Browserify + TypeScript!
 

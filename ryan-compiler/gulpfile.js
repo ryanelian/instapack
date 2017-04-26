@@ -8,7 +8,7 @@ let gulp = require('gulp');
 let gutil = require('gulp-util');       // Mostly used for logging.
 let yargs = require('yargs').argv;
 
-gutil.log("Ryan's Awesome Compiler", gutil.colors.cyan("3.0.0")); // Running at __dirname
+gutil.log("Ryan's Awesome Compiler", gutil.colors.cyan("3.0.1")); // Running at __dirname
 
 let RELEASE = yargs.release || yargs.r;
 if (RELEASE) {
@@ -130,7 +130,7 @@ gulp.task('concat', function () {
 let browserify = require('browserify');
 let tsify = require('tsify');
 let watchify = require('watchify');
-let stringify = require('./ryan-modules/stringify');
+let stringify = require('./ryan_modules/stringify');
 
 let source = require('vinyl-source-stream');
 let buffer = require('vinyl-buffer');

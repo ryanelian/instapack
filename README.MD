@@ -27,7 +27,9 @@ Install [TypeScript 2 for Visual Studio 2015](https://www.microsoft.com/en-us/do
 Install [gulp-cli](https://github.com/gulpjs/gulp/blob/master/docs/getting-started.md): `npm install -g gulp-cli`
 
 Optional but highly recommended:
+
 -  If running Node on Windows, make sure that the Command Prompt is opened in Administrator Mode then install [windows-build-tools](https://www.npmjs.com/package/windows-build-tools): `npm install -g windows-build-tools`. (Installs [Python 2](https://www.python.org/downloads/) and [Visual C++ Build Tools 2015](http://landinghub.visualstudio.com/visual-cpp-build-tools). Please manually install them if the `windows-build-tools` failed to register Python into environment PATH.)
+
 - Use Yarn to manage your packages. Install: https://github.com/yarnpkg/yarn/releases
 
 Copy everything inside `ryan-compiler` subfolder into our project, then run package restore: `yarn` or `npm update`.
@@ -39,11 +41,30 @@ Run `gulp` and watch the magic happens!
 It is recommended to use [Yarn](https://yarnpkg.com/) instead of NPM for managing packages. [Read more about Yarn here](https://code.facebook.com/posts/1840075619545360).
 
 - Yarn generates packages lockfile similar to ASP.NET `project.json` for added reliability.
+
 - Yarn has built-in interactive package upgrade command. (`yarn upgrade-interactive`)
-- Yarn has can install packages previously installed (cached offline) via `--prefer-offline` flag.
-- Yarn automatically saves package install to `package.json` without `--save` flag via `yarn add` command. (You may add `--dev` flag for saving `devDependencies`)  
+
+- Yarn perform package restore without active internet connection via `--offline` flag.
+
+- Yarn automatically saves package install to `package.json` without `--save` flag via `yarn add` command. (You may add `--dev` flag for adding `devDependencies`)  
 
 If you prefer to not to use Yarn, it is recommended to use [npm-check](https://www.npmjs.com/package/npm-check) for checking outdated packages and interactively upgrading them.
+
+## Improving Package Restore & IDE Performance
+
+Windows Defender or other anti-virus software appears to slow down package restore and Visual Studio when opening projects.
+
+For this very reason, it is highly recommended to:
+
+- Add anti-virus exclusion to Yarn installation folder: `C:\Program Files (x86)\Yarn`. To double check, type: `where yarn`.
+
+- Add anti-virus exclusion to Git installation folder: `C:\Program Files\Git`. To double check, type: `where git`.
+
+- Add anti-virus exclusion to NodeJS installation folder: `C:\Program Files\nodejs`. To double check, type: `where node`.
+
+- Add anti-virus exclusion to Yarn cache folder: `C:\Users\Ryan\AppData\Local\Yarn`. To double check, type: `yarn cache dir`.
+
+- Use very short root folder name for projects, such as `D:\VS`, to avoid problems with system paths over 260 characters long. Then exclude the folder from the anti-virus.
 
 ## Importing Node Modules via TypeScript
 

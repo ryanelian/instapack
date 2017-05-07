@@ -1,3 +1,5 @@
+import * as models from '../models';
+
 export class SampleService {
     static $inject = ['$http'];
 
@@ -8,7 +10,7 @@ export class SampleService {
     }
 
     Hello() {
-        return this.$http.post('/api/v1/hello', {
+        return this.$http.post<models.SampleModel>('/api/v1/hello', {
             message: 'Hello World'
         });
     }

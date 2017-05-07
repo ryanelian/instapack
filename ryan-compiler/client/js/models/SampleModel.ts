@@ -3,5 +3,5 @@ export class SampleModel {
     quick: boolean;
     brown: string;
     fox: string[];
-    jumps: { [key: number]: string }; // Dictionary<int, str ing>
+    jumps: { [key: number]: string }; // C#: Dictionary<int, string>
 }

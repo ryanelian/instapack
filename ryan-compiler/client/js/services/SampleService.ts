@@ -9,7 +9,7 @@ export class SampleService {
         this.$http = $http;
     }
 
-    Hello() {
+    hello() {
         return this.$http.post<models.SampleModel>('/api/v1/hello', {
             message: 'Hello World'
         });

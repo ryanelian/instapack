@@ -1,7 +1,7 @@
 export class SampleModel {
-    Quick: number;
-    Brown: boolean;
-    Fox: string;
-    Jumps: string[];
-    Over: { [key: number]: string }; // Dictionary<int, string>
+    the: number;
+    quick: boolean;
+    brown: string;
+    fox: string[];
+    jumps: { [key: number]: string }; // Dictionary<int, str ing>
 }

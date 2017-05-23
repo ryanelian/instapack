@@ -8,13 +8,14 @@ let gulp = require('gulp');
 let gutil = require('gulp-util');       // Mostly used for logging.
 let yargs = require('yargs').argv;
 
-gutil.log("Ryan's Awesome Compiler", gutil.colors.cyan("3.0.1")); // Running at __dirname
+gutil.log("RPack", gutil.colors.cyan("3.1.0")); // Running at __dirname
 
 let RELEASE = yargs.release || yargs.r;
 if (RELEASE) {
     gutil.log(gutil.colors.yellow("RELEASE"), "mode: Bundles will be minified.", gutil.colors.red("This process will slow down your build."));
 } else {
-    gutil.log(gutil.colors.yellow("DEBUG"), "mode: Bundles are NOT minified in exchange for compilation speed.");
+    gutil.log(gutil.colors.yellow("DEBUG"), "mode: Bundles are", gutil.colors.red("NOT minified"), "in exchange for compilation speed.");
+    gutil.log("Do not forget to minify before pushing to repository or production environment!");
     gutil.log("Use", gutil.colors.cyan("--release"), "flag for switching to", gutil.colors.yellow("RELEASE"), "mode, which enables JS minification.");
 }
 
@@ -55,16 +56,14 @@ let sizeOptions = {
     showTotal: false
 };
 
-let uglify = require('uglify-js');
+let uglifyjs = require('uglify-js');
 let gulpif = require('gulp-if');
-let minifier = require('gulp-uglify/minifier');
+let minifier = require('gulp-uglify/composer');
 
 function CreateMinificationPipe() {
-    let minifyPipe = minifier({
-        acorn: true
-    }, uglify);
-
-    return gulpif(RELEASE, minifyPipe);
+    let minify = minifier(uglifyjs, console);
+    var minifyOptions = {};
+    return gulpif(RELEASE, minify(minifyOptions));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -1,12 +1,20 @@
 {
   "compilerOptions": {
     "noImplicitAny": false,
-    "noEmitOnError": true,
-    "removeComments": true,
-    "sourceMap": false,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+    "strictNullChecks": false,
+    "skipLibCheck": true,
+
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+
+    "noEmit": true,
     "target": "es5",
-    "moduleResolution": "node",
-    "module": "commonjs"
+    "module": "commonjs",
+    "moduleResolution": "node"
   },
   "files": [
     "client/js/index.ts"

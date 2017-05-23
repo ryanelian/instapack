@@ -1,6 +1,6 @@
-# Ryan's Awesome Compiler 3.0.1
+# RPack 3.1.0
 
-> Ryan's awesome client-side application compiler for Angular and SASS, using Browserify + TypeScript!
+> Web application project compiler for AngularJS (1.X) and SASS, using Browserify + TypeScript!
 
 ![screenshot](https://raw.githubusercontent.com/ryanelian/ryan-compiler/master/screenshot.PNG)
 
@@ -14,7 +14,7 @@
 
 - Other tooling and bundling issues such as Sass importing files from `node_modules` or `bower_components`, Source Maps output, and so on.
 
-This project attempts to alleviate those burdens away from the developer. By plugging this compiler into our project, we can immediately start coding Angular 1.X applications using TypeScript with a resulting bundle that is easily debuggable under **Google Chrome**!
+This project attempts to alleviate those burdens away from the developer. By plugging this compiler into our project, we can immediately start coding AngularJS applications using TypeScript with a resulting bundle that is easily debuggable under **Google Chrome**!
 
 In addition, this project is configured to output the bundled files into `wwwroot` folder, which is used by default for placing **ASP.NET Core MVC** static files.
 
@@ -22,7 +22,7 @@ In addition, this project is configured to output the bundled files into `wwwroo
 
 Supported NodeJS version: [6.X LTS](https://nodejs.org/en/download/)
 
-Install [TypeScript 2 for Visual Studio 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48593). Or if you use Visual Studio 2017, simply select **TypeScript 2 SDK** from the component list during setup.
+Install [TypeScript 2 for Visual Studio 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48593). When using Visual Studio 2017, simply select **TypeScript 2 SDK** from the component list during setup.
 
 Install [gulp-cli](https://github.com/gulpjs/gulp/blob/master/docs/getting-started.md): `npm install -g gulp-cli`
 
@@ -30,7 +30,7 @@ Optional but highly recommended:
 
 -  If running Node on Windows, make sure that the Command Prompt is opened in Administrator Mode then install [windows-build-tools](https://www.npmjs.com/package/windows-build-tools): `npm install -g windows-build-tools`. (Installs [Python 2](https://www.python.org/downloads/) and [Visual C++ Build Tools 2015](http://landinghub.visualstudio.com/visual-cpp-build-tools). Please manually install them if the `windows-build-tools` failed to register Python into environment PATH.)
 
-- Use Yarn to manage your packages. Install: https://github.com/yarnpkg/yarn/releases
+- Use Yarn to manage packages. Install: https://github.com/yarnpkg/yarn/releases
 
 Copy everything inside `ryan-compiler` subfolder into our project, then run package restore: `yarn` or `npm update`.
 
@@ -46,7 +46,7 @@ It is recommended to use [Yarn](https://yarnpkg.com/) instead of NPM for managin
 
 - Yarn perform package restore without active internet connection via `--offline` flag.
 
-- Yarn automatically saves package install to `package.json` without `--save` flag via `yarn add` command. (You may add `--dev` flag for adding `devDependencies`)  
+- Yarn automatically saves package install to `package.json` without `--save` flag via `yarn add` command. (Add `--dev` flag for adding `devDependencies`)  
 
 If you prefer to not to use Yarn, it is recommended to use [npm-check](https://www.npmjs.com/package/npm-check) for checking outdated packages and interactively upgrading them.
 
@@ -87,7 +87,7 @@ _.padStart("Hello TypeScript!", 20, " ");
 
 Compiles an `index.js` entry point in `assets/js` folder using [Browserify](https://github.com/substack/node-browserify) then outputs the result as `wwwroot/js/bundle.js` (plus its source maps).
 
-If there are requires that are pointed to `html` files, the said files will be minified and then converted into string. Handy for Angular's component / directive template parameter.
+If there are requires that are pointed to `html` files, the said files will be minified and then converted into string. Handy for AngularJS's component / directive template parameter.
 
 You may block TypeScript compilation in a Visual Studio 2017 project during Solution Rebuild by adding `<TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>` to the `csproj` in the first `<PropertyGroup>`.
 
@@ -99,7 +99,7 @@ Applies [autoprefixer](https://github.com/postcss/autoprefixer) with following b
 
 ### gulp concat
 
-Unlike Angular modules, certain jQuery modules / plugins requires globally defined `$` or `jQuery` variable, such as: **ASP.NET jQuery Validation Unobtrusive**. This may pose compatibility problem when the jQuery and its plugins are imported via TypeScript / Browserify.
+Unlike AngularJS modules, certain jQuery modules / plugins requires globally defined `$` or `jQuery` variable, such as: **ASP.NET jQuery Validation Unobtrusive**. This may pose compatibility problem when the jQuery and its plugins are imported via TypeScript / Browserify.
 
 Therefore, a `concat.json` is provided to bundle (and minify) together jQuery modules directly from `node_modules` for convenience and maintainability. This file will be parsed and used to concatenate those files, which will be outputted into the `wwwroot/js/`.
 
@@ -156,9 +156,9 @@ Make sure to do a RELEASE mode build before pushing your bundle into your source
 
 Shorthand flag for invoking RELEASE and WATCH mode.
 
-## Ryan's Angular Validation Message
+## AngularJS Validation Message Component
 
-As demonstration of the compiler's capabilities, a custom Angular input validation message component (written in TypeScript) is added and configured into the project. It allows automatic validation message output using [Angular's input directive](https://docs.angularjs.org/api/ng/directive/input).
+As demonstration of the compiler's capabilities, a custom AngularJS input validation message component (written in TypeScript) is added and configured into the project. It allows automatic validation message output using [AngularJS input directive](https://docs.angularjs.org/api/ng/directive/input).
 
 Usage example:
 

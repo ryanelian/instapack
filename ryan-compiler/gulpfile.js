@@ -62,7 +62,7 @@ let minifier = require('gulp-uglify/composer');
 
 function CreateMinificationPipe() {
     let minify = minifier(uglifyjs, console);
-    var minifyOptions = {};
+    let minifyOptions = {};
     return gulpif(RELEASE, minify(minifyOptions));
 }
 
@@ -114,7 +114,7 @@ gulp.task('concat', function () {
         concatStreams.push(targetStream);
     }
 
-    var minifyRELEASE = CreateMinificationPipe();
+    let minifyRELEASE = CreateMinificationPipe();
 
     return es.merge(concatStreams)
         .pipe(minifyRELEASE)
@@ -151,7 +151,7 @@ if (WATCH) {
 
 function compileJs() {
     gutil.log('Compiling JavaScript...');
-    var minifyRELEASE = CreateMinificationPipe();
+    let minifyRELEASE = CreateMinificationPipe();
 
     return bundler.bundle()
         .on('error', gutil.log)

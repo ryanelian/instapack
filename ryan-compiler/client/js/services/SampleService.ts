@@ -5,13 +5,13 @@ export class SampleService {
 
     $http: angular.IHttpService;
 
-    constructor($http){
+    constructor($http) {
         this.$http = $http;
     }
 
-    hello() {
+    hello(name: string) {
         return this.$http.post<models.SampleModel>('/api/v1/hello', {
-            message: 'Hello World'
+            message: 'Hello ' + name
         });
     }
 }

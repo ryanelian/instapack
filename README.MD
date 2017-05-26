@@ -120,15 +120,22 @@ For example, this file is provided by default with this compiler:
 
 ... which will result in `wwwroot/js/jquery-bootstrap.js` and `wwwroot/js/aspnet-validator.js`. By including these files using `<script>` **BEFORE** the resulting `bundle.js` from `gulp js` task, the plugins can be correctly loaded and can be used to code the application using TypeScript!
 
-For example:
+For example, in your `index.ts`:
 
 ```typescript
-let $ : any = window['$'];
+function main(this: any) {
+    let $ = window['$'];
 
-$(document).ready(function(){
+    $(() => {
+        // Do jQuery logic here.
+        // If you only need standard jQuery API, type-hint $: JQueryStatic
+    });
+}
 
-});
+main();
 ```
+
+Learn more about callback function `this` parameter type annotation: https://www.typescriptlang.org/docs/handbook/functions.html
 
 Due to the nature of the hack, it is recommended to **only use concatenation against library / plugin files** instead of application source code. By grouping libraries to be concatenated, it is possible to load the libraries only on pages that actually require them. For example:
 - `jquery-bootstrap.js` can be included everywhere if the application uses Bootstrap's JavaScript extensively. For example, dropdown in navbar.

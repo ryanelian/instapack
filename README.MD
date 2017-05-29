@@ -1,6 +1,6 @@
 # RPack
 
-> Web application project compiler for AngularJS (1.X) and SASS, using Browserify + TypeScript!
+> Web application client project compiler using Browserify + TypeScript and SASS
 
 ![screenshot](https://raw.githubusercontent.com/ryanelian/ryan-compiler/master/screenshot.PNG)
 

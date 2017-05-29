@@ -1,7 +1,7 @@
 {
   "name": "rpack",
   "version": "3.2.0",
-  "description": "Web application project compiler for AngularJS (1.X) and SASS, using Browserify + TypeScript!",
+  "description": "Integrated web application client project compiler using Browserify + TypeScript and SASS",
   "main": "gulpfile.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

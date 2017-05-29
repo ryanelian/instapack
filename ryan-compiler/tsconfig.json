@@ -14,7 +14,8 @@
     "noEmit": true,
     "target": "es5",
     "module": "commonjs",
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "jsx": "react"
   },
   "files": [
     "client/js/index.ts"

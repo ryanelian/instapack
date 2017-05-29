@@ -1,6 +1,6 @@
 # RPack
 
-> Web application client project compiler using Browserify + TypeScript and SASS
+> Integrated web application client project compiler using Browserify + TypeScript and SASS
 
 ![screenshot](https://raw.githubusercontent.com/ryanelian/ryan-compiler/master/screenshot.PNG)
 

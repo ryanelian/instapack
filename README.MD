@@ -1,4 +1,4 @@
-# RPack 3.1.0
+# RPack
 
 > Web application project compiler for AngularJS (1.X) and SASS, using Browserify + TypeScript!
 

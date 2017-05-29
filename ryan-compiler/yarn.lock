@@ -400,9 +400,9 @@ browserify-zlib@~0.1.2:
   dependencies:
     pako "~0.2.0"
 
-browserify@^14.0.0, browserify@^14.3.0:
-  version "14.3.0"
-  resolved "https://registry.yarnpkg.com/browserify/-/browserify-14.3.0.tgz#fd003a2386ac1aec127f097885a3cc6373b745c4"
+browserify@^14.0.0, browserify@^14.4.0:
+  version "14.4.0"
+  resolved "https://registry.yarnpkg.com/browserify/-/browserify-14.4.0.tgz#089a3463af58d0e48d8cd4070b3f74654d5abca9"
   dependencies:
     JSONStream "^1.0.3"
     assert "^1.4.0"
@@ -441,7 +441,7 @@ browserify@^14.0.0, browserify@^14.3.0:
     shell-quote "^1.6.1"
     stream-browserify "^2.0.0"
     stream-http "^2.0.0"
-    string_decoder "~0.10.0"
+    string_decoder "~1.0.0"
     subarg "^1.0.0"
     syntax-error "^1.1.1"
     through2 "^2.0.0"
@@ -3607,7 +3607,7 @@ string-width@^2.0.0:
     is-fullwidth-code-point "^2.0.0"
     strip-ansi "^3.0.0"
 
-string_decoder@~0.10.0, string_decoder@~0.10.x:
+string_decoder@~0.10.x:
   version "0.10.31"
   resolved "https://registry.yarnpkg.com/string_decoder/-/string_decoder-0.10.31.tgz#62e203bc41766c6c28c9fc84301dab1c5310fa94"
 
@@ -3823,9 +3823,9 @@ typescript@^2.3.3:
   version "2.3.3"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.3.3.tgz#9639f3c3b40148e8ca97fe08a51dd1891bb6be22"
 
-uglify-js@3.0.x, uglify-js@^3.0.11, uglify-js@^3.0.5:
-  version "3.0.11"
-  resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-3.0.11.tgz#81f594b9a24dad76e39da92f8f06e5b3bc8c2e11"
+uglify-js@3.0.x, uglify-js@^3.0.13, uglify-js@^3.0.5:
+  version "3.0.13"
+  resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-3.0.13.tgz#1871d736aa1e550c728d7e5a6556579e70925d68"
   dependencies:
     commander "~2.9.0"
     source-map "~0.5.1"

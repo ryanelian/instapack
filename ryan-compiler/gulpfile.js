@@ -8,7 +8,8 @@ let gulp = require('gulp');
 let gutil = require('gulp-util');       // Mostly used for logging.
 let yargs = require('yargs').argv;
 
-gutil.log("RPack", gutil.colors.cyan("3.1.0")); // Running at __dirname
+let version = require('./package.json').version;
+gutil.log("RPack", gutil.colors.cyan(version)); // Running at __dirname
 
 let RELEASE = yargs.release || yargs.r;
 if (RELEASE) {

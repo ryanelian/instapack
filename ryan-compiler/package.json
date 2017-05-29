@@ -1,6 +1,6 @@
 {
   "name": "rpack",
-  "version": "3.1.1",
+  "version": "3.2.0",
   "description": "Web application project compiler for AngularJS (1.X) and SASS, using Browserify + TypeScript!",
   "main": "gulpfile.js",
   "scripts": {

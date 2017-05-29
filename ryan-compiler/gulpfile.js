@@ -33,17 +33,29 @@ gulp.task('default', ['js', 'sass', 'concat']);
 // Shared Modules & Settings
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+let path = require('path');
 let watch = require('gulp-watch');      // File watcher that actually works.
 let plumber = require('gulp-plumber');  // Prevents gulp-watch from stopping on compilation error!
 let sourcemaps = require('gulp-sourcemaps');
 let size = require('gulp-size');
 
+let settingsFile = 'rpack.json'
+let settings = require('./' + settingsFile);
+gutil.log('Reading compiler settings from', gutil.colors.magenta(settingsFile));
+
 let mainCss = 'site.scss';
 let targetJs = 'bundle.js';
-let targetFolder = './wwwroot/';
+
+let outputFolder = settings.output;
+let outputJsFolder = path.join(outputFolder, 'js');
+let outputCssFolder = path.join(outputFolder, 'css');
+
+let npmPath = path.join(__dirname, 'node_modules');
+// let bowerPath = path.join(__dirname, 'bower_components');
 
 let jsFolder = './client/js/';
 let cssFolder = './client/css/';
+let sassWatch = cssFolder + '**/*.scss';
 
 let plumberSettings = {
     errorHandler: function (error) {
@@ -68,19 +80,14 @@ function CreateMinificationPipe() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Awesome JQuery Plugins Concatenator
+// Ryan's Awesome JavaScript Concatenator
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-let fs = require('fs');
 let resolve = require('resolve');
 let es = require('event-stream');
 let concat = require('gulp-concat');
 
-let concatConfig = 'concat.json';
-gutil.log('Resolving concatenation targets from', gutil.colors.magenta(concatConfig));
-
-let concatListRaw = fs.readFileSync(concatConfig).toString();
-let concatList = JSON.parse(concatListRaw);
+let concatList = settings.concat;
 let resolver = [];
 let resolverLength = 0;
 
@@ -120,7 +127,7 @@ gulp.task('concat', function () {
     return es.merge(concatStreams)
         .pipe(minifyRELEASE)
         .pipe(size(sizeOptions))
-        .pipe(gulp.dest(targetFolder + 'js'));
+        .pipe(gulp.dest(outputJsFolder));
 });
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -163,7 +170,7 @@ function compileJs() {
         .pipe(minifyRELEASE)
         .pipe(sourcemaps.write('./'))
         .pipe(size(sizeOptions))
-        .pipe(gulp.dest(targetFolder + 'js'));
+        .pipe(gulp.dest(outputJsFolder));
 }
 
 gulp.task('js', compileJs);
@@ -175,7 +182,6 @@ gulp.task('js', compileJs);
 let sass = require('gulp-sass');
 let postcss = require('gulp-postcss');
 let autoprefixer = require('autoprefixer');
-let path = require('path');
 let cssnano = require('cssnano');
 
 let cssProcessors = [
@@ -194,9 +200,6 @@ if (RELEASE) {
 }
 
 function sassCompile() {
-    let npmPath = path.join(__dirname, 'node_modules');
-    let bowerPath = path.join(__dirname, 'bower_components'); // Excluded because nobody use bower anymore LOL.
-
     let sassOptions = {
         includePaths: [npmPath]
     };
@@ -208,13 +211,13 @@ function sassCompile() {
         .pipe(postcss(cssProcessors))
         .pipe(sourcemaps.write('./'))
         .pipe(size(sizeOptions))
-        .pipe(gulp.dest(targetFolder + 'css'));
+        .pipe(gulp.dest(outputCssFolder));
 }
 
 gulp.task('sass-compile', sassCompile);
 
 gulp.task('sass-watch', ['sass-compile'], function () {
-    watch(cssFolder + '**/*.scss', function () {
+    watch(sassWatch, function () {
         gulp.start('sass-compile');
     });
 });

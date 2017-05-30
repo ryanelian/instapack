@@ -2,8 +2,6 @@
 
 > Integrated web application client project compiler using Browserify + TypeScript and SASS
 
-![flow](https://raw.githubusercontent.com/ryanelian/ryan-compiler/master/flow.png)
-
 ![screenshot](https://raw.githubusercontent.com/ryanelian/ryan-compiler/master/screenshot.PNG)
 
 ## Why Should I Use This?
@@ -19,6 +17,8 @@
 This project attempts to alleviate those burdens away from the developer. By plugging this compiler into our project, we can immediately start coding AngularJS applications using TypeScript with a resulting bundle that is easily debuggable under **Google Chrome**!
 
 In addition, this project is configured to output the bundled files into `wwwroot` folder, which is used by default for placing **ASP.NET Core MVC** static files.
+
+![flow](https://raw.githubusercontent.com/ryanelian/ryan-compiler/master/flow.png)
 
 ## Getting Started
 

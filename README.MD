@@ -6,17 +6,17 @@
 
 ## Why Should I Use This?
 
-- [Modern JavaScript is convenient, but stupid](https://hackernoon.com/how-it-feels-to-learn-javascript-in-2016-d3a717dd577f#.wm43f7wca). We need to set up the project 'makefiles' for hours before we even can start coding, if we want to use modern JavaScript features.
+- [Modern JavaScript is convenient, but stupid](https://hackernoon.com/how-it-feels-to-learn-javascript-in-2016-d3a717dd577f#.wm43f7wca) due to the needs to setup the project 'makefiles' for hours... (gulpfile, webpack config, gruntfile, brocfile, etc.) 
 
-- [TypeScript](https://www.typescriptlang.org/) is glorious but stupid at the same time. It compiles the JavaScript files but does not actually merge them. Therefore requires us to stitch them together using other tools such as Browserify or WebPack or SystemJS or RequireJS. (Which brings us back to the first point.)
+- [TypeScript](https://www.typescriptlang.org/) is glorious but baffling at the same time. It compiles the JavaScript files but does not actually merge them. Therefore requires the programmers to stitch the outputs together using other tools such as Browserify or WebPack or SystemJS or RequireJS. (Which brings us back to the first point...)
 
-- [AngularJS](https://angularjs.org/) `templateUrl` is wonderful until our site is being slowed down by dozens of mini HTML templates being loaded remotely. And there are no easy ways to bundle them together without using third-party tools such as Gulp. (Noticed a pattern here?)
+- [AngularJS](https://angularjs.org/) `templateUrl` is wonderful until the website is being slowed down by dozens of mini HTML templates being loaded remotely. ([No, HTTP/2 does not help](https://medium.com/@asyncmax/the-right-way-to-bundle-your-assets-for-faster-sites-over-http-2-437c37efe3ff)) And there are no easy ways to bundle them together without using third-party build tools... (Noticed a pattern here?)
 
-- Other tooling and bundling issues such as Sass importing files from `node_modules` or `bower_components`, Source Maps output, and so on.
+- Other tooling and bundling issues such as Sass importing files from `node_modules` or `bower_components`, configuring Source Maps output, and so on.
 
-This project attempts to alleviate those burdens away from the developer. By plugging this compiler into our project, we can immediately start coding AngularJS applications using TypeScript with a resulting bundle that is easily debuggable under **Google Chrome**!
+This project attempts to alleviate those burdens away from the developer. By plugging this compiler into a web application project, the developer can immediately start coding programming using TypeScript with a resulting bundle that is easily debuggable under **Google Chrome**!
 
-In addition, this project is configured to output the bundled files into `wwwroot` folder, which is used by default for placing **ASP.NET Core MVC** static files.
+In addition, this project is configured by default to output the bundled files into `wwwroot` folder, which is used by default for placing **ASP.NET Core MVC** static files.
 
 ![flow](https://raw.githubusercontent.com/ryanelian/ryan-compiler/master/flow.png)
 
@@ -89,7 +89,7 @@ _.padStart("Hello TypeScript!", 20, " ");
 
 Compiles an `index.js` entry point in `assets/js` folder using [Browserify](https://github.com/substack/node-browserify) then outputs the result as `wwwroot/js/bundle.js` (plus its source maps).
 
-If there are requires that are pointed to `html` files, the said files will be minified and then converted into string. Handy for AngularJS's component / directive template parameter.
+If there are requires that are pointed to `html` files, the said files will be minified and then converted into string. Handy for AngularJS's component / directive template parameter or Handlebars / Mustache templates.
 
 You may block TypeScript compilation in a Visual Studio 2017 project during Solution Rebuild by adding `<TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>` to the `csproj` in the first `<PropertyGroup>`.
 
@@ -101,9 +101,9 @@ Applies [autoprefixer](https://github.com/postcss/autoprefixer) with following b
 
 ### gulp concat
 
-Unlike AngularJS modules, certain jQuery modules / plugins requires globally defined `$` or `jQuery` variable, such as: **ASP.NET jQuery Validation Unobtrusive**. This may pose compatibility problem when the jQuery and its plugins are imported via TypeScript / Browserify.
+Unlike node modules, certain jQuery plugins / non-UMD JavaScript libraries require globally defined `$` or `jQuery` variable, such as: **ASP.NET jQuery Validation Unobtrusive**. This may pose compatibility problem when they are imported via TypeScript / Browserify.
 
-Therefore, a `concat` property in `rpack.json` is provided to bundle (and minify) together jQuery modules directly from `node_modules` for convenience and maintainability. This file will be parsed and used to concatenate those files, which will be outputted into the `wwwroot/js/`.
+Therefore, a `concat` property in `rpack.json` is provided to bundle (and minify) together jQuery modules directly from `node_modules` or specific local file for convenience and maintainability. This file will be parsed and used to concatenate those files, which will be outputted into the `wwwroot/js/`.
 
 For example, concatenation is by default set up for these following modules:
 

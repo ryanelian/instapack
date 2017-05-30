@@ -2,7 +2,7 @@
 
 > Integrated web application client project compiler using Browserify + TypeScript and SASS
 
-![screenshot](https://raw.githubusercontent.com/ryanelian/ryan-compiler/master/flow.PNG)
+![flow](https://raw.githubusercontent.com/ryanelian/ryan-compiler/master/flow.png)
 
 ![screenshot](https://raw.githubusercontent.com/ryanelian/ryan-compiler/master/screenshot.PNG)
 

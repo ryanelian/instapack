@@ -2,6 +2,8 @@
 
 > Integrated web application client project compiler using Browserify + TypeScript and SASS
 
+![screenshot](https://raw.githubusercontent.com/ryanelian/ryan-compiler/master/flow.PNG)
+
 ![screenshot](https://raw.githubusercontent.com/ryanelian/ryan-compiler/master/screenshot.PNG)
 
 ## Why Should I Use This?
@@ -101,9 +103,9 @@ Applies [autoprefixer](https://github.com/postcss/autoprefixer) with following b
 
 Unlike AngularJS modules, certain jQuery modules / plugins requires globally defined `$` or `jQuery` variable, such as: **ASP.NET jQuery Validation Unobtrusive**. This may pose compatibility problem when the jQuery and its plugins are imported via TypeScript / Browserify.
 
-Therefore, a `concat.json` is provided to bundle (and minify) together jQuery modules directly from `node_modules` for convenience and maintainability. This file will be parsed and used to concatenate those files, which will be outputted into the `wwwroot/js/`.
+Therefore, a `concat` property in `rpack.json` is provided to bundle (and minify) together jQuery modules directly from `node_modules` for convenience and maintainability. This file will be parsed and used to concatenate those files, which will be outputted into the `wwwroot/js/`.
 
-For example, this file is provided by default with this compiler:
+For example, concatenation is by default set up for these following modules:
 
 ```json
 {

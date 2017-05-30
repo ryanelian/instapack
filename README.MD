@@ -2,7 +2,7 @@
 
 > Integrated web application client project compiler using Browserify + TypeScript and SASS
 
-![screenshot](https://raw.githubusercontent.com/ryanelian/ryan-compiler/master/screenshot.PNG)
+![Screenshot](https://raw.githubusercontent.com/ryanelian/ryan-compiler/master/screenshot.png)
 
 ## Why Should I Use This?
 
@@ -18,7 +18,7 @@ This project attempts to alleviate those burdens away from the developer. By plu
 
 In addition, this project is configured by default to output the bundled files into `wwwroot` folder, which is used by default for placing **ASP.NET Core MVC** static files.
 
-![flow](https://raw.githubusercontent.com/ryanelian/ryan-compiler/master/flow.png)
+![Build Flow](https://raw.githubusercontent.com/ryanelian/ryan-compiler/master/flow.png)
 
 ## Getting Started
 

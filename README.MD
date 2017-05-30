@@ -105,7 +105,7 @@ Unlike node modules, certain jQuery plugins / non-UMD JavaScript libraries requi
 
 Therefore, a `concat` property in `rpack.json` is provided to bundle (and minify) together jQuery modules directly from `node_modules` or specific local file for convenience and maintainability. This file will be parsed and used to concatenate those files, which will be outputted into the `wwwroot/js/`.
 
-For example, concatenation is by default set up for these following modules:
+For example, concatenation is set up for these following modules by default:
 
 ```json
 {

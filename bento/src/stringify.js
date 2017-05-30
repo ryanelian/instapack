@@ -1,4 +1,5 @@
 'use strict';
+
 var htmlMinifier  = require('html-minifier'),
     fs            = require('fs'),
     path          = require('path'),

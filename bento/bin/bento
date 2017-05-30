@@ -1,0 +1,31 @@
+#!/usr/bin/env node
+'use strict';
+
+let app = require('yargs');
+let packageJSON = require('../package.json');
+let bento = require('../index.js');
+let chalk = require('chalk');
+
+console.log(chalk.yellow('bento') + ' ' + chalk.green(packageJSON.version));
+console.log(packageJSON.description);
+console.log();
+
+app.command(['build [project]', '*'], 'Compiles the web application client project.', function (yargs) {
+    return yargs.option('w', {
+        alias: 'watch',
+        describe: 'Enables rebuild on source code changes.'
+    }).option('d', {
+        alias: 'dev',
+        describe: 'Disables output files minification.'
+    });
+}, function (argv) {
+    bento.build(argv.project, !argv.dev, argv.watch);
+});
+
+app.command('new [template]', 'Scaffolds a new web application client project.', function (yargs) {
+}, function (argv) {
+    bento.scaffold(argv.template);
+});
+
+let parse = app.strict().help().argv;
+//console.log(parse);

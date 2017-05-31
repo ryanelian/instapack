@@ -1,8 +1,11 @@
 'use strict';
 
+let packageJSON = require('./package.json');
+let chalk = require('chalk');
+
 module.exports = {
   build: function (project, isProduction, watch) {
-    let settings = require('./src/bento-settings');
+    let settings = require('./src/compiler-settings');
     // console.log(settings);
 
     let compiler = require('./src/compiler');
@@ -21,5 +24,15 @@ module.exports = {
 
     let scaffold = require('./src/scaffold');
     scaffold(template);
+  },
+
+  version: packageJSON.version,
+
+  branding: function (command, writeDescription) {
+    console.log(chalk.yellow(packageJSON.name) + ' ' + chalk.green(packageJSON.version) + ' ' + command);
+    if (writeDescription) {
+        console.log(packageJSON.description);
+    }
+    console.log();
   }
 };

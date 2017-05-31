@@ -1,0 +1,29 @@
+#!/usr/bin/env node
+'use strict';
+
+let cli = require('yargs');
+let app = require('../index.js');
+
+cli.version(app.version);
+
+cli.command(['build [project]', '*'], 'Compiles the web application client project.', function (yargs) {
+    return yargs.option('w', {
+        alias: 'watch',
+        describe: 'Enables rebuild on source code changes.'
+    }).option('d', {
+        alias: 'dev',
+        describe: 'Disables output files minification.'
+    });
+}, function (argv) {
+    app.branding('build');
+    app.build(argv.project, !argv.dev, argv.watch);
+});
+
+cli.command('new [template]', 'Scaffolds a new web application client project.', function (yargs) {
+}, function (argv) {
+    app.branding('new');
+    app.scaffold(argv.template);
+});
+
+let parse = cli.strict().help().argv;
+//console.log(parse);

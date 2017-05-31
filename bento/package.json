@@ -1,21 +1,22 @@
 {
-  "name": "bento",
-  "version": "4.0.0-beta2",
+  "name": "instapack",
+  "version": "4.0.0-beta3",
   "description": "Integrated web application client project compiler using TypeScript and SASS",
   "main": "index.js",
   "bin": {
-    "bento": "./bin/bento"
+    "ipack": "./bin/instapack",
+    "instapack": "./bin/instapack"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ryanelian/bento.git"
+    "url": "git+https://github.com/ryanelian/instapack.git"
   },
   "author": "Ryan Elian",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/ryanelian/bento/issues"
+    "url": "https://github.com/ryanelian/instapack/issues"
   },
-  "homepage": "https://github.com/ryanelian/bento#readme",
+  "homepage": "https://github.com/ryanelian/instapack#readme",
   "dependencies": {
     "autoprefixer": "^7.1.1",
     "bl": "^1.2.1",

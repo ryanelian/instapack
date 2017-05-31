@@ -41,6 +41,6 @@ module.exports = function (name) {
 
     console.log();
     console.log(chalk.green('Package restored successfully!'));
-    console.log('To build the application, type: ' + chalk.yellow('bento'));
+    console.log('To build the application, type: ' + chalk.yellow('ipack'));
 };
 

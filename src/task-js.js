@@ -12,19 +12,22 @@ let browserify = require('browserify');
 let tsify = require('tsify');
 let watchify = require('watchify');
 
-let stringify = require('./stringify');
+let htmlify = require('./htmlify');
 let converter = require('./fs-to-vinyl');
 let buffer = require('./vinyl-buffer');
 
 module.exports = function (gulp, projectJsEntry, outputJsFolder, isProduction, watch) {
-    let bundler = browserify({
+    let browserifyOptions = {
         debug: true,
-        noParse: ['angular', 'jquery'],
-        cache: {},
-        packageCache: {}
-    }).transform(stringify, {
-        minify: true
-    }).add(projectJsEntry).plugin(tsify);
+        fast: true
+    };
+
+    if (watch) {
+        browserifyOptions.cache = {};
+        browserifyOptions.packageCache = {};
+    }
+
+    let bundler = browserify(browserifyOptions).transform(htmlify).add(projectJsEntry).plugin(tsify);
 
     bundler.compile = function () {
         gutil.log('Compiling JS', gutil.colors.cyan(projectJsEntry));

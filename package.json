@@ -1,6 +1,6 @@
 {
   "name": "instapack",
-  "version": "4.0.0-beta3",
+  "version": "4.0.0-beta4",
   "description": "Integrated web application client project compiler using TypeScript and SASS!",
   "main": "index.js",
   "bin": {
@@ -42,7 +42,7 @@
     "through2": "^2.0.3",
     "tsify": "^3.0.1",
     "typescript": "^2.3.4",
-    "uglify-js": "^3.0.13",
+    "uglify-js": "^3.0.14",
     "vinyl": "^2.0.2",
     "watchify": "^3.9.0",
     "yargs": "^8.0.1"

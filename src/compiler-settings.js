@@ -6,10 +6,7 @@ let fs = require('fs-extra');
 
 let projectFolder = process.cwd();
 let settingsJSON = path.join(projectFolder, 'instapack.json');
-let settings = {
-    'output': 'wwwroot',
-    'concat': {}
-};
+let settings = {};
 
 if (fs.existsSync(settingsJSON)) {
     gutil.log('Reading settings from', gutil.colors.cyan(settingsJSON));
@@ -18,10 +15,22 @@ if (fs.existsSync(settingsJSON)) {
     gutil.log(gutil.colors.cyan(settingsJSON), 'not found. Using default settings.');
 }
 
+if (!settings.input) {
+    settings.input = 'client';
+}
+
+if (!settings.output) {
+    settings.output = 'wwwroot';
+}
+
+if (!settings.concat) {
+    settings.concat = {};
+}
+
 settings.projectFolder = projectFolder;
 settings.projectNpmFolder = path.join(projectFolder, 'node_modules');
 settings.projectBowerFolder = path.join(projectFolder, 'bower_components');
-settings.projectClientFolder = path.join(projectFolder, 'client')
+settings.projectClientFolder = path.join(projectFolder, settings.input)
 settings.projectJsFolder = path.join(settings.projectClientFolder, 'js');
 settings.projectCssFolder = path.join(settings.projectClientFolder, 'css');
 settings.projectJsEntry = path.join(settings.projectJsFolder, 'index.ts');

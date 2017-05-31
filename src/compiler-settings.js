@@ -5,7 +5,7 @@ let path = require('path');
 let fs = require('fs-extra');
 
 let projectFolder = process.cwd();
-let settingsJSON = path.join(projectFolder, 'bento.json');
+let settingsJSON = path.join(projectFolder, 'instapack.json');
 let settings = {
     'output': 'wwwroot',
     'concat': {}

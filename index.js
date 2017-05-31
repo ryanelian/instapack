@@ -19,7 +19,7 @@ module.exports = {
 
   scaffold: function (template) {
     if (!template) {
-      template = 'angularjs';
+      template = 'aspnet';
     }
 
     let scaffold = require('./src/scaffold');

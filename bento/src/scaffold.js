@@ -23,8 +23,6 @@ module.exports = function (name) {
     }
 
     console.log('Initializing new project using template: ' + chalk.cyan(name));
-    console.log();
-
     console.log('Scaffolding project into your web application...');
     fs.copySync(templateFolder, thisFolder);
     console.log(chalk.green('Scaffold completed.') + ' Restoring packages for you...');

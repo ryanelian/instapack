@@ -2,13 +2,22 @@
 
 let gutil = require('gulp-util');
 let path = require('path');
+let fs = require('fs-extra');
 
 let projectFolder = process.cwd();
 let settingsJSON = path.join(projectFolder, 'bento.json');
+let settings = {
+    'output': 'wwwroot',
+    'concat': {}
+};
 
-gutil.log('Reading settings from', gutil.colors.cyan(settingsJSON));
+if (fs.existsSync(settingsJSON)) {
+    gutil.log('Reading settings from', gutil.colors.cyan(settingsJSON));
+    settings = require(settingsJSON);
+} else {
+    gutil.log(gutil.colors.cyan(settingsJSON), 'not found. Using default settings.');
+}
 
-let settings = require(settingsJSON);
 settings.projectFolder = projectFolder;
 settings.projectNpmFolder = path.join(projectFolder, 'node_modules');
 settings.projectBowerFolder = path.join(projectFolder, 'bower_components');

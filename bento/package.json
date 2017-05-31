@@ -1,6 +1,6 @@
 {
   "name": "bento",
-  "version": "4.0.0-beta1",
+  "version": "4.0.0-beta2",
   "description": "Integrated web application client project compiler using TypeScript and SASS",
   "main": "index.js",
   "bin": {
@@ -26,7 +26,6 @@
     "fs-extra": "^3.0.1",
     "gulp": "^3.9.1",
     "gulp-concat": "^2.6.1",
-    "gulp-if": "^2.0.2",
     "gulp-plumber": "^1.1.0",
     "gulp-postcss": "^7.0.0",
     "gulp-sass": "^3.1.0",

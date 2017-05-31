@@ -17,7 +17,10 @@ module.exports = function (gulp, concatFiles, outputJsFolder, isProduction) {
             concatStreams.push(targetStream);
         }
 
-        gutil.log('Found', gutil.colors.cyan(concatStreams.length), 'concatenation targets.');
+        gutil.log('Resolved', gutil.colors.cyan(concatStreams.length), 'concatenation targets.');
+        if (!concatStreams.length) {
+            return;
+        }
 
         return es.merge(concatStreams)
             .pipe(miniprod(isProduction))

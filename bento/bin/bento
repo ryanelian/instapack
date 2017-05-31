@@ -6,9 +6,15 @@ let packageJSON = require('../package.json');
 let bento = require('../index.js');
 let chalk = require('chalk');
 
-console.log(chalk.yellow('bento') + ' ' + chalk.green(packageJSON.version));
-console.log(packageJSON.description);
-console.log();
+app.version(packageJSON.version);
+
+function commandLog(name, writeDescription) {
+    console.log(chalk.yellow('bento') + ' ' + chalk.green(packageJSON.version) + ' ' + name);
+    if (writeDescription) {
+        console.log(packageJSON.description);
+    }
+    console.log();
+}
 
 app.command(['build [project]', '*'], 'Compiles the web application client project.', function (yargs) {
     return yargs.option('w', {
@@ -19,11 +25,13 @@ app.command(['build [project]', '*'], 'Compiles the web application client proje
         describe: 'Disables output files minification.'
     });
 }, function (argv) {
+    commandLog('build');
     bento.build(argv.project, !argv.dev, argv.watch);
 });
 
 app.command('new [template]', 'Scaffolds a new web application client project.', function (yargs) {
 }, function (argv) {
+    commandLog('new');
     bento.scaffold(argv.template);
 });
 

@@ -1,12 +1,14 @@
 'use strict';
 
 let gutil = require('gulp-util');
-let miniprod = require('./miniprod');
-let sizing = require('./sizing');
-let duration = require('./gulp-duration');
 
-let es = require('event-stream');
 let concat = require('gulp-concat');
+let es = require('event-stream');
+
+let toSizeLog = require('./pipe/to-sizelog');
+let toTimeLog = require('./pipe/to-timelog');
+
+let toProductionJsMinifier = require('./pipe/to-miniprod');
 
 module.exports = function (gulp, concatFiles, outputJsFolder, isProduction) {
     gulp.task('concat', function () {
@@ -23,9 +25,9 @@ module.exports = function (gulp, concatFiles, outputJsFolder, isProduction) {
         }
 
         return es.merge(concatStreams)
-            .pipe(miniprod(isProduction))
-            .pipe(sizing())
-            .pipe(duration('Finished JS concatenation after'))
+            .pipe(toProductionJsMinifier(isProduction))
+            .pipe(toSizeLog())
+            .pipe(toTimeLog('Finished JS concatenation after'))
             .pipe(gulp.dest(outputJsFolder));
     });
 };

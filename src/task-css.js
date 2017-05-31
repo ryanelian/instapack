@@ -1,14 +1,16 @@
 'use strict';
 
+let gutil = require('gulp-util');
+let sourcemaps = require('gulp-sourcemaps');
+
 let sass = require('gulp-sass');
 let gwatch = require('gulp-watch');
-let sourcemaps = require('gulp-sourcemaps');
-let gutil = require('gulp-util');
-let duration = require('./gulp-duration');
 
-let cssProcessors = require('./css-processors');
-let sizing = require('./sizing');
-let errortrap = require('./errortrap');
+let toErrorHandler = require('./pipe/to-errorhandler');
+let toSizeLog = require('./pipe/to-sizelog');
+let toTimeLog = require('./pipe/to-timelog');
+
+let toPostCss = require('./pipe/to-postcss');
 
 module.exports = function (gulp, projectCssEntry, projectCssWatch, outputCssFolder, isProduction, watch, projectNpmFolder) {
     gulp.task('css:compile', function () {
@@ -19,13 +21,13 @@ module.exports = function (gulp, projectCssEntry, projectCssWatch, outputCssFold
         };
 
         return gulp.src(projectCssEntry)
-            .pipe(errortrap())
+            .pipe(toErrorHandler())
             .pipe(sourcemaps.init())
             .pipe(sass(sassOptions))
-            .pipe(cssProcessors(isProduction))
+            .pipe(toPostCss(isProduction))
             .pipe(sourcemaps.write('./'))
-            .pipe(sizing())
-            .pipe(duration('Finished CSS compilation after'))
+            .pipe(toSizeLog())
+            .pipe(toTimeLog('Finished CSS compilation after'))
             .pipe(gulp.dest(outputCssFolder));
     });
 

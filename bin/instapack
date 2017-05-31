@@ -6,20 +6,25 @@ let app = require('../index.js');
 
 cli.version(app.version);
 
+let validCommands = ['all', 'js', 'css', 'concat'];
+let validTemplates = ['empty', 'aspnet', 'angularjs'];
+
 cli.command(['build [project]', '*'], 'Compiles the web application client project.', function (yargs) {
-    return yargs.option('w', {
-        alias: 'watch',
-        describe: 'Enables rebuild on source code changes.'
-    }).option('d', {
-        alias: 'dev',
-        describe: 'Disables output files minification.'
-    });
+    return yargs.choices('project', validCommands)
+        .option('w', {
+            alias: 'watch',
+            describe: 'Enables rebuild on source code changes.'
+        }).option('d', {
+            alias: 'dev',
+            describe: 'Disables output files minification.'
+        });
 }, function (argv) {
     app.branding('build');
     app.build(argv.project, !argv.dev, argv.watch);
 });
 
 cli.command('new [template]', 'Scaffolds a new web application client project.', function (yargs) {
+    return yargs.choices('template', validTemplates);
 }, function (argv) {
     app.branding('new');
     app.scaffold(argv.template);

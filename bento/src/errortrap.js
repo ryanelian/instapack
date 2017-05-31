@@ -1,6 +1,7 @@
 'use strict';
 
 let plumber = require('gulp-plumber');  // Prevents gulp-watch from stopping on compilation error!
+let gutil = require('gulp-util');
 
 let plumberSettings = {
     errorHandler: function (error) {

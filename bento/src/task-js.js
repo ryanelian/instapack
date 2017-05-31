@@ -11,10 +11,10 @@ let errortrap = require('./errortrap');
 let browserify = require('browserify');
 let tsify = require('tsify');
 let watchify = require('watchify');
-let stringify = require('./stringify');
 
-let source = require('vinyl-source-stream');
-let buffer = require('vinyl-buffer');
+let stringify = require('./stringify');
+let converter = require('./fs-to-vinyl');
+let buffer = require('./vinyl-buffer');
 
 module.exports = function (gulp, projectJsEntry, outputJsFolder, isProduction, watch) {
     let bundler = browserify({
@@ -31,7 +31,7 @@ module.exports = function (gulp, projectJsEntry, outputJsFolder, isProduction, w
 
         return bundler.bundle()
             .on('error', gutil.log)
-            .pipe(source('bundle.js'))
+            .pipe(converter('bundle.js'))
             .pipe(buffer())
             .pipe(errortrap())
             .pipe(sourcemaps.init({ loadMaps: true }))

@@ -1,56 +1,220 @@
-# RPack
+# instapack
 
-> Integrated web application client project compiler using Browserify + TypeScript and SASS
+> Integrated web application client project compiler using TypeScript and Sass!
 
-![Screenshot](https://raw.githubusercontent.com/ryanelian/ryan-compiler/master/screenshot.png)
 
-## Why Should I Use This?
 
-- [Modern JavaScript is convenient, but stupid](https://hackernoon.com/how-it-feels-to-learn-javascript-in-2016-d3a717dd577f#.wm43f7wca) due to the needs to setup the project 'makefiles' for hours... (gulpfile, webpack config, gruntfile, brocfile, etc.) 
+## Install
 
-- [TypeScript](https://www.typescriptlang.org/) is glorious but baffling at the same time. It compiles the JavaScript files but does not actually merge them. Therefore requires the programmers to stitch the outputs together using other tools such as Browserify or WebPack or SystemJS or RequireJS. (Which brings us back to the first point...)
+`yarn global add instapack`
 
-- [AngularJS](https://angularjs.org/) `templateUrl` is wonderful until the website is being slowed down by dozens of mini HTML templates being loaded remotely. ([No, HTTP/2 does not help](https://medium.com/@asyncmax/the-right-way-to-bundle-your-assets-for-faster-sites-over-http-2-437c37efe3ff)) And there are no easy ways to bundle them together without using third-party build tools... (Noticed a pattern here?)
+or
 
-- Other tooling and bundling issues such as Sass importing files from `node_modules` or `bower_components`, configuring Source Maps output, and so on.
+`npm install -g instapack`
 
-This project attempts to alleviate those burdens away from the developer. By plugging this compiler into a web application project, the developer can immediately start coding programming using TypeScript with a resulting bundle that is easily debuggable under **Google Chrome**!
+But seriously, please use Yarn from now on. [Check it out](https://yarnpkg.com/en/).
 
-In addition, this project is configured by default to output the bundled files into `wwwroot` folder, which is used by default for placing **ASP.NET Core MVC** static files.
+## Quick Start Guide
 
-![Build Flow](https://raw.githubusercontent.com/ryanelian/ryan-compiler/master/flow.png)
+```cmd
+cd E:\VS\MyWebApp
+ipack new
+ipack
+```
 
-## Getting Started
+We also provide programmatic API if you wish to integrate `instapack` into your very own build script:
 
-Supported NodeJS version: [6.X LTS](https://nodejs.org/en/download/)
+```ts
+import { instapack } from 'instapack';
 
-Install [TypeScript 2 for Visual Studio 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48593). When using Visual Studio 2017, simply select **TypeScript 2 SDK** from the component list during setup.
+let ipack = new instapack();
+ipack.build('all', false, false);
+```
 
-Install [gulp-cli](https://github.com/gulpjs/gulp/blob/master/docs/getting-started.md): `npm install -g gulp-cli`
+## System Requirement
 
-Optional but highly recommended:
+Currently supported Node.js is [latest version 6 LTS](https://nodejs.org/en/download/). The tool will be supported against version 8 when LTS build is released in [October 2017](https://github.com/nodejs/LTS).
 
--  If running Node on Windows, make sure that the Command Prompt is opened in Administrator Mode then install [windows-build-tools](https://www.npmjs.com/package/windows-build-tools): `npm install -g windows-build-tools`. (Installs [Python 2](https://www.python.org/downloads/) and [Visual C++ Build Tools 2015](http://landinghub.visualstudio.com/visual-cpp-build-tools). Please manually install them if the `windows-build-tools` failed to register Python into environment PATH.)
+When using Visual Studio 2017, select the latest **TypeScript 2.X SDK** from the individual component list during setup.
 
-- Use Yarn to manage packages. Install: https://github.com/yarnpkg/yarn/releases
+Optional but highly recommended, install [Python 2](https://www.python.org/downloads/).
 
-Copy everything inside `ryan-compiler` subfolder into our project, then run package restore: `yarn` or `npm update`.
+## Features
 
-Run `gulp` and watch the magic happens!
+- Hyper opinionated web application client project builder with zero configurations that just works.
 
-## Yarn vs NPM
+- Built-in new project scaffold tool.
 
-It is recommended to use [Yarn](https://yarnpkg.com/) instead of NPM for managing packages. [Read more about Yarn here](https://code.facebook.com/posts/1840075619545360).
+- Rich debugging experience using Google Chrome `DevTools`. 
 
-- Yarn generates packages lockfile similar to ASP.NET `project.json` for added reliability.
+## Design Goals
 
-- Yarn has built-in interactive package upgrade command. (`yarn upgrade-interactive`)
+- Lower the barrier of entry for modern web application client development.
 
-- Yarn perform package restore without active internet connection via `--offline` flag.
+- Enforce development and deployment best practices.
 
-- Yarn automatically saves package install to `package.json` without `--save` flag via `yarn add` command. (Add `--dev` flag for adding `devDependencies`)  
+- Improve source code quality with syntax and type checking.
 
-If you prefer to not to use Yarn, it is recommended to use [npm-check](https://www.npmjs.com/package/npm-check) for checking outdated packages and interactively upgrading them.
+- Unify team tooling accross multiple projects.
+
+- Blurs the boundary behind design time and programming time using blazing fast `watch` + `dev` compilation mode. 
+
+- Stand-alone tooling allows shipping to `npm`, which allows build system upgrade without altering the application.
+
+- High quality tooling supported by latest stable Node.js, using strictly curated, actively maintained dependencies.
+
+## But... Why?
+
+At a glance, the `instapack` looks similar to `webpack`. However, that is where the similarity ends.
+
+Here is an example. Michael wants to develop an ES6-based web application. One of the following events usually happen next...
+
+- Michael would scramble the internet for `gulp` or `grunt` or `webpack` or `brocolli` recipes, configuring it for hours, before starting to code...
+
+- Michael would hit a dead end. Gives up on the entire thing and writes the application in old-school JavaScript...
+
+- Michael next project uses a more evolved version of his build system. However, when he needs to maintain his older applications, he needs to upgrade the build scripts manually...
+
+- Michael's hard drive is now full because each project has their own build system. Ouch.
+
+- Suddenly, Evan from the other team of the same company develops his own build system. So does Kevin.
+
+`instapack` is developed as an answer those problems, and more!
+
+## Is it Windows only? :(
+
+Majority of the developers using `instapack` is working on ASP.NET Core MVC on Windows + Visual Studio full-time on daily basis. This use case will be the core focus for the tooling support.
+
+However, several developers have successfully utilized `instapack` in OS X development environment. So **theoretically** it should work in Linux too without problems.
+
+`instapack` will not suddenly introduce Windows or Visual Studio exclusive feature, and strive to maintain compatibility with multiple platforms.
+
+## How does it work?
+
+Internally, `instapack` uses the following modules:
+
+- `gulp` as task orchestrator, and build pipeline.
+
+- `typescript` as the transpiler, syntax checker, and type checker for the JavaScript language.
+
+- `node-sass` as the transpiler, syntax checker, and type checker for the CSS language.
+
+- `browserify` for merging the JavaScript output modules together.
+
+- `uglify-js` for minifying the resulting JavaScript bundle.
+
+- `postcss` for applying automatic CSS vendor-prefix using `autoprefixer`, then minifying the result using `cssnano`.
+
+Out of the box, the following files will be used as the application entry points:
+
+- `client/js/index.ts`, compiled to `wwwroot/js/bundle.js`.
+
+- `client/css/site.scss`, compiled to `wwwroot/css/site.css`.
+
+- If there are concatenation targets defined, will be resolved and then outputted to `wwwroot/js` folder. Read more below.
+
+## Is this stable?
+
+The manual `gulp` script version of the build system has been used for shipping 7 production-grade `AngularJS` projects across 2 different companies.
+
+The script itself has been refined over the past 3 years in the making, with each revision involving approval from an internal build system improvement group within my company.
+
+The beta version of `instapack` was then tested to reproduce the bundles for the said projects, with successful result (minimal diff), and since then has been used to maintain those projects.
+
+So yes, rock solid stable.
+
+## Release Cadence
+
+Starting version 4.0.0, `instapack` follows [Semantic Versioning](http://semver.org/).
+
+Weekly releases will be performed for updating package dependencies. This will increment the patch version.
+
+Bug reports will be dealt promptly. This will increment the patch version.
+
+New non-breaking features, such as addition of new task pipeline, will increment the minor version.
+
+Breaking changes, such as behavior or configuration changes to existing task pipeline, will increment the major version.
+
+## Commands
+
+You may use `instapack` or `ipack` or `ipk` to invoke the command line interface.
+
+### new [template]
+
+Scaffolds a new `instapack` project into your existing application from where the command line is invoked. The following templates are available:
+
+- `empty` when you need a clean slate. Just `package.json`, `tsconfig.json`, and JSS + CSS entry files.
+
+- `aspnet` when you want to develop an ASP.NET Core MVC project with Bootstrap + JQuery Validation Unobtrusive.
+
+- `angularjs` when you want to develop a rich client application with Bootstrap + AngularJS 1.X, using a well-defined project stucture.
+
+If no template parameter is provided by default, `aspnet` is chosen.
+
+### build [project]
+
+Performs compilation against selected project type. Available projects: `all`, `js`, `css` and `concat`.
+
+In addition, build flags are available:
+
+- `-w` or `--watch` for enabling compilation on change.
+
+- `-d` or `--dev` for disabling minification for speed compilation.
+
+- `-dw` shorthand for `watch` and `dev` mode together, for massive productivity.
+
+## Configuration
+
+`instapack` puts configuration inside `package.json` to reduce project files clutter. For example, this is the included `package.json` with `aspnet` template:
+
+```json
+{
+  "name": "aspnet",
+  "version": "1.0.0",
+  "private": true,
+  "browserslist": [
+    "ie >= 11",
+    "Android >= 4",
+    "last 3 versions"
+  ],
+  "instapack": {
+    "output": "wwwroot",
+    "concat": {
+      "jquery-bootstrap": [
+        "jquery",
+        "bootstrap-sass"
+      ],
+      "aspnet-validator": [
+        "jquery-validation",
+        "jquery-validation-unobtrusive"
+      ]
+    }
+  },
+  "dependencies": {
+    "@types/jquery": "^2.0.45",
+    "@types/lodash": "^4.14.63",
+    "@types/node": "^7.0.22",
+    "@types/urijs": "^1.15.32",
+    "alertifyjs": "^1.10.0",
+    "bootstrap-sass": "^3.3.7",
+    "jquery": "^3.2.1",
+    "jquery-validation": "^1.16.0",
+    "jquery-validation-unobtrusive": "^3.2.6",
+    "lodash": "^4.17.4",
+    "moment": "^2.18.1",
+    "mustache": "^2.3.0",
+    "urijs": "^1.18.10"
+  }
+}
+```
+
+- `browserslist` affects CSS `autoprefixer` output result.
+
+- `instapack:input` allows setting the input folder location. By default is set to `client`.
+
+- `instapack:output` allows setting the output folder location. By default is set to `wwwroot`.
+
+- `instapack:concat` allows packing libraries from `node_modules` or your custom folder (such as `./client/lib/vue.js`) to be minified and outputted into your output JS folder.
 
 ## Improving Package Restore & IDE Performance
 
@@ -60,114 +224,43 @@ For this very reason, it is highly recommended to:
 
 - Add anti-virus exclusion to Yarn installation folder: `C:\Program Files (x86)\Yarn`. To double check, type: `where yarn`.
 
-- Add anti-virus exclusion to Git installation folder: `C:\Program Files\Git`. To double check, type: `where git`.
+- Add anti-virus exclusion to Yarn cache folder: `C:\Users\Ryan\AppData\Local\Yarn`. To double check, type: `yarn cache dir`.
 
 - Add anti-virus exclusion to NodeJS installation folder: `C:\Program Files\nodejs`. To double check, type: `where node`.
 
-- Add anti-virus exclusion to Yarn cache folder: `C:\Users\Ryan\AppData\Local\Yarn`. To double check, type: `yarn cache dir`.
+- Add anti-virus exclusion to Git installation folder: `C:\Program Files\Git`. To double check, type: `where git`.
 
-- Use very short root folder name for projects, such as `D:\VS`, to avoid problems with system paths over 260 characters long. Then exclude the folder from the anti-virus.
+- Use very short root folder name for projects, such as `D:\VS`, to avoid problems with Windows system paths over 260 characters long. Then exclude the folder from the anti-virus.
 
-## Importing Node Modules via TypeScript
+## FAQ
 
-As of [TypeScript 2.1](https://blogs.msdn.microsoft.com/typescript/2016/12/07/announcing-typescript-2-1/), any packages can be imported from `node_modules` using the `import` syntax. However, like importing using Browserify CommonJS `require()` syntax, we do not get Visual Studio Intellisense.
+### Can I use other folder than `js` and `css` for input / output?
 
-For enhanced developing experience, it is recommended to use TypeScript definition installed from [@types](http://microsoft.github.io/TypeSearch/) when available. Installing @types for a library will provide Visual Studio Intellisense when the library is being imported using [TypeScript Import](https://www.typescriptlang.org/docs/handbook/modules.html) syntax. For example:
+Nope.
 
-`npm install --save @types/lodash lodash`
+### Can I use entry point other than `index.ts` and `site.scss`?
 
-```typescript
-import * as _ from "lodash"; // Will be compiled into require('lodash') and then resolved by Browserify.
-_.padStart("Hello TypeScript!", 20, " ");
-```
+Nope.
 
-[Read more](https://blogs.msdn.microsoft.com/typescript/2016/06/15/the-future-of-declaration-files/) about @types.
+### Why TypeScript?
 
-## Command List
+- Babel is very slow.
+- TypeScript is supported by Microsoft.
+- TypeScript is growing at exponential rate.
+- TypeScript is a strict superset of the JavaScript, which allows porting existing code with ease, then extend it with new features.
 
-### gulp js
+As a testament of TypeScript capabilities, `instapack` is fully written using TypeScript!
 
-Compiles an `index.js` entry point in `assets/js` folder using [Browserify](https://github.com/substack/node-browserify) then outputs the result as `wwwroot/js/bundle.js` (plus its source maps).
+### Why Sass instead of Less.js?
 
-If there are requires that are pointed to `html` files, the said files will be minified and then converted into string. Handy for AngularJS's component / directive template parameter or Handlebars / Mustache templates.
+- `libsass` is native and fast.
+- Sass has better language syntax.
+- Sass has more features.
+- Sass is more popular. Bootstrap, Foundation, and Angular-Material are written in Sass!
 
-You may block TypeScript compilation in a Visual Studio 2017 project during Solution Rebuild by adding `<TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>` to the `csproj` in the first `<PropertyGroup>`.
+### What is that ValidationMessageComponent in AngularJS template?
 
-### gulp sass
-
-Compiles a `site.scss` entry point in `assets/css` folder using [libsass](https://github.com/sass/libsass), then outputs the result as `wwwroot/css/site.css` (plus its source maps).
-
-Applies [autoprefixer](https://github.com/postcss/autoprefixer) with following browsers parameter: `['ie >= 9', 'Android >= 4', 'last 3 versions']`
-
-### gulp concat
-
-Unlike node modules, certain jQuery plugins / non-UMD JavaScript libraries require globally defined `$` or `jQuery` variable, such as: **ASP.NET jQuery Validation Unobtrusive**. This may pose compatibility problem when they are imported via TypeScript / Browserify.
-
-Therefore, a `concat` property in `rpack.json` is provided to bundle (and minify) together jQuery modules directly from `node_modules` or specific local file for convenience and maintainability. This file will be parsed and used to concatenate those files, which will be outputted into the `wwwroot/js/`.
-
-For example, concatenation is set up for these following modules by default:
-
-```json
-{
-    "jquery-bootstrap": [
-        "jquery",
-        "bootstrap-sass"
-    ],
-    "aspnet-validator": [
-        "jquery-validation",
-        "jquery-validation-unobtrusive"
-    ]
-}
-```
-
-... which will result in `wwwroot/js/jquery-bootstrap.js` and `wwwroot/js/aspnet-validator.js`. By including these files using `<script>` **BEFORE** the resulting `bundle.js` from `gulp js` task, the plugins can be correctly loaded and can be used to code the application using TypeScript!
-
-For example, in your `index.ts`:
-
-```typescript
-function main(this: any) {
-    let $ = window['$'];
-
-    $(() => {
-        // Do jQuery logic here.
-        // If you only need standard jQuery API, type-hint $: JQueryStatic
-    });
-}
-
-main();
-```
-
-Learn more about callback function `this` parameter type annotation: https://www.typescriptlang.org/docs/handbook/functions.html
-
-Due to the nature of the hack, it is recommended to **only use concatenation against library / plugin files** instead of application source code. By grouping libraries to be concatenated, it is possible to load the libraries only on pages that actually require them. For example:
-- `jquery-bootstrap.js` can be included everywhere if the application uses Bootstrap's JavaScript extensively. For example, dropdown in navbar.
-- However, `aspnet-validator.js` can be included only when you need to perform validation using Razor's Data Annotation by clever use of `ViewBag`. (For example: `ViewBag.Validation = true;`)
-
-### gulp
-
-Perform both TypeScript, Sass, and concatenation targets compilation.
-
-## Flag List
-
-### --watch / -w
-
-Providing this flag will enable WATCH mode, which enables automatic compilation on source code changes.
-
-### --release / -r
-
-By default, DEBUG mode is used for increased development speed. JavaScript bundle will NOT be minified, but can be compiled in 2-3 seconds.
-
-By providing this flag, bundle minification will be enabled, which uses [gulp-uglify](https://www.npmjs.com/package/gulp-uglify) and [`cssnano`](https://www.npmjs.com/package/cssnano) but adds few seconds to the compilation time. 
-
-Make sure to do a RELEASE mode build before pushing your bundle into your source control repository or production environment!
-
-### -rw
-
-Shorthand flag for invoking RELEASE and WATCH mode.
-
-## AngularJS Validation Message Component
-
-As demonstration of the compiler's capabilities, a custom AngularJS input validation message component (written in TypeScript) is added and configured into the project. It allows automatic validation message output using [AngularJS input directive](https://docs.angularjs.org/api/ng/directive/input).
+A custom AngularJS input validation message component. It allows automatic validation message output using [AngularJS input directive](https://docs.angularjs.org/api/ng/directive/input), similar to Razor's `ValidationMessage` for Core MVC.
 
 Usage example:
 

@@ -1,0 +1,21 @@
+﻿.field-validation-error {
+    color: red;
+    font-style: italic;
+}
+
+input.input-validation-error {
+    border-color: red;
+    outline-color: red;
+}
+
+.navbar {
+    border-radius: 0;
+}
+
+body {
+    min-height: 100vh;
+}
+
+body.breathable {
+    padding-bottom: 96px;
+}

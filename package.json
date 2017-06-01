@@ -4,8 +4,9 @@
   "description": "Integrated web application client project compiler using TypeScript and SASS!",
   "main": "index.js",
   "bin": {
-    "ipack": "./bin/instapack",
-    "instapack": "./bin/instapack"
+    "ipk": "./cli.js",
+    "ipack": "./cli.js",
+    "instapack": "./cli.js"
   },
   "repository": {
     "type": "git",
@@ -46,5 +47,25 @@
     "vinyl": "^2.0.2",
     "watchify": "^3.9.0",
     "yargs": "^8.0.1"
+  },
+  "devDependencies": {
+    "@types/autoprefixer": "^6.7.1",
+    "@types/browserify": "^12.0.30",
+    "@types/chalk": "^0.4.31",
+    "@types/event-stream": "^3.3.31",
+    "@types/fs-extra": "^3.0.2",
+    "@types/gulp": "^4.0.3",
+    "@types/gulp-concat": "^0.0.30",
+    "@types/gulp-sass": "^0.0.30",
+    "@types/gulp-sourcemaps": "^0.0.30",
+    "@types/gulp-util": "^3.0.31",
+    "@types/gulp-watch": "^4.1.30",
+    "@types/html-minifier": "^1.1.30",
+    "@types/node": "^7.0.22",
+    "@types/resolve": "^0.0.4",
+    "@types/through2": "^2.0.33",
+    "@types/vinyl": "^2.0.0",
+    "@types/watchify": "^3.7.4",
+    "@types/yargs": "^6.6.0"
   }
 }

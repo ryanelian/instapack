@@ -1,11 +1,9 @@
-'use strict';
+import * as through2 from 'through2';
+import * as vinyl from 'vinyl';
+import * as BufferList from 'bl';
 
-let through2 = require('through2').obj;
-let vinyl = require('vinyl');
-let bl = require('bl');
-
-module.exports = function () {
-    return through2(function (chunk, enc, next) {
+let Buffer = () => {
+    return through2.obj(function (chunk, enc, next) {
         let pipe = this;
 
         if (chunk.isNull()) {
@@ -17,9 +15,9 @@ module.exports = function () {
             return next();
         }
 
-        chunk.contents.pipe(bl(function (err, data) {
-            if (err) {
-                return next(err);
+        chunk.contents.pipe(BufferList(function (error, data) {
+            if (error) {
+                return next(error);
             }
 
             let file = new vinyl({
@@ -32,3 +30,5 @@ module.exports = function () {
         }));
     });
 };
+
+export { Buffer }

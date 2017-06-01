@@ -1,17 +1,15 @@
-'use strict';
+import * as through2 from 'through2';
+import * as vinyl from 'vinyl';
 
-let through2 = require('through2').obj;
-let vinyl = require('vinyl');
-
-module.exports = function (filename) {
+let Vinyl = filename => {
     let pass = true;
-    let buffer = through2();
+    let buffer = through2.obj();
     let file = new vinyl({
         path: filename,
         contents: buffer
     });
 
-    return through2(function (chunk, enc, next) {
+    return through2.obj(function (chunk, enc, next) {
         if (pass) {
             this.push(file);
             pass = false;
@@ -24,3 +22,5 @@ module.exports = function (filename) {
         this.push(null);
     });
 };
+
+export { Vinyl };

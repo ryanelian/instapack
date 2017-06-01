@@ -1,9 +1,5 @@
-'use strict';
-
-let minifier = require('html-minifier');
-let fs = require('fs');
-let path = require('path');
-let tools = require('browserify-transform-tools');
+import * as minifier from 'html-minifier';
+import * as tools from 'browserify-transform-tools';
 
 let minifierOptions = {
     caseSensitive: false,
@@ -40,13 +36,13 @@ let transformOptions = {
     includeExtensions: ['html']
 };
 
-let transformer = tools.makeStringTransform('htmlify', transformOptions, function (content, args, done) {
+let HTMLify = tools.makeStringTransform('htmlify', transformOptions, function (content, args, done) {
     content = minifier.minify(content, minifierOptions);
     content = 'module.exports = ' + JSON.stringify(content) + ';\n';
     done(null, content);
 });
 
-module.exports = transformer;
+export { HTMLify }
 
 /*
 let dummyPath = path.resolve(__dirname, "./test.html");

@@ -3,6 +3,6 @@ node_js:
   - "6"
   - "7"
 before_script:
-  yarn global add typescript
+  - yarn global add typescript
 script:
-  tsc
+  - tsc

@@ -1,5 +1,9 @@
 # instapack
 
+[![npm](https://img.shields.io/npm/v/instapack.svg)](https://www.npmjs.com/package/instapack)
+
+[![Build Status](https://travis-ci.org/ryanelian/instapack.svg?branch=master)](https://travis-ci.org/ryanelian/instapack)
+
 > Integrated web application client project compiler using TypeScript and Sass!
 
 ![Screenshot](https://raw.githubusercontent.com/ryanelian/instapack/master/img/screenshot.png)

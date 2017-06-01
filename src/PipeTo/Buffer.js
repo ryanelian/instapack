@@ -1,6 +1,8 @@
-import * as through2 from 'through2';
-import * as vinyl from 'vinyl';
-import * as BufferList from 'bl';
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const through2 = require("through2");
+const vinyl = require("vinyl");
+const BufferList = require("bl");
 let Buffer = () => {
     return through2.obj(function (chunk, enc, next) {
         let pipe = this;
@@ -25,4 +27,4 @@ let Buffer = () => {
         }));
     });
 };
-export { Buffer };
+exports.Buffer = Buffer;

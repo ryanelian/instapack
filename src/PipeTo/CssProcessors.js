@@ -1,6 +1,8 @@
-import * as postcss from 'gulp-postcss';
-import * as autoprefixer from 'autoprefixer';
-import * as cssnano from 'cssnano';
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const postcss = require("gulp-postcss");
+const autoprefixer = require("autoprefixer");
+const cssnano = require("cssnano");
 let CssProcessors = productionMode => {
     let cssProcessors = [
         autoprefixer({
@@ -17,4 +19,4 @@ let CssProcessors = productionMode => {
     }
     return postcss(cssProcessors);
 };
-export { CssProcessors };
+exports.CssProcessors = CssProcessors;

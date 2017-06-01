@@ -12,7 +12,7 @@
     "noFallthroughCasesInSwitch": true,
     
     "target": "es6",
-    "module": "es6",
+    "module": "commonjs",
     "moduleResolution": "node",
     "removeComments": true
   },

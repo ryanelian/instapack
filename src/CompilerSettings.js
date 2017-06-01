@@ -1,7 +1,9 @@
-import * as path from 'path';
-import * as gutil from 'gulp-util';
-import * as resolve from 'resolve';
-export class CompilerSettings {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const path = require("path");
+const gutil = require("gulp-util");
+const resolve = require("resolve");
+class CompilerSettings {
     get concatResolution() {
         let resolver = {};
         let resolverLength = 0;
@@ -73,3 +75,4 @@ export class CompilerSettings {
         return settings;
     }
 }
+exports.CompilerSettings = CompilerSettings;

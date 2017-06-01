@@ -1,5 +1,7 @@
-import * as plumber from 'gulp-plumber';
-import * as gutil from 'gulp-util';
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const plumber = require("gulp-plumber");
+const gutil = require("gulp-util");
 let ErrorHandler = () => {
     return plumber({
         errorHandler: function (error) {
@@ -8,4 +10,4 @@ let ErrorHandler = () => {
         }
     });
 };
-export { ErrorHandler };
+exports.ErrorHandler = ErrorHandler;

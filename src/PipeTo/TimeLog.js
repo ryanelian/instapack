@@ -1,6 +1,8 @@
-import * as prettyTime from 'pretty-hrtime';
-import * as through2 from 'through2';
-import * as gutil from 'gulp-util';
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const prettyTime = require("pretty-hrtime");
+const through2 = require("through2");
+const gutil = require("gulp-util");
 let TimeLog = message => {
     let start = process.hrtime();
     let stream = through2.obj();
@@ -9,4 +11,4 @@ let TimeLog = message => {
         gutil.log(message, gutil.colors.green(time));
     });
 };
-export { TimeLog };
+exports.TimeLog = TimeLog;

@@ -1,5 +1,7 @@
-import * as through2 from 'through2';
-import * as vinyl from 'vinyl';
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const through2 = require("through2");
+const vinyl = require("vinyl");
 let Vinyl = filename => {
     let pass = true;
     let buffer = through2.obj();
@@ -19,4 +21,4 @@ let Vinyl = filename => {
         this.push(null);
     });
 };
-export { Vinyl };
+exports.Vinyl = Vinyl;

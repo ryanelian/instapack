@@ -1,5 +1,7 @@
-import * as minifier from 'html-minifier';
-import * as tools from 'browserify-transform-tools';
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const minifier = require("html-minifier");
+const tools = require("browserify-transform-tools");
 let minifierOptions = {
     caseSensitive: false,
     collapseBooleanAttributes: true,
@@ -38,4 +40,4 @@ let HTMLify = tools.makeStringTransform('htmlify', transformOptions, function (c
     content = 'module.exports = ' + JSON.stringify(content) + ';\n';
     done(null, content);
 });
-export { HTMLify };
+exports.HTMLify = HTMLify;

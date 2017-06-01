@@ -1,9 +1,11 @@
-import * as gutil from 'gulp-util';
-import * as uglifyjs from 'uglify-js';
-import * as minifier from 'gulp-uglify/composer';
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const gutil = require("gulp-util");
+const uglifyjs = require("uglify-js");
+const minifier = require("gulp-uglify/composer");
 let MinifyProductionJs = productionMode => {
     let minify = minifier(uglifyjs, console);
     let minifyOptions = {};
     return productionMode ? minify(minifyOptions) : gutil.noop();
 };
-export { MinifyProductionJs };
+exports.MinifyProductionJs = MinifyProductionJs;

@@ -1,8 +1,10 @@
-import * as fse from 'fs-extra';
-import * as path from 'path';
-import * as cp from 'child_process';
-import * as chalk from 'chalk';
-export class Scaffold {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const fse = require("fs-extra");
+const path = require("path");
+const cp = require("child_process");
+const chalk = require("chalk");
+class Scaffold {
     exec(command) {
         return cp.execSync(command, {
             stdio: [0, 1, 2]
@@ -35,3 +37,4 @@ export class Scaffold {
         console.log('To build the application, type: ' + chalk.yellow('ipack'));
     }
 }
+exports.Scaffold = Scaffold;

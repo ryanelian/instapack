@@ -1,14 +1,16 @@
 #!/usr/bin/env node
-import { Instapack } from './index';
-import * as CLI from 'yargs';
-import * as chalk from 'chalk';
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const index_1 = require("./index");
+const CLI = require("yargs");
+const chalk = require("chalk");
 let packageJSON = require('./package.json');
 let packageInfo = {
     name: packageJSON.name,
     version: packageJSON.version,
     description: packageJSON
 };
-let app = new Instapack();
+let app = new index_1.Instapack();
 CLI.version(packageInfo.version);
 let validCommands = ['all', 'js', 'css', 'concat'];
 let validTemplates = ['empty', 'aspnet', 'angularjs'];

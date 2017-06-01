@@ -1,19 +1,21 @@
-import * as gulp from 'gulp';
-import * as gutil from 'gulp-util';
-import * as sourcemaps from 'gulp-sourcemaps';
-import * as concat from 'gulp-concat';
-import * as es from 'event-stream';
-import * as browserify from 'browserify';
-import * as tsify from 'tsify';
-import * as watchify from 'watchify';
-import { HTMLify } from './HTMLify';
-import * as sass from 'gulp-sass';
-import * as gwatch from 'gulp-watch';
-import * as To from './PipeTo';
-import { CompilerSettings } from './CompilerSettings';
-export class Compiler {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const gulp = require("gulp");
+const gutil = require("gulp-util");
+const sourcemaps = require("gulp-sourcemaps");
+const concat = require("gulp-concat");
+const es = require("event-stream");
+const browserify = require("browserify");
+const tsify = require("tsify");
+const watchify = require("watchify");
+const HTMLify_1 = require("./HTMLify");
+const sass = require("gulp-sass");
+const gwatch = require("gulp-watch");
+const To = require("./PipeTo");
+const CompilerSettings_1 = require("./CompilerSettings");
+class Compiler {
     constructor(productionMode, watchMode, settingsFileName = 'instapack.json') {
-        this.settings = CompilerSettings.tryReadFromFile(settingsFileName);
+        this.settings = CompilerSettings_1.CompilerSettings.tryReadFromFile(settingsFileName);
         this.productionMode = productionMode;
         this.watchMode = watchMode;
         this.chat();
@@ -55,7 +57,7 @@ export class Compiler {
         }
         let jsEntry = this.settings.jsEntry;
         let jsOut = this.settings.outputJsFolder;
-        let bundler = browserify(browserifyOptions).transform(HTMLify).add(jsEntry).plugin(tsify);
+        let bundler = browserify(browserifyOptions).transform(HTMLify_1.HTMLify).add(jsEntry).plugin(tsify);
         let compileJs = () => {
             gutil.log('Compiling JS', gutil.colors.cyan(jsEntry));
             return bundler.bundle()
@@ -129,3 +131,4 @@ export class Compiler {
         });
     }
 }
+exports.Compiler = Compiler;

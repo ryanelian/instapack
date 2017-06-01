@@ -2,7 +2,7 @@
 
 > Integrated web application client project compiler using TypeScript and Sass!
 
-
+![Screenshot](https://raw.githubusercontent.com/ryanelian/instapack/master/img/screenshot.png)
 
 ## Install
 
@@ -90,6 +90,8 @@ However, several developers have successfully utilized `instapack` in OS X devel
 `instapack` will not suddenly introduce Windows or Visual Studio exclusive feature, and strive to maintain compatibility with multiple platforms.
 
 ## How does it work?
+
+![Build Flow](https://github.com/ryanelian/instapack/raw/master/img/flow.png)
 
 Internally, `instapack` uses the following modules:
 

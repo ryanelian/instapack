@@ -11,7 +11,7 @@ export class Scaffold {
         });
     }
 
-    usingTemplate(name = 'aspnet') {
+    usingTemplate(name) {
         let templateFolder = path.join(__dirname, '../templates', name);
         let thisFolder = process.cwd();
 

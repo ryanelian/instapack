@@ -10,7 +10,7 @@ class Scaffold {
             stdio: [0, 1, 2]
         });
     }
-    usingTemplate(name = 'aspnet') {
+    usingTemplate(name) {
         let templateFolder = path.join(__dirname, '../templates', name);
         let thisFolder = process.cwd();
         let exist = fse.existsSync(templateFolder);

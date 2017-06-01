@@ -36,8 +36,9 @@ CLI.command({
         });
     },
     handler: argv => {
-        echo('build', argv.project || 'all');
-        app.build(argv.project, !argv.dev, argv.watch);
+        let subCommand = argv.project || 'all';
+        echo('build', subCommand);
+        app.build(subCommand, !argv.dev, argv.watch);
     }
 });
 CLI.command({
@@ -47,8 +48,9 @@ CLI.command({
         return yargs.choices('template', validTemplates);
     },
     handler: argv => {
-        echo('new', argv.template || 'aspnet');
-        app.scaffold(argv.template);
+        let subCommand = argv.template || 'aspnet';
+        echo('new', subCommand);
+        app.scaffold(subCommand);
     }
 });
 let parse = CLI.strict().help().argv;

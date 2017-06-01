@@ -58,7 +58,7 @@ export class Compiler {
         this.registerCssTask();
     }
 
-    build(taskName = 'all') {
+    build(taskName) {
         gulp.start(taskName);
     }
 

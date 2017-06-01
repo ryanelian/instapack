@@ -43,7 +43,7 @@ class Compiler {
         this.registerJsTask();
         this.registerCssTask();
     }
-    build(taskName = 'all') {
+    build(taskName) {
         gulp.start(taskName);
     }
     registerJsTask() {

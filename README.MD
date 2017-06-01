@@ -24,7 +24,7 @@ ipack new
 ipack
 ```
 
-We also provide programmatic API if you wish to integrate `instapack` into your very own build script:
+Programmatic API is also provided if you wish to integrate `instapack` into your very own build script:
 
 ```ts
 import { instapack } from 'instapack';
@@ -51,13 +51,15 @@ Optional but highly recommended, install [Python 2](https://www.python.org/downl
 
 ## Design Goals
 
-- Lower the barrier of entry for modern web application client development.
+- Lowers the barrier of entry for developing a modern web application client.
 
-- Enforce development and deployment best practices.
+- Brings structure to the project source code.
 
-- Improve source code quality with syntax and type checking.
+- Improves source code quality and maintainability with type hints and compile-time checks.
 
-- Unify team tooling accross multiple projects.
+- Enforces best practices when building the application, which may significantly impact page load time. (For example: bundling and minification)
+
+- Unifies team tooling across multiple projects.
 
 - Blurs the boundary behind design time and programming time using blazing fast `watch` + `dev` compilation mode. 
 
@@ -81,9 +83,9 @@ Here is an example. Michael wants to develop an ES6-based web application. One o
 
 - Suddenly, Evan from the other team of the same company develops his own build system. So does Kevin.
 
-`instapack` is developed as an answer those problems, and more!
+`instapack` is developed as an answer those problems and more!
 
-## Is it Windows only? :(
+## Is this Windows only? :(
 
 Majority of the developers using `instapack` is working on ASP.NET Core MVC on Windows + Visual Studio full-time on daily basis. This use case will be the core focus for the tooling support.
 
@@ -97,7 +99,7 @@ However, several developers have successfully utilized `instapack` in OS X devel
 
 Internally, `instapack` uses the following modules:
 
-- `gulp` as task orchestrator, and build pipeline.
+- `gulp` as task orchestrator and build pipeline.
 
 - `typescript` as the transpiler, syntax checker, and type checker for the JavaScript language.
 
@@ -115,7 +117,7 @@ Out of the box, the following files will be used as the application entry points
 
 - `client/css/site.scss`, compiled to `wwwroot/css/site.css`.
 
-- If there are concatenation targets defined, will be resolved and then outputted to `wwwroot/js` folder. Read more below.
+- Concatenate files listed in `package.json`. Read more below.
 
 ## Is this stable?
 
@@ -123,7 +125,7 @@ The manual `gulp` script version of the build system has been used for shipping 
 
 The script itself has been refined over the past 3 years in the making, with each revision involving approval from an internal build system improvement group within my company.
 
-The beta version of `instapack` was then tested to reproduce the bundles for the said projects, with successful result (minimal diff), and since then has been used to maintain those projects.
+The beta version of `instapack` was then tested to reproduce the bundles for the said projects, with successful result (minimal diff). Since then has `instapack` been used to maintain those projects.
 
 So yes, rock solid stable.
 
@@ -218,7 +220,7 @@ In addition, build flags are available:
 
 - `instapack:output` allows setting the output folder location. By default is set to `wwwroot`.
 
-- `instapack:concat` allows packing libraries from `node_modules` or your custom folder (such as `./client/lib/vue.js`) to be minified and outputted into your output JS folder.
+- `instapack:concat` allows packing libraries from `node_modules` or your custom folder (such as `./client/lib/vue.js`). The files will be resolved node-style, minified, and then outputted into your output JS folder.
 
 ## Improving Package Restore & IDE Performance
 

@@ -14,8 +14,8 @@ const gwatch = require("gulp-watch");
 const To = require("./PipeTo");
 const CompilerSettings_1 = require("./CompilerSettings");
 class Compiler {
-    constructor(productionMode, watchMode, settingsFileName = 'instapack.json') {
-        this.settings = CompilerSettings_1.CompilerSettings.tryReadFromFile(settingsFileName);
+    constructor(productionMode, watchMode) {
+        this.settings = CompilerSettings_1.CompilerSettings.tryReadFromFile();
         this.productionMode = productionMode;
         this.watchMode = watchMode;
         this.chat();

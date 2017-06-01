@@ -30,8 +30,8 @@ export class Compiler {
 
     watchMode: boolean;
 
-    constructor(productionMode: boolean, watchMode: boolean, settingsFileName = 'instapack.json') {
-        this.settings = CompilerSettings.tryReadFromFile(settingsFileName);
+    constructor(productionMode: boolean, watchMode: boolean) {
+        this.settings = CompilerSettings.tryReadFromFile();
         this.productionMode = productionMode;
         this.watchMode = watchMode;
         this.chat();

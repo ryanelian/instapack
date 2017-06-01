@@ -7,6 +7,19 @@
     "Android >= 4",
     "last 3 versions"
   ],
+  "instapack": {
+    "output": "wwwroot",
+    "concat": {
+      "jquery-bootstrap": [
+        "jquery",
+        "bootstrap-sass"
+      ],
+      "aspnet-validator": [
+        "jquery-validation",
+        "jquery-validation-unobtrusive"
+      ]
+    }
+  },
   "dependencies": {
     "@types/angular": "^1.6.16",
     "@types/jquery": "^2.0.45",

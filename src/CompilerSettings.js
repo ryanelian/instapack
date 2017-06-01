@@ -48,13 +48,13 @@ class CompilerSettings {
     get outputCssFolder() {
         return path.join(this.outputFolder, 'css');
     }
-    static tryReadFromFile(fileName) {
+    static tryReadFromFile() {
         let settings = new CompilerSettings();
         settings.projectFolder = process.cwd();
-        let json = path.join(settings.projectFolder, fileName);
+        let json = path.join(settings.projectFolder, 'package.json');
         try {
-            gutil.log('Attempting to read settings from', gutil.colors.cyan(json));
-            let parse = require(json);
+            gutil.log('Reading settings from', gutil.colors.cyan(json + ':instapack'));
+            let parse = require(json).instapack;
             settings.input = parse.input;
             settings.output = parse.output;
             settings.concat = parse.concat;

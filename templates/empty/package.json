@@ -9,16 +9,7 @@
   ],
   "instapack": {
     "output": "wwwroot",
-    "concat": {
-      "jquery-bootstrap": [
-        "jquery",
-        "bootstrap-sass"
-      ],
-      "aspnet-validator": [
-        "jquery-validation",
-        "jquery-validation-unobtrusive"
-      ]
-    }
+    "concat": {}
   },
   "dependencies": {
     "@types/jquery": "^2.0.45",

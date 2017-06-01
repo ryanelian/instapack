@@ -3,13 +3,9 @@ import * as gutil from 'gulp-util';
 import * as resolve from 'resolve';
 
 export class CompilerSettings {
-
     projectFolder: string;
-
     input: string;
-
     output: string;
-
     concat: { [key: string]: string[] };
 
     get concatResolution(): { [key: string]: string[] } {

@@ -3,17 +3,9 @@
     font-style: italic;
 }
 
-input.ng-dirty.ng-invalid, input.input-validation-error {
+input.input-validation-error {
     border-color: red;
     outline-color: red;
-}
-
-.modal-content {
-    padding: 16px;
-}
-
-.tab-content {
-    padding-top: 16px;
 }
 
 .navbar {

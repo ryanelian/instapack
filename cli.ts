@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { Instapack } from './index';
+import { instapack } from './index';
 import * as CLI from 'yargs';
 import * as chalk from 'chalk';
 
@@ -11,7 +11,7 @@ let packageInfo = {
     description: packageJSON as string
 };
 
-let app = new Instapack();
+let app = new instapack();
 CLI.version(packageInfo.version);
 
 let validCommands = ['all', 'js', 'css', 'concat'];

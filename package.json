@@ -1,7 +1,7 @@
 {
   "name": "instapack",
-  "version": "4.0.0-beta6",
-  "description": "Integrated web application client project compiler using TypeScript and SASS!",
+  "version": "4.0.0-beta7",
+  "description": "Integrated web application client project compiler using TypeScript and Sass!",
   "main": "index.js",
   "bin": {
     "ipk": "./cli.js",
@@ -43,7 +43,7 @@
     "through2": "^2.0.3",
     "tsify": "^3.0.1",
     "typescript": "^2.3.4",
-    "uglify-js": "^3.0.14",
+    "uglify-js": "^3.0.15",
     "vinyl": "^2.0.2",
     "watchify": "^3.9.0",
     "yargs": "^8.0.1"
@@ -61,7 +61,7 @@
     "@types/gulp-util": "^3.0.31",
     "@types/gulp-watch": "^4.1.30",
     "@types/html-minifier": "^1.1.30",
-    "@types/node": "^7.0.22",
+    "@types/node": "^7.0.23",
     "@types/resolve": "^0.0.4",
     "@types/through2": "^2.0.33",
     "@types/vinyl": "^2.0.0",

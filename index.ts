@@ -1,8 +1,7 @@
 import { Compiler } from './src/Compiler';
 import { Scaffold } from './src/Scaffold';
 
-export class Instapack {
-
+export class instapack {
   build(taskName: string, isProduction: boolean, watchMode: boolean) {
     let compiler = new Compiler(isProduction, watchMode);
     compiler.build(taskName);
@@ -12,5 +11,4 @@ export class Instapack {
     let scaffold = new Scaffold();
     scaffold.usingTemplate(template);
   }
-
 }

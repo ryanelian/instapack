@@ -10,7 +10,7 @@ let packageInfo = {
     version: packageJSON.version,
     description: packageJSON
 };
-let app = new index_1.Instapack();
+let app = new index_1.instapack();
 CLI.version(packageInfo.version);
 let validCommands = ['all', 'js', 'css', 'concat'];
 let validTemplates = ['empty', 'aspnet', 'angularjs'];

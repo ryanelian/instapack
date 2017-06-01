@@ -23,11 +23,8 @@ import * as To from './PipeTo';
 import { CompilerSettings } from './CompilerSettings';
 
 export class Compiler {
-
     settings: CompilerSettings;
-
     productionMode: boolean;
-
     watchMode: boolean;
 
     constructor(productionMode: boolean, watchMode: boolean) {
@@ -67,8 +64,7 @@ export class Compiler {
 
     registerJsTask() {
         let browserifyOptions: browserify.Options = {
-            debug: true,
-            fast: true,
+            debug: true
         };
 
         if (this.watchMode) {

@@ -48,8 +48,7 @@ class Compiler {
     }
     registerJsTask() {
         let browserifyOptions = {
-            debug: true,
-            fast: true,
+            debug: true
         };
         if (this.watchMode) {
             browserifyOptions.cache = {};

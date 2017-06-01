@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const Compiler_1 = require("./src/Compiler");
 const Scaffold_1 = require("./src/Scaffold");
-class Instapack {
+class instapack {
     build(taskName, isProduction, watchMode) {
         let compiler = new Compiler_1.Compiler(isProduction, watchMode);
         compiler.build(taskName);
@@ -12,4 +12,4 @@ class Instapack {
         scaffold.usingTemplate(template);
     }
 }
-exports.Instapack = Instapack;
+exports.instapack = instapack;

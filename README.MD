@@ -101,9 +101,9 @@ Internally, `instapack` uses the following modules:
 
 - `gulp` as task orchestrator and build pipeline.
 
-- `typescript` as the transpiler, syntax checker, and type checker for the JavaScript language.
+- `typescript` as the compiler service, syntax checker, and type checker for the JavaScript language.
 
-- `node-sass` as the transpiler, syntax checker, and type checker for the CSS language.
+- `node-sass` as the compiler service, syntax checker, and type checker for the CSS language.
 
 - `browserify` for merging the JavaScript output modules together.
 

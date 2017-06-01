@@ -33,7 +33,7 @@ let ipack = new instapack();
 ipack.build('all', false, false);
 ```
 
-## System Requirement
+## System Requirements
 
 Currently supported Node.js is [latest version 6 LTS](https://nodejs.org/en/download/). The tool will be supported against version 8 when LTS build is released in [October 2017](https://github.com/nodejs/LTS).
 
@@ -43,7 +43,7 @@ Optional but highly recommended, install [Python 2](https://www.python.org/downl
 
 ## Features
 
-- Hyper opinionated web application client project builder with zero configurations that just works.
+- Hyper-opinionated web application client project builder with zero configurations. It just works.
 
 - Built-in new project scaffold tool.
 

@@ -2,6 +2,11 @@
   "name": "aspnet",
   "version": "1.0.0",
   "private": true,
+  "browserslist": [
+    "ie >= 11",
+    "Android >= 4",
+    "last 3 versions"
+  ],
   "dependencies": {
     "@types/jquery": "^2.0.45",
     "@types/lodash": "^4.14.63",

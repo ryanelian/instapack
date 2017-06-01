@@ -3,11 +3,7 @@ import * as autoprefixer from 'autoprefixer';
 import * as cssnano from 'cssnano';
 
 let CssProcessors = productionMode => {
-    let cssProcessors = [
-        autoprefixer({
-            browsers: ['ie >= 9', 'Android >= 4', 'last 3 versions']
-        })
-    ];
+    let cssProcessors = [autoprefixer];
 
     if (productionMode) {
         let minifier = cssnano({

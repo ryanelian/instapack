@@ -98,16 +98,15 @@ class Compiler {
                 .pipe(To.TimeLog('Finished CSS compilation after'))
                 .pipe(gulp.dest(cssOut));
         });
+        let watchCallback = undefined;
         if (this.watchMode) {
-            gulp.task('css', ['css:compile'], () => {
+            watchCallback = () => {
                 return gwatch(sassGlob, () => {
                     gulp.start('css:compile');
                 });
-            });
+            };
         }
-        else {
-            gulp.task('css', ['css:compile']);
-        }
+        gulp.task('css', ['css:compile'], watchCallback);
     }
     registerConcatTask() {
         gulp.task('concat', () => {

@@ -260,7 +260,7 @@ As a testament of TypeScript capabilities, `instapack` is fully written using Ty
 
 ### What is that ValidationMessageComponent in AngularJS template?
 
-A custom AngularJS input validation message component. It allows automatic validation message output using [AngularJS input directive](https://docs.angularjs.org/api/ng/directive/input).
+A custom AngularJS input validation message component. It allows automatic validation message output using [AngularJS input directive](https://docs.angularjs.org/api/ng/directive/input), similar to Razor's `ValidationMessage` for Core MVC.
 
 Usage example:
 

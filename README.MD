@@ -292,7 +292,7 @@ var _ = require('lodash');
 var $ = window['$'];
 ```
 
-However, TypeScript is the key for scaling your application while maintaining source code quality. Try it, it's not that hard!
+That said, TypeScript is the key for scaling your application while maintaining source code quality. [Try it](https://www.typescriptlang.org/docs/handbook/basic-types.html), it's not that hard!
 
 ### What is that ValidationMessageComponent in AngularJS template?
 

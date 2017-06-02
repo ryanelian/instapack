@@ -8,15 +8,18 @@ let packageJSON = require('./package.json');
 let packageInfo = {
     name: packageJSON.name as string,
     version: packageJSON.version as string,
-    description: packageJSON as string
+    description: packageJSON.description as string
 };
 
 let app = new instapack();
 CLI.version(packageInfo.version);
 
-let validCommands = ['all', 'js', 'css', 'concat'];
-let validTemplates = ['empty', 'aspnet', 'angularjs'];
-
+/**
+ * Writes application name, version number, command and sub-command to the console output.
+ * @param command 
+ * @param subCommand 
+ * @param writeDescription 
+ */
 function echo(command: string, subCommand: string, writeDescription = false) {
     console.log(chalk.yellow(packageInfo.name) + ' ' + chalk.green(packageInfo.version) + ' ' + command + ' ' + subCommand);
     if (writeDescription) {
@@ -30,7 +33,7 @@ CLI.command({
     describe: 'Compiles the web application client project.',
     aliases: ['*'],
     builder: yargs => {
-        return yargs.choices('project', validCommands)
+        return yargs.choices('project', app.availableTasks)
             .option('w', {
                 alias: 'watch',
                 describe: 'Enables rebuild on source code changes.'
@@ -51,7 +54,7 @@ CLI.command({
     command: 'new [template]',
     describe: 'Scaffolds a new web application client project.',
     builder: yargs => {
-        return yargs.choices('template', validTemplates);
+        return yargs.choices('template', app.availableTemplates);
     },
     handler: argv => {
         let subCommand = argv.template || 'aspnet';

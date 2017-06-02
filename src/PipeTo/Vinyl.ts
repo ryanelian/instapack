@@ -1,12 +1,16 @@
 import * as through2 from 'through2';
 import * as vinyl from 'vinyl';
 
-let Vinyl = filename => {
+/**
+ * Creates a new build pipe for converting fs stream into vinyl stream.
+ * @param filename 
+ */
+export function Vinyl(filename: string) {
     let pass = true;
-    let buffer = through2.obj();
+    let stream = through2.obj();
     let file = new vinyl({
         path: filename,
-        contents: buffer
+        contents: stream
     });
 
     return through2.obj(function (chunk, enc, next) {
@@ -15,12 +19,10 @@ let Vinyl = filename => {
             pass = false;
         }
 
-        buffer.push(chunk);
+        stream.push(chunk);
         next();
     }, function () {
-        buffer.push(null);
+        stream.push(null);
         this.push(null);
     });
 };
-
-export { Vinyl };

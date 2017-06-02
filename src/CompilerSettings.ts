@@ -2,16 +2,66 @@ import * as path from 'path';
 import * as gutil from 'gulp-util';
 import * as resolve from 'resolve';
 
-export class CompilerSettings {
-    projectFolder: string;
-    input: string;
-    output: string;
-    concat: { [key: string]: string[] };
+/**
+ * Dictionary<string, List<string>>
+ */
+export type ConcatenationLookup = {
+    [key: string]: string[]
+};
 
-    get concatResolution(): { [key: string]: string[] } {
-        let resolver: { [key: string]: string[] } = {};
+/**
+ * Contains properties for setting the project builder class.
+ */
+export class CompilerSettings {
+
+    /**
+     * Gets the project root folder path.
+     */
+    readonly projectRoot: string;
+
+    /**
+     * Gets the root input folder name.
+     */
+    readonly input: string;
+
+    /**
+     * Gets the root output folder name.
+     */
+    readonly output: string;
+
+    /**
+     * Gets the unresolved concatenation map.
+     */
+    readonly concat: ConcatenationLookup;
+
+    /**
+     * Constructs a new instance of CompilerSettings.
+     * @param projectRoot 
+     * @param input 
+     * @param output 
+     * @param concat 
+     */
+    constructor(projectRoot: string, input: string, output: string, concat: ConcatenationLookup) {
+        this.projectRoot = projectRoot || process.cwd();
+        this.input = input || 'client';
+        this.output = output || 'wwwroot';
+        this.concat = concat || {};
+    }
+
+    /**
+     * Gets the number of keys / target files in the concatenation map.
+     */
+    get concatCount(): number {
+        return Object.keys(this.concat).length;
+    }
+
+    /**
+     * Gets the resolved concatenation map.
+     */
+    get concatResolution(): ConcatenationLookup {
+        let resolver: ConcatenationLookup = {};
         let resolverLength = 0;
-        let resolveOption = { basedir: this.projectFolder };
+        let resolveOption = { basedir: this.projectRoot };
 
         for (let concatResult in this.concat) {
             let resolverItems: string[] = [];
@@ -30,70 +80,89 @@ export class CompilerSettings {
         return resolver;
     }
 
+    /**
+     * Gets the full path to node_modules folder.
+     */
     get npmFolder(): string {
-        return path.join(this.projectFolder, 'node_modules');
+        return path.join(this.projectRoot, 'node_modules');
     }
 
+    /**
+     * Gets the full path to bower_components folder.
+     */
     get bowerFolder(): string {
-        return path.join(this.projectFolder, 'bower_components');
+        return path.join(this.projectRoot, 'bower_components');
     }
 
+    /**
+     * Gets the full path to the root input folder.
+     */
     get inputFolder(): string {
-        return path.join(this.projectFolder, this.input);
+        return path.join(this.projectRoot, this.input);
     }
 
+    /**
+     * Gets the full path to the index.ts entry point.
+     */
     get jsEntry(): string {
         return path.join(this.inputFolder, 'js', 'index.ts');
     }
 
+    /**
+     * Gets the full path to the site.scss entry point.
+     */
     get cssEntry(): string {
         return path.join(this.inputFolder, 'css', 'site.scss');
     }
 
+    /**
+     * Gets the glob pattern for watching changes of Sass source code files. 
+     */
     get cssWatchGlob(): string {
         return path.join(this.inputFolder, 'css', '**', '*.scss');
     }
 
+    /**
+     * Gets the full path to the root output folder.
+     */
     get outputFolder(): string {
-        return path.join(this.projectFolder, this.output);
+        return path.join(this.projectRoot, this.output);
     }
 
+    /**
+     * Gets the full path to the JavaScript compilation and concatenation output folder.
+     */
     get outputJsFolder(): string {
         return path.join(this.outputFolder, 'js');
     }
 
+    /**
+     * Gets the full path to the CSS compilation and concatenation output folder.
+     */
     get outputCssFolder(): string {
         return path.join(this.outputFolder, 'css');
     }
 
-    static tryReadFromFile(): CompilerSettings {
-        let settings = new CompilerSettings();
-
-        settings.projectFolder = process.cwd();
-        let json = path.join(settings.projectFolder, 'package.json');
+    /**
+     * Attempts to read the settings from package.json in the same folder where the command line is invoked at.
+     */
+    static tryRead(): CompilerSettings {
+        let folder = process.cwd();
+        let json = path.join(folder, 'package.json');
+        let parse: any;
 
         try {
             gutil.log('Reading settings from', gutil.colors.cyan(json + ':instapack'));
-            let parse = require(json).instapack;
-            settings.input = parse.input;
-            settings.output = parse.output;
-            settings.concat = parse.concat;
-        } catch (error) {
+            parse = require(json).instapack;
+        } catch (ex) {
             gutil.log('Failed to read settings. Using default settings.');
         }
 
-        if (!settings.input) {
-            settings.input = 'client';
+        if (!parse) {
+            parse = {};
         }
 
-        if (!settings.output) {
-            settings.output = 'wwwroot';
-        }
-
-        if (!settings.concat) {
-            settings.concat = {};
-        }
-
+        let settings = new CompilerSettings(folder, parse.input, parse.output, parse.concat);
         gutil.log('Using output folder', gutil.colors.cyan(settings.outputFolder));
         return settings;
     }

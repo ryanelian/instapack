@@ -14,12 +14,12 @@ const gwatch = require("gulp-watch");
 const To = require("./PipeTo");
 const CompilerSettings_1 = require("./CompilerSettings");
 class Compiler {
-    constructor(productionMode, watchMode) {
-        this.settings = CompilerSettings_1.CompilerSettings.tryReadFromFile();
+    constructor(productionMode, watchMode, settings = undefined) {
+        this.settings = settings || CompilerSettings_1.CompilerSettings.tryRead();
         this.productionMode = productionMode;
         this.watchMode = watchMode;
         this.chat();
-        this.registerTasks();
+        this.registerAllTasks();
     }
     chat() {
         if (this.productionMode) {
@@ -37,7 +37,7 @@ class Compiler {
             gutil.log("Use", gutil.colors.yellow("--watch"), "flag for switching to", gutil.colors.yellow("Watch"), "mode for automatic compilation on source changes.");
         }
     }
-    registerTasks() {
+    registerAllTasks() {
         gulp.task('all', ['concat', 'js', 'css']);
         this.registerConcatTask();
         this.registerJsTask();
@@ -60,15 +60,17 @@ class Compiler {
         let compileJs = () => {
             gutil.log('Compiling JS', gutil.colors.cyan(jsEntry));
             return bundler.bundle()
-                .on('error', gutil.log)
+                .on('error', function (error) {
+                gutil.log(error);
+                this.emit('end');
+            })
                 .pipe(To.Vinyl('bundle.js'))
                 .pipe(To.Buffer())
                 .pipe(To.ErrorHandler())
                 .pipe(sourcemaps.init({ loadMaps: true }))
                 .pipe(To.MinifyProductionJs(this.productionMode))
                 .pipe(sourcemaps.write('./'))
-                .pipe(To.SizeLog())
-                .pipe(To.TimeLog('Finished JS compilation after'))
+                .pipe(To.BuildLog('JS compilation'))
                 .pipe(gulp.dest(jsOut));
         };
         if (this.watchMode) {
@@ -93,8 +95,7 @@ class Compiler {
                 .pipe(sass(sassOptions))
                 .pipe(To.CssProcessors(this.productionMode))
                 .pipe(sourcemaps.write('./'))
-                .pipe(To.SizeLog())
-                .pipe(To.TimeLog('Finished CSS compilation after'))
+                .pipe(To.BuildLog('CSS compilation'))
                 .pipe(gulp.dest(cssOut));
         });
         let watchCallback = undefined;
@@ -110,7 +111,7 @@ class Compiler {
     registerConcatTask() {
         gulp.task('concat', () => {
             let concatStreams = [];
-            let concatCount = Object.keys(this.settings.concat).length;
+            let concatCount = this.settings.concatCount;
             gutil.log('Resolving', gutil.colors.cyan(concatCount.toString()), 'concatenation targets...');
             if (!concatCount) {
                 return;
@@ -123,8 +124,7 @@ class Compiler {
             }
             return es.merge(concatStreams)
                 .pipe(To.MinifyProductionJs(this.productionMode))
-                .pipe(To.SizeLog())
-                .pipe(To.TimeLog('Finished JS concatenation after'))
+                .pipe(To.BuildLog('JS concatenation'))
                 .pipe(gulp.dest(this.settings.outputJsFolder));
         });
     }

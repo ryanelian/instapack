@@ -22,19 +22,44 @@ import * as To from './PipeTo';
 
 import { CompilerSettings } from './CompilerSettings';
 
+/**
+ * Contains methods for assembling and invoking the compilation tasks.
+ */
 export class Compiler {
-    settings: CompilerSettings;
-    productionMode: boolean;
-    watchMode: boolean;
 
-    constructor(productionMode: boolean, watchMode: boolean) {
-        this.settings = CompilerSettings.tryReadFromFile();
+    /**
+     * Gets the common settings for all tasks.
+     */
+    readonly settings: CompilerSettings;
+
+    /**
+     * Gets the minification setting for build output.
+     */
+    readonly productionMode: boolean;
+
+    /**
+     * Gets the automatic build setting.
+     */
+    readonly watchMode: boolean;
+
+    /**
+     * Constructs a new instance of Compiler using specified build flags. 
+     * If settings are not provided, will attempt to read from project.json.
+     * @param productionMode 
+     * @param watchMode 
+     * @param settings 
+     */
+    constructor(productionMode: boolean, watchMode: boolean, settings: CompilerSettings = undefined) {
+        this.settings = settings || CompilerSettings.tryRead();
         this.productionMode = productionMode;
         this.watchMode = watchMode;
         this.chat();
-        this.registerTasks();
+        this.registerAllTasks();
     }
 
+    /**
+     * Displays information about currently used build flags.
+     */
     chat() {
         if (this.productionMode) {
             gutil.log(gutil.colors.yellow("Production"), "mode: Outputs will be minified.", gutil.colors.red("This process will slow down your build."));
@@ -51,17 +76,27 @@ export class Compiler {
         }
     }
 
-    registerTasks() {
+    /**
+     * Registers all available tasks and registers a task for invoking all those tasks.
+     */
+    registerAllTasks() {
         gulp.task('all', ['concat', 'js', 'css']);
         this.registerConcatTask();
         this.registerJsTask();
         this.registerCssTask();
     }
 
+    /**
+     * Runs the selected build task.
+     * @param taskName 
+     */
     build(taskName) {
         gulp.start(taskName);
     }
 
+    /**
+     * Registers a JavaScript compilation task using TypeScript piped into Browserify.
+     */
     registerJsTask() {
         let browserifyOptions: browserify.Options = {
             debug: true
@@ -81,15 +116,17 @@ export class Compiler {
             gutil.log('Compiling JS', gutil.colors.cyan(jsEntry));
 
             return bundler.bundle()
-                .on('error', gutil.log)
+                .on('error', function (this: any, error) {
+                    gutil.log(error);
+                    this.emit('end');
+                })
                 .pipe(To.Vinyl('bundle.js'))
                 .pipe(To.Buffer())
                 .pipe(To.ErrorHandler())
                 .pipe(sourcemaps.init({ loadMaps: true }))
                 .pipe(To.MinifyProductionJs(this.productionMode))
                 .pipe(sourcemaps.write('./'))
-                .pipe(To.SizeLog())
-                .pipe(To.TimeLog('Finished JS compilation after'))
+                .pipe(To.BuildLog('JS compilation'))
                 .pipe(gulp.dest(jsOut));
         };
 
@@ -101,6 +138,9 @@ export class Compiler {
         gulp.task('js', compileJs);
     }
 
+    /**
+     * Registers a CSS compilation task using Sass piped into postcss.
+     */
     registerCssTask() {
         let npm = this.settings.npmFolder;
         let cssEntry = this.settings.cssEntry;
@@ -120,8 +160,7 @@ export class Compiler {
                 .pipe(sass(sassOptions))
                 .pipe(To.CssProcessors(this.productionMode))
                 .pipe(sourcemaps.write('./'))
-                .pipe(To.SizeLog())
-                .pipe(To.TimeLog('Finished CSS compilation after'))
+                .pipe(To.BuildLog('CSS compilation'))
                 .pipe(gulp.dest(cssOut));
         });
 
@@ -137,11 +176,14 @@ export class Compiler {
         gulp.task('css', ['css:compile'], watchCallback);
     }
 
+    /**
+     * Registers a JavaScript concatenation task.
+     */
     registerConcatTask() {
         gulp.task('concat', () => {
             let concatStreams = [];
 
-            let concatCount = Object.keys(this.settings.concat).length;
+            let concatCount = this.settings.concatCount;
             gutil.log('Resolving', gutil.colors.cyan(concatCount.toString()), 'concatenation targets...');
 
             if (!concatCount) {
@@ -159,8 +201,7 @@ export class Compiler {
 
             return es.merge(concatStreams)
                 .pipe(To.MinifyProductionJs(this.productionMode))
-                .pipe(To.SizeLog())
-                .pipe(To.TimeLog('Finished JS concatenation after'))
+                .pipe(To.BuildLog('JS concatenation'))
                 .pipe(gulp.dest(this.settings.outputJsFolder));
         });
     }

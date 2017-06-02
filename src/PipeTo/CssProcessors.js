@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const postcss = require("gulp-postcss");
 const autoprefixer = require("autoprefixer");
 const cssnano = require("cssnano");
-let CssProcessors = productionMode => {
+function CssProcessors(productionMode) {
     let cssProcessors = [autoprefixer];
     if (productionMode) {
         let minifier = cssnano({
@@ -14,5 +14,6 @@ let CssProcessors = productionMode => {
         cssProcessors.push(minifier);
     }
     return postcss(cssProcessors);
-};
+}
 exports.CssProcessors = CssProcessors;
+;

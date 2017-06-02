@@ -3,7 +3,15 @@ import * as path from 'path';
 import * as cp from 'child_process';
 import * as chalk from 'chalk';
 
+/**
+ * Contains methods for initializing new project.
+ */
 export class Scaffold {
+
+    /**
+     * Runs a child process that displays outputs to current command line output.
+     * @param command 
+     */
     exec(command: string) {
         // inherit
         return cp.execSync(command, {
@@ -11,6 +19,10 @@ export class Scaffold {
         });
     }
 
+    /**
+     * Initialize project using an officially shipped template.
+     * @param name 
+     */
     usingTemplate(name) {
         let templateFolder = path.join(__dirname, '../templates', name);
         let thisFolder = process.cwd();

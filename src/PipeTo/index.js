@@ -4,9 +4,8 @@ function __export(m) {
 }
 Object.defineProperty(exports, "__esModule", { value: true });
 __export(require("./Buffer"));
+__export(require("./BuildLog"));
 __export(require("./CssProcessors"));
 __export(require("./ErrorHandler"));
 __export(require("./MinifyProductionJs"));
-__export(require("./SizeLog"));
-__export(require("./TimeLog"));
 __export(require("./Vinyl"));

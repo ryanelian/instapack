@@ -2,17 +2,15 @@ import * as through2 from 'through2';
 import * as vinyl from 'vinyl';
 import * as BufferList from 'bl';
 
-let Buffer = () => {
+/**
+ * Creates a new build pipe for buffering a streaming vinyl file.
+ */
+export function Buffer() {
     return through2.obj(function (chunk, enc, next) {
-        let pipe = this;
 
-        if (chunk.isNull()) {
-            pipe.push(chunk);
-            return next();
-        }
-        if (chunk.isBuffer()) {
-            pipe.push(chunk);
-            return next();
+        if (!chunk.isStream()) {
+            next(null, chunk);
+            return;
         }
 
         chunk.contents.pipe(BufferList(function (error, data) {
@@ -24,11 +22,8 @@ let Buffer = () => {
                 path: chunk.path,
                 contents: data
             });
-
-            pipe.push(file);
-            return next();
+            
+            next(null, file);
         }));
     });
 };
-
-export { Buffer }

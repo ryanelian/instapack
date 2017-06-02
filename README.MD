@@ -266,7 +266,7 @@ Also, in IIS, HTTP/2 is only supported when using Windows Server 2016. Many of o
 - TypeScript is a strict superset of the JavaScript, which allows porting and refactoring existing codes with ease.
 - TypeScript allows writing JavaScript using features that do not exist yet in browsers, then compile them down to [ES5](http://kangax.github.io/compat-table/es5/).
 
-As testament of TypeScript effectiveness, `instapack` is fully written using TypeScript!
+As a testament to TypeScript effectiveness, `instapack` is fully written using TypeScript!
 
 ### Why Sass instead of Less.js?
 

@@ -57,13 +57,13 @@ Optional but highly recommended, install [Python 2](https://www.python.org/downl
 
 - Improve source code quality and maintainability with type hints and compile-time checks.
 
-- Enforce best practices when building the application, which may significantly impact page load time. (For example: bundling and minification)
+- Enforce best practices when building the application, which may significantly impact page load time. (e.g. bundling and minification)
 
-- Unify team tooling across multiple projects.
+- Unify team build system across multiple projects.
 
-- Blur the boundary behind design time and programming time using blazing fast `watch` + `dev` compilation mode. 
+- Blur the boundary between design time and programming time using blazing fast `watch` + `dev` compilation mode. 
 
-- Stand-alone tooling allows shipping to `npm`, which allows build system upgrade without altering the application.
+- Stand-alone command line interface allows shipping to `npm`, which enables build system upgrade without altering `project.json` in each applications.
 
 - High quality tooling supported by latest stable Node.js, using strictly curated, actively maintained dependencies.
 
@@ -262,11 +262,11 @@ Also, in IIS, HTTP/2 is only supported when using Windows Server 2016. Many of o
 
 - Babel is very slow.
 - TypeScript is supported by Microsoft.
-- TypeScript is growing at an exponential rate.
+- TypeScript is growing at an [exponential rate](https://github.com/Microsoft/TypeScript/milestones).
 - TypeScript is a strict superset of the JavaScript, which allows porting and refactoring existing codes with ease.
-- TypeScript allows writing JavaScript using features that do not exist yet in browsers, then compile them down to `es5`.
+- TypeScript allows writing JavaScript using features that do not exist yet in browsers, then compile them down to [ES5](http://kangax.github.io/compat-table/es5/).
 
-As a testament of TypeScript capabilities, `instapack` is fully written using TypeScript!
+As testament of TypeScript effectiveness, `instapack` is fully written using TypeScript!
 
 ### Why Sass instead of Less.js?
 
@@ -274,6 +274,25 @@ As a testament of TypeScript capabilities, `instapack` is fully written using Ty
 - Sass has better language syntax.
 - Sass has more features.
 - Sass is more popular. Bootstrap, Foundation, and Angular-Material are written in Sass!
+
+### Can I just develop using classic JavaScript instead of TypeScript?
+
+Sure thing. You can use `require` to sequentially load external files. For example, in your `index.ts`:
+
+```js
+require('./a');         // client/a.js
+require('./b');         // client/b.js
+require('./folder/c');  // client/folder/c.js
+
+// As you may have guessed already, module.exports also works with this technique.
+// You can also load libraries from node_modules
+// Note that you still need to use window[...] to load libraries referenced before bundle.js
+
+var _ = require('lodash');
+var $ = window['$'];
+```
+
+However, TypeScript is the key for scaling your application while maintaining source code quality. Try it, it's not that hard!
 
 ### What is that ValidationMessageComponent in AngularJS template?
 

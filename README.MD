@@ -35,7 +35,7 @@ ipack.build('all', false, false);
 
 ## System Requirements
 
-Currently supported Node.js is [latest version 6 LTS](https://nodejs.org/en/download/). The tool will be supported against version 8 when LTS build is released in [October 2017](https://github.com/nodejs/LTS).
+Currently supported Node.js is [latest version 6 LTS](https://nodejs.org/en/download/). Version 8 when LTS build is released in [October 2017](https://github.com/nodejs/LTS).
 
 When using Visual Studio 2017, select the latest **TypeScript 2.X SDK** from the individual component list during setup.
 
@@ -235,6 +235,12 @@ Yes, absolutely!
 In fact, you can just add the packages required and start hacking. We'll take care of the outputs. We have also enabled `tsx` compilation specifically for React in our templates' `tsconfig.json`.
 
 Also, pull requests are welcomed if you have a great starting template for those projects. We'd love to expand our template collections. :)
+
+### Why don't your team develop using Angular 2+?
+
+Angular 2+ uses [JavaScript Decorators](https://github.com/wycats/javascript-decorators) feature. This feature is [flagged as experimental](https://www.typescriptlang.org/docs/handbook/decorators.html) in TypeScript.
+
+Our management does not like experimental features.
 
 ### Can I use input / output folder other than `js` and `css`?
 

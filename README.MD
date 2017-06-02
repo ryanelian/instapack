@@ -51,17 +51,17 @@ Optional but highly recommended, install [Python 2](https://www.python.org/downl
 
 ## Design Goals
 
-- Lowers the barrier of entry for developing a modern web application client.
+- Lower the barrier of entry for developing a modern web application client.
 
-- Brings structure to the project source code.
+- Bring structure to the project source code.
 
-- Improves source code quality and maintainability with type hints and compile-time checks.
+- Improve source code quality and maintainability with type hints and compile-time checks.
 
-- Enforces best practices when building the application, which may significantly impact page load time. (For example: bundling and minification)
+- Enforce best practices when building the application, which may significantly impact page load time. (For example: bundling and minification)
 
-- Unifies team tooling across multiple projects.
+- Unify team tooling across multiple projects.
 
-- Blurs the boundary behind design time and programming time using blazing fast `watch` + `dev` compilation mode. 
+- Blur the boundary behind design time and programming time using blazing fast `watch` + `dev` compilation mode. 
 
 - Stand-alone tooling allows shipping to `npm`, which allows build system upgrade without altering the application.
 
@@ -81,15 +81,15 @@ Here is an example. Michael wants to develop an ES6-based web application. One o
 
 - Michael's hard drive is now full because each project has their own build system. Ouch.
 
-- Suddenly, Evan from the other team of the same company develops his own build system. So does Kevin.
+- Suddenly, Evan from the other team of the same company develops his own build system. So does Jack.
 
 `instapack` is developed as an answer those problems and more!
 
 ## Is this Windows only? :(
 
-Majority of the developers using `instapack` is working on ASP.NET Core MVC on Windows + Visual Studio full-time on daily basis. This use case will be the core focus for the tooling support.
+Majority of the developers using `instapack` are working full-time on ASP.NET Core MVC projects on Windows with Visual Studio on daily basis. This use case will be the core focus for tooling support.
 
-However, several developers have successfully utilized `instapack` in OS X development environment. So **theoretically** it should work in Linux too without problems.
+However, there should be no reason for `instapack` to not to run on OS X and Linux.
 
 `instapack` will not suddenly introduce Windows or Visual Studio exclusive feature, and strive to maintain compatibility with multiple platforms.
 
@@ -103,7 +103,7 @@ Internally, `instapack` uses the following modules:
 
 - `typescript` as the compiler service, syntax checker, and type checker for the JavaScript language.
 
-- `node-sass` as the compiler service, syntax checker, and type checker for the CSS language.
+- `node-sass` as the compiler service and syntax checker for the CSS language. It also configured to allow `@import` from `node_modules`.
 
 - `browserify` for merging the JavaScript output modules together.
 

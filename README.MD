@@ -71,7 +71,7 @@ Optional but highly recommended, install [Python 2](https://www.python.org/downl
 
 At a glance, the `instapack` looks similar to `webpack`. However, that is where the similarity ends.
 
-Here is an example. Michael wants to develop an ES6-based web application. One of the following events usually happen next...
+Here is an example, Michael wants to develop a web application using ES6. One of the following events usually happens next...
 
 - Michael would scramble the internet for `gulp` or `grunt` or `webpack` or `brocolli` recipes, configuring it for hours, before starting to code...
 
@@ -280,9 +280,9 @@ As a testament to TypeScript effectiveness, `instapack` is fully written using T
 Sure thing. You can use `require` to sequentially load external files. For example, in your `index.ts`:
 
 ```js
-require('./a');         // client/a.js
-require('./b');         // client/b.js
-require('./folder/c');  // client/folder/c.js
+require('./a');         // client/js/a.js
+require('./b');         // client/js/b.js
+require('./folder/c');  // client/js/folder/c.js
 
 // As you may have guessed already, module.exports also works with this technique.
 // You can also load libraries from node_modules

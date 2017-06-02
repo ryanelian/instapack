@@ -137,15 +137,15 @@ Scaffolds a new `instapack` project into your existing application from where th
 
 - `angularjs` when you want to develop a rich client application with Bootstrap + AngularJS 1.X, using a well-defined project stucture.
 
-If no template parameter is provided by default, `aspnet` is chosen.
+If no template parameter is provided, `aspnet` is chosen.
 
 ### build [project]
 
-Performs compilation against selected project type. Available projects: `all`, `js`, `css` and `concat`.
+Performs compilation against selected project type. Available projects: `all`, `js`, `css` and `concat`. If no project parameter is provided, `all` is chosen.
 
-Use concatenation for libraries that cannot be imported / do not need to be imported from within TypeScript (for example, jQuery plugins). This hybrid approach allows great compatibility with older JavaScript libraries (accessed via `window['$']`), while enjoying the rich development experience using TypeScript.
+Use concatenation for libraries that cannot be imported / do not need to be imported from within TypeScript (for example, jQuery plugins). This hybrid approach allows great compatibility with older JavaScript libraries, while enjoying the rich development experience using TypeScript.
 
-Obviously, the concatenated libraries must be referenced in your HTML before the application source code `bundle.js`.
+Obviously, the concatenated libraries must be referenced in your HTML before `bundle.js` (e.g. access jQuery using `window['$']`).
 
 In addition, build flags are available:
 
@@ -243,6 +243,14 @@ For this very reason, it is highly recommended to:
 - Add anti-virus exclusion to Git installation folder: `C:\Program Files\Git`. To double check, type: `where git`.
 
 - Use very short root folder name for projects, such as `D:\VS`, to avoid problems with Windows system paths over 260 characters long. Then exclude the folder from the anti-virus.
+
+### Can I use React / Vue / Angular 2+ / Ember / Aurelia / Knockout / ... ?
+
+Yes.
+
+In fact, you can just add the packages required and start hacking. We'll take care of the outputs. We have also enabled `tsx` compilation specifically for React.
+
+Also, pull requests are welcomed if you have a great starting template for those projects. We'd love to expand our template collections. :)
 
 ### Can I use input / output folder other than `js` and `css`?
 

@@ -51,9 +51,9 @@ Optional but highly recommended, install [Python 2](https://www.python.org/downl
 
 ## Design Goals
 
-- Lower the barrier of entry for developing a modern web application client.
+- Lower the barrier of entry for developing a modern web application.
 
-- Bring structure to the project source code.
+- Introduce structure to the application client source code.
 
 - Improve source code quality and maintainability with type hints and compile-time checks.
 
@@ -61,7 +61,7 @@ Optional but highly recommended, install [Python 2](https://www.python.org/downl
 
 - Unify team build system across multiple projects.
 
-- Blur the boundary between design time and programming time using blazing fast `watch` + `dev` compilation mode. 
+- Blur the boundary between design time and programming time using blazing fast `watch` + `dev` compilation mode.
 
 - Stand-alone command line interface allows shipping to `npm`, which enables build system upgrade without altering `project.json` in each applications.
 
@@ -244,7 +244,7 @@ For this very reason, it is highly recommended to:
 
 - Use very short root folder name for projects, such as `D:\VS`, to avoid problems with Windows system paths over 260 characters long. Then exclude the folder from the anti-virus.
 
-### Can I use other folder than `js` and `css` for input / output?
+### Can I use input / output folder other than `js` and `css`?
 
 Nope.
 

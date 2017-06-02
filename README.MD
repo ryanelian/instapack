@@ -161,6 +161,10 @@ If no template parameter is provided by default, `aspnet` is chosen.
 
 Performs compilation against selected project type. Available projects: `all`, `js`, `css` and `concat`.
 
+Use concatenation for libraries that cannot be imported / do not need to be imported from within TypeScript (for example, jQuery plugins). This hybrid approach allows great compatibility with older JavaScript libraries (accessed via `window['$']`), while enjoying the rich development experience using TypeScript.
+
+Obviously, the concatenated libraries must be referenced in your HTML before the application source code `bundle.js`.
+
 In addition, build flags are available:
 
 - `-w` or `--watch` for enabling compilation on change.
@@ -220,7 +224,7 @@ In addition, build flags are available:
 
 - `instapack:output` allows setting the output folder location. By default is set to `wwwroot`.
 
-- `instapack:concat` allows packing libraries from `node_modules` or your custom folder (such as `./client/lib/vue.js`). The files will be resolved node-style, minified, and then outputted into your output JS folder.
+- `instapack:concat` allows packing libraries from `node_modules` or a custom folder (for example, `./client/lib/vue.js`). The files will be resolved node-style, bundled, minified, and then placed into the output JS folder.
 
 ## Improving Package Restore & IDE Performance
 
@@ -248,12 +252,19 @@ Nope.
 
 Nope.
 
+### I thought that you should not concatenate files because of HTTP/2?
+
+[Nope.](https://medium.com/@asyncmax/the-right-way-to-bundle-your-assets-for-faster-sites-over-http-2-437c37efe3ff)
+
+Also, in IIS, HTTP/2 is only supported when using Windows Server 2016. Many of our customers are still using Windows Server 2012 R2 to date.
+
 ### Why TypeScript?
 
 - Babel is very slow.
 - TypeScript is supported by Microsoft.
-- TypeScript is growing at exponential rate.
-- TypeScript is a strict superset of the JavaScript, which allows porting existing code with ease, then extend it with new features.
+- TypeScript is an growing at exponential rate.
+- TypeScript is a strict superset of the JavaScript, which allows porting and refactoring existing codes with ease.
+- Alternatively, TypeScript allows writing JavaScript using features that do not exist yet in browsers, then compile them down to `es5`.
 
 As a testament of TypeScript capabilities, `instapack` is fully written using TypeScript!
 
@@ -299,4 +310,4 @@ Validation messages shown:
 - url (when using `type=url`)
 - week (when using `type=week`)
 
-You may provide `title` attribute to the component for customizing the field name displayed.
+Provide `title` attribute to the component for customizing the field name displayed.

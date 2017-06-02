@@ -85,14 +85,6 @@ Here is an example. Michael wants to develop an ES6-based web application. One o
 
 `instapack` is developed as an answer those problems and more!
 
-## Is this Windows only? :(
-
-Majority of the developers using `instapack` are working full-time on ASP.NET Core MVC projects on Windows with Visual Studio on daily basis. This use case will be the core focus for tooling support.
-
-However, there should be no reason for `instapack` to not to run on OS X and Linux.
-
-`instapack` will not suddenly introduce Windows or Visual Studio exclusive feature, and strive to maintain compatibility with multiple platforms.
-
 ## How does it work?
 
 ![Build Flow](https://github.com/ryanelian/instapack/raw/master/img/flow.png)
@@ -119,21 +111,11 @@ Out of the box, the following files will be used as the application entry points
 
 - Concatenate files listed in `package.json`. Read more below.
 
-## Is this stable?
-
-The manual `gulp` script version of the build system has been used for shipping 7 production-grade `AngularJS` projects across 2 different companies.
-
-The script itself has been refined over the past 3 years in the making, with each revision involving approval from an internal build system improvement group within my company.
-
-The beta version of `instapack` was then tested to reproduce the bundles for the said projects, with successful result (minimal diff). Since then has `instapack` been used to maintain those projects.
-
-So yes, rock solid stable.
-
 ## Release Cadence
 
 Starting version 4.0.0, `instapack` follows [Semantic Versioning](http://semver.org/).
 
-Weekly releases will be performed for updating package dependencies. This will increment the patch version.
+Bi-weekly releases will be performed for updating package dependencies. This will increment the patch version.
 
 Bug reports will be dealt promptly. This will increment the patch version.
 
@@ -226,7 +208,27 @@ In addition, build flags are available:
 
 - `instapack:concat` allows packing libraries from `node_modules` or a custom folder (for example, `./client/lib/vue.js`). The files will be resolved node-style, bundled, minified, and then placed into the output JS folder.
 
-## Improving Package Restore & IDE Performance
+## FAQ
+
+### Is this stable?
+
+The manual `gulp` script version of the build system has been used for shipping 7 production-grade `AngularJS` projects across 2 different companies.
+
+The script itself has been refined over the past 3 years in the making, with each revision involving approval from an internal build system improvement group within my company.
+
+The beta version of `instapack` was then tested to reproduce the bundles for the said projects, with successful result (minimal diff). Since then `instapack` has been used to maintain those projects.
+
+So yes, rock solid stable.
+
+### Is this Windows only? :(
+
+Majority of the developers using `instapack` are working full-time on ASP.NET Core MVC projects on Windows with Visual Studio on daily basis. This use case will be the core focus for tooling support.
+
+However, there should be no reason for `instapack` to not to run on OS X and Linux.
+
+`instapack` will not suddenly introduce Windows or Visual Studio exclusive feature, and strive to maintain compatibility with multiple platforms.
+
+### My package restore / IDE is slow. Help!
 
 Windows Defender or other anti-virus software appears to slow down package restore and Visual Studio when opening projects.
 
@@ -242,8 +244,6 @@ For this very reason, it is highly recommended to:
 
 - Use very short root folder name for projects, such as `D:\VS`, to avoid problems with Windows system paths over 260 characters long. Then exclude the folder from the anti-virus.
 
-## FAQ
-
 ### Can I use other folder than `js` and `css` for input / output?
 
 Nope.
@@ -252,7 +252,7 @@ Nope.
 
 Nope.
 
-### I thought that you should not concatenate files because of HTTP/2?
+### I thought files should not be bundled because of HTTP/2?
 
 [Nope.](https://medium.com/@asyncmax/the-right-way-to-bundle-your-assets-for-faster-sites-over-http-2-437c37efe3ff)
 
@@ -264,7 +264,7 @@ Also, in IIS, HTTP/2 is only supported when using Windows Server 2016. Many of o
 - TypeScript is supported by Microsoft.
 - TypeScript is an growing at exponential rate.
 - TypeScript is a strict superset of the JavaScript, which allows porting and refactoring existing codes with ease.
-- Alternatively, TypeScript allows writing JavaScript using features that do not exist yet in browsers, then compile them down to `es5`.
+- TypeScript allows writing JavaScript using features that do not exist yet in browsers, then compile them down to `es5`.
 
 As a testament of TypeScript capabilities, `instapack` is fully written using TypeScript!
 

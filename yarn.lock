@@ -27,10 +27,11 @@
   dependencies:
     postcss "^5.2.15"
 
-"@types/browserify@*", "@types/browserify@^12.0.30":
-  version "12.0.30"
-  resolved "https://registry.yarnpkg.com/@types/browserify/-/browserify-12.0.30.tgz#cb4cc544cb18df0059ea8924e111b325cc7febb2"
+"@types/browserify@*", "@types/browserify@^12.0.31":
+  version "12.0.31"
+  resolved "https://registry.yarnpkg.com/@types/browserify/-/browserify-12.0.31.tgz#c6b20223148ee9bfdaa2d00d88666f1083fde3ec"
   dependencies:
+    "@types/insert-module-globals" "*"
     "@types/node" "*"
 
 "@types/chalk@*", "@types/chalk@^0.4.31":
@@ -47,9 +48,9 @@
   dependencies:
     "@types/node" "*"
 
-"@types/fs-extra@^3.0.2":
-  version "3.0.2"
-  resolved "https://registry.yarnpkg.com/@types/fs-extra/-/fs-extra-3.0.2.tgz#00cbf48563f377f9ce5cf24237b21b3d9779e055"
+"@types/fs-extra@^3.0.3":
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/@types/fs-extra/-/fs-extra-3.0.3.tgz#1d66eb670ebf657e57c0fda014df340c19d8aa0c"
   dependencies:
     "@types/node" "*"
 
@@ -101,6 +102,12 @@
     "@types/clean-css" "*"
     "@types/relateurl" "*"
     "@types/uglify-js" "*"
+
+"@types/insert-module-globals@*":
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/@types/insert-module-globals/-/insert-module-globals-7.0.0.tgz#8d158de4a6384e8daa13b3d63eebab6d5f67777d"
+  dependencies:
+    "@types/node" "*"
 
 "@types/node@*", "@types/node@^7.0.23":
   version "7.0.23"

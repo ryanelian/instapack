@@ -75,7 +75,7 @@ Here is an example. Michael wants to develop an ES6-based web application. One o
 
 - Michael would scramble the internet for `gulp` or `grunt` or `webpack` or `brocolli` recipes, configuring it for hours, before starting to code...
 
-- Michael would hit a dead end. Gives up on the entire thing and writes the application in old-school JavaScript...
+- Michael would hit a dead end, gives up on the entire thing, then writes the application in old-school JavaScript...
 
 - Michael next project uses a more evolved version of his build system. However, when he needs to maintain his older applications, he needs to upgrade the build scripts manually...
 
@@ -202,9 +202,9 @@ In addition, build flags are available:
 
 - `browserslist` affects CSS `autoprefixer` output result.
 
-- `instapack:input` allows setting the input folder location. By default is set to `client`.
+- `instapack:input` allows setting the input folder location. By default, it is set to `client`.
 
-- `instapack:output` allows setting the output folder location. By default is set to `wwwroot`.
+- `instapack:output` allows setting the output folder location. By default, it is set to `wwwroot`.
 
 - `instapack:concat` allows packing libraries from `node_modules` or a custom folder (for example, `./client/lib/vue.js`). The files will be resolved node-style, bundled, minified, and then placed into the output JS folder.
 
@@ -262,7 +262,7 @@ Also, in IIS, HTTP/2 is only supported when using Windows Server 2016. Many of o
 
 - Babel is very slow.
 - TypeScript is supported by Microsoft.
-- TypeScript is an growing at exponential rate.
+- TypeScript is growing at an exponential rate.
 - TypeScript is a strict superset of the JavaScript, which allows porting and refactoring existing codes with ease.
 - TypeScript allows writing JavaScript using features that do not exist yet in browsers, then compile them down to `es5`.
 

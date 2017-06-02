@@ -47,7 +47,7 @@ Optional but highly recommended, install [Python 2](https://www.python.org/downl
 
 - Built-in new project scaffold tool.
 
-- Rich debugging experience using Google Chrome `DevTools`. 
+- Rich debugging experience using Google Chrome DevTools. 
 
 ## Design Goals
 
@@ -81,7 +81,7 @@ Here is an example. Michael wants to develop an ES6-based web application. One o
 
 - Michael's hard drive is now full because each project has their own build system. Ouch.
 
-- Suddenly, Evan from the other team of the same company develops his own build system. So does Jack.
+- Suddenly, Jack from the other team of the same company develops his own build system. So does Evan.
 
 `instapack` is developed as an answer those problems and more!
 
@@ -95,7 +95,7 @@ Internally, `instapack` uses the following modules:
 
 - `typescript` as the compiler service, syntax checker, and type checker for the JavaScript language.
 
-- `node-sass` as the compiler service and syntax checker for the CSS language. It also configured to allow `@import` from `node_modules`.
+- `node-sass` as the compiler service and syntax checker for the CSS language. It is also configured to enable `@import` from `node_modules`.
 
 - `browserify` for merging the JavaScript output modules together.
 

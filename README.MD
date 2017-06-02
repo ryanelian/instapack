@@ -222,7 +222,7 @@ So yes, rock solid stable.
 
 ### Is this Windows only? :(
 
-Majority of the developers using `instapack` are working full-time on ASP.NET Core MVC projects on Windows with Visual Studio on daily basis. This use case will be the core focus for tooling support.
+The majority of developers using `instapack` are working full-time on ASP.NET Core MVC projects on Windows with Visual Studio on daily basis. This use case will be the core focus for tooling support.
 
 However, there should be no reason for `instapack` to not to run on OS X and Linux.
 

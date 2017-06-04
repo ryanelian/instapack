@@ -73,7 +73,7 @@ At a glance, `instapack` looks similar to `webpack`. However, that is where the 
 
 - `gulp` is like a DIY PC that you can construct from scratch. Very powerful but requires effort to configure and maintain.
 
-- `webpack` is like a barebone PC that can be plugged-in with off-the-shelf components. Easy to configure and good enough for most people.
+- `webpack` is like a barebone PC that can be plugged-in with off-the-shelf components. Not very versatile but easy to configure and good enough for most people.
 
 - `instapack` is like laptops handed out by your company. You are not expected to configure or customize it.
 

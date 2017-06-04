@@ -69,7 +69,7 @@ Optional but highly recommended, install [Python 2](https://www.python.org/downl
 
 ## But... Why?
 
-At a glance, `instapack` looks similar to `webpack`. However, that is where the similarity ends because `instapack` is not designed to replace `webpack`. Here is an analogy to help to differentiate these build systems:
+At a glance, `instapack` looks similar to `webpack`. However, that is where the similarity ends because `instapack` is **not** designed to replace `webpack`. Here is an analogy to help to differentiate these build systems:
 
 - `gulp` is like a DIY PC that you can construct from scratch. Very powerful but requires effort to configure and maintain.
 
@@ -79,7 +79,7 @@ At a glance, `instapack` looks similar to `webpack`. However, that is where the 
 
 Here is an example, Michael wants to develop a web application using ES6. One of the following events usually happens next...
 
-- Michael would scramble the internet for `gulp` or `grunt` or `webpack` or `brocolli` recipes, configuring it for hours, before starting to code...
+- Michael would scramble the internet for [gulp](http://gulpjs.com/) or [Grunt](https://gruntjs.com/) or [webpack](https://webpack.js.org/) or [Broccoli](http://broccolijs.com/) or [Brunch](http://brunch.io/) recipes, configuring it for hours, before starting to code...
 
 - Michael would hit a dead end, gives up on the entire thing, then writes the application in old-school JavaScript...
 
@@ -211,7 +211,7 @@ In addition, build flags are available:
 
 ### Is this stable?
 
-Instapack started as a `grunt` script, which then evolved into a `gulp` script. The manual script version of the build system has been used for shipping 7 production-grade `AngularJS` projects across 2 different companies.
+`instapack` started as `Gruntfile.js` which then evolved into `gulpfile.js`. The manual script version of the build system has been used for shipping 7 production-grade AngularJS projects across 2 different companies.
 
 The script itself has been refined over the past 3 years in the making, with each revision involving approval from an internal build system improvement group within my company.
 

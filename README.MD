@@ -164,11 +164,6 @@ In addition, build flags are available:
   "name": "aspnet",
   "version": "1.0.0",
   "private": true,
-  "browserslist": [
-    "ie >= 11",
-    "Android >= 4",
-    "last 3 versions"
-  ],
   "instapack": {
     "output": "wwwroot",
     "concat": {
@@ -176,7 +171,7 @@ In addition, build flags are available:
         "jquery",
         "bootstrap-sass"
       ],
-      "aspnet-validator": [
+      "aspnet-validation": [
         "jquery-validation",
         "jquery-validation-unobtrusive"
       ]
@@ -199,8 +194,6 @@ In addition, build flags are available:
   }
 }
 ```
-
-- `browserslist` affects CSS `autoprefixer` output result.
 
 - `instapack:input` allows setting the input folder location. By default, it is set to `client`.
 

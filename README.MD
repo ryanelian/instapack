@@ -69,7 +69,13 @@ Optional but highly recommended, install [Python 2](https://www.python.org/downl
 
 ## But... Why?
 
-At a glance, the `instapack` looks similar to `webpack`. However, that is where the similarity ends.
+At a glance, `instapack` looks similar to `webpack`. However, that is where the similarity ends because `instapack` is not designed to replace `webpack`. Here is an analogy to help to differentiate these build systems:
+
+- `gulp` is like a DIY PC that you can construct from scratch. Very powerful but requires effort to configure and maintain.
+
+- `webpack` is like a barebone PC that can be plugged-in with off-the-shelf components. Easy to configure and good enough for most people.
+
+- `instapack` is like laptops handed out by your company. You are not expected to configure or customize it.
 
 Here is an example, Michael wants to develop a web application using ES6. One of the following events usually happens next...
 
@@ -77,7 +83,7 @@ Here is an example, Michael wants to develop a web application using ES6. One of
 
 - Michael would hit a dead end, gives up on the entire thing, then writes the application in old-school JavaScript...
 
-- Michael next project uses a more evolved version of his build system. However, when he needs to maintain his older applications, he needs to upgrade the build scripts manually...
+- Michael's next project uses a more evolved version of his build system. However, when he needs to maintain his older applications, he needs to upgrade the build scripts manually...
 
 - Michael's hard drive is now full because each project has their own build system. Ouch.
 
@@ -205,7 +211,7 @@ In addition, build flags are available:
 
 ### Is this stable?
 
-The manual `gulp` script version of the build system has been used for shipping 7 production-grade `AngularJS` projects across 2 different companies.
+Instapack started as a `grunt` script, which then evolved into a `gulp` script. The manual script version of the build system has been used for shipping 7 production-grade `AngularJS` projects across 2 different companies.
 
 The script itself has been refined over the past 3 years in the making, with each revision involving approval from an internal build system improvement group within my company.
 
@@ -303,7 +309,7 @@ For this very reason, it is highly recommended to:
 
 ### What is that ValidationMessageComponent in AngularJS template?
 
-A custom AngularJS input validation message component. It allows automatic validation message output using [AngularJS input directive](https://docs.angularjs.org/api/ng/directive/input), similar to Razor's `ValidationMessage` for Core MVC.
+A custom AngularJS input validation message component. It allows automatic display of validation messages using [AngularJS input directive](https://docs.angularjs.org/api/ng/directive/input), similar to `@Html.ValidationMessage` for ASP.NET Core MVC.
 
 Usage example:
 

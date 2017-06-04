@@ -75,9 +75,9 @@ At a glance, `instapack` looks similar to `webpack`. However, that is where the 
 
 - `webpack` is like a barebone PC that can be plugged-in with off-the-shelf components. Not very versatile but easy to configure and good enough for most people.
 
-- `instapack` is like laptops handed out by your company. You are not expected to configure or customize it.
+- `instapack` is like a laptop borrowed from your company. You are not expected to modify it.
 
-Here is an example, Michael wants to develop a web application using ES6. One of the following events usually happens next...
+Here is a story: Michael wants to develop a web application using ES6. One of the following events usually happens next...
 
 - Michael would scramble the internet for [gulp](http://gulpjs.com/) or [Grunt](https://gruntjs.com/) or [webpack](https://webpack.js.org/) or [Broccoli](http://broccolijs.com/) or [Brunch](http://brunch.io/) recipes, configuring it for hours, before starting to code...
 

@@ -2,11 +2,6 @@
   "name": "aspnet",
   "version": "1.0.0",
   "private": true,
-  "browserslist": [
-    "ie >= 11",
-    "Android >= 4",
-    "last 3 versions"
-  ],
   "instapack": {
     "output": "wwwroot",
     "concat": {
@@ -14,7 +9,7 @@
         "jquery",
         "bootstrap-sass"
       ],
-      "aspnet-validator": [
+      "aspnet-validation": [
         "jquery-validation",
         "jquery-validation-unobtrusive"
       ]

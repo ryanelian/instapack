@@ -8,4 +8,5 @@ __export(require("./BuildLog"));
 __export(require("./CssProcessors"));
 __export(require("./ErrorHandler"));
 __export(require("./MinifyProductionJs"));
+__export(require("./Sass"));
 __export(require("./Vinyl"));

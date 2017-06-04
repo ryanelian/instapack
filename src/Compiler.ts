@@ -14,7 +14,6 @@ import * as watchify from 'watchify';
 import { HTMLify } from './HTMLify';
 
 // These are used by CSS
-import * as sass from 'gulp-sass';
 import * as gwatch from 'gulp-watch';
 
 // These are my pipes :V
@@ -146,18 +145,16 @@ export class Compiler {
         let cssEntry = this.settings.cssEntry;
         let cssOut = this.settings.outputCssFolder;
         let sassGlob = this.settings.cssWatchGlob;
+        let projectFolder = this.settings.projectRoot;
 
         gulp.task('css:compile', () => {
             gutil.log('Compiling CSS', gutil.colors.cyan(cssEntry));
-
-            let sassOptions = {
-                includePaths: [npm]
-            };
+            let sassImports = [this.settings.npmFolder];
 
             return gulp.src(cssEntry)
                 .pipe(To.ErrorHandler())
                 .pipe(sourcemaps.init())
-                .pipe(sass(sassOptions))
+                .pipe(To.Sass(sassImports, projectFolder))
                 .pipe(To.CssProcessors(this.productionMode))
                 .pipe(sourcemaps.write('./'))
                 .pipe(To.BuildLog('CSS compilation'))
@@ -187,7 +184,7 @@ export class Compiler {
             gutil.log('Resolving', gutil.colors.cyan(concatCount.toString()), 'concatenation targets...');
 
             if (!concatCount) {
-                return;
+                return null;
             }
 
             let concatFiles = this.settings.concatResolution;

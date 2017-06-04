@@ -3,4 +3,12 @@
 @import 'alertifyjs/build/css/alertify';
 @import 'alertifyjs/build/css/themes/default';
 
-@import 'ryan-defaults';
+@import 'aspnet-validation';
+
+body {
+    min-height: 100vh;
+}
+
+.navbar {
+    border-radius: 0;
+}

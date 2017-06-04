@@ -16,8 +16,10 @@ export function BuildLog(label: string) {
             let fileName = gutil.colors.blue(chunk.relative);
             let size = gutil.colors.magenta(prettyBytes(chunk.contents.length));
             gutil.log(fileName, size);
-        } else {
-            gutil.log(gutil.colors.red('Unexpected outputs: files are not buffered!'));
+        }
+
+        if (chunk.isStream()) {
+            gutil.log(gutil.colors.red('Unexpected build artefacts: files are not buffered!'));
         }
 
         next(null, chunk);

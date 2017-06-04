@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const Compiler_1 = require("./src/Compiler");
 const Scaffold_1 = require("./src/Scaffold");
+const autoprefixer = require("autoprefixer");
 class instapack {
     get availableTasks() {
         return ['all', 'js', 'css', 'concat'];
@@ -16,6 +17,9 @@ class instapack {
     scaffold(template) {
         let scaffold = new Scaffold_1.Scaffold();
         scaffold.usingTemplate(template);
+    }
+    displayAutoprefixInfo() {
+        console.log(autoprefixer().info());
     }
 }
 exports.instapack = instapack;

@@ -1,5 +1,6 @@
 import { Compiler } from './src/Compiler';
 import { Scaffold } from './src/Scaffold';
+import * as autoprefixer from 'autoprefixer';
 
 /**
  * Exposes methods for developing a web application client project.
@@ -40,5 +41,12 @@ export class instapack {
   scaffold(template: string) {
     let scaffold = new Scaffold();
     scaffold.usingTemplate(template);
+  }
+
+  /**
+   * Displays browser list used by autoprefixer, their statistics, and prefix rules.
+   */
+  displayAutoprefixInfo() {
+    console.log(autoprefixer().info());
   }
 }

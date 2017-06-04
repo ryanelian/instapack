@@ -51,4 +51,11 @@ CLI.command({
         app.scaffold(subCommand);
     }
 });
+CLI.command({
+    command: 'apinfo',
+    describe: 'Displays browser list used by autoprefixer, their statistics, and prefix rules.',
+    handler: argv => {
+        app.displayAutoprefixInfo();
+    }
+});
 let parse = CLI.strict().help().argv;

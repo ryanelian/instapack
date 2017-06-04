@@ -9,7 +9,6 @@ const browserify = require("browserify");
 const tsify = require("tsify");
 const watchify = require("watchify");
 const HTMLify_1 = require("./HTMLify");
-const sass = require("gulp-sass");
 const gwatch = require("gulp-watch");
 const To = require("./PipeTo");
 const CompilerSettings_1 = require("./CompilerSettings");
@@ -84,15 +83,14 @@ class Compiler {
         let cssEntry = this.settings.cssEntry;
         let cssOut = this.settings.outputCssFolder;
         let sassGlob = this.settings.cssWatchGlob;
+        let projectFolder = this.settings.projectRoot;
         gulp.task('css:compile', () => {
             gutil.log('Compiling CSS', gutil.colors.cyan(cssEntry));
-            let sassOptions = {
-                includePaths: [npm]
-            };
+            let sassImports = [this.settings.npmFolder];
             return gulp.src(cssEntry)
                 .pipe(To.ErrorHandler())
                 .pipe(sourcemaps.init())
-                .pipe(sass(sassOptions))
+                .pipe(To.Sass(sassImports, projectFolder))
                 .pipe(To.CssProcessors(this.productionMode))
                 .pipe(sourcemaps.write('./'))
                 .pipe(To.BuildLog('CSS compilation'))
@@ -114,7 +112,7 @@ class Compiler {
             let concatCount = this.settings.concatCount;
             gutil.log('Resolving', gutil.colors.cyan(concatCount.toString()), 'concatenation targets...');
             if (!concatCount) {
-                return;
+                return null;
             }
             let concatFiles = this.settings.concatResolution;
             for (let target in concatFiles) {

@@ -1,5 +1,4 @@
 import * as through2 from 'through2';
-import * as vinyl from 'vinyl';
 import * as BufferList from 'bl';
 
 /**
@@ -18,12 +17,8 @@ export function Buffer() {
                 return next(error);
             }
 
-            let file = new vinyl({
-                path: chunk.path,
-                contents: data
-            });
-            
-            next(null, file);
+            chunk.contents = data;
+            next(null, chunk);
         }));
     });
 };

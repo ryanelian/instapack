@@ -149,6 +149,8 @@ If no template parameter is provided, `aspnet` is chosen.
 
 Performs compilation against selected project type. Available projects: `all`, `js`, `css` and `concat`. If no project parameter is provided, `all` is chosen.
 
+When compiling JavaScript, `require(...)` against `.html` files will cause the said files to be minified and then stringified. This is handy when working with HTML-based templates for AngularJS and Mustache / Handlebars.
+
 Use concatenation for libraries that cannot be imported / do not need to be imported from within TypeScript (for example, jQuery plugins). This hybrid approach allows great compatibility with older JavaScript libraries, while enjoying the rich development experience using TypeScript.
 
 Obviously, the concatenated libraries must be referenced in your HTML before `bundle.js` (e.g. access jQuery using `window['$']`).

@@ -24,7 +24,7 @@ ipack new
 ipack
 ```
 
-Programmatic API is also provided if you wish to integrate `instapack` into your very own build script:
+Programmable API is also provided if you wish to integrate `instapack` into your very own build script:
 
 ```ts
 import { instapack } from 'instapack';
@@ -77,15 +77,15 @@ At a glance, `instapack` looks similar to `webpack`. However, that is where the 
 
 - `instapack` is like a laptop borrowed from your company. You are not expected to modify it.
 
-Here is a story: Michael wants to develop a web application using ES6. One of the following events usually happens next...
+Consider the following example: Michael wants to develop a web application using ES6. One of the following events usually happens next...
 
-- Michael would scramble the internet for [gulp](http://gulpjs.com/) or [Grunt](https://gruntjs.com/) or [webpack](https://webpack.js.org/) or [Broccoli](http://broccolijs.com/) or [Brunch](http://brunch.io/) recipes, configuring it for hours, before starting to code...
+- Michael needs to scramble the internet for a [gulp](http://gulpjs.com/) or [Grunt](https://gruntjs.com/) or [webpack](https://webpack.js.org/) or [Broccoli](http://broccolijs.com/) or [Brunch](http://brunch.io/) recipe, configuring it for hours before starting to code...
 
-- Michael would hit a dead end, gives up on the entire thing, then writes the application in old-school JavaScript...
+- Michael hits a dead end, gives up on the entire thing, then writes the application in old-school JavaScript...
 
-- Michael's next project uses a more evolved version of his build system. However, when he needs to maintain his older applications, he needs to upgrade the build scripts manually...
+- Michael's next project uses an evolved version of his build system. However, when he needs to maintain his older applications, he needs to upgrade the build scripts manually...
 
-- Michael's hard drive is now full because each project has their own build system. Ouch.
+- Michael's hard drive is now full because each project has its own build system. Ouch.
 
 - Suddenly, Jack from the other team of the same company develops his own build system. So does Evan.
 
@@ -295,7 +295,7 @@ That said, TypeScript is the key for scaling your application while maintaining 
 
 ### My package restore / IDE is slow. Help!
 
-Windows Defender or other anti-virus software appears to slow down package restore and Visual Studio when opening projects.
+Windows Defender or other anti-virus software apparently slow down package restore and IDEs when opening projects.
 
 For this very reason, it is highly recommended to:
 

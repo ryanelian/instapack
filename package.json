@@ -1,6 +1,6 @@
 {
   "name": "instapack",
-  "version": "4.0.0-rc4",
+  "version": "4.0.0-rc5",
   "description": "Integrated web application client project compiler using TypeScript and Sass!",
   "main": "index.js",
   "bin": {
@@ -55,7 +55,6 @@
     "@types/chalk": "^0.4.31",
     "@types/event-stream": "^3.3.31",
     "@types/fs-extra": "^3.0.3",
-    "@types/gulp": "^4.0.3",
     "@types/gulp-concat": "^0.0.30",
     "@types/gulp-sourcemaps": "^0.0.30",
     "@types/gulp-util": "^3.0.31",

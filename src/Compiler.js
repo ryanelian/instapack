@@ -1,26 +1,35 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const gulp = require("gulp");
 const gutil = require("gulp-util");
 const sourcemaps = require("gulp-sourcemaps");
 const concat = require("gulp-concat");
 const es = require("event-stream");
+const resolve = require("resolve");
 const browserify = require("browserify");
 const tsify = require("tsify");
 const watchify = require("watchify");
 const HTMLify_1 = require("./HTMLify");
 const gwatch = require("gulp-watch");
 const To = require("./PipeTo");
-const CompilerSettings_1 = require("./CompilerSettings");
 class Compiler {
-    constructor(productionMode, watchMode, settings = undefined) {
-        this.settings = settings || CompilerSettings_1.CompilerSettings.tryRead();
+    constructor(productionMode, watchMode, settings) {
+        this.settings = settings;
         this.productionMode = productionMode;
         this.watchMode = watchMode;
         this.chat();
         this.registerAllTasks();
     }
     chat() {
+        gutil.log('Using output folder', gutil.colors.cyan(this.settings.outputFolder));
         if (this.productionMode) {
             gutil.log(gutil.colors.yellow("Production"), "mode: Outputs will be minified.", gutil.colors.red("This process will slow down your build."));
         }
@@ -106,25 +115,58 @@ class Compiler {
         }
         gulp.task('css', ['css:compile'], watchCallback);
     }
-    registerConcatTask() {
-        gulp.task('concat', () => {
-            let concatStreams = [];
-            let concatCount = this.settings.concatCount;
-            gutil.log('Resolving', gutil.colors.cyan(concatCount.toString()), 'concatenation targets...');
-            if (!concatCount) {
-                return null;
+    resolveConcatModules() {
+        return __awaiter(this, void 0, void 0, function* () {
+            let resolveOption = { basedir: this.settings.projectRoot };
+            let resolver = {};
+            let promises = [];
+            for (let target in this.settings.concat) {
+                let resolveList = [];
+                this.settings.concat[target].forEach(s => {
+                    let p = new Promise((ok, reject) => {
+                        resolve(s, resolveOption, (error, result) => {
+                            if (error) {
+                                reject(error);
+                            }
+                            else {
+                                ok(result);
+                            }
+                        });
+                    });
+                    resolveList.push(p);
+                    promises.push(p);
+                });
+                resolver[target] = resolveList;
             }
-            let concatFiles = this.settings.concatResolution;
-            for (let target in concatFiles) {
-                let targetFiles = concatFiles[target];
-                let targetStream = gulp.src(targetFiles).pipe(concat(target));
-                concatStreams.push(targetStream);
+            yield Promise.all(promises);
+            let resolution = {};
+            for (let target in resolver) {
+                resolution[target + '.js'] = yield Promise.all(resolver[target]);
             }
-            return es.merge(concatStreams)
-                .pipe(To.MinifyProductionJs(this.productionMode))
-                .pipe(To.BuildLog('JS concatenation'))
-                .pipe(gulp.dest(this.settings.outputJsFolder));
+            return resolution;
         });
+    }
+    registerConcatTask() {
+        let concatCount = this.settings.concatCount;
+        gutil.log('Resolving', gutil.colors.cyan(concatCount.toString()), 'concatenation targets...');
+        let concatTask = undefined;
+        if (concatCount) {
+            concatTask = () => __awaiter(this, void 0, void 0, function* () {
+                let resolution = yield this.resolveConcatModules();
+                let concatStreams = [];
+                for (let target in resolution) {
+                    let targetFiles = resolution[target];
+                    let targetStream = gulp.src(targetFiles)
+                        .pipe(concat(target))
+                        .pipe(To.MinifyProductionJs(this.productionMode));
+                    concatStreams.push(targetStream);
+                }
+                return es.merge(concatStreams)
+                    .pipe(To.BuildLog('JS concatenation'))
+                    .pipe(gulp.dest(this.settings.outputJsFolder));
+            });
+        }
+        gulp.task('concat', concatTask);
     }
 }
 exports.Compiler = Compiler;

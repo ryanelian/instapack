@@ -6,6 +6,7 @@ import * as sourcemaps from 'gulp-sourcemaps';
 // These are used by concat task
 import * as concat from 'gulp-concat';
 import * as es from 'event-stream';
+import * as resolve from 'resolve';
 
 // These are used by Browserify
 import * as browserify from 'browserify';
@@ -19,7 +20,7 @@ import * as gwatch from 'gulp-watch';
 // These are my pipes :V
 import * as To from './PipeTo';
 
-import { CompilerSettings } from './CompilerSettings';
+import { CompilerSettings, ConcatenationLookup } from './CompilerSettings';
 
 /**
  * Contains methods for assembling and invoking the compilation tasks.
@@ -48,10 +49,11 @@ export class Compiler {
      * @param watchMode 
      * @param settings 
      */
-    constructor(productionMode: boolean, watchMode: boolean, settings: CompilerSettings = undefined) {
-        this.settings = settings || CompilerSettings.tryRead();
+    constructor(productionMode: boolean, watchMode: boolean, settings: CompilerSettings) {
+        this.settings = settings;
         this.productionMode = productionMode;
         this.watchMode = watchMode;
+
         this.chat();
         this.registerAllTasks();
     }
@@ -60,6 +62,8 @@ export class Compiler {
      * Displays information about currently used build flags.
      */
     chat() {
+        gutil.log('Using output folder', gutil.colors.cyan(this.settings.outputFolder));
+
         if (this.productionMode) {
             gutil.log(gutil.colors.yellow("Production"), "mode: Outputs will be minified.", gutil.colors.red("This process will slow down your build."));
         } else {
@@ -174,32 +178,78 @@ export class Compiler {
     }
 
     /**
+     * Attempts to resolve modules using concat list and project folder in setting.
+     */
+    async resolveConcatModules(): Promise<ConcatenationLookup> {
+        let resolveOption = { basedir: this.settings.projectRoot };
+
+        let resolver: { [target: string]: Promise<string>[] } = {};
+        let promises: Promise<string>[] = [];
+
+        for (let target in this.settings.concat) {
+            let resolveList = [];
+
+            this.settings.concat[target].forEach(s => {
+                let p = new Promise<string>((ok, reject) => {
+                    resolve(s, resolveOption, (error, result) => {
+                        if (error) {
+                            reject(error)
+                        } else {
+                            ok(result);
+                        }
+                    });
+                });
+
+                resolveList.push(p);
+                promises.push(p);
+            });
+
+            resolver[target] = resolveList;
+        }
+
+        // TODO: Use Object.values when using Node 8
+        await Promise.all(promises);
+
+        let resolution: ConcatenationLookup = {};
+
+        for (let target in resolver) {
+            resolution[target + '.js'] = await Promise.all(resolver[target]);
+        }
+
+        return resolution;
+    }
+
+    /**
      * Registers a JavaScript concatenation task.
      */
     registerConcatTask() {
-        gulp.task('concat', () => {
-            let concatStreams = [];
+        let concatCount = this.settings.concatCount;
+        gutil.log('Resolving', gutil.colors.cyan(concatCount.toString()), 'concatenation targets...');
 
-            let concatCount = this.settings.concatCount;
-            gutil.log('Resolving', gutil.colors.cyan(concatCount.toString()), 'concatenation targets...');
+        let concatTask = undefined;
 
-            if (!concatCount) {
-                return null;
-            }
+        if (concatCount) {
+            concatTask = async () => {
+                let resolution = await this.resolveConcatModules();
+                //console.log(resolution);
 
-            let concatFiles = this.settings.concatResolution;
-            //console.log(concatFiles);
+                let concatStreams = [];
 
-            for (let target in concatFiles) {
-                let targetFiles = concatFiles[target];
-                let targetStream = gulp.src(targetFiles).pipe(concat(target));
-                concatStreams.push(targetStream);
-            }
+                for (let target in resolution) {
+                    let targetFiles = resolution[target];
+                    let targetStream = gulp.src(targetFiles)
+                        .pipe(concat(target))
+                        .pipe(To.MinifyProductionJs(this.productionMode))
 
-            return es.merge(concatStreams)
-                .pipe(To.MinifyProductionJs(this.productionMode))
-                .pipe(To.BuildLog('JS concatenation'))
-                .pipe(gulp.dest(this.settings.outputJsFolder));
-        });
+                    concatStreams.push(targetStream);
+                }
+
+                return es.merge(concatStreams)
+                    .pipe(To.BuildLog('JS concatenation'))
+                    .pipe(gulp.dest(this.settings.outputJsFolder));
+            };
+        }
+
+        gulp.task('concat', concatTask);
     }
 }

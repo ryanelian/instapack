@@ -16,7 +16,7 @@ export class CompilerSettings {
     /**
      * Gets the project root folder path.
      */
-    readonly projectRoot: string;
+    readonly root: string;
 
     /**
      * Gets the root input folder name.
@@ -35,13 +35,13 @@ export class CompilerSettings {
 
     /**
      * Constructs a new instance of CompilerSettings.
-     * @param projectRoot 
+     * @param root 
      * @param input 
      * @param output 
      * @param concat 
      */
-    constructor(projectRoot: string, input: string, output: string, concat: ConcatenationLookup) {
-        this.projectRoot = projectRoot || process.cwd();
+    constructor(root: string, input: string, output: string, concat: ConcatenationLookup) {
+        this.root = root || process.cwd();
         this.input = input || 'client';
         this.output = output || 'wwwroot';
         this.concat = concat || {};
@@ -58,21 +58,21 @@ export class CompilerSettings {
      * Gets the full path to node_modules folder.
      */
     get npmFolder(): string {
-        return path.join(this.projectRoot, 'node_modules');
+        return path.join(this.root, 'node_modules');
     }
 
     /**
      * Gets the full path to bower_components folder.
      */
     get bowerFolder(): string {
-        return path.join(this.projectRoot, 'bower_components');
+        return path.join(this.root, 'bower_components');
     }
 
     /**
      * Gets the full path to the root input folder.
      */
     get inputFolder(): string {
-        return path.join(this.projectRoot, this.input);
+        return path.join(this.root, this.input);
     }
 
     /**
@@ -100,7 +100,7 @@ export class CompilerSettings {
      * Gets the full path to the root output folder.
      */
     get outputFolder(): string {
-        return path.join(this.projectRoot, this.output);
+        return path.join(this.root, this.output);
     }
 
     /**
@@ -126,10 +126,10 @@ export class CompilerSettings {
 
         try {
             let json = path.join(folder, 'package.json');
-            console.log('Loading settings ' + chalk.cyan(json));
+            // console.log('Loading settings ' + chalk.cyan(json));
             parse = require(json).instapack;
         } catch (ex) {
-            console.log('Failed to load settings. Using default settings.');
+            // console.log('Failed to load settings. Using default settings.');
         }
 
         if (!parse) {

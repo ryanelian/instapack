@@ -21,6 +21,10 @@ CLI.version(packageInfo.version);
  * @param writeDescription 
  */
 function echo(command: string, subCommand: string, writeDescription = false) {
+    if (!subCommand) {
+        subCommand = '';
+    }
+
     console.log(chalk.yellow(packageInfo.name) + ' ' + chalk.green(packageInfo.version) + ' ' + command + ' ' + subCommand);
     if (writeDescription) {
         console.log(packageInfo.description);
@@ -68,7 +72,17 @@ CLI.command({
     command: 'apinfo',
     describe: 'Displays browser list used by autoprefixer, their statistics, and prefix rules.',
     handler: argv => {
+        echo('autoprefix-info', null);
         app.displayAutoprefixInfo();
+    }
+});
+
+CLI.command({
+    command: 'settings',
+    describe: 'Displays settings loaded from package.json, if exists.',
+    handler: argv => {
+        echo('settings', null);
+        app.displaySettings();
     }
 });
 

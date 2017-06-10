@@ -1,10 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const path = require("path");
-const chalk = require("chalk");
 class CompilerSettings {
-    constructor(projectRoot, input, output, concat) {
-        this.projectRoot = projectRoot || process.cwd();
+    constructor(root, input, output, concat) {
+        this.root = root || process.cwd();
         this.input = input || 'client';
         this.output = output || 'wwwroot';
         this.concat = concat || {};
@@ -13,13 +12,13 @@ class CompilerSettings {
         return Object.keys(this.concat).length;
     }
     get npmFolder() {
-        return path.join(this.projectRoot, 'node_modules');
+        return path.join(this.root, 'node_modules');
     }
     get bowerFolder() {
-        return path.join(this.projectRoot, 'bower_components');
+        return path.join(this.root, 'bower_components');
     }
     get inputFolder() {
-        return path.join(this.projectRoot, this.input);
+        return path.join(this.root, this.input);
     }
     get jsEntry() {
         return path.join(this.inputFolder, 'js', 'index.ts');
@@ -31,7 +30,7 @@ class CompilerSettings {
         return path.join(this.inputFolder, 'css', '**', '*.scss');
     }
     get outputFolder() {
-        return path.join(this.projectRoot, this.output);
+        return path.join(this.root, this.output);
     }
     get outputJsFolder() {
         return path.join(this.outputFolder, 'js');
@@ -44,11 +43,9 @@ class CompilerSettings {
         let parse;
         try {
             let json = path.join(folder, 'package.json');
-            console.log('Loading settings ' + chalk.cyan(json));
             parse = require(json).instapack;
         }
         catch (ex) {
-            console.log('Failed to load settings. Using default settings.');
         }
         if (!parse) {
             parse = {};

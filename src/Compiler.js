@@ -92,7 +92,7 @@ class Compiler {
         let cssEntry = this.settings.cssEntry;
         let cssOut = this.settings.outputCssFolder;
         let sassGlob = this.settings.cssWatchGlob;
-        let projectFolder = this.settings.projectRoot;
+        let projectFolder = this.settings.root;
         gulp.task('css:compile', () => {
             gutil.log('Compiling CSS', gutil.colors.cyan(cssEntry));
             let sassImports = [this.settings.npmFolder];
@@ -117,7 +117,7 @@ class Compiler {
     }
     resolveConcatModules() {
         return __awaiter(this, void 0, void 0, function* () {
-            let resolveOption = { basedir: this.settings.projectRoot };
+            let resolveOption = { basedir: this.settings.root };
             let resolver = {};
             let promises = [];
             for (let target in this.settings.concat) {

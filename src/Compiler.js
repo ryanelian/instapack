@@ -39,7 +39,6 @@ class Compiler {
         }
         if (this.watchMode) {
             gutil.log(gutil.colors.yellow("Watch"), "mode: Source codes will be automatically be compiled on changes.");
-            gutil.log(gutil.colors.red("ATTENTION!"), "Concatenation task will only be run once and not watched.");
         }
         else {
             gutil.log("Use", gutil.colors.yellow("--watch"), "flag for switching to", gutil.colors.yellow("Watch"), "mode for automatic compilation on source changes.");
@@ -149,12 +148,12 @@ class Compiler {
     registerConcatTask() {
         let concatCount = this.settings.concatCount;
         gutil.log('Resolving', gutil.colors.cyan(concatCount.toString()), 'concatenation targets...');
-        if (this.watchMode) {
-            gutil.log("Concatenation task will be run once and", gutil.colors.red("NOT watched!"));
-        }
         let concatTask = undefined;
         if (concatCount) {
             concatTask = () => __awaiter(this, void 0, void 0, function* () {
+                if (this.watchMode) {
+                    gutil.log("Concatenation task will be run once and", gutil.colors.red("NOT watched!"));
+                }
                 let resolution = yield this.resolveConcatModules();
                 let concatStreams = [];
                 for (let target in resolution) {

@@ -149,6 +149,9 @@ class Compiler {
     registerConcatTask() {
         let concatCount = this.settings.concatCount;
         gutil.log('Resolving', gutil.colors.cyan(concatCount.toString()), 'concatenation targets...');
+        if (this.watchMode) {
+            gutil.log("Concatenation task will be run once and", gutil.colors.red("NOT watched!"));
+        }
         let concatTask = undefined;
         if (concatCount) {
             concatTask = () => __awaiter(this, void 0, void 0, function* () {

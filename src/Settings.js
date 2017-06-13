@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const path = require("path");
-class CompilerSettings {
+class Settings {
     constructor(root, input, output, concat) {
         this.root = root || process.cwd();
         this.input = input || 'client';
@@ -50,7 +50,7 @@ class CompilerSettings {
         if (!parse) {
             parse = {};
         }
-        return new CompilerSettings(folder, parse.input, parse.output, parse.concat);
+        return new Settings(folder, parse.input, parse.output, parse.concat);
     }
 }
-exports.CompilerSettings = CompilerSettings;
+exports.Settings = Settings;

@@ -20,16 +20,26 @@ const watchify = require("watchify");
 const HTMLify_1 = require("./HTMLify");
 const gwatch = require("gulp-watch");
 const To = require("./PipeTo");
+const Server_1 = require("./Server");
 class Compiler {
-    constructor(productionMode, watchMode, settings) {
+    constructor(settings, flags) {
         this.settings = settings;
-        this.productionMode = productionMode;
-        this.watchMode = watchMode;
+        this.productionMode = flags.productionMode;
+        this.watchMode = flags.watchMode;
+        if (flags.serverPort) {
+            this.watchMode = true;
+            this.server = new Server_1.Server(flags.serverPort);
+        }
         this.chat();
         this.registerAllTasks();
     }
     chat() {
-        gutil.log('Using output folder', gutil.colors.cyan(this.settings.outputFolder));
+        if (this.server) {
+            gutil.log(gutil.colors.yellow("Server"), "mode: Listening on", gutil.colors.cyan('http://localhost:' + this.server.port));
+        }
+        else {
+            gutil.log('Using output folder', gutil.colors.cyan(this.settings.outputFolder));
+        }
         if (this.productionMode) {
             gutil.log(gutil.colors.yellow("Production"), "mode: Outputs will be minified.", gutil.colors.red("This process will slow down your build."));
         }
@@ -38,7 +48,7 @@ class Compiler {
             gutil.log("Do not forget to minify before pushing to repository or production environment!");
         }
         if (this.watchMode) {
-            gutil.log(gutil.colors.yellow("Watch"), "mode: Source codes will be automatically be compiled on changes.");
+            gutil.log(gutil.colors.yellow("Watch"), "mode: Source codes will be automatically compiled on changes.");
         }
         else {
             gutil.log("Use", gutil.colors.yellow("--watch"), "flag for switching to", gutil.colors.yellow("Watch"), "mode for automatic compilation on source changes.");
@@ -62,7 +72,6 @@ class Compiler {
             browserifyOptions.packageCache = {};
         }
         let jsEntry = this.settings.jsEntry;
-        let jsOut = this.settings.outputJsFolder;
         let bundler = browserify(browserifyOptions).transform(HTMLify_1.HTMLify).add(jsEntry).plugin(tsify);
         let compileJs = () => {
             gutil.log('Compiling JS', gutil.colors.cyan(jsEntry));
@@ -78,7 +87,7 @@ class Compiler {
                 .pipe(To.MinifyProductionJs(this.productionMode))
                 .pipe(sourcemaps.write('./'))
                 .pipe(To.BuildLog('JS compilation'))
-                .pipe(gulp.dest(jsOut));
+                .pipe(this.server ? this.server.Update() : gulp.dest(this.settings.outputJsFolder));
         };
         if (this.watchMode) {
             bundler.plugin(watchify);
@@ -89,7 +98,6 @@ class Compiler {
     registerCssTask() {
         let npm = this.settings.npmFolder;
         let cssEntry = this.settings.cssEntry;
-        let cssOut = this.settings.outputCssFolder;
         let sassGlob = this.settings.cssWatchGlob;
         let projectFolder = this.settings.root;
         gulp.task('css:compile', () => {
@@ -102,7 +110,7 @@ class Compiler {
                 .pipe(To.CssProcessors(this.productionMode))
                 .pipe(sourcemaps.write('./'))
                 .pipe(To.BuildLog('CSS compilation'))
-                .pipe(gulp.dest(cssOut));
+                .pipe(this.server ? this.server.Update() : gulp.dest(this.settings.outputCssFolder));
         });
         let watchCallback = undefined;
         if (this.watchMode) {
@@ -165,7 +173,7 @@ class Compiler {
                 }
                 return es.merge(concatStreams)
                     .pipe(To.BuildLog('JS concatenation'))
-                    .pipe(gulp.dest(this.settings.outputJsFolder));
+                    .pipe(this.server ? this.server.Update() : gulp.dest(this.settings.outputJsFolder));
             });
         }
         gulp.task('concat', concatTask);

@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const Compiler_1 = require("./src/Compiler");
-const CompilerSettings_1 = require("./src/CompilerSettings");
+const Settings_1 = require("./src/Settings");
 const Scaffold_1 = require("./src/Scaffold");
 const autoprefixer = require("autoprefixer");
 const prettyJSON = require("prettyjson");
@@ -13,10 +13,14 @@ class instapack {
         return ['empty', 'aspnet', 'angularjs'];
     }
     constructor() {
-        this.settings = CompilerSettings_1.CompilerSettings.tryRead();
+        this.settings = Settings_1.Settings.tryRead();
     }
-    build(taskName, productionMode, watchMode) {
-        let compiler = new Compiler_1.Compiler(productionMode, watchMode, this.settings);
+    build(taskName, productionMode, watchMode, serverPort) {
+        let compiler = new Compiler_1.Compiler(this.settings, {
+            productionMode: productionMode,
+            watchMode: watchMode,
+            serverPort: serverPort
+        });
         compiler.build(taskName);
     }
     scaffold(template) {

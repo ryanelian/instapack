@@ -20,7 +20,17 @@ import * as gwatch from 'gulp-watch';
 // These are my pipes :V
 import * as To from './PipeTo';
 
-import { CompilerSettings, ConcatenationLookup } from './CompilerSettings';
+import { Server } from './Server';
+import { Settings, ConcatenationLookup } from './Settings';
+
+/**
+ * Defines build flags to be used by Compiler class.
+ */
+export type CompilerFlags = {
+    productionMode: boolean,
+    watchMode: boolean,
+    serverPort: number
+};
 
 /**
  * Contains methods for assembling and invoking the compilation tasks.
@@ -28,9 +38,9 @@ import { CompilerSettings, ConcatenationLookup } from './CompilerSettings';
 export class Compiler {
 
     /**
-     * Gets the common settings for all tasks.
+     * Gets the project environment settings.
      */
-    readonly settings: CompilerSettings;
+    readonly settings: Settings;
 
     /**
      * Gets the minification setting for build output.
@@ -43,16 +53,24 @@ export class Compiler {
     readonly watchMode: boolean;
 
     /**
-     * Constructs a new instance of Compiler using specified build flags. 
-     * If settings are not provided, will attempt to read from project.json.
-     * @param productionMode 
-     * @param watchMode 
-     * @param settings 
+     * Gets the build server instance.
      */
-    constructor(productionMode: boolean, watchMode: boolean, settings: CompilerSettings) {
+    readonly server: Server;
+
+    /**
+     * Constructs a new instance of Compiler using specified build flags. 
+     * @param settings 
+     * @param flags 
+     */
+    constructor(settings: Settings, flags: CompilerFlags) {
         this.settings = settings;
-        this.productionMode = productionMode;
-        this.watchMode = watchMode;
+        this.productionMode = flags.productionMode;
+        this.watchMode = flags.watchMode;
+
+        if (flags.serverPort) {
+            this.watchMode = true;
+            this.server = new Server(flags.serverPort);
+        }
 
         this.chat();
         this.registerAllTasks();
@@ -62,7 +80,11 @@ export class Compiler {
      * Displays information about currently used build flags.
      */
     chat() {
-        gutil.log('Using output folder', gutil.colors.cyan(this.settings.outputFolder));
+        if (this.server) {
+            gutil.log(gutil.colors.yellow("Server"), "mode: Listening on", gutil.colors.cyan('http://localhost:' + this.server.port));
+        } else {
+            gutil.log('Using output folder', gutil.colors.cyan(this.settings.outputFolder));
+        }
 
         if (this.productionMode) {
             gutil.log(gutil.colors.yellow("Production"), "mode: Outputs will be minified.", gutil.colors.red("This process will slow down your build."));
@@ -72,7 +94,7 @@ export class Compiler {
         }
 
         if (this.watchMode) {
-            gutil.log(gutil.colors.yellow("Watch"), "mode: Source codes will be automatically be compiled on changes.");
+            gutil.log(gutil.colors.yellow("Watch"), "mode: Source codes will be automatically compiled on changes.");
         } else {
             gutil.log("Use", gutil.colors.yellow("--watch"), "flag for switching to", gutil.colors.yellow("Watch"), "mode for automatic compilation on source changes.");
         }
@@ -110,8 +132,6 @@ export class Compiler {
         }
 
         let jsEntry = this.settings.jsEntry;
-        let jsOut = this.settings.outputJsFolder;
-
         let bundler = browserify(browserifyOptions).transform(HTMLify).add(jsEntry).plugin(tsify);
 
         let compileJs = () => {
@@ -129,7 +149,7 @@ export class Compiler {
                 .pipe(To.MinifyProductionJs(this.productionMode))
                 .pipe(sourcemaps.write('./'))
                 .pipe(To.BuildLog('JS compilation'))
-                .pipe(gulp.dest(jsOut));
+                .pipe(this.server ? this.server.Update() : gulp.dest(this.settings.outputJsFolder));
         };
 
         if (this.watchMode) {
@@ -146,7 +166,6 @@ export class Compiler {
     registerCssTask() {
         let npm = this.settings.npmFolder;
         let cssEntry = this.settings.cssEntry;
-        let cssOut = this.settings.outputCssFolder;
         let sassGlob = this.settings.cssWatchGlob;
         let projectFolder = this.settings.root;
 
@@ -161,7 +180,7 @@ export class Compiler {
                 .pipe(To.CssProcessors(this.productionMode))
                 .pipe(sourcemaps.write('./'))
                 .pipe(To.BuildLog('CSS compilation'))
-                .pipe(gulp.dest(cssOut));
+                .pipe(this.server ? this.server.Update() : gulp.dest(this.settings.outputCssFolder));
         });
 
         let watchCallback = undefined;
@@ -249,7 +268,7 @@ export class Compiler {
 
                 return es.merge(concatStreams)
                     .pipe(To.BuildLog('JS concatenation'))
-                    .pipe(gulp.dest(this.settings.outputJsFolder));
+                    .pipe(this.server ? this.server.Update() : gulp.dest(this.settings.outputJsFolder));
             };
         }
 

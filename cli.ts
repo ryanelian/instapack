@@ -44,13 +44,18 @@ CLI.command({
             }).option('d', {
                 alias: 'dev',
                 describe: 'Disables output files minification.'
+            }).option('s', {
+                alias: 'server',
+                describe: 'Serve the output using an HTTP server of the specified port. (Enables watch mode)',
+                //default: 19991,
+                type: 'number'
             });
     },
     handler: argv => {
         let subCommand = argv.project || 'all';
 
         echo('build', subCommand);
-        app.build(subCommand, !argv.dev, argv.watch);
+        app.build(subCommand, !argv.dev, argv.watch, argv.server);
     }
 });
 

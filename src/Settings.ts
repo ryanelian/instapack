@@ -11,7 +11,7 @@ export type ConcatenationLookup = {
 /**
  * Contains properties for setting the project builder class.
  */
-export class CompilerSettings {
+export class Settings {
 
     /**
      * Gets the project root folder path.
@@ -34,7 +34,7 @@ export class CompilerSettings {
     readonly concat: ConcatenationLookup;
 
     /**
-     * Constructs a new instance of CompilerSettings.
+     * Constructs a new instance of Settings.
      * @param root 
      * @param input 
      * @param output 
@@ -120,7 +120,7 @@ export class CompilerSettings {
     /**
      * Attempts to read the settings from package.json in the same folder where the command line is invoked at.
      */
-    static tryRead(): CompilerSettings {
+    static tryRead(): Settings {
         let folder = process.cwd();
         let parse: any;
 
@@ -136,6 +136,6 @@ export class CompilerSettings {
             parse = {};
         }
 
-        return new CompilerSettings(folder, parse.input, parse.output, parse.concat);
+        return new Settings(folder, parse.input, parse.output, parse.concat);
     }
 }

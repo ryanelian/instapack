@@ -1,13 +1,6 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
+const tslib_1 = require("tslib");
 const gulp = require("gulp");
 const gutil = require("gulp-util");
 const sourcemaps = require("gulp-sourcemaps");
@@ -123,7 +116,7 @@ class Compiler {
         gulp.task('css', ['css:compile'], watchCallback);
     }
     resolveConcatModules() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             let resolveOption = { basedir: this.settings.root };
             let resolver = {};
             let promises = [];
@@ -158,7 +151,7 @@ class Compiler {
         gutil.log('Resolving', gutil.colors.cyan(concatCount.toString()), 'concatenation targets...');
         let concatTask = undefined;
         if (concatCount) {
-            concatTask = () => __awaiter(this, void 0, void 0, function* () {
+            concatTask = () => tslib_1.__awaiter(this, void 0, void 0, function* () {
                 if (this.watchMode) {
                     gutil.log("Concatenation task will be run once and", gutil.colors.red("NOT watched!"));
                 }

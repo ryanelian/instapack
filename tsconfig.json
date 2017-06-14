@@ -14,7 +14,8 @@
     "target": "es6",
     "module": "commonjs",
     "moduleResolution": "node",
-    "removeComments": true
+    "removeComments": true,
+    "importHelpers": true
   },
   "exclude": [
     "templates/**/*.ts"

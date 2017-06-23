@@ -126,7 +126,7 @@ export class Compiler {
         let jsEntry = this.settings.jsEntry;
 
         if (!fs.existsSync(jsEntry)) {
-            gutil.log('JS entry', gutil.colors.cyan(jsEntry), 'was not found.', gutil.colors.red('Aborting JS compilation.'));
+            gutil.log('JS entry', gutil.colors.cyan(jsEntry), 'was not found.', gutil.colors.red('Aborting JS build.'));
             gulp.task('js', () => { });
             return;
         }
@@ -178,7 +178,7 @@ export class Compiler {
         let projectFolder = this.settings.root;
 
         if (!fs.existsSync(cssEntry)) {
-            gutil.log('CSS entry', gutil.colors.cyan(cssEntry), 'was not found.', gutil.colors.red('Aborting CSS compilation.'));
+            gutil.log('CSS entry', gutil.colors.cyan(cssEntry), 'was not found.', gutil.colors.red('Aborting CSS build.'));
             gulp.task('css', () => { });
             return;
         }

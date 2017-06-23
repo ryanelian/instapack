@@ -7,6 +7,7 @@ const sourcemaps = require("gulp-sourcemaps");
 const concat = require("gulp-concat");
 const es = require("event-stream");
 const resolve = require("resolve");
+const fs = require("fs-extra");
 const browserify = require("browserify");
 const tsify = require("tsify");
 const watchify = require("watchify");
@@ -57,6 +58,12 @@ class Compiler {
         gulp.start(taskName);
     }
     registerJsTask() {
+        let jsEntry = this.settings.jsEntry;
+        if (!fs.existsSync(jsEntry)) {
+            gutil.log('JS entry', gutil.colors.cyan(jsEntry), 'was not found.', gutil.colors.red('Aborting JS compilation.'));
+            gulp.task('js', () => { });
+            return;
+        }
         let browserifyOptions = {
             debug: true
         };
@@ -64,7 +71,6 @@ class Compiler {
             browserifyOptions.cache = {};
             browserifyOptions.packageCache = {};
         }
-        let jsEntry = this.settings.jsEntry;
         let bundler = browserify(browserifyOptions).transform(HTMLify_1.HTMLify).add(jsEntry).plugin(tsify);
         let compileJs = () => {
             gutil.log('Compiling JS', gutil.colors.cyan(jsEntry));
@@ -93,6 +99,11 @@ class Compiler {
         let cssEntry = this.settings.cssEntry;
         let sassGlob = this.settings.cssWatchGlob;
         let projectFolder = this.settings.root;
+        if (!fs.existsSync(cssEntry)) {
+            gutil.log('CSS entry', gutil.colors.cyan(cssEntry), 'was not found.', gutil.colors.red('Aborting CSS compilation.'));
+            gulp.task('css', () => { });
+            return;
+        }
         gulp.task('css:compile', () => {
             gutil.log('Compiling CSS', gutil.colors.cyan(cssEntry));
             let sassImports = [this.settings.npmFolder];
@@ -114,6 +125,15 @@ class Compiler {
             };
         }
         gulp.task('css', ['css:compile'], watchCallback);
+    }
+    needPackageRestore() {
+        let hasNodeModules = fs.existsSync(this.settings.npmFolder);
+        let hasPackageJson = fs.existsSync(this.settings.packageJson);
+        let restore = hasPackageJson && !hasNodeModules;
+        if (restore) {
+            gutil.log(gutil.colors.cyan('node_modules'), 'folder not found. Performing automatic package restore...');
+        }
+        return restore;
     }
     resolveConcatModules() {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {

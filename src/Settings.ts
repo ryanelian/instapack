@@ -55,6 +55,13 @@ export class Settings {
     }
 
     /**
+     * Gets the full path to package.json file.
+     */
+    get packageJson(): string {
+        return path.join(this.root, 'package.json');
+    }
+
+    /**
      * Gets the full path to node_modules folder.
      */
     get npmFolder(): string {

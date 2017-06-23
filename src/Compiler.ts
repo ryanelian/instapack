@@ -7,6 +7,7 @@ import * as sourcemaps from 'gulp-sourcemaps';
 import * as concat from 'gulp-concat';
 import * as es from 'event-stream';
 import * as resolve from 'resolve';
+import * as fs from 'fs-extra';
 
 // These are used by Browserify
 import * as browserify from 'browserify';
@@ -122,6 +123,14 @@ export class Compiler {
      * Registers a JavaScript compilation task using TypeScript piped into Browserify.
      */
     registerJsTask() {
+        let jsEntry = this.settings.jsEntry;
+
+        if (!fs.existsSync(jsEntry)) {
+            gutil.log('JS entry', gutil.colors.cyan(jsEntry), 'was not found.', gutil.colors.red('Aborting JS compilation.'));
+            gulp.task('js', () => { });
+            return;
+        }
+
         let browserifyOptions: browserify.Options = {
             debug: true
         };
@@ -131,7 +140,6 @@ export class Compiler {
             browserifyOptions.packageCache = {};
         }
 
-        let jsEntry = this.settings.jsEntry;
         let bundler = browserify(browserifyOptions).transform(HTMLify).add(jsEntry).plugin(tsify);
 
         let compileJs = () => {
@@ -169,6 +177,12 @@ export class Compiler {
         let sassGlob = this.settings.cssWatchGlob;
         let projectFolder = this.settings.root;
 
+        if (!fs.existsSync(cssEntry)) {
+            gutil.log('CSS entry', gutil.colors.cyan(cssEntry), 'was not found.', gutil.colors.red('Aborting CSS compilation.'));
+            gulp.task('css', () => { });
+            return;
+        }
+
         gulp.task('css:compile', () => {
             gutil.log('Compiling CSS', gutil.colors.cyan(cssEntry));
             let sassImports = [this.settings.npmFolder];
@@ -193,6 +207,22 @@ export class Compiler {
         }
 
         gulp.task('css', ['css:compile'], watchCallback);
+    }
+
+    /**
+     * Returns true when package.json exists in project root folder but node_modules folder is missing.
+     */
+    needPackageRestore(): boolean {
+        let hasNodeModules = fs.existsSync(this.settings.npmFolder);
+        let hasPackageJson = fs.existsSync(this.settings.packageJson);
+
+        let restore = hasPackageJson && !hasNodeModules;
+
+        if (restore) {
+            gutil.log(gutil.colors.cyan('node_modules'), 'folder not found. Performing automatic package restore...');
+        }
+
+        return restore;
     }
 
     /**

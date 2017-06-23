@@ -10,6 +10,19 @@ class Scaffold {
             stdio: [0, 1, 2]
         });
     }
+    restorePackages() {
+        console.log();
+        try {
+            this.exec('yarn');
+        }
+        catch (error) {
+            console.log();
+            console.log(chalk.red('Package restore using Yarn failed.') + ' Attempting package restore using NPM...');
+            console.log();
+            this.exec('npm install');
+        }
+        console.log();
+    }
     usingTemplate(name) {
         let templateFolder = path.join(__dirname, '../templates', name);
         let thisFolder = process.cwd();
@@ -22,17 +35,7 @@ class Scaffold {
         console.log('Scaffolding project into your web application...');
         fse.copySync(templateFolder, thisFolder);
         console.log(chalk.green('Scaffold completed.') + ' Restoring packages for you...');
-        console.log();
-        try {
-            this.exec('yarn');
-        }
-        catch (error) {
-            console.log();
-            console.log(chalk.red('Package restore using Yarn failed.') + ' Attempting package restore using NPM...');
-            console.log();
-            this.exec('npm update');
-        }
-        console.log();
+        this.restorePackages();
         console.log(chalk.green('Package restored successfully!'));
         console.log('To build the application, type: ' + chalk.yellow('ipack'));
     }

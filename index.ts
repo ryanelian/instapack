@@ -48,6 +48,11 @@ export class instapack {
       watchMode: watchMode,
       serverPort: serverPort
     });
+    let scaffold = new Scaffold();
+
+    if (compiler.needPackageRestore()) {
+      scaffold.restorePackages();
+    }
     compiler.build(taskName);
   }
 

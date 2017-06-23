@@ -21,6 +21,10 @@ class instapack {
             watchMode: watchMode,
             serverPort: serverPort
         });
+        let scaffold = new Scaffold_1.Scaffold();
+        if (compiler.needPackageRestore()) {
+            scaffold.restorePackages();
+        }
         compiler.build(taskName);
     }
     scaffold(template) {

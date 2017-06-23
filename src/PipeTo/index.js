@@ -1,12 +1,10 @@
 "use strict";
-function __export(m) {
-    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
-}
 Object.defineProperty(exports, "__esModule", { value: true });
-__export(require("./Buffer"));
-__export(require("./BuildLog"));
-__export(require("./CssProcessors"));
-__export(require("./ErrorHandler"));
-__export(require("./MinifyProductionJs"));
-__export(require("./Sass"));
-__export(require("./Vinyl"));
+const tslib_1 = require("tslib");
+tslib_1.__exportStar(require("./Buffer"), exports);
+tslib_1.__exportStar(require("./BuildLog"), exports);
+tslib_1.__exportStar(require("./CssProcessors"), exports);
+tslib_1.__exportStar(require("./ErrorHandler"), exports);
+tslib_1.__exportStar(require("./MinifyProductionJs"), exports);
+tslib_1.__exportStar(require("./Sass"), exports);
+tslib_1.__exportStar(require("./Vinyl"), exports);

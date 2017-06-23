@@ -20,6 +20,26 @@ export class Scaffold {
     }
 
     /**
+     * Attempts to restore packages using Yarn. If failed, attempts to restore package using NPM.
+     */
+    restorePackages() {
+        console.log();
+
+        try {
+            this.exec('yarn');
+        }
+        catch (error) {
+            console.log();
+            console.log(chalk.red('Package restore using Yarn failed.') + ' Attempting package restore using NPM...');
+            console.log();
+            this.exec('npm install');
+            // if NPM fails, tough luck.
+        }
+
+        console.log();
+    }
+
+    /**
      * Initialize project using an officially shipped template.
      * @param name 
      */
@@ -37,20 +57,9 @@ export class Scaffold {
         console.log('Scaffolding project into your web application...');
         fse.copySync(templateFolder, thisFolder);
         console.log(chalk.green('Scaffold completed.') + ' Restoring packages for you...');
-        console.log();
 
-        try {
-            this.exec('yarn');
-        }
-        catch (error) {
-            console.log();
-            console.log(chalk.red('Package restore using Yarn failed.') + ' Attempting package restore using NPM...');
-            console.log();
-            this.exec('npm update');
-            // if NPM fails, tough luck.
-        }
+        this.restorePackages();
 
-        console.log();
         console.log(chalk.green('Package restored successfully!'));
         console.log('To build the application, type: ' + chalk.yellow('ipack'));
     }

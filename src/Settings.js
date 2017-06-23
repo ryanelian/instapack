@@ -11,6 +11,9 @@ class Settings {
     get concatCount() {
         return Object.keys(this.concat).length;
     }
+    get packageJson() {
+        return path.join(this.root, 'package.json');
+    }
     get npmFolder() {
         return path.join(this.root, 'node_modules');
     }

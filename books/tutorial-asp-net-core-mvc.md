@@ -1,6 +1,6 @@
 # instapack + ASP.NET Core MVC
 
-For this tutorial, we will not be using Visual Studio 2017, but instead rely on command line tool provided by .NET Core SDK to setup, build, and run the project.
+For this tutorial, we will not be using Visual Studio 2017, but use the command line tool provided by .NET Core SDK to setup, build, and run the project.
 
 Install .NET Core SDK if you have not done so. https://www.microsoft.com/net/download/core
 
@@ -81,9 +81,11 @@ We need to reference those files. Our `/Views/Shared/_Layout.cshtml` should look
 </html>
 ```
 
-The reason the JavaScript files are referenced in that order is because the files are resulting from the following builds:
+In this arrangement, the style sheets will be loaded first, then the HTML body, to allow progressive page rendering ahead of the JavaScript codes.
 
-- `jquery-bootstrap.js` = `jquery` + `bootstrap-sass` modules concatenation
+The reason that the JavaScript files are referenced in that order, is because of the composition of each files:
+
+- `jquery-bootstrap.js` = `jquery` + `bootstrap-sass` modules concatenation.
 - `aspnet-validation.js` = `jquery-validation` + `jquery-validation-unobtrusive` modules concatenation, which depends on JQuery.
 - `bundle.js` = `/client/js/index.ts` compilation, which may or may not use static JQuery instance from `window['$']` object.
 

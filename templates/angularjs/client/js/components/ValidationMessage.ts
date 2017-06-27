@@ -80,7 +80,7 @@
     }
 }
 
-let ValidationMessageComponent = {
+let ValidationMessageComponent: angular.IComponentOptions = {
     template: require('./ValidationMessage.html'),
     bindings: {
         input: '=',

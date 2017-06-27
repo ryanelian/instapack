@@ -97,7 +97,7 @@ Let's make a `/Views/Home/Index.cshtml` file that looks like this:
 
 ```html
 @{
-    ViewData["Title"] = "Index";
+    ViewBag.Title = "Index";
 }
 
 <h2>Index</h2>

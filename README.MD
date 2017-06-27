@@ -39,6 +39,8 @@ Currently supported Node.js is [latest version 6 LTS](https://nodejs.org/en/down
 
 When using Visual Studio 2017, select the latest **TypeScript 2.X SDK** from the individual component list during setup.
 
+Also, VS2017 15.2 user can install TypeScript 2.4.1 out-of-band using a [separate installer](http://download.microsoft.com/download/7/0/A/70A6AC0E-8934-4396-A43E-445059F430EA/2.4.1-TS-release-dev14update3-20170626.1/TypeScript_SDK.exe) from the [release announcement page](https://blogs.msdn.microsoft.com/typescript/2017/06/27/announcing-typescript-2-4/).
+
 Optional but highly recommended, install [Python 2](https://www.python.org/downloads/).
 
 ## Features
@@ -213,13 +215,7 @@ In addition, build flags are available:
 
 ### Is this stable?
 
-`instapack` started as `Gruntfile.js` which then evolved into `gulpfile.js`. The manual script version of the build system has been used for shipping 7 production-grade AngularJS projects across 2 different companies.
-
-The script itself has been refined over the past 3 years in the making, with each revision involving approval from an internal build system improvement group within my company.
-
-The beta version of `instapack` was then tested to reproduce the bundles for the said projects, with successful result (minimal diff). Since then `instapack` has been used to maintain those projects.
-
-So yes, rock solid stable.
+Yup, rock solid stable. Our team has used `instapack` to ship multiple AngularJS projects to production.
 
 ### Is this Windows only? :(
 
@@ -308,6 +304,17 @@ For this very reason, it is highly recommended to:
 - Add anti-virus exclusion to Git installation folder: `C:\Program Files\Git`. To double check, type: `where git`.
 
 - Use very short root folder name for projects, such as `D:\VS`, to avoid problems with Windows system paths over 260 characters long. Then exclude the folder from the anti-virus.
+
+### Your PowerShell is cute. How to?
+
+```powershell
+Set-ExecutionPolicy RemoteSigned -scope CurrentUser
+iex (new-object net.webclient).downloadstring('https://get.scoop.sh')
+scoop install concfg
+concfg import firefly
+```
+
+For more information, visit http://scoop.sh/ and https://github.com/lukesampson/concfg
 
 ### What is that ValidationMessageComponent in AngularJS template?
 

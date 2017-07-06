@@ -33,6 +33,8 @@ let ipack = new instapack();
 ipack.build('all', false, false);
 ```
 
+Practical guides can be read in [books](https://github.com/ryanelian/instapack/tree/master/books) folder.
+
 ## System Requirements
 
 Currently supported Node.js is [latest version 6 LTS](https://nodejs.org/en/download/). Version 8 when LTS build is released in [October 2017](https://github.com/nodejs/LTS).
@@ -165,7 +167,7 @@ In addition, build flags are available:
 
 - `-dw` shorthand for `watch` and `dev` mode together, for massive productivity.
 
-- `-s [port number]` or `-server 19991` for experimental server mode. Build artefacts will be served directly to http://localhost:port using GZIP compression without writing to folder / file system.
+- `-s [port number]` or `--server 19991` for experimental server mode. Build artefacts will be served directly to http://localhost:port using GZIP compression without writing to folder / file system.
 
 ## Configuration
 

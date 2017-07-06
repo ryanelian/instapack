@@ -4,12 +4,33 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const instapack = require("./index");
 const CLI = require("yargs");
 const chalk = require("chalk");
+const https = require("https");
 let packageJSON = require('./package.json');
 let packageInfo = {
     name: packageJSON.name,
     version: packageJSON.version,
     description: packageJSON.description
 };
+let outdated = false;
+let masterVersion = packageInfo.version;
+https.get('https://raw.githubusercontent.com/ryanelian/instapack/master/package.json', response => {
+    let body = '';
+    response.setEncoding('utf8');
+    response.on('data', data => {
+        body += data;
+    });
+    response.on('end', () => {
+        try {
+            let json = JSON.parse(body);
+            masterVersion = json.version;
+            outdated = masterVersion > packageInfo.version;
+        }
+        catch (error) {
+            outdated = false;
+            masterVersion = 'ERROR';
+        }
+    });
+}).on('error', () => { });
 let app = new instapack();
 CLI.version(packageInfo.version);
 function echo(command, subCommand, writeDescription = false) {
@@ -75,3 +96,18 @@ CLI.command({
     }
 });
 let parse = CLI.strict().help().argv;
+function updateNag() {
+    if (outdated) {
+        console.log();
+        console.log(chalk.yellow('instapack') + ' is outdated. New version: ' + chalk.green(masterVersion));
+        console.log('Run ' + chalk.blue('yarn global upgrade instapack') + ' or ' + chalk.blue('npm update -g instapack') + ' to update!');
+    }
+    outdated = false;
+}
+process.on('exit', () => {
+    updateNag();
+});
+process.on('SIGINT', () => {
+    updateNag();
+    process.exit(2);
+});

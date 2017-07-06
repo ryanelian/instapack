@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { instapack } from './index';
+import instapack = require('./index');
 import * as CLI from 'yargs';
 import * as chalk from 'chalk';
 

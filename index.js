@@ -1,11 +1,10 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 const Compiler_1 = require("./src/Compiler");
 const Settings_1 = require("./src/Settings");
 const Scaffold_1 = require("./src/Scaffold");
 const autoprefixer = require("autoprefixer");
 const prettyJSON = require("prettyjson");
-class instapack {
+module.exports = class instapack {
     get availableTasks() {
         return ['all', 'js', 'css', 'concat'];
     }
@@ -37,5 +36,4 @@ class instapack {
     displaySettings() {
         console.log(prettyJSON.render(this.settings));
     }
-}
-exports.instapack = instapack;
+};

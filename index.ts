@@ -8,7 +8,7 @@ import * as prettyJSON from 'prettyjson';
 /**
  * Exposes methods for developing a web application client project.
  */
-export class instapack {
+export = class instapack {
   /**
    * Gets a list of string which contains tasks available for the build method.
    */

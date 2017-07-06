@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const index_1 = require("./index");
+const instapack = require("./index");
 const CLI = require("yargs");
 const chalk = require("chalk");
 let packageJSON = require('./package.json');
@@ -10,7 +10,7 @@ let packageInfo = {
     version: packageJSON.version,
     description: packageJSON.description
 };
-let app = new index_1.instapack();
+let app = new instapack();
 CLI.version(packageInfo.version);
 function echo(command, subCommand, writeDescription = false) {
     if (!subCommand) {

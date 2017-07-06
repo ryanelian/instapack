@@ -26,8 +26,8 @@ ipack
 
 Programmable API is also provided if you wish to integrate `instapack` into your very own build script:
 
-```ts
-import { instapack } from 'instapack';
+```js
+let instapack = require('instapack');
 
 let ipack = new instapack();
 ipack.build('all', false, false);

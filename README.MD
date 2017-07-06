@@ -165,6 +165,8 @@ In addition, build flags are available:
 
 - `-dw` shorthand for `watch` and `dev` mode together, for massive productivity.
 
+- `-s [port number]` or `-server 19991` for experimental server mode. Build artefacts will be served directly to http://localhost:port using GZIP compression without writing to folder / file system.
+
 ## Configuration
 
 `instapack` puts configuration inside `package.json` to reduce project files clutter. For example, this is the included `package.json` with `aspnet` template:
@@ -188,9 +190,9 @@ In addition, build flags are available:
     }
   },
   "dependencies": {
-    "@types/jquery": "^2.0.45",
-    "@types/lodash": "^4.14.63",
-    "@types/node": "^7.0.22",
+    "@types/jquery": "^3.2.5",
+    "@types/lodash": "^4.14.67",
+    "@types/node": "^8.0.8",
     "@types/urijs": "^1.15.32",
     "alertifyjs": "^1.10.0",
     "bootstrap-sass": "^3.3.7",
@@ -200,6 +202,7 @@ In addition, build flags are available:
     "lodash": "^4.17.4",
     "moment": "^2.18.1",
     "mustache": "^2.3.0",
+    "tslib": "^1.7.1",
     "urijs": "^1.18.10"
   }
 }

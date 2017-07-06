@@ -7,15 +7,7 @@
     "concat": {}
   },
   "dependencies": {
-    "@types/jquery": "^3.2.5",
-    "@types/lodash": "^4.14.67",
-    "@types/node": "^8.0.4",
-    "@types/urijs": "^1.15.32",
-    "jquery": "^3.2.1",
-    "lodash": "^4.17.4",
-    "moment": "^2.18.1",
-    "mustache": "^2.3.0",
-    "tslib": "^1.7.1",
-    "urijs": "^1.18.10"
+    "@types/node": "^8.0.8",
+    "tslib": "^1.7.1"
   }
 }

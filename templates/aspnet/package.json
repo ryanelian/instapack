@@ -18,7 +18,7 @@
   "dependencies": {
     "@types/jquery": "^3.2.5",
     "@types/lodash": "^4.14.67",
-    "@types/node": "^8.0.4",
+    "@types/node": "^8.0.8",
     "@types/urijs": "^1.15.32",
     "alertifyjs": "^1.10.0",
     "bootstrap-sass": "^3.3.7",

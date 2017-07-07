@@ -23,8 +23,10 @@ app.run(['$window', '$q', ($window: angular.IWindowService, $q: angular.IQServic
 
 app.component('validationMessage', components.ValidationMessageComponent);
 app.component('home', components.HomeComponent);
+app.component('hello', components.HelloComponent);
 
 app.config(['$stateProvider', '$urlRouterProvider', (routing: router.StateProvider, url: router.UrlRouterProvider) => {
     url.otherwise('/');
     routing.state(states.Home);
+    routing.state(states.Hello);
 }]);

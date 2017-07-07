@@ -1,3 +1,12 @@
-<p>
-    Hello World!
-</p>
+<md-content ng-cloak layout-padding>
+    <form name="me.greetForm" ng-submit="me.submit()">
+        <md-input-container class="md-block">
+            <label>Name</label>
+            <input md-maxlength="32" required name="Name" ng-model="me.name">
+            <validation-message input="me.greetForm.Name"></validation-message>
+        </md-input-container>
+        <div>
+            <md-button class="md-raised md-primary" type="submit">Submit</md-button>
+        </div>
+    </form>
+</md-content>

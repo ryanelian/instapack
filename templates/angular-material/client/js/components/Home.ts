@@ -1,10 +1,22 @@
-class HomeController implements angular.IController {
-    static $inject = [];
+import { StateService } from '@uirouter/angularjs';
 
-    constructor(){
+class HomeController implements angular.IController {
+    static $inject = ['$state'];
+
+    $state: StateService;
+    name: string;
+
+    constructor($state) {
+        this.$state = $state;
     }
 
     $onInit() {
+    }
+
+    submit() {
+        this.$state.go('hello', {
+            name: this.name
+        });
     }
 }
 

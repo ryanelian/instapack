@@ -1,6 +1,6 @@
 # instapack
 
-> Integrated web application client project compiler using TypeScript and Sass!
+> All-in-one web application client project compiler using TypeScript and Sass!
 
 [![npm](https://img.shields.io/npm/v/instapack.svg)](https://www.npmjs.com/package/instapack) [![Build Status](https://travis-ci.org/ryanelian/instapack.svg?branch=master)](https://travis-ci.org/ryanelian/instapack)
 
@@ -27,7 +27,7 @@ ipack
 Programmable API is also provided if you wish to integrate `instapack` into your very own build script:
 
 ```js
-let instapack = require('instapack');
+const instapack = require('instapack');
 
 let ipack = new instapack();
 ipack.build('all', false, false);

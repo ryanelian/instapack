@@ -10,7 +10,7 @@ Create an empty folder, such as `E:\VS\MyWebApp` then run these commands inside 
 
 ```cmd
 dotnet new mvc
-ipack new
+ipack new aspnet
 ```
 
 Your folder structure should look like this:

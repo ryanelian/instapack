@@ -79,7 +79,7 @@ At a glance, `instapack` looks similar to `webpack`. However, that is where the 
 
 - `webpack` is like a barebone PC that can be plugged-in with off-the-shelf components. Not very versatile but easy to configure and good enough for most people.
 
-- `instapack` is like a laptop borrowed from your company. You are not expected to modify it.
+- `instapack` is like a laptop borrowed from your company, batteries included. You are not expected to modify it.
 
 Consider the following example: Michael wants to develop a web application using ES6. One of the following events usually happens next...
 

@@ -145,7 +145,9 @@ Scaffolds a new `instapack` project into your existing application from where th
 
 - `aspnet` when you want to develop an ASP.NET Core MVC project with Bootstrap + JQuery Validation Unobtrusive.
 
-- `angularjs` when you want to develop a rich client application with Bootstrap + AngularJS 1.X, using a well-defined project stucture.
+- `angularjs` when you want to develop a component-based application with AngularJS, using Bootstrap.
+
+- `angular-material` when you want to develop a single-page application with AngularJS, using Material Design.
 
 If no template parameter is provided, `aspnet` is chosen.
 

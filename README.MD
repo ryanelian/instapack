@@ -141,7 +141,7 @@ You may use `instapack` or `ipack` or `ipk` to invoke the command line interface
 
 Scaffolds a new `instapack` project into your existing application from where the command line is invoked. The following templates are available:
 
-- `empty` when you need a clean slate. Just `package.json`, `tsconfig.json`, and JSS + CSS entry files.
+- `empty` when you need a minimal clean slate. Use this template to author a new template!
 
 - `aspnet` when you want to develop an ASP.NET Core MVC project with Bootstrap + JQuery Validation Unobtrusive.
 

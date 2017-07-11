@@ -6,17 +6,37 @@
 
 Use your favorite back-end technology and reference `instapack` build artefacts. If you are not familiar, read the [basic tutorial using ASP.NET Core MVC](tutorial-asp-net-core-mvc.md).
 
+Your JavaScript project structure should look like this:
+
+```
+client/js/
+│   angular-project.ts
+│   index.ts
+├───components
+│       Hello.html
+│       Hello.ts
+│       Home.html
+│       Home.ts
+│       index.ts
+│       ValidationMessage.html
+│       ValidationMessage.ts
+├───models
+│       index.ts
+│       SampleModel.ts
+├───services
+│       index.ts
+│       SampleService.ts
+└───states
+        index.ts
+```
+
 ## Modules
 
-Open `angular-project.ts`, which is imported by `index.ts`.
-
-An AngularJS application consists of modules:
+Open `angular-project.ts`, which is imported by `index.ts`. An AngularJS application consists of modules:
 
 ```ts
 let app = angular.module('aspnet', [animate, aria, messages, sanitize, material, router.default]);
 ```
-
-> **Be careful.** `module` method with array as second parameter **declares** a module using a given name, while `module` method without a second parameter **retrieves** an existing module of the said name.
 
 The modules listed are imported from `node_modules`, which are resolved as strings:
 
@@ -28,6 +48,8 @@ import * as sanitize from 'angular-sanitize';   // 'angular-sanitize'
 import * as material from 'angular-material';   // 'ngMaterial'
 import * as router from '@uirouter/angularjs';  // router.default = 'ui.router'
 ```
+
+> **Newbie trap:** `module` method with array as second parameter **declares** a module using a given name, while `module` method without a second parameter **retrieves** an existing module of the said name.
 
 With our registered `aspnet` module, auto-bootstrap your application by using `ng-app` directive / attribute with `aspnet` as parameter on your HTML:
 
@@ -52,33 +74,7 @@ angular.element(document).ready(function() {
 
 ## Components
 
-A component allows you to develop a reusable HTML tag for use within your AngularJS application.
-
-Before coding one, let's take a moment to look at the JavaScript project structure:
-
-```
-client/js/
-│   angular-project.ts
-│   index.ts
-├───components
-│       Hello.html
-│       Hello.ts
-│       Home.html
-│       Home.ts
-│       index.ts
-│       ValidationMessage.html
-│       ValidationMessage.ts
-├───models
-│       index.ts
-│       SampleModel.ts
-├───services
-│       index.ts
-│       SampleService.ts
-└───states
-        index.ts
-```
-
-In `angular-project.ts`, you should find the following lines:
+A component allows you to develop a reusable HTML tag for use within your AngularJS application. In `angular-project.ts`, you should find the following lines:
 
 ```ts
 import * as components from './components';

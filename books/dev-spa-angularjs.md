@@ -385,7 +385,7 @@ Explanation:
 
     - `for` attribute must be filled with `[<form> name].[<input> name]`.
     
-    - The component will attempt to homing to the input tag automatically using `getElementsByName` for parsing validation parameter values such as `min`, `max`, `minlength`, `maxlength`, and `pattern` for accurately displaying the error message.
+    - The component will attempt automatic homing to the input tag using `getElementsByName` for parsing validation parameter values such as `min`, `max`, `minlength`, `maxlength`, and `pattern` for accurately displaying the error message.
 
     - `for-id` attribute may be filled if there are multiple elements with the same name. `getElementById` will be used instead for accurately parsing the input tag parameters.
 

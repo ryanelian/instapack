@@ -320,7 +320,7 @@ Explanation:
 
 ## async-await
 
-While manipulating `Promise` results using `then()` and `catch()` callbacks are possible, the application code can quickly become unreadable if the code contains many nested / chained Promises.
+While manipulating `Promise` results using `then()` and `catch()` callbacks are possible, the controller methods can quickly become unreadable if the code contain multiple nested / chained Promises.
 
 For this reason TypeScript and ECMAScript 8 supports async-await, which allows writing asynchronous code just like a synchronous code. This concept is similar to [.NET Task Parallel Library using async-await](https://docs.microsoft.com/en-us/dotnet/csharp/async).
 
@@ -343,7 +343,7 @@ Explanation:
 
 - `await` can only be performed against a `Promise` object. Successful `await` will unwrap the result of a completed `Promise`.
 
-- Similar to a synchronous code, `await` will throw an error if not successful. For this reason, `try-catch` block is required to prevent unhandled error when the request failed.
+- Similar to synchronous code, `await` will throw an error if not successful. For this reason, `try-catch` block is required to prevent unhandled error when the request failed.
 
 > **Under the hood:** Normally this technique does not work in AngularJS world because `$q` triggers `$scope.$apply()` but standard `Promise` does not. However, we can trick the browser into using `$q` as `Promise` polyfill by using the following code in `angular-project.ts`:
 

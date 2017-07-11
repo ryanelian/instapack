@@ -320,9 +320,9 @@ Explanation:
 
 ## async-await
 
-While manipulating `Promise` results using `then()` and `catch()` callbacks are possible. The application code can quickly become unreadable if the code contains many nested / chained Promises.
+While manipulating `Promise` results using `then()` and `catch()` callbacks are possible, the application code can quickly become unreadable if the code contains many nested / chained Promises.
 
-For this very reason ECMAScript 8 supports async-await which allows writing asynchronous code just like a synchronous code. This concept is similar to [.NET Task Parallel Library using async-await](https://docs.microsoft.com/en-us/dotnet/csharp/async).
+For this reason TypeScript and ECMAScript 8 supports async-await, which allows writing asynchronous code just like a synchronous code. This concept is similar to [.NET Task Parallel Library using async-await](https://docs.microsoft.com/en-us/dotnet/csharp/async).
 
 Modify the `submit()` method in `SumController` to:
 
@@ -348,7 +348,7 @@ Explanation:
 > **Under the hood:** Normally this technique does not work in AngularJS world because `$q` triggers `$scope.$apply()` but standard `Promise` does not. However, we can trick the browser into using `$q` as `Promise` polyfill by using the following code in `angular-project`:
 
 ```ts
-// This code has already been included by instapack
+// This code has already been included by instapack in template
 app.run(['$window', '$q', ($window: angular.IWindowService, $q: angular.IQService) => {
     $window['Promise'] = $q;
 }]);
@@ -356,5 +356,8 @@ app.run(['$window', '$q', ($window: angular.IWindowService, $q: angular.IQServic
 
 ## Routing
 
-## Role-Based Authorization
+If you have successfully followed the guide up to this point, **congratulations**! :tada: You have mastered the ways of building a **component-based web application client**. You may use server-based routing to serve pages containing your developed components.
 
+However, there are cases when you need to develop a full Single-Page Application (SPA) powered by client-side routing.
+
+## Role-Based Authorization

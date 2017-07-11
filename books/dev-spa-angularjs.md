@@ -314,7 +314,7 @@ Explanation:
 
 - `SumController` requires `MathService` dependency, used for posting the two numbers to the server and obtaining the result as `total` property. The `MathService` property is type-hinted for improved code quality.
 
-- `MathService.post` returns a [$q](https://docs.angularjs.org/api/ng/service/$q) object, which is a [Promises/A+](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)-compliant implementation of deferred objects. HTTP request is performed asynchronously, and then processed when done.
+- `MathService.post` returns a [$q](https://docs.angularjs.org/api/ng/service/$q) object, which is a [Promises/A+](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)-compliant implementation of deferred objects. HTTP requests are performed asynchronously, then handled using a series of callbacks when done / failed.
 
 - Introduce UI for the component using a form, with two input box bound to `a` and `b` properties. When the form is submitted, invoke `submit()` method in the controller. Also, display the sum total.
 
@@ -322,7 +322,7 @@ Explanation:
 
 While manipulating `Promise` results using `then()` and `catch()` callbacks are possible, the controller methods can quickly become unreadable if the code contain multiple nested / chained Promises.
 
-For this reason TypeScript and ECMAScript 8 supports async-await, which allows writing asynchronous code just like a synchronous code. This concept is similar to [.NET Task Parallel Library using async-await](https://docs.microsoft.com/en-us/dotnet/csharp/async).
+For this reason TypeScript and ECMAScript 8 supports async-await, which allows writing asynchronous code just like normal synchronous code. This concept is similar to [.NET Task Parallel Library using async-await](https://docs.microsoft.com/en-us/dotnet/csharp/async).
 
 Modify the `submit()` method in `SumController` to:
 

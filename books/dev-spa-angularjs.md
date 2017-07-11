@@ -147,7 +147,7 @@ Explanation:
 
     - Like components, `implements angular.IController` is technically not required, but encouraged for source code clarity and documentation.
 
-- `SumComponent` uses `SumComponent` as its controller.
+- `SumComponent` uses `SumController` as its controller.
 
 - `SubComponent` view can access controller class members by using `me`. (If not provided, defaults to `$ctrl`)
 

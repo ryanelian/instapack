@@ -395,16 +395,16 @@ Explanation:
 
     - Error messages are wrapped in a `field-validation-error` class, like the Razor tag counterpart.
 
-    - Read more about AngularJS forms: https://docs.angularjs.org/guide/forms
-
     - Read more about `ng-messages`, used within `validation-message` component: https://docs.angularjs.org/api/ngMessages/directive/ngMessages
 
 - `MyForm.$valid` and `MyForm.$invalid` were used for disabling form submit and the submission button when one or more inputs have invalid values. 
 
+    - Read more about AngularJS forms: https://docs.angularjs.org/guide/forms
+
 ## Routing
 
-If you have successfully followed the guide up to this point, **congratulations**! :tada: You have mastered the ways of building a **component-based web application client**. You may use server-based routing to serve pages containing your developed components.
+If you have successfully followed the guide up to this point, **congratulations**! :tada: You have mastered the ways of building a **component-based web application client**. You may use **server-side routing** to serve pages containing your developed components.
 
-However, there are cases when you need to develop a full Single-Page Application (SPA) powered by client-side routing.
+However, there are cases when you need to develop a full **Single-Page Application (SPA)** powered by **client-side routing**.
 
 ## Role-Based Authorization

@@ -401,6 +401,8 @@ Explanation:
 
     - Read more about AngularJS forms: https://docs.angularjs.org/guide/forms
 
+> **Warning:** Client-side validation cannot alone secure user input. Server side validation is also necessary.
+
 ## Routing
 
 If you have successfully followed the guide up to this point, **congratulations**! :tada: You have mastered the ways of building a **component-based web application client**. You may use **server-side routing** to serve pages containing your developed components.

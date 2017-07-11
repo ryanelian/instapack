@@ -265,7 +265,7 @@ Also, in IIS, HTTP/2 is only supported when using Windows Server 2016. Many of o
 - Babel is very slow.
 - TypeScript is supported by Microsoft.
 - TypeScript is growing at an [exponential rate](https://github.com/Microsoft/TypeScript/milestones).
-- TypeScript is a strict superset of the JavaScript, which allows porting and refactoring existing codes with ease.
+- TypeScript is a strict superset of the JavaScript, which allows porting and refactoring existing code with ease.
 - TypeScript allows writing JavaScript using features that do not exist yet in browsers, then compile them down to [ES5](http://kangax.github.io/compat-table/es5/).
 
 As a testament to TypeScript effectiveness, `instapack` is fully written using TypeScript!
@@ -322,40 +322,3 @@ concfg import firefly
 ```
 
 For more information, visit http://scoop.sh/ and https://github.com/lukesampson/concfg
-
-### What is that ValidationMessageComponent in AngularJS template?
-
-A custom AngularJS input validation message component. It allows automatic display of validation messages using [AngularJS input directive](https://docs.angularjs.org/api/ng/directive/input), similar to `@Html.ValidationMessage` for ASP.NET Core MVC.
-
-Usage example:
-
-```html
-<form id="MyForm" name="MyForm">
-    <div class="form-group">
-        <label for="Name">Name</label>
-        <input class="form-control" id="Name" name="Name" ng-model="NameValue" required="required" minlength="2" maxlength="64" />
-        <validation-message input="MyForm.Name"></validation-message>
-    </div>
-    <div class="form-group">
-        <button type="submit" class="btn btn-primary">Submit</button>
-    </div>
-</form>
-```
-
-Validation messages shown:
-- required
-- min
-- max
-- minlength
-- maxlength
-- pattern (provide `mismatch` attribute to the component for customizing the message)
-- date (when using `type=date`)
-- datetimelocal (when using `type=datetime-local`)
-- email (when using `type=email`)
-- month (when using `type=month`)
-- number (when using `type=number`)
-- time (when using `type=time`)
-- url (when using `type=url`)
-- week (when using `type=week`)
-
-Provide `title` attribute to the component for customizing the field name displayed.

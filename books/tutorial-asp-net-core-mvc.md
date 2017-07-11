@@ -81,7 +81,7 @@ We need to reference those files. Our `/Views/Shared/_Layout.cshtml` should look
 </html>
 ```
 
-In this arrangement, the style sheets will be loaded first, then the HTML body, to allow progressive page rendering ahead of the JavaScript codes.
+In this arrangement, the style sheets will be loaded first, then the HTML body, to allow progressive page rendering ahead of the JavaScript code.
 
 The reason that the JavaScript files are referenced in that order, is because of the composition of each files:
 

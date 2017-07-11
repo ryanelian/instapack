@@ -1,12 +1,12 @@
-<md-content ng-cloak layout-padding>
-    <form name="me.greetForm" ng-submit="me.submit()">
+<md-content layout-padding>
+    <form name="GreetForm" ng-submit="GreetForm.$valid && me.submit()">
         <md-input-container class="md-block">
-            <label>Name</label>
-            <input md-maxlength="32" required name="Name" ng-model="me.name">
-            <validation-message input="me.greetForm.Name"></validation-message>
+            <label for="Name">Name</label>
+            <input id="Name" name="Name" ng-model="me.name" md-maxlength="32" required />
+            <validation-message for="GreetForm.Name"></validation-message>
         </md-input-container>
         <div>
-            <md-button class="md-raised md-primary" type="submit">Submit</md-button>
+            <md-button type="submit" class="md-raised md-primary" ng-disabled="GreetForm.$invalid">Submit</md-button>
         </div>
     </form>
 </md-content>

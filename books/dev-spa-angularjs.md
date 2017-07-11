@@ -354,6 +354,53 @@ app.run(['$window', '$q', ($window: angular.IWindowService, $q: angular.IQServic
 }]);
 ```
 
+## Validation
+
+AngularJS provides basic implementation for common HTML5 input types and attributes for validation. However unlike ASP.NET Core MVC, it does not provide an out-of-the-box component for quickly displaying validation errors.
+
+For this reason, a custom AngularJS input validation message component is provided within a project generated using `instapack`. The component usage is similar to `@Html.ValidationMessageFor` for ASP.NET Core MVC.
+
+Modify `Sum.html` to:
+
+```html
+<form name="MyForm" ng-submit="MyForm.$valid && me.submit()">
+    <div>
+        <input name="A" ng-model="me.a" type="number" required />
+        <validation-message for="MyForm.A" display="First number"></validation-message>
+    </div>
+    <div>
+        <input name="B" ng-model="me.b" type="number" required />
+        <validation-message for="MyForm.B" display="Second number"></validation-message>
+    </div>
+    <div>
+        <button ng-disabled="MyForm.$invalid" type="submit">Submit</button>
+    </div>
+    <p ng-bind="me.total"></p>
+</form>
+```
+
+Explanation:
+
+- `<validation-message>` displays validation message for [AngularJS standard input errors](https://docs.angularjs.org/api/ng/input).
+
+    - `for` attribute must be filled with `[<form> name].[<input> name]`.
+    
+    - The component will attempt to homing to the input tag automatically using `getElementsByName` for parsing validation parameter values such as `min`, `max`, `minlength`, `maxlength`, and `pattern` for accurately displaying the error message.
+
+    - `for-id` attribute may be filled if there are multiple elements with the same name. `getElementById` will be used instead for accurately parsing the input tag parameters.
+
+    - `display` attribute customizes the name displayed for the input field.
+
+    - `pattern-error` attribute may be filled for customizing error message due to `pattern` RegEx mismatch.
+
+    - Error messages are wrapped in a `field-validation-error` class, like the Razor tag counterpart.
+
+    - Read more about AngularJS forms: https://docs.angularjs.org/guide/forms
+
+    - Read more about `ng-messages`, used within `validation-message` component: https://docs.angularjs.org/api/ngMessages/directive/ngMessages
+
+- `MyForm.$valid` and `MyForm.$invalid` were used for disabling form submit and the submission button when one or more inputs have invalid values. 
+
 ## Routing
 
 If you have successfully followed the guide up to this point, **congratulations**! :tada: You have mastered the ways of building a **component-based web application client**. You may use server-based routing to serve pages containing your developed components.

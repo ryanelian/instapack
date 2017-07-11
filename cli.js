@@ -5,6 +5,8 @@ const instapack = require("./index");
 const CLI = require("yargs");
 const chalk = require("chalk");
 const https = require("https");
+const autoprefixer = require("autoprefixer");
+const prettyJSON = require("prettyjson");
 let packageJSON = require('./package.json');
 let packageInfo = {
     name: packageJSON.name,
@@ -80,19 +82,17 @@ CLI.command({
     }
 });
 CLI.command({
-    command: 'apinfo',
-    describe: 'Displays browser list used by autoprefixer, their statistics, and prefix rules.',
+    command: 'info',
+    describe: 'Displays instapack dependencies, loaded settings, and autoprefixer information.',
     handler: argv => {
-        echo('autoprefix-info', null);
-        app.displayAutoprefixInfo();
-    }
-});
-CLI.command({
-    command: 'settings',
-    describe: 'Displays settings loaded from package.json, if exists.',
-    handler: argv => {
-        echo('settings', null);
-        app.displaySettings();
+        echo('info', null);
+        let pinfo = prettyJSON.render({
+            dependencies: packageJSON.dependencies,
+            settings: app.settings
+        }, { noColor: true });
+        console.log(pinfo);
+        console.log();
+        console.log(autoprefixer().info());
     }
 });
 let parse = CLI.strict().help().argv;

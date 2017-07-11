@@ -5,6 +5,9 @@ import * as CLI from 'yargs';
 import * as chalk from 'chalk';
 import * as https from 'https';
 
+import * as autoprefixer from 'autoprefixer';
+import * as prettyJSON from 'prettyjson';
+
 let packageJSON = require('./package.json');
 let packageInfo = {
     name: packageJSON.name as string,
@@ -99,20 +102,19 @@ CLI.command({
 });
 
 CLI.command({
-    command: 'apinfo',
-    describe: 'Displays browser list used by autoprefixer, their statistics, and prefix rules.',
+    command: 'info',
+    describe: 'Displays instapack dependencies, loaded settings, and autoprefixer information.',
     handler: argv => {
-        echo('autoprefix-info', null);
-        app.displayAutoprefixInfo();
-    }
-});
+        echo('info', null);
 
-CLI.command({
-    command: 'settings',
-    describe: 'Displays settings loaded from package.json, if exists.',
-    handler: argv => {
-        echo('settings', null);
-        app.displaySettings();
+        let pinfo = prettyJSON.render({
+            dependencies: packageJSON.dependencies,
+            settings: app.settings
+        }, { noColor: true });
+
+        console.log(pinfo);
+        console.log();
+        console.log(autoprefixer().info());
     }
 });
 

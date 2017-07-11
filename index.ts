@@ -2,9 +2,6 @@ import { Compiler } from './src/Compiler';
 import { Settings } from './src/Settings';
 import { Scaffold } from './src/Scaffold';
 
-import * as autoprefixer from 'autoprefixer';
-import * as prettyJSON from 'prettyjson';
-
 /**
  * Exposes methods for developing a web application client project.
  */
@@ -65,17 +62,4 @@ export = class instapack {
     scaffold.usingTemplate(template);
   }
 
-  /**
-   * Displays browser list used by autoprefixer, their statistics, and prefix rules.
-   */
-  displayAutoprefixInfo() {
-    console.log(autoprefixer().info());
-  }
-
-  /**
-   * Displays settings loaded from package.json, if exists.
-   */
-  displaySettings() {
-    console.log(prettyJSON.render(this.settings));
-  }
 }

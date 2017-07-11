@@ -133,17 +133,19 @@ export let SumComponent: angular.IComponentOptions = {
     controller: SumController,
     controllerAs: 'me',
     bindings: {
-        a: '<'
+        a: '<',
         b: '<'
     }
 };
 ```
 
-Let's dissect the above codes:
+Explanation:
 
 - `SumController` is a basic class, which contains the following methods:
 
     - `$onInit()` is executed when the component is ready. **You should never run initialization logic in controller class constructor!**
+
+    - Like components, `implements angular.IController` is technically not required, but encouraged for source code clarity and documentation.
 
 - `SumComponent` uses `SumComponent` as its controller.
 
@@ -155,7 +157,7 @@ Let's dissect the above codes:
 
     - `<` one-way data binding. Allows passing an object reference to a child component. However, changes to object will not update the parent scope.
 
-    - `@` string binding. Allows passing a raw string into a component. Use `{{ }}` to evaluate values to be passed as a string.
+    - `@` string binding. Allows passing a raw string into a component. Use `{{ }}` within the parameter to evaluate values to be passed as a string.
 
     - `&` callback binding. Allows passing a function into a child component.
 
@@ -167,9 +169,190 @@ With that knowledge, we can change the `Sum.html` template to:
 
 Try calling `<sum a="2" b="3"></sum>`. If done correctly, the web page should display `5`.
 
+## Server API
+
+Before attempting the next section, prepare a web service endpoint that accepts two numbers then returns addition, subtraction, and multiplication results as JSON. Make sure that the API works by using [Postman](https://www.getpostman.com/).
+
+As an example, this is a `POST /api/v1/math` API developed using ASP.NET Core MVC:
+
+```cs
+[Produces("application/json")]
+[Route("api/v1/math")]
+public class MathApiController : Controller
+{
+    public class MathApiRequestModel
+    {
+        public double A { set; get; }
+
+        public double B { set; get; }
+    }
+
+    public class MathApiResponseModel
+    {
+        public double Sum { set; get; }
+
+        public double Subtract { set; get; }
+
+        public double Multiply { set; get; }
+    }
+
+    [HttpPost]
+    public IActionResult Post([FromBody]MathApiRequestModel model)
+    {
+        var result = new MathApiResponseModel
+        {
+            Sum = model.A + model.B,
+            Subtract = model.A - model.B,
+            Multiply = model.A / model.B
+        };
+
+        return Ok(result);
+    }
+}
+```
+
+> It is always a good practice to version your APIs. That way, you can retain backwards compatibility during future development.
+
 ## Services
 
-## Async-Await
+In `models/index.ts`, add the following code:
+
+```ts
+export class MathApiResponseModel {
+    sum: number;
+    subtract: number;
+    multiply: number;
+}
+```
+
+After that, in `services/index.ts`, add the following line:
+
+```ts
+export * from './MathService';
+```
+
+Create a new file `MathService.ts` in the same `services` folder:
+
+```ts
+import { MathApiResponseModel } from '../models';
+
+export class MathService {
+    static $inject = ['$http'];
+
+    $http: angular.IHttpService;
+
+    constructor($http) {
+        this.$http = $http;
+    }
+
+    post(a: number, b: number) {
+        return this.$http.post<MathApiResponseModel>('/api/v1/math', {
+            a: a,
+            b: b
+        });
+    }
+}
+```
+
+Explanation:
+
+- `constructor($http)` allows AngularJS to perform Dependency Injection via constructor parameter for HTTP Service required to perform request against a web API.
+
+- `static $inject` allows injected services to survive mangling during compilation. For example, `$http` parameter may turn into `a` after minification. By providing a **static $inject** containing service names in an array of string, AngularJS will be able to correctly resolve the required dependencies.
+
+- `post` method uses the HTTP Service to perform a request to a web API, which returns a `Promise<MathApiResponseModel>` object if successful.
+
+To use the service via Dependency Injection, in `angular-project.ts`, add the following line:
+
+```ts
+app.service('MathService', services.MathService);
+```
+
+Then, modify our `SumController` in `SumComponent.ts`:
+
+```ts
+import { MathService } from '../services';
+
+class SumController implements angular.IController {
+    static $inject = ['MathService'];
+
+    MathService: MathService;
+
+    a: number;
+    b: number;
+    total: number;
+
+    constructor(MathService) {
+        this.MathService = MathService;
+    }
+
+    $onInit() {
+    }
+
+    submit() {
+        this.MathService.post(this.a, this.b).then(response => {
+            this.total = response.data.sum;
+        }).catch(error => {
+            console.log(error);
+        });
+    }
+}
+```
+
+And our `Sum.html` to:
+
+```html
+<form ng-submit="me.submit()">
+    <input ng-model="me.a" />
+    <input ng-model="me.b" />
+    <button type="submit">Submit</button>
+    <p ng-bind="me.total"></p>
+</form>
+```
+
+Explanation:
+
+- `SumController` requires `MathService` dependency, used for posting the two numbers to the server and obtaining the result as `total` property. The `MathService` property is type-hinted for improved code quality.
+
+- `MathService.post` returns a [$q](https://docs.angularjs.org/api/ng/service/$q) object, which is a [Promises/A+](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)-compliant implementation of deferred objects. HTTP request is performed asynchronously, and then processed when done.
+
+- Introduce UI for the component using a form, with two input box bound to `a` and `b` properties. When the form is submitted, invoke `submit()` method in the controller. Also, display the sum total.
+
+## async-await
+
+While manipulating `Promise` results using `then()` and `catch()` callbacks are possible. The application code can quickly become unreadable if the code contains many nested / chained Promises.
+
+For this very reason ECMAScript 8 supports async-await which allows writing asynchronous code just like a synchronous code. This concept is similar to [.NET Task Parallel Library using async-await](https://docs.microsoft.com/en-us/dotnet/csharp/async).
+
+Modify the `submit()` method in `SumController` to:
+
+```ts
+async submit() {
+    try {
+        let response = await this.MathService.post(this.a, this.b);
+        this.total = response.data.sum;
+    } catch (error) {
+        console.log(error);
+    }
+}
+```
+
+Explanation:
+
+- `await` keyword can only be used in an `async` methods.
+
+- `await` can only be performed against a `Promise` object. Successful `await` will unwrap the result of a completed `Promise`.
+
+- Similar to a synchronous code, `await` will throw an error if not successful. For this reason, `try-catch` block is required to prevent unhandled error when the request failed.
+
+> **Under the hood:** Normally this technique does not work in AngularJS world because `$q` triggers `$scope.$apply()` but standard `Promise` does not. However, we can trick the browser into using `$q` as `Promise` polyfill by using the following code in `angular-project`:
+
+```ts
+// This code has already been included by instapack
+app.run(['$window', '$q', ($window: angular.IWindowService, $q: angular.IQService) => {
+    $window['Promise'] = $q;
+}]);
+```
 
 ## Routing
 

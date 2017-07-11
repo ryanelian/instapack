@@ -203,7 +203,7 @@ public class MathApiController : Controller
         {
             Sum = model.A + model.B,
             Subtract = model.A - model.B,
-            Multiply = model.A / model.B
+            Multiply = model.A * model.B
         };
 
         return Ok(result);
@@ -258,7 +258,7 @@ Explanation:
 
 - `constructor($http)` allows AngularJS to perform Dependency Injection via constructor parameter for HTTP Service required to perform request against a web API.
 
-- `static $inject` allows injected services to survive mangling during compilation. For example, `$http` parameter may turn into `a` after minification. By providing a **static $inject** containing service names in an array of string, AngularJS will be able to correctly resolve the required dependencies.
+- `static $inject` allows injected services to survive mangling during compilation. For example, `$http` parameter may turn into `h` after minification. By providing a `static $inject` containing service names in an array of string, AngularJS will be able to correctly resolve the required dependencies.
 
 - `post` method uses the HTTP Service to perform a request to a web API, which returns a `Promise<MathApiResponseModel>` object if successful.
 

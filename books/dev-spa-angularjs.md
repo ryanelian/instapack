@@ -114,6 +114,18 @@ app.component('sum', components.SumComponent);
 
 Now we can use our newly created component as HTML tag `<sum></sum>`. Try it!
 
+## View Directives
+
+Most common AngularJS directives are listed in this page: https://docs.angularjs.org/api/ng/directive
+
+For the sake of guide completeness, fundamental directives will be reviewed in this chapter.
+
+### Control Structures
+
+### Model Binders
+
+### Event Handlers
+
 ## Controllers
 
 Controller allows adding code-behind for the component view. Revisit `Sum.ts` and change the codes to:
@@ -339,7 +351,9 @@ Explanation:
 
 - `await` can only be performed against a `Promise` object. Successful `await` will unwrap the result of a completed `Promise`.
 
-- Similar to synchronous code, `await` will throw an error if not successful. For this reason, `try-catch` block is required to prevent unhandled error when the request failed.
+- Similar to synchronous code, `await` will throw an error if not successful. For this reason, try-catch block is required to prevent unhandled error when the request failed.
+
+    - Instead of wrapping everything in a try-catch blocks, you can also do a global exception handling using [`window.onerror`](https://developer.mozilla.org/en-US/docs/Web/API/GlobalEventHandlers/onerror) callback.
 
 > **Under the hood:** Normally this technique does not work in AngularJS world because `$q` triggers `$scope.$apply()` but standard `Promise` does not. However, we can trick the browser into using `$q` as `Promise` polyfill by using the following code in `angular-project.ts`:
 

@@ -16,7 +16,7 @@ An AngularJS application consists of modules:
 let app = angular.module('aspnet', [animate, aria, messages, sanitize, material, router.default]);
 ```
 
-> Be careful. `module` method with array as second parameter **declares** a module using a given name, while `module` method without a second parameter **retrieves** an existing module of the said name.
+> **Be careful.** `module` method with array as second parameter **declares** a module using a given name, while `module` method without a second parameter **retrieves** an existing module of the said name.
 
 The modules listed are imported from `node_modules`, which are resolved as strings:
 
@@ -345,7 +345,7 @@ Explanation:
 
 - Similar to a synchronous code, `await` will throw an error if not successful. For this reason, `try-catch` block is required to prevent unhandled error when the request failed.
 
-> **Under the hood:** Normally this technique does not work in AngularJS world because `$q` triggers `$scope.$apply()` but standard `Promise` does not. However, we can trick the browser into using `$q` as `Promise` polyfill by using the following code in `angular-project`:
+> **Under the hood:** Normally this technique does not work in AngularJS world because `$q` triggers `$scope.$apply()` but standard `Promise` does not. However, we can trick the browser into using `$q` as `Promise` polyfill by using the following code in `angular-project.ts`:
 
 ```ts
 // This code has already been included by instapack in template

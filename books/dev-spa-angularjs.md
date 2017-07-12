@@ -181,7 +181,7 @@ For the sake of guide completeness, fundamental view directives will be reviewed
 </p>
 ```
 
-Iterates through every element in a collection. Each loop creates a new element instance with its own scope and variable. `track by` statement must be provided with a unique key of an element (use `$index` when no such key exists).
+[`ng-repeat`](https://docs.angularjs.org/api/ng/directive/ngRepeat) iterates through every element in a collection. Each loop creates a new element instance with its own scope and variable. `track by` statement must be provided with a unique key of an element (use `$index` when no such key exists).
 
 > **ALWAYS** have `track by` when iterating a collection. If `track by` is missing, the directive will recreate all elements on change, which translates to **heavy performance penalty**!
 
@@ -211,7 +211,7 @@ Filters may be applied to provide declarative client-side search from the collec
 <p ng-repeat="student in me.students | filter:wildcard track by student.studentId"></p>
 ```
 
-The above examples will return search results containing the input from the textbox from any property. A search keyword `234` will return a student with property `phone: '123456789'`.
+The above [`filter:`](https://docs.angularjs.org/api/ng/filter/filter) example will return search results containing the input from the textbox from any property. A search keyword `234` will return a student with property `phone: '123456789'`.
 
 ```html
 <p>
@@ -245,7 +245,7 @@ class StudentController implements angular.IController {
 
 The above example demonstrates how to create a custom search by creating a callback which accepts an item and returns a boolean.
 
-In addition, you can also use `orderBy` filter to perform sorting:
+In addition, you can also use [`orderBy`](https://docs.angularjs.org/api/ng/filter/orderBy) filter to perform sorting:
 
 ```html
 <p ng-repeat="student in me.students | orderBy:'name' track by student.studentId">
@@ -262,7 +262,7 @@ In addition, you can also use `orderBy` filter to perform sorting:
 </p>
 ```
 
-And use `limitTo` filter to perform pagination:
+And use [`limitTo`](https://docs.angularjs.org/api/ng/filter/limitTo) filter to perform pagination:
 
 ```html
 <p>
@@ -301,7 +301,7 @@ Use `as` to store filter results into a temporary variable, if needed.
 
 > `track by` must always be the last expression in the repeat directive parameter!
 
-#### Conditional
+#### Conditions
 
 ```html
 <div ng-if="true"></div>
@@ -327,7 +327,7 @@ The difference between [`ng-if`](https://docs.angularjs.org/api/ng/directive/ngI
 
 ### Data Directives
 
-#### Model and Expression Binders
+#### Model & Expression Binders
 
 ```html
 <p>
@@ -342,20 +342,20 @@ The difference between [`ng-if`](https://docs.angularjs.org/api/ng/directive/ngI
 <p ng-non-bindable>{{test}}</p>
 ```
 
-- `ng-model` allows two-way model binding against an input. Control value manipulation from UI via user action will change backing model data and programmatic changes to model value will be reflected to the UI. You can customize input behavior by using [`ng-model-options`](https://docs.angularjs.org/api/ng/directive/ngModelOptions) directive (can be globally applied by placing on the root element of the application).
+- [`ng-model`](https://docs.angularjs.org/api/ng/directive/ngModel) allows two-way model binding against an input. Control value manipulation from UI via user action will change backing model data and programmatic changes to model value will be reflected to the UI. You can customize input behavior by using [`ng-model-options`](https://docs.angularjs.org/api/ng/directive/ngModelOptions) directive (can be globally applied by placing on the root element of the application).
 
-- In contrast, `ng-value` allows one-way binding from the model to the UI but not the other way around.
+- In contrast, [`ng-value`](https://docs.angularjs.org/api/ng/directive/ngValue) allows one-way binding from the model to the UI but not the other way around.
 
-- Double curly brackets / markup notation `{{ }}` evaluates expression within. The result will replace the markup.
+- Double curly brackets / markup notation [`{{ }}`](https://docs.angularjs.org/guide/templates) evaluates expression within. The result will replace the markup.
 
-- `ng-bind` evaluates the expression passed in parameter, then replaces the content of the element with the result.
+- [`ng-bind`](https://docs.angularjs.org/api/ng/directive/ngBind) evaluates the expression passed in parameter, then replaces the content of the element with the result.
     - However, unlike markup, `ng-bind` **is much faster** (about 20% faster).
     - Markup is dirty checked every `$digest` cycle, even when not needed.
     - `ng-bind` places a watcher on passed variables, which will only fire when the passed value actually changes.
 
-- `ng-bind-html` behaves like `ng-bind`, but does not escape the resulting string. To use this directive, [`angular-sanitize`](https://www.npmjs.com/package/angular-sanitize) must be added to application module dependencies. The directive will securely sanitize the output then treats it as an injected HTML code.
+- [`ng-bind-html`](https://docs.angularjs.org/api/ng/directive/ngBindHtml) behaves like `ng-bind`, but does not escape the resulting string. To use this directive, [`angular-sanitize`](https://www.npmjs.com/package/angular-sanitize) must be added to application module dependencies. The directive will securely sanitize the output then treats it as an injected HTML code.
 
-- `ng-non-bindable` tells AngularJS to ignore / not compile the tag content. This is useful for displaying contents which appeared to be AngularJS codes, such as code snippets.
+- [`ng-non-bindable`](https://docs.angularjs.org/api/ng/directive/ngNonBindable) tells AngularJS to ignore / not compile the tag content. This is useful for displaying contents which appeared to be AngularJS codes, such as code snippets.
 
 #### Attribute Changers
 
@@ -366,7 +366,7 @@ The difference between [`ng-if`](https://docs.angularjs.org/api/ng/directive/ngI
 </p>
 <p>
     <img ng-src="profile-image/{{value}}.jpg"/>
-    <!-- If you use src, the image may not load! Also, there is ng-srcset for srcset attribute. -->
+    <!-- If you use src, the image may not load! -->
 </p>
 <p>
     <button type="button" ng-disabled="!value">OK</button>
@@ -390,6 +390,16 @@ The difference between [`ng-if`](https://docs.angularjs.org/api/ng/directive/ngI
     <!-- details tag is not supported in IE and Edge. Use polyfill: https://github.com/javan/details-element-polyfill -->
 </div>
 ```
+
+Read more:
+- https://docs.angularjs.org/api/ng/directive/ngHref
+- https://docs.angularjs.org/api/ng/directive/ngSrc
+- https://docs.angularjs.org/api/ng/directive/ngSrcset
+- https://docs.angularjs.org/api/ng/directive/ngDisabled
+- https://docs.angularjs.org/api/ng/directive/ngChecked
+- https://docs.angularjs.org/api/ng/directive/ngReadonly
+- https://docs.angularjs.org/api/ng/directive/ngSelected
+- https://docs.angularjs.org/api/ng/directive/ngOpen
 
 > Obviously, you should not use `ng-checked` and `ng-selected` if you are planning to interact with user input, but instead use `ng-model`. These directives are bound one-way and will not update the backing model!
 

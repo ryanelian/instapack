@@ -359,6 +359,8 @@ Use `as` to store filter results into a temporary variable, if needed.
 
 #### Attribute Changers
 
+These directives should be used instead of their standard HTML attribute counterparts due to technical reasons.
+
 ```html
 <p>
     <a ng-href="profile/{{value}}">

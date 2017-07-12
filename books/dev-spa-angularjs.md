@@ -55,7 +55,7 @@ With our registered `aspnet` module, auto-bootstrap your application by using `n
 
 ```html
 <div ng-app="aspnet" ng-cloak>
-    <!-- AngularJS codes work here! -->
+    <!-- AngularJS code work here! -->
     <p>{{1 + 1}}</p>
 </div>
 ```
@@ -90,7 +90,7 @@ export * from './Sum'
 
 Then create new file `Sum.ts` in the same `components` folder. Doing so tells TypeScript to re-export the modules exported from `Sum.ts`. This technique allows adding more components into the application while keeping its source code well-organized.
 
-Write the following codes in `Sum.ts`:
+Write the following code in `Sum.ts`:
 
 ```ts
 export let SumComponent: angular.IComponentOptions = {
@@ -116,7 +116,7 @@ Now we can use our newly created component as HTML tag `<sum></sum>`. Try it!
 
 ## Controllers
 
-Controller allows adding code-behind for the component view. Revisit `Sum.ts` and change the codes to:
+Controller allows adding code-behind for the component view. Revisit `Sum.ts` and change the code to:
 
 ```ts
 class SumController implements angular.IController {
@@ -355,7 +355,7 @@ Use `as` to store filter results into a temporary variable, if needed.
 
 - [`ng-bind-html`](https://docs.angularjs.org/api/ng/directive/ngBindHtml) behaves like `ng-bind`, but does not escape the resulting string. To use this directive, [`angular-sanitize`](https://www.npmjs.com/package/angular-sanitize) must be added to application module dependencies. The directive will securely sanitize the output then treats it as an injected HTML code.
 
-- [`ng-non-bindable`](https://docs.angularjs.org/api/ng/directive/ngNonBindable) tells AngularJS to ignore / not compile the tag content. This is useful for displaying contents which appeared to be AngularJS codes, such as code snippets.
+- [`ng-non-bindable`](https://docs.angularjs.org/api/ng/directive/ngNonBindable) tells AngularJS to ignore / not compile the tag content. This is useful for displaying contents which appeared to be AngularJS code, such as snippets.
 
 #### Attribute Changers
 

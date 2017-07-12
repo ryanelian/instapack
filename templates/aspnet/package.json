@@ -16,11 +16,12 @@
     }
   },
   "dependencies": {
+    "@types/bootbox": "^4.4.33",
     "@types/jquery": "^3.2.5",
     "@types/lodash": "^4.14.67",
     "@types/node": "^8.0.8",
     "@types/urijs": "^1.15.32",
-    "alertifyjs": "^1.10.0",
+    "bootbox": "^4.4.0",
     "bootstrap-sass": "^3.3.7",
     "jquery": "^3.2.1",
     "jquery-validation": "^1.16.0",

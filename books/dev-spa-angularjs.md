@@ -305,15 +305,8 @@ Use `as` to store filter results into a temporary variable, if needed.
 
 ```html
 <div ng-if="true"></div>
-
 <div ng-show="true"></div>
 <div ng-hide="false"></div>
-
-<div ng-switch="me.value">
-    <div ng-switch-when="1"></div>
-    <div ng-switch-when="2"></div>
-    <div ng-switch-default></div>
-</div>
 ```
 
 The above directives will render the tag if parameter condition evaluates to [truthy](https://developer.mozilla.org/en/docs/Glossary/Truthy) (or [falsy](https://developer.mozilla.org/en-US/docs/Glossary/Falsy) for `ng-hide`).
@@ -322,7 +315,15 @@ The difference between [`ng-if`](https://docs.angularjs.org/api/ng/directive/ngI
 
 `ng-if` can be used to reduce memory usage by reducing the amount of hidden elements in the application. However, `ng-show` / `ng-hide` should be used when recreating the DOM tree is slow (e.g. expensive initialization logic in nested components' controllers). 
 
-`ng-switch` behaves like `ng-if` by swapping DOM tree to matching template in accordance to `ng-switch-when` parameter, similar to [switch-case](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/switch) logic. 
+```html
+<div ng-switch="me.value">
+    <div ng-switch-when="1"></div>
+    <div ng-switch-when="2"></div>
+    <div ng-switch-default></div>
+</div>
+```
+
+[`ng-switch`](https://docs.angularjs.org/api/ng/directive/ngSwitch) behaves like `ng-if` by swapping DOM tree to matching template in accordance to `ng-switch-when` parameter, similar to [switch-case](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/switch) logic. 
 
 ### Data Directives
 
@@ -341,17 +342,20 @@ The difference between [`ng-if`](https://docs.angularjs.org/api/ng/directive/ngI
 <p ng-non-bindable>{{test}}</p>
 ```
 
-`ng-model` allows two-way model binding against an input. Control value manipulation from UI via user action will change backing model data and programmatic changes to model value will be reflected to the UI. You can customize input behavior by using [`ng-model-options`](https://docs.angularjs.org/api/ng/directive/ngModelOptions) directive (can be globally applied by placing on the root element of the application).
+- `ng-model` allows two-way model binding against an input. Control value manipulation from UI via user action will change backing model data and programmatic changes to model value will be reflected to the UI. You can customize input behavior by using [`ng-model-options`](https://docs.angularjs.org/api/ng/directive/ngModelOptions) directive (can be globally applied by placing on the root element of the application).
 
-In contrast, `ng-value` allows one-way binding from the model to the UI but not the other way around.
+- In contrast, `ng-value` allows one-way binding from the model to the UI but not the other way around.
 
-Double curly brackets / markup notation `{{ }}` evaluates expression within. The result will replace the markup.
+- Double curly brackets / markup notation `{{ }}` evaluates expression within. The result will replace the markup.
 
-`ng-bind` evaluates the expression passed in parameter, then replaces the content of the element with the result. However, unlike markup, `ng-bind` **is much faster** (about 20% faster). Markup is dirty checked every `$digest` cycle, even when not needed; `ng-bind` places a watcher on passed variables, which will only fire when the passed value actually changes.
+- `ng-bind` evaluates the expression passed in parameter, then replaces the content of the element with the result.
+    - However, unlike markup, `ng-bind` **is much faster** (about 20% faster).
+    - Markup is dirty checked every `$digest` cycle, even when not needed.
+    - `ng-bind` places a watcher on passed variables, which will only fire when the passed value actually changes.
 
-`ng-bind-html` behaves like `ng-bind`, but does not escape the resulting string. To use this directive, [`angular-sanitize`](https://www.npmjs.com/package/angular-sanitize) must be added to application module dependencies. The directive will securely sanitize the output then treats it as an injected HTML code.
+- `ng-bind-html` behaves like `ng-bind`, but does not escape the resulting string. To use this directive, [`angular-sanitize`](https://www.npmjs.com/package/angular-sanitize) must be added to application module dependencies. The directive will securely sanitize the output then treats it as an injected HTML code.
 
-`ng-non-bindable` tells AngularJS to ignore / not compile the tag content. This is useful for displaying contents which appeared to be AngularJS codes, such as code snippets.
+- `ng-non-bindable` tells AngularJS to ignore / not compile the tag content. This is useful for displaying contents which appeared to be AngularJS codes, such as code snippets.
 
 #### Attribute Changers
 
@@ -409,30 +413,12 @@ AngularJS events should behave similarly to the [DOM events](https://developer.m
 - `ng-mousedown`
 - `ng-mouseup`
 
-#### Mouse Coordinate Events
+#### Mouse Position Events
 
 - `ng-mouseover`
 - `ng-mouseenter`
 - `ng-mouseleave`
 - `ng-mousemove`
-
-#### Touchscreen Events
-
-`angular-material` provides custom swipe gesture listeners. [Demo](https://material.angularjs.org/latest/demo/swipe)
-
-- `md-swipe-down`
-- `md-swipe-left`
-- `md-swipe-right`
-- `md-swipe-up`
-
-However, if for some reason you are unable / do not want to use `angular-material`, you can use the official [`angular-touch`](https://www.npmjs.com/package/angular-touch) or the alternative [`angular-swipe`](https://www.npmjs.com/package/angular-swipe) to provide these gesture events:
-
-- `ng-swipe-left`
-- `ng-swipe-right`
-- `ng-swipe-up` *
-- `ng-swipe-down` *
-
-> \* not available in `angular-touch`
 
 #### Keyboard Events
 
@@ -454,6 +440,24 @@ However, if for some reason you are unable / do not want to use `angular-materia
 - `ng-copy`
 - `ng-cut`
 - `ng-paste`
+
+#### Touchscreen Events
+
+`angular-material` provides custom swipe gesture listeners. [Demo](https://material.angularjs.org/latest/demo/swipe)
+
+- `md-swipe-down`
+- `md-swipe-left`
+- `md-swipe-right`
+- `md-swipe-up`
+
+However, if for some reason you are unable / do not want to use `angular-material`, you can use the official [`angular-touch`](https://www.npmjs.com/package/angular-touch) or the alternative [`angular-swipe`](https://www.npmjs.com/package/angular-swipe) to provide these gesture events:
+
+- `ng-swipe-left`
+- `ng-swipe-right`
+- `ng-swipe-up` *
+- `ng-swipe-down` *
+
+> \* not available in `angular-touch`
 
 ### Transform Filters
 

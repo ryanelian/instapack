@@ -611,7 +611,7 @@ Return to `angular-project.ts` code lines where we registered `add` filter earli
 app.filter('add', filters.Add);
 ```
 
-That's better, isn't it?
+Looks better, aye?
 
 #### Built-In Filters
 

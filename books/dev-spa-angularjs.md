@@ -229,6 +229,8 @@ Within the loop template, these special properties can also be accessed:
 
 Filters may be applied to provide declarative client-side search from the collection. Multiple filters can be chained together using the pipe `|` symbol.
 
+> `track by` must always be the last expression in the repeat directive parameter!
+
 ```html
 <p>
     <input ng-model="wildcard" />
@@ -326,8 +328,6 @@ Use `as` to store filter results into a temporary variable, if needed.
     <!-- filter results are stored into 'results' variable -->
 </p>
 ```
-
-> `track by` must always be the last expression in the repeat directive parameter!
 
 ### Data Directives
 
@@ -517,6 +517,102 @@ However, if you are unable / do not want to use `angular-material` for some reas
 
 ### Transform Filters
 
+#### Basic
+
+All AngularJS filters, including `filter`, `orderBy`, and `limitTo` filters that we used for searching through a looped collection, are basically [a simple transform function at its very core](https://docs.angularjs.org/guide/filter). This is an example of creating a custom filter for incrementing an input number by one:
+
+```ts
+app.filter('add', function() {
+    return function(input: number) {
+        return input + 1;
+    };
+});
+```
+
+As simple as that. To use the filter, simply pipe your value to it:
+
+```html
+<p ng-bind="2 | add"></p>
+```
+
+We can add parameters to our `add` filter too:
+
+```ts
+app.filter('add', function () {
+    return function (input: number, x: number) {
+        if (x) {
+            return input + x;
+        }
+        return input + 1;
+    };
+});
+```
+
+```html
+<p ng-bind="2 | add:3"></p>
+```
+
+#### Advanced
+
+If somehow you need to call in a service from the Dependency Injection provider, the usual [construction function via array notation](https://docs.angularjs.org/guide/di) works nicely here:
+
+```ts
+// Extra knowledge: this is how you define application-wide settings / constants. 
+app.value('jack', 100);
+
+app.filter('add', ['jack', function (jack: number) {
+    return function (input: number, x: number) {
+        input += jack;
+        if (x) {
+            return input + x;
+        }
+        return input + 1;
+    };
+}]);
+```
+
+Normally, one or two simple filters defined in `angular-project.ts` would not be detrimental to source code structure. However, if there are gigantic complex filters or too many filters, the entry file can quickly become unreadable.
+
+To mitigate this, add the following line in `angular-project.ts`:
+
+```ts
+import * as filters from './filters';
+```
+
+Then create a new folder `/filters` with `index.ts` inside:
+
+```ts
+export * from './Add';
+```
+
+Then create `Add.ts` next to the `index.ts`:
+
+```ts
+let Add = ['jack', function (jack: number) {
+    return function (input: number, x: number) {
+        input += jack;
+        if (x) {
+            return input + x;
+        }
+        return input + 1;
+    };
+}];
+
+export { Add }
+```
+
+Now functions required for running `Add.ts` are isolated into a single module, which allows clean separation and loose coupling with the rest of the application modules.
+
+Return to `angular-project.ts` code lines where we registered `add` filter earlier. Replace the code with:
+
+```ts
+app.filter('add', filters.Add);
+```
+
+That's better, isn't it?
+
+#### Built-In Filters
+
 > TODO
 
 - currency
@@ -525,7 +621,6 @@ However, if you are unable / do not want to use `angular-material` for some reas
 - json
 - lowercase
 - uppercase
-- custom
 
 ### Behavior Mutations
 

@@ -519,7 +519,9 @@ However, if you are unable / do not want to use `angular-material` for some reas
 
 #### Basic
 
-All AngularJS filters, including `filter`, `orderBy`, and `limitTo` filters that we used for searching through a looped collection, are basically **[simple transform functions at their very core](https://docs.angularjs.org/guide/filter)**. This is an example of creating a custom filter for incrementing an input number by one:
+All AngularJS filters, including `filter`, `orderBy`, and `limitTo` filters that we used for searching through a looped collection, are basically **[simple transform functions at their very cores](https://docs.angularjs.org/guide/filter)**.
+
+This is an example of authoring a custom filter for incrementing an input number by one:
 
 ```ts
 app.filter('add', function() {

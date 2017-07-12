@@ -173,6 +173,30 @@ For the sake of guide completeness, fundamental view directives will be reviewed
 
 ### Control Structures
 
+#### Conditions
+
+```html
+<div ng-if="true"></div>
+<div ng-show="true"></div>
+<div ng-hide="false"></div>
+```
+
+The above directives will render the tag if parameter condition evaluates to [truthy](https://developer.mozilla.org/en/docs/Glossary/Truthy) (or [falsy](https://developer.mozilla.org/en-US/docs/Glossary/Falsy) for `ng-hide`).
+
+The difference between [`ng-if`](https://docs.angularjs.org/api/ng/directive/ngIf) and [`ng-show`](https://docs.angularjs.org/api/ng/directive/ngShow) / [`ng-hide`](https://docs.angularjs.org/api/ng/directive/ngHide), is the former **erases** the DOM tree when not displaying the element, while the latter uses CSS `display: none` property.
+
+`ng-if` can be used to reduce memory usage by reducing the amount of hidden elements in the application. However, `ng-show` / `ng-hide` should be used when recreating the DOM tree is slow (e.g. expensive initialization logic in nested components' controllers). 
+
+```html
+<div ng-switch="me.value">
+    <div ng-switch-when="1"></div>
+    <div ng-switch-when="2"></div>
+    <div ng-switch-default></div>
+</div>
+```
+
+[`ng-switch`](https://docs.angularjs.org/api/ng/directive/ngSwitch) behaves like `ng-if` by swapping DOM tree to matching template in accordance to `ng-switch-when` parameter, similar to [switch-case](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/switch) logic. 
+
 #### Loop
 
 ```html
@@ -301,30 +325,6 @@ Use `as` to store filter results into a temporary variable, if needed.
 
 > `track by` must always be the last expression in the repeat directive parameter!
 
-#### Conditions
-
-```html
-<div ng-if="true"></div>
-<div ng-show="true"></div>
-<div ng-hide="false"></div>
-```
-
-The above directives will render the tag if parameter condition evaluates to [truthy](https://developer.mozilla.org/en/docs/Glossary/Truthy) (or [falsy](https://developer.mozilla.org/en-US/docs/Glossary/Falsy) for `ng-hide`).
-
-The difference between [`ng-if`](https://docs.angularjs.org/api/ng/directive/ngIf) and [`ng-show`](https://docs.angularjs.org/api/ng/directive/ngShow) / [`ng-hide`](https://docs.angularjs.org/api/ng/directive/ngHide), is the former **erases** the DOM tree when not displaying the element, while the latter uses CSS `display: none` property.
-
-`ng-if` can be used to reduce memory usage by reducing the amount of hidden elements in the application. However, `ng-show` / `ng-hide` should be used when recreating the DOM tree is slow (e.g. expensive initialization logic in nested components' controllers). 
-
-```html
-<div ng-switch="me.value">
-    <div ng-switch-when="1"></div>
-    <div ng-switch-when="2"></div>
-    <div ng-switch-default></div>
-</div>
-```
-
-[`ng-switch`](https://docs.angularjs.org/api/ng/directive/ngSwitch) behaves like `ng-if` by swapping DOM tree to matching template in accordance to `ng-switch-when` parameter, similar to [switch-case](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/switch) logic. 
-
 ### Data Directives
 
 #### Model & Expression Binders
@@ -412,9 +412,7 @@ Read more:
 
 ### Event Handlers
 
-For detailed information and examples, visit https://docs.angularjs.org/api/ng/directive
-
-AngularJS events should behave similarly to the [DOM events](https://developer.mozilla.org/en-US/docs/Web/Events) counterpart.
+AngularJS events should behave similarly to the [DOM events](https://developer.mozilla.org/en-US/docs/Web/Events) counterpart. For detailed information and examples, visit https://docs.angularjs.org/api/ng/directive
 
 #### Click Events
 
@@ -470,6 +468,8 @@ However, if for some reason you are unable / do not want to use `angular-materia
 > \* not available in `angular-touch`
 
 ### Transform Filters
+
+> TODO
 
 ### Behavior Mutations
 

@@ -370,17 +370,18 @@ These directives should be used instead of their standard HTML attribute counter
     <img ng-src="profile-image/{{value}}.jpg"/>
     <!-- If you use src, the image may not load! -->
 </p>
-<p>
+<div>
+    <!-- These directives evaluate the expression in parameter to boolean. -->
+
     <button type="button" ng-disabled="!value">OK</button>
     <label><input type="checkbox" ng-checked="value">Has value?</label>
     <input ng-readonly="true" value="Hello World!" />
+
     <select>
         <option ng-selected="!value">No value...</option>
         <option ng-selected="value">Has value!</option>
     </select>
-    <!-- Evaluates the statement within to boolean, instead of using markup. -->
-</p>
-<div>
+    
     <details id="details" ng-open="false">
         <summary>List</summary>
         <ul>
@@ -389,7 +390,6 @@ These directives should be used instead of their standard HTML attribute counter
             <li>Durian</li>
         </ul>
     </details>
-    <!-- details tag is not supported in IE and Edge. Use polyfill: https://github.com/javan/details-element-polyfill -->
 </div>
 ```
 
@@ -404,6 +404,8 @@ Read more:
 - https://docs.angularjs.org/api/ng/directive/ngOpen
 
 > Obviously, you should not use `ng-checked` and `ng-selected` if you are planning to interact with user input, but instead use `ng-model`. These directives are bound one-way and will not update the backing model!
+
+> `<details>` is not supported in IE and Edge browsers. Use polyfill when needed: https://github.com/javan/details-element-polyfill
 
 #### CSS Class Changers
 
@@ -452,7 +454,7 @@ p.namez:nth-child(even) {
 
 ### Event Handlers
 
-AngularJS events should behave similarly to the [DOM events](https://developer.mozilla.org/en-US/docs/Web/Events) counterpart. For detailed information and examples, visit https://docs.angularjs.org/api/ng/directive
+AngularJS events should behave similarly to the [DOM event counterparts](https://developer.mozilla.org/en-US/docs/Web/Events). For detailed information and examples, visit https://docs.angularjs.org/api/ng/directive
 
 #### Click Events
 

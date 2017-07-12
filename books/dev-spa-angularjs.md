@@ -413,7 +413,7 @@ Read more:
 <p ng-class="me.classMap">Class Map</p>
 <!-- CSS class will be set to "a c" -->
 
-<p ng-class="[me.class1, me.class2]">Class Map</p>
+<p ng-class="[me.class1, me.class2]">String Array</p>
 ```
 
 ```ts
@@ -436,6 +436,18 @@ class MyController implements angular.IController {
 <div ng-repeat="name in me.names track by $index">
     <p ng-class-odd="'odd'" ng-class-even="'even'" ng-bind="name"></p>
 </div>
+```
+
+> For simple cases, you should probably use CSS rule instead for better performance:
+
+```css
+p.namez:nth-child(odd) {
+    background: red;
+}
+
+p.namez:nth-child(even) {
+    background: blue;
+}
 ```
 
 ### Event Handlers

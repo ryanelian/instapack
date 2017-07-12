@@ -590,7 +590,7 @@ export * from './Add';
 Then create `Add.ts` next to the `index.ts`:
 
 ```ts
-let Add = ['jack', function (jack: number) {
+export let Add = ['jack', function (jack: number) {
     return function (input: number, x: number) {
         input += jack;
         if (x) {
@@ -599,8 +599,6 @@ let Add = ['jack', function (jack: number) {
         return input + 1;
     };
 }];
-
-export { Add }
 ```
 
 Now functions required for running `Add.ts` are isolated into a single module, which allows clean separation and loose coupling with the rest of the application modules.

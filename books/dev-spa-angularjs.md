@@ -387,14 +387,73 @@ Double curly brackets / markup notation `{{ }}` evaluates expression within. The
 </div>
 ```
 
-Obviously, you should not use `ng-checked` and `ng-selected` if you are planning to interact with user input, but instead use `ng-model`. These directives are one-way data binding and will not update the backing model!
+> Obviously, you should not use `ng-checked` and `ng-selected` if you are planning to interact with user input, but instead use `ng-model`. These directives are bound one-way and will not update the backing model!
 
 #### CSS Class Changers
+
+> TODO
 
 - `ng-class`
 - `ng-class-odd` vs `ng-class-even` 
 
 ### Event Handlers
+
+For detailed information and examples, visit https://docs.angularjs.org/api/ng/directive
+
+AngularJS events should behave similarly to the [DOM events](https://developer.mozilla.org/en-US/docs/Web/Events) counterpart.
+
+#### Click Events
+
+- `ng-click`
+- `ng-dblclick`
+- `ng-mousedown`
+- `ng-mouseup`
+
+#### Mouse Coordinate Events
+
+- `ng-mouseover`
+- `ng-mouseenter`
+- `ng-mouseleave`
+- `ng-mousemove`
+
+#### Touchscreen Events
+
+`angular-material` provides custom swipe gesture listeners. [Demo](https://material.angularjs.org/latest/demo/swipe)
+
+- `md-swipe-down`
+- `md-swipe-left`
+- `md-swipe-right`
+- `md-swipe-up`
+
+However, if for some reason you are unable / do not want to use `angular-material`, you can use the official [`angular-touch`](https://www.npmjs.com/package/angular-touch) or the alternative [`angular-swipe`](https://www.npmjs.com/package/angular-swipe) to provide these gesture events:
+
+- `ng-swipe-left`
+- `ng-swipe-right`
+- `ng-swipe-up` *
+- `ng-swipe-down` *
+
+> \* not available in `angular-touch`
+
+#### Keyboard Events
+
+- `ng-keydown`
+- `ng-keyup`
+- `ng-keypress`
+
+#### Form & Control Events
+
+- `ng-submit`
+- `ng-change` unlike DOM event `onchange`, is evaluated immediately (the latter only fires when the element loses focus).
+- `ng-focus`
+- `ng-blur`
+
+> **Fun trivia:** DOM event [`oninput`](https://developer.mozilla.org/en-US/docs/Web/Events/input) triggers immediately after the value of an element has changed via user interaction, however does not work on `<select>` tag.
+
+#### Clipboard Events
+
+- `ng-copy`
+- `ng-cut`
+- `ng-paste`
 
 ### Transform Filters
 

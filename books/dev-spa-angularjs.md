@@ -60,7 +60,7 @@ With our registered `aspnet` module, auto-bootstrap your application by using `n
 </div>
 ```
 
-If everything goes well, the expression will be evaluated to `2` inside the paragraph tag.
+If everything goes well, the expression within the double curly braces inside the paragraph tag will be evaluated to `2`.
 
 You can also manually bootstrap the application instead of using `ng-app` directive:
 
@@ -114,18 +114,6 @@ app.component('sum', components.SumComponent);
 
 Now we can use our newly created component as HTML tag `<sum></sum>`. Try it!
 
-## View Directives
-
-Most common AngularJS directives are listed in this page: https://docs.angularjs.org/api/ng/directive
-
-For the sake of guide completeness, fundamental directives will be reviewed in this chapter.
-
-### Control Structures
-
-### Model Binders
-
-### Event Handlers
-
 ## Controllers
 
 Controller allows adding code-behind for the component view. Revisit `Sum.ts` and change the codes to:
@@ -176,6 +164,169 @@ With that knowledge, we can change the `Sum.html` template to:
 ```
 
 Try calling `<sum a="2" b="3"></sum>`. If done correctly, the web page should display `5`.
+
+## View Directives
+
+Most common AngularJS directives are listed in this page: https://docs.angularjs.org/api/ng/directive
+
+For the sake of guide completeness, fundamental view directives will be reviewed in this chapter.
+
+### Control Structures
+
+#### Loop
+
+```html
+<p ng-repeat="student in me.students track by student.studentId">
+    {{ student.name }}
+</p>
+```
+
+Iterates through every element in a collection. Each loop creates a new element instance with its own scope and variable. `track by` statement must be provided with a unique key of an element (use `$index` when no such key exists).
+
+> **ALWAYS** have `track by` when iterating a collection. If `track by` is missing, the directive will recreate all elements on change, which translates to **heavy performance penalty**!
+
+Within the loop template, these special properties can also be accessed:
+
+- `$index` starts from 0 to array length -1.
+
+- `$first` is `true` if current element is the first item in iteration.
+
+- `$last` is `true` if current element is the last item in iteration.
+
+- `$middle` = `!$first && !$last`
+
+- `$even` = `$index % 2 == 0`
+
+- `$odd` = `$index % 2 == 1`
+
+#### Loop Filters
+
+Filters may be applied to provide declarative client-side search from the collection. Multiple filters can be chained together using the pipe `|` symbol.
+
+```html
+<p>
+    <input ng-model="wildcard" />
+</p>
+
+<p ng-repeat="student in me.students | filter:wildcard track by student.studentId"></p>
+```
+
+The above examples will return search results containing the input from the textbox from any property. A search keyword `234` will return a student with property `phone: '123456789'`.
+
+
+```html
+<p>
+    <input ng-model="search.name" />
+</p>
+
+<p ng-repeat="student in me.students | filter:search:true track by student.studentId"></p>
+```
+
+In contrast, the above example allows precision search by returning only results with **matching property** (e.g. the object passed is `{ name: '...' }`) and **strict equality** mode enabled (`:true`). A student with property `name: 'Sherlock Holmes'` will only be returned if the search keyword is also `Sherlock Holmes`.
+
+```html
+<p>
+    <input ng-model="me.search" />
+</p>
+
+<p ng-repeat="student in me.students | filter:me.customSearch track by student.studentId"></p>
+```
+
+```ts
+class StudentController implements angular.IController {
+
+    search: string;
+
+    // Note: a filter must NOT be a method, but a callback.
+    customSearch = (student) => {
+        return student.name.toLowerCase().startsWith(search.toLowerCase());
+    };
+}
+```
+
+The above example demonstrates how to create a custom search by creating a callback which accepts an item and returns a boolean.
+
+In addition, you can also use `orderBy` filter to perform sorting:
+
+```html
+<p ng-repeat="student in me.students | orderBy:'name' track by student.studentId">
+    <!-- Order by name property, ascending -->
+</p>
+<p ng-repeat="student in me.students | orderBy:['name', 'studentId'] track by student.studentId">
+    <!-- Order by name property, then by studentId (both ascending) -->
+</p>
+<p ng-repeat="student in me.students | orderBy:'-name' track by student.studentId">
+    <!-- Order by name property, descending -->
+</p>
+<p ng-repeat="student in me.students | orderBy:'name':true track by student.studentId">
+    <!-- Order by name property (ascending), then reverse the result -->
+</p>
+```
+
+And use `limitTo` filter to perform pagination:
+
+```html
+<p>
+    <input ng-model="me.page" type="number" />
+</p>
+<p ng-repeat="student in me.students | orderBy:'name' | limitTo:me.take:me.skip() track by student.studentId"></p>
+```
+
+```ts
+class StudentController implements angular.IController {
+    
+    page: number;
+
+    // Items per page
+    take = 10;
+
+    skip() {
+        if (!this.page) {
+            return 0;
+        }
+        return (this.page - 1) * this.take;
+    }
+}
+```
+
+Use `as` to store filter results into a temporary variable, if needed.
+
+```html
+<p ng-repeat="student in me.students | filter:'Ryan' | orderBy:'name' | limitTo:10:20 as results track by student.studentId">
+    <!-- filter results are stored into 'results' variable -->
+</p>
+```
+
+> `track by` must always be the last expression in the repeat directive parameter!
+
+#### Conditional
+
+```html
+<div ng-if="true"></div>
+
+<div ng-show="true"></div>
+<div ng-hide="false"></div>
+
+<div ng-switch="me.value">
+    <div ng-switch-when="1"></div>
+    <div ng-switch-when="2"></div>
+    <div ng-switch-default></div>
+</div>
+```
+
+The above directives will render the tag if parameter condition evaluates to [truthy](https://developer.mozilla.org/en/docs/Glossary/Truthy) (or [falsy](https://developer.mozilla.org/en-US/docs/Glossary/Falsy) for `ng-hide`).
+
+The difference between [`ng-if`](https://docs.angularjs.org/api/ng/directive/ngIf) and [`ng-show`](https://docs.angularjs.org/api/ng/directive/ngShow) / [`ng-hide`](https://docs.angularjs.org/api/ng/directive/ngHide), is the former **erases** the DOM tree when not displaying the element, while the latter uses CSS `display: none` property.
+
+`ng-if` can be used to reduce memory usage by reducing the amount of hidden elements in the application. However, `ng-show` / `ng-hide` should be used when recreating the DOM tree is slow (e.g. expensive initialization logic in nested components' controllers). 
+
+`ng-switch` behaves like `ng-if` by swapping DOM tree to matching template in accordance to `ng-switch-when` parameter. 
+
+### Model Binders
+
+https://docs.angularjs.org/api/ng/input
+
+### Event Handlers
 
 ## Server API
 
@@ -391,7 +542,7 @@ Modify `Sum.html` to:
 
 Explanation:
 
-- `<validation-message>` displays validation message for [AngularJS standard input errors](https://docs.angularjs.org/api/ng/input).
+- `<validation-message>` displays validation message for AngularJS standard input errors.
 
     - `for` attribute must be filled with `[<form> name].[<input> name]`.
     
@@ -409,7 +560,7 @@ Explanation:
 
 - `MyForm.$valid` and `MyForm.$invalid` were used for disabling form submit and the submission button when one or more inputs have invalid values. 
 
-    - Read more about AngularJS forms: https://docs.angularjs.org/guide/forms
+    - Read more about AngularJS forms and validations: https://docs.angularjs.org/guide/forms
 
 > **Warning:** Client-side validation cannot alone secure user input. Server side validation is also necessary.
 

@@ -186,9 +186,8 @@ For the sake of guide completeness, fundamental view directives will be reviewed
 The above directives will render the tag if parameter condition evaluates to [truthy](https://developer.mozilla.org/en/docs/Glossary/Truthy) (or [falsy](https://developer.mozilla.org/en-US/docs/Glossary/Falsy) for `ng-hide`).
 
 The difference between [`ng-if`](https://docs.angularjs.org/api/ng/directive/ngIf) and [`ng-show`](https://docs.angularjs.org/api/ng/directive/ngShow) / [`ng-hide`](https://docs.angularjs.org/api/ng/directive/ngHide), is the former **erases** the DOM tree when not displaying the element, while the latter uses CSS `display: none` property.
-
-`ng-if` can be used to reduce memory usage by reducing the amount of hidden elements in the application.
-However, `ng-show` / `ng-hide` should be used when recreating the DOM tree is slow (e.g. expensive initialization logic in nested components' controllers). 
+- `ng-if` can be used to reduce memory usage by reducing the amount of hidden elements in the application.
+- `ng-show` / `ng-hide` should be used when recreating the DOM tree is slow (e.g. expensive initialization logic in nested components' controllers). 
 
 ```html
 <div ng-switch="me.value">
@@ -249,6 +248,7 @@ The above [`filter:`](https://docs.angularjs.org/api/ng/filter/filter) example w
 ```
 
 In contrast, the above example allows precision search by returning only results with **matching property** (e.g. the object passed is `{ name: '...' }`) and **strict equality** mode enabled (`:true`).
+
 A student with property `name: 'Sherlock Holmes'` will only be returned if the search keyword is also `Sherlock Holmes`.
 
 ```html

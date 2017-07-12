@@ -88,7 +88,9 @@ These imports refer to `index.ts` in respective folders. Open `components/index.
 export * from './Sum'
 ```
 
-Then create new file `Sum.ts` in the same `components` folder. Doing so tells TypeScript to re-export the modules exported from `Sum.ts`. This technique allows adding more components into the application while keeping its source code well-organized.
+Then create new file `Sum.ts` in the same `components` folder.
+    - Doing so tells TypeScript to re-export the modules exported from `Sum.ts`.
+    - This technique allows adding more components into the application while keeping its source code well-organized.
 
 Write the following code in `Sum.ts`:
 
@@ -185,7 +187,8 @@ The above directives will render the tag if parameter condition evaluates to [tr
 
 The difference between [`ng-if`](https://docs.angularjs.org/api/ng/directive/ngIf) and [`ng-show`](https://docs.angularjs.org/api/ng/directive/ngShow) / [`ng-hide`](https://docs.angularjs.org/api/ng/directive/ngHide), is the former **erases** the DOM tree when not displaying the element, while the latter uses CSS `display: none` property.
 
-`ng-if` can be used to reduce memory usage by reducing the amount of hidden elements in the application. However, `ng-show` / `ng-hide` should be used when recreating the DOM tree is slow (e.g. expensive initialization logic in nested components' controllers). 
+`ng-if` can be used to reduce memory usage by reducing the amount of hidden elements in the application.
+However, `ng-show` / `ng-hide` should be used when recreating the DOM tree is slow (e.g. expensive initialization logic in nested components' controllers). 
 
 ```html
 <div ng-switch="me.value">
@@ -245,7 +248,8 @@ The above [`filter:`](https://docs.angularjs.org/api/ng/filter/filter) example w
 <p ng-repeat="student in me.students | filter:search:true track by student.studentId"></p>
 ```
 
-In contrast, the above example allows precision search by returning only results with **matching property** (e.g. the object passed is `{ name: '...' }`) and **strict equality** mode enabled (`:true`). A student with property `name: 'Sherlock Holmes'` will only be returned if the search keyword is also `Sherlock Holmes`.
+In contrast, the above example allows precision search by returning only results with **matching property** (e.g. the object passed is `{ name: '...' }`) and **strict equality** mode enabled (`:true`).
+A student with property `name: 'Sherlock Holmes'` will only be returned if the search keyword is also `Sherlock Holmes`.
 
 ```html
 <p>
@@ -342,7 +346,9 @@ Use `as` to store filter results into a temporary variable, if needed.
 <p ng-non-bindable>{{test}}</p>
 ```
 
-- [`ng-model`](https://docs.angularjs.org/api/ng/directive/ngModel) allows two-way model binding against an input. Control value manipulation from UI via user action will change backing model data and programmatic changes to model value will be reflected to the UI. You can customize input behavior by using [`ng-model-options`](https://docs.angularjs.org/api/ng/directive/ngModelOptions) directive (can be globally applied by placing on the root element of the application).
+- [`ng-model`](https://docs.angularjs.org/api/ng/directive/ngModel) allows two-way model binding against an input.
+    - Control value manipulation from UI via user action will change backing model data and programmatic changes to model value will be reflected to the UI.
+    - You can customize input behavior by using [`ng-model-options`](https://docs.angularjs.org/api/ng/directive/ngModelOptions) directive (can be globally applied by placing on the root element of the application).
 
 - In contrast, [`ng-value`](https://docs.angularjs.org/api/ng/directive/ngValue) allows one-way binding from the model to the UI but not the other way around.
 
@@ -618,7 +624,9 @@ Explanation:
 
 - `constructor($http)` allows AngularJS to perform Dependency Injection via constructor parameter for HTTP Service required to perform request against a web API.
 
-- `static $inject` allows injected services to survive mangling during compilation. For example, `$http` parameter may turn into `h` after minification. By providing a `static $inject` containing service names in an array of string, AngularJS will be able to correctly resolve the required dependencies.
+- `static $inject` allows injected services to survive mangling during compilation.
+    - For example, `$http` parameter may turn into `h` after minification.
+    - By providing a `static $inject` containing service names in an array of string, AngularJS will be able to correctly resolve the required dependencies.
 
 - `post` method uses the HTTP Service to perform a request to a web API, which returns a `Promise<MathApiResponseModel>` object if successful.
 

@@ -407,10 +407,36 @@ Read more:
 
 #### CSS Class Changers
 
-> TODO
+[`ng-class`](https://docs.angularjs.org/api/ng/directive/ngClass) accepts a string-boolean key-value-pair / map / dictionary parameter, which will be used for dynamically setting CSS classes into an element. `ng-class` also accepts and evaluates string and string array.
 
-- `ng-class`
-- `ng-class-odd` vs `ng-class-even` 
+```html
+<p ng-class="me.classMap">Class Map</p>
+<!-- CSS class will be set to "a c" -->
+
+<p ng-class="[me.class1, me.class2]">Class Map</p>
+```
+
+```ts
+class MyController implements angular.IController {
+
+    class1 = 'a';
+    class2 = 'b';
+
+    classMap = {
+        'a': true,
+        'b': false,
+        'c': true
+    };
+}
+```
+
+[`ng-class-odd`](https://docs.angularjs.org/api/ng/directive/ngClassOdd) and [`ng-class-even`](https://docs.angularjs.org/api/ng/directive/ngClassEven) behave exactly like `ng-class`, except they only work within `ng-repeat` template scope, for rows with either `$odd` or `$even` evaluated as true.
+
+```html
+<div ng-repeat="name in me.names track by $index">
+    <p ng-class-odd="'odd'" ng-class-even="'even'" ng-bind="name"></p>
+</div>
+```
 
 ### Event Handlers
 
@@ -700,8 +726,6 @@ Explanation:
     - `for` attribute must be filled with `[<form> name].[<input> name]`.
     
     - The component will attempt automatic homing to the input tag using `getElementsByName` for parsing validation parameter values such as `min`, `max`, `minlength`, `maxlength`, and `pattern` for accurately displaying the error message.
-
-    - `for-id` attribute may be filled if there are multiple elements with the same name. `getElementById` will be used instead for accurately parsing the input tag parameters.
 
     - `display` attribute customizes the name displayed for the input field.
 

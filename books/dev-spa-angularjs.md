@@ -498,7 +498,7 @@ AngularJS events should behave similarly to the [DOM events](https://developer.m
 - `md-swipe-right`
 - `md-swipe-up`
 
-However, if for some reason you are unable / do not want to use `angular-material`, you can use the official [`angular-touch`](https://www.npmjs.com/package/angular-touch) or the alternative [`angular-swipe`](https://www.npmjs.com/package/angular-swipe) to provide these gesture events:
+However, if you are unable / do not want to use `angular-material` for some reason, you can use the official [`angular-touch`](https://www.npmjs.com/package/angular-touch) or the alternative [`angular-swipe`](https://www.npmjs.com/package/angular-swipe) to provide these gesture events:
 
 - `ng-swipe-left`
 - `ng-swipe-right`
@@ -510,6 +510,14 @@ However, if for some reason you are unable / do not want to use `angular-materia
 ### Transform Filters
 
 > TODO
+
+- currency
+- number
+- date
+- json
+- lowercase
+- uppercase
+- custom
 
 ### Behavior Mutations
 

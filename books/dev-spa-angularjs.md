@@ -324,9 +324,9 @@ The difference between [`ng-if`](https://docs.angularjs.org/api/ng/directive/ngI
 
 `ng-switch` behaves like `ng-if` by swapping DOM tree to matching template in accordance to `ng-switch-when` parameter, similar to [switch-case](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/switch) logic. 
 
-### Model Binders
+### Data Directives
 
-#### Value Binders
+#### Model and Expression Binders
 
 ```html
 <p>
@@ -341,7 +341,7 @@ The difference between [`ng-if`](https://docs.angularjs.org/api/ng/directive/ngI
 <p ng-non-bindable>{{test}}</p>
 ```
 
-`ng-model` allows two-way model binding against an input. Control value manipulation from UI via user action will change backing model data and programmatic changes to model value will be reflected to the UI.
+`ng-model` allows two-way model binding against an input. Control value manipulation from UI via user action will change backing model data and programmatic changes to model value will be reflected to the UI. You can customize input behavior by using [`ng-model-options`](https://docs.angularjs.org/api/ng/directive/ngModelOptions) directive (can be globally applied by placing on the root element of the application).
 
 In contrast, `ng-value` allows one-way binding from the model to the UI but not the other way around.
 
@@ -355,15 +355,39 @@ Double curly brackets / markup notation `{{ }}` evaluates expression within. The
 
 #### Attribute Changers
 
-- `ng-href`
-- `ng-src`
-- `ng-srcset`
+```html
+<p>
+    <a ng-href="profile/{{value}}">
+    <!-- If you use href, the link may not work! -->
+</p>
+<p>
+    <img ng-src="profile-image/{{value}}.jpg"/>
+    <!-- If you use src, the image may not load! Also, there is ng-srcset for srcset attribute. -->
+</p>
+<p>
+    <button type="button" ng-disabled="!value">OK</button>
+    <label><input type="checkbox" ng-checked="value">Has value?</label>
+    <input ng-readonly="true" value="Hello World!" />
+    <select>
+        <option ng-selected="!value">No value...</option>
+        <option ng-selected="value">Has value!</option>
+    </select>
+    <!-- Evaluates the statement within to boolean, instead of using markup. -->
+</p>
+<div>
+    <details id="details" ng-open="false">
+        <summary>List</summary>
+        <ul>
+            <li>Apple</li>
+            <li>Orange</li>
+            <li>Durian</li>
+        </ul>
+    </details>
+    <!-- details tag is not supported in IE and Edge. Use polyfill: https://github.com/javan/details-element-polyfill -->
+</div>
+```
 
-- `ng-disabled`
-- `ng-checked`
-- `ng-readonly`
-- `ng-selected`
-- `ng-open`
+Obviously, you should not use `ng-checked` and `ng-selected` if you are planning to interact with user input, but instead use `ng-model`. These directives are one-way data binding and will not update the backing model!
 
 #### CSS Class Changers
 

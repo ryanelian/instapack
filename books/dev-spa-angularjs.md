@@ -213,7 +213,6 @@ Filters may be applied to provide declarative client-side search from the collec
 
 The above examples will return search results containing the input from the textbox from any property. A search keyword `234` will return a student with property `phone: '123456789'`.
 
-
 ```html
 <p>
     <input ng-model="search.name" />
@@ -237,7 +236,7 @@ class StudentController implements angular.IController {
 
     search: string;
 
-    // Note: a filter must NOT be a method, but a callback.
+    // IMPORTANT: a filter must NOT be a method, but a callback.
     customSearch = (student) => {
         return student.name.toLowerCase().startsWith(search.toLowerCase());
     };
@@ -274,6 +273,9 @@ And use `limitTo` filter to perform pagination:
 
 ```ts
 class StudentController implements angular.IController {
+
+    // Get array values from a web service.
+    students: Student[];
     
     page: number;
 
@@ -320,13 +322,65 @@ The difference between [`ng-if`](https://docs.angularjs.org/api/ng/directive/ngI
 
 `ng-if` can be used to reduce memory usage by reducing the amount of hidden elements in the application. However, `ng-show` / `ng-hide` should be used when recreating the DOM tree is slow (e.g. expensive initialization logic in nested components' controllers). 
 
-`ng-switch` behaves like `ng-if` by swapping DOM tree to matching template in accordance to `ng-switch-when` parameter. 
+`ng-switch` behaves like `ng-if` by swapping DOM tree to matching template in accordance to `ng-switch-when` parameter, similar to [switch-case](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/switch) logic. 
 
 ### Model Binders
 
-https://docs.angularjs.org/api/ng/input
+#### Value Binders
+
+```html
+<p>
+    <input ng-model="test" />
+</p>
+<p>
+    <input ng-value="test" />
+</p>
+<p>{{ test }}</p>
+<p ng-bind="test"></p>
+<p ng-bind-html="test"></p>
+<p ng-non-bindable>{{test}}</p>
+```
+
+`ng-model` allows two-way model binding against an input. Control value manipulation from UI via user action will change backing model data and programmatic changes to model value will be reflected to the UI.
+
+In contrast, `ng-value` allows one-way binding from the model to the UI but not the other way around.
+
+Double curly brackets / markup notation `{{ }}` evaluates expression within. The result will replace the markup.
+
+`ng-bind` evaluates the expression passed in parameter, then replaces the content of the element with the result. However, unlike markup, `ng-bind` **is much faster** (about 20% faster). Markup is dirty checked every `$digest` cycle, even when not needed; `ng-bind` places a watcher on passed variables, which will only fire when the passed value actually changes.
+
+`ng-bind-html` behaves like `ng-bind`, but does not escape the resulting string. To use this directive, [`angular-sanitize`](https://www.npmjs.com/package/angular-sanitize) must be added to application module dependencies. The directive will securely sanitize the output then treats it as an injected HTML code.
+
+`ng-non-bindable` tells AngularJS to ignore / not compile the tag content. This is useful for displaying contents which appeared to be AngularJS codes, such as code snippets.
+
+#### Attribute Changers
+
+- `ng-href`
+- `ng-src`
+- `ng-srcset`
+
+- `ng-disabled`
+- `ng-checked`
+- `ng-readonly`
+- `ng-selected`
+- `ng-open`
+
+#### CSS Class Changers
+
+- `ng-class`
+- `ng-class-odd` vs `ng-class-even` 
 
 ### Event Handlers
+
+### Transform Filters
+
+### Behavior Mutations
+
+Certain tags within AngularJS will behave differently compared to standard HTML:
+
+`<a>` will not cause page reload when `href` attribute is empty. This is needed for writing AngularJS application with client-side routing.
+
+`<form>` will not cause submission to server when `action` attribute is empty, due to the nature of AngularJS applications relying on AJAX for receiving / sending data from / to server.
 
 ## Server API
 

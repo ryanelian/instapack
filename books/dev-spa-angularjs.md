@@ -89,8 +89,8 @@ export * from './Sum'
 ```
 
 Then create new file `Sum.ts` in the same `components` folder.
-    - Doing so tells TypeScript to re-export the modules exported from `Sum.ts`.
-    - This technique allows adding more components into the application while keeping its source code well-organized.
+- Doing so tells TypeScript to re-export the modules exported from `Sum.ts`.
+- This technique allows adding more components into the application while keeping its source code well-organized.
 
 Write the following code in `Sum.ts`:
 
@@ -531,9 +531,9 @@ However, if you are unable / do not want to use `angular-material` for some reas
 
 Certain tags within AngularJS will behave differently compared to standard HTML:
 
-`<a>` will not cause page reload when `href` attribute is empty. This is needed for writing AngularJS application with client-side routing.
+- `<a>` will not cause page reload when `href` attribute is empty. This is needed for writing AngularJS application with client-side routing.
 
-`<form>` will not cause submission to server when `action` attribute is empty, due to the nature of AngularJS applications relying on AJAX for receiving / sending data from / to server.
+- `<form>` will not cause submission to server when `action` attribute is empty, due to the nature of AngularJS applications relying on AJAX for receiving / sending data from / to server.
 
 ## Server API
 

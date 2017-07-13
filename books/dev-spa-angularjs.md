@@ -633,7 +633,7 @@ Looks better, aye?
 
     - `ng-bind` and `{{ }}` also automatically stringify an object passed to JSON, but not indented.
 
-> [`date`](https://docs.angularjs.org/api/ng/filter/date) allows rendering a JavaScript [Date](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date) or [number representing Unix Time in milliseconds](https://en.wikipedia.org/wiki/Unix_time) or [ISO 8601 string](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Date/toISOString) object using requested format.
+- [`date`](https://docs.angularjs.org/api/ng/filter/date) allows rendering a JavaScript [Date](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date) or [number representing Unix Time in milliseconds](https://en.wikipedia.org/wiki/Unix_time) or [ISO 8601 string](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Date/toISOString) object using requested format.
 
     - For example, but not limited to: `1499955043195 | date:'yyyy-MM-dd HH:mm:ss Z'` will be rendered as `2017-07-13 21:10:43 +0700`
 

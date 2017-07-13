@@ -559,7 +559,7 @@ app.filter('add', function () {
 If somehow you need to call in a service from the Dependency Injection provider, the usual [construction function via array notation](https://docs.angularjs.org/guide/di) works nicely here:
 
 ```ts
-// Extra knowledge: this is how you define application-wide settings / constants. 
+// Extra Knowledge: This is how you define application-wide settings / constants. 
 app.value('jack', 100);
 
 app.filter('add', ['jack', function (jack: number) {
@@ -573,7 +573,7 @@ app.filter('add', ['jack', function (jack: number) {
 }]);
 ```
 
-Normally, one or two simple filters defined in `angular-project.ts` would not be detrimental to source code structure. However, if there are gigantic complex filters or too many filters, the entry file can quickly become unreadable.
+Normally, one or two simple filters defined in `angular-project.ts` would not be detrimental to source code structure. However, if there are gigantic complex filters or too many filters, the entry point would quickly become unreadable.
 
 To mitigate this, add the following line in `angular-project.ts`:
 
@@ -613,14 +613,33 @@ Looks better, aye?
 
 #### Built-In Filters
 
-> TODO
+- Refer to [loop filters section](#loop-filters) for `filter`, `orderBy`, and `limitTo` usage manual.
 
-- currency
-- number
-- date
-- json
-- lowercase
-- uppercase
+- [`number`](https://docs.angularjs.org/api/ng/filter/number) applies thousands separators and performs input rounding to the chosen fraction count (defaults to 3).
+
+    - `1234.56789 | number:2` will be rendered as `1,234.57`.
+
+- [`currency`](https://docs.angularjs.org/api/ng/filter/currency) works like `number` but displays a currency symbol (defaults to `$`).
+
+    - `1234.56789 | currency:'Rp ':2` will be rendered as `Rp 1,234.57`.
+
+- [`lowercase`](https://docs.angularjs.org/api/ng/filter/lowercase) and [`uppercase`](https://docs.angularjs.org/api/ng/filter/uppercase) converts a string input into lowercase or uppercase.
+
+    - You should use CSS [`text-transform`](https://developer.mozilla.org/en/docs/Web/CSS/text-transform) property with `uppercase`, `lowercase`, or `capitalize` values instead for styling outputs, though...
+
+- [`json`](https://docs.angularjs.org/api/ng/filter/json) stringifies any input object into JSON string. Provide parameter for specificying display indentation.
+
+    - Practical usage example: `<pre><code ng-bind="debugging | json:4"></code></pre>`
+
+    - `ng-bind` and `{{ }}` also automatically stringify an object passed to JSON, but not indented.
+
+> [`date`](https://docs.angularjs.org/api/ng/filter/date) allows rendering a JavaScript [Date](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date) or [number representing Unix Time in milliseconds](https://en.wikipedia.org/wiki/Unix_time) or [ISO 8601 string](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Date/toISOString) object using requested format.
+
+    - For example, but not limited to: `1499955043195 | date:'yyyy-MM-dd HH:mm:ss Z'` will be rendered as `2017-07-13 21:10:43 +0700`
+
+    - The first filter parameter accepts the format string. Refer to the official documentation for a comprehensive usage manual.
+
+    - The second filter parameter accepts time zone string. (e.g. `UTC`, `+0800` for 8h0m ahead of GMT)
 
 ### Behavior Mutations
 
@@ -872,4 +891,4 @@ If you have successfully followed the guide up to this point, **congratulations*
 
 However, there are cases when you need to develop a full **Single-Page Application (SPA)** powered by **client-side routing**.
 
-## Role-Based Authorization
+> TODO

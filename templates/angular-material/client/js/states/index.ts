@@ -11,7 +11,7 @@ export let Hello: State = {
     url: '/hello/{name}',
     component: 'hello',
     resolve: {
-        name: ['$stateParams', function (params: StateParams) {
+        name: ['$stateParams', (params: StateParams) => {
             return params['name'];
         }]
     }

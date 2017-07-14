@@ -45,7 +45,7 @@ export let Templatify = function (file) {
             return next(null, buffer);
         }
 
-        let template: string = buffer.toString('utf8');
+        let template = buffer.toString('utf8');
 
         if (minifyExt.indexOf(ext) !== -1) {
             template = minifier.minify(template, minifierOptions).trim();

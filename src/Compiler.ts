@@ -151,7 +151,7 @@ export class Compiler {
                     this.emit('end');
                 })
                 .pipe(To.Vinyl('bundle.js'))
-                .pipe(To.Buffer())
+                .pipe(To.VinylBuffer())
                 .pipe(To.ErrorHandler())
                 .pipe(sourcemaps.init({ loadMaps: true }))
                 .pipe(To.MinifyProductionJs(this.productionMode))

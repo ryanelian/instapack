@@ -74,7 +74,7 @@ CLI.command({
                 describe: 'Disables output files minification.'
             }).option('s', {
                 alias: 'server',
-                describe: 'Serve the output using an HTTP server of the specified port. (Enables watch mode)',
+                describe: 'Serve the output using an HTTP server listening on a local port.',
                 //default: 19991,
                 type: 'number'
             });

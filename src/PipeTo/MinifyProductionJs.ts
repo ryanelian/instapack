@@ -45,7 +45,7 @@ export function MinifyProductionJs(productionMode: boolean) {
             next(result.error);
         }
 
-        chunk.contents = new Buffer(result.code);
+        chunk.contents = Buffer.from(result.code);
 
         if (createSourceMap) {
             applySourceMap(chunk, JSON.parse(result.map));

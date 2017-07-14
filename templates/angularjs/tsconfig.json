@@ -16,7 +16,14 @@
     "module": "commonjs",
     "moduleResolution": "node",
     "importHelpers": true,
-    "jsx": "react"
+    "jsx": "react",
+
+    "lib": [
+      "dom",
+      "es5",
+      "scripthost",
+      "es2015.promise"
+    ]
   },
   "files": [
     "client/js/index.ts"

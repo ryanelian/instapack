@@ -832,10 +832,20 @@ Explanation:
 > **Under the hood:** Normally this technique does not work in AngularJS world because `$q` triggers `$scope.$apply()` but standard `Promise` does not. However, we can trick the browser into using `$q` as `Promise` polyfill by using the following code in `angular-project.ts`:
 
 ```ts
-// This code has already been included by instapack in template
-app.run(['$window', '$q', ($window: angular.IWindowService, $q: angular.IQService) => {
-    $window['Promise'] = $q;
+// This code has already been included by instapack AngularJS project templates!
+app.run(['$q', ($q: angular.IQService) => {
+    window['Promise'] = $q;
 }]);
+```
+
+```json
+// Add "es2015.promise" to "lib" in tsconfig.json, for source code access to Promise API.
+"lib": [
+    "dom",
+    "es5",
+    "scripthost",
+    "es2015.promise"
+]
 ```
 
 ## Validation

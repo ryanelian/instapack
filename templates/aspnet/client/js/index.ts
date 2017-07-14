@@ -1,9 +1,7 @@
-﻿function main(this: any) {
-    let $: JQueryStatic = window['$'];
-
+﻿function main(this: any, $: JQueryStatic) {
     $(() => {
 
     });
 }
 
-main();
+main(window['$']);

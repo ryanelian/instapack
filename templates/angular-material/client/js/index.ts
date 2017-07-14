@@ -1,1 +1,2 @@
-﻿import './angular-project';
+﻿// import './core-js';
+import './angular-project';

@@ -314,7 +314,7 @@ export class Compiler {
                     }));
 
                     concatCount--;
-                    if (concatCount === 0){
+                    if (concatCount === 0) {
                         g.push(null);
                     }
                 });

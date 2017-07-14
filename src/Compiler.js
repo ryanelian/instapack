@@ -11,7 +11,7 @@ const fs = require("fs-extra");
 const browserify = require("browserify");
 const tsify = require("tsify");
 const watchify = require("watchify");
-const HTMLify_1 = require("./HTMLify");
+const Templatify_1 = require("./Templatify");
 const gwatch = require("gulp-watch");
 const To = require("./PipeTo");
 const Server_1 = require("./Server");
@@ -71,7 +71,7 @@ class Compiler {
             browserifyOptions.cache = {};
             browserifyOptions.packageCache = {};
         }
-        let bundler = browserify(browserifyOptions).transform(HTMLify_1.HTMLify).add(jsEntry).plugin(tsify);
+        let bundler = browserify(browserifyOptions).transform(Templatify_1.Templatify).add(jsEntry).plugin(tsify);
         let compileJs = () => {
             gutil.log('Compiling JS', gutil.colors.cyan(jsEntry));
             return bundler.bundle()

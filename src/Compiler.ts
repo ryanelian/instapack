@@ -13,7 +13,7 @@ import * as fs from 'fs-extra';
 import * as browserify from 'browserify';
 import * as tsify from 'tsify';
 import * as watchify from 'watchify';
-import { HTMLify } from './HTMLify';
+import { Templatify } from './Templatify';
 
 // These are used by CSS
 import * as gwatch from 'gulp-watch';
@@ -140,7 +140,7 @@ export class Compiler {
             browserifyOptions.packageCache = {};
         }
 
-        let bundler = browserify(browserifyOptions).transform(HTMLify).add(jsEntry).plugin(tsify);
+        let bundler = browserify(browserifyOptions).transform(Templatify).add(jsEntry).plugin(tsify);
 
         let compileJs = () => {
             gutil.log('Compiling JS', gutil.colors.cyan(jsEntry));

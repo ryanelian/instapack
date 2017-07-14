@@ -1,5 +1,6 @@
 import * as minifier from 'html-minifier';
-import * as tools from 'browserify-transform-tools';
+import * as through2 from 'through2';
+import * as path from 'path';
 
 let minifierOptions = {
     caseSensitive: false,
@@ -32,22 +33,26 @@ let minifierOptions = {
     useShortDoctype: false
 };
 
-let transformOptions = {
-    includeExtensions: ['html']
+let minifyExt = ['.htm', '.html'];
+let templateExt = ['.txt'].concat(minifyExt);
+
+export let Templatify = function (file) {
+    return through2(function (buffer: Buffer, encoding, next) {
+
+        var ext = path.extname(file).toLowerCase();
+
+        if (templateExt.indexOf(ext) === -1) {
+            return next(null, buffer);
+        }
+
+        let template: string = buffer.toString('utf8');
+
+        if (minifyExt.indexOf(ext) !== -1) {
+            template = minifier.minify(template, minifierOptions).trim();
+        }
+
+        template = 'module.exports = ' + JSON.stringify(template) + ';\n';
+        //console.log("Templatify > " + file + "\n" + template);
+        return next(null, template);
+    });
 };
-
-let HTMLify = tools.makeStringTransform('htmlify', transformOptions, function (content, args, done) {
-    content = minifier.minify(content, minifierOptions);
-    content = 'module.exports = ' + JSON.stringify(content) + ';\n';
-    done(null, content);
-});
-
-export { HTMLify }
-
-/*
-let dummyPath = path.resolve(__dirname, "./test.html");
-let content = '<h1>\nHello World!\n</h1>';
-tools.runTransform(transformer, dummyPath, { content: content }, function (err, result) {
-    console.log(result);
-});
-*/

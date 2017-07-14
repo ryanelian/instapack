@@ -1,7 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const minifier = require("html-minifier");
-const tools = require("browserify-transform-tools");
+const through2 = require("through2");
+const path = require("path");
 let minifierOptions = {
     caseSensitive: false,
     collapseBooleanAttributes: true,
@@ -32,12 +33,19 @@ let minifierOptions = {
     trimCustomFragments: false,
     useShortDoctype: false
 };
-let transformOptions = {
-    includeExtensions: ['html']
+let minifyExt = ['.htm', '.html'];
+let templateExt = ['.txt'].concat(minifyExt);
+exports.Templatify = function (file) {
+    return through2(function (buffer, encoding, next) {
+        var ext = path.extname(file).toLowerCase();
+        if (templateExt.indexOf(ext) === -1) {
+            return next(null, buffer);
+        }
+        let template = buffer.toString('utf8');
+        if (minifyExt.indexOf(ext) !== -1) {
+            template = minifier.minify(template, minifierOptions).trim();
+        }
+        template = 'module.exports = ' + JSON.stringify(template) + ';\n';
+        return next(null, template);
+    });
 };
-let HTMLify = tools.makeStringTransform('htmlify', transformOptions, function (content, args, done) {
-    content = minifier.minify(content, minifierOptions);
-    content = 'module.exports = ' + JSON.stringify(content) + ';\n';
-    done(null, content);
-});
-exports.HTMLify = HTMLify;

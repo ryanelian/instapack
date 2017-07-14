@@ -4,8 +4,8 @@ import * as gutil from 'gulp-util';
 import * as sourcemaps from 'gulp-sourcemaps';
 
 // These are used by concat task
-import * as concat from 'gulp-concat';
-import * as es from 'event-stream';
+import * as through2 from 'through2';
+import * as vinyl from 'vinyl';
 import * as resolve from 'resolve';
 import * as fs from 'fs-extra';
 
@@ -118,7 +118,7 @@ export class Compiler {
     build(taskName) {
         gulp.start(taskName);
     }
-    
+
     /**
      * Flattens abyssmal sourcemap paths resulting from Browserify compilation.
      */
@@ -240,7 +240,7 @@ export class Compiler {
     /**
      * Returns true when package.json exists in project root folder but node_modules folder is missing.
      */
-    needPackageRestore(): boolean {
+    needPackageRestore() {
         let hasNodeModules = fs.existsSync(this.settings.npmFolder);
         let hasPackageJson = fs.existsSync(this.settings.packageJson);
 
@@ -254,45 +254,36 @@ export class Compiler {
     }
 
     /**
-     * Attempts to resolve modules using concat list and project folder in setting.
+     * Attempts to resolve a module using node resolution logic, relative to project folder path, asynchronously.
+     * @param path 
      */
-    async resolveConcatModules(): Promise<ConcatenationLookup> {
-        let resolveOption = { basedir: this.settings.root };
-
-        let resolver: { [target: string]: Promise<string>[] } = {};
-        let promises: Promise<string>[] = [];
-
-        for (let target in this.settings.concat) {
-            let resolveList = [];
-
-            this.settings.concat[target].forEach(s => {
-                let p = new Promise<string>((ok, reject) => {
-                    resolve(s, resolveOption, (error, result) => {
-                        if (error) {
-                            reject(error)
-                        } else {
-                            ok(result);
-                        }
-                    });
-                });
-
-                resolveList.push(p);
-                promises.push(p);
+    resolveAsPromise(path: string) {
+        return new Promise<string>((ok, reject) => {
+            resolve(path, {
+                basedir: this.settings.root
+            }, (error, result) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    ok(result);
+                }
             });
+        });
+    }
 
-            resolver[target] = resolveList;
+    /**
+     * Returns a promise for a concatenated file content as string, resulting from a list of node modules.
+     * @param paths 
+     */
+    async resolveThenConcatenate(paths: string[]) {
+        let concat = '';
+
+        for (let path of paths) {
+            let absolute = await this.resolveAsPromise(path);
+            concat += await fs.readFile(absolute, 'utf8') + '\n';
         }
 
-        // TODO: Use Object.values when using Node 8
-        await Promise.all(promises);
-
-        let resolution: ConcatenationLookup = {};
-
-        for (let target in resolver) {
-            resolution[target + '.js'] = await Promise.all(resolver[target]);
-        }
-
-        return resolution;
+        return concat;
     }
 
     /**
@@ -302,34 +293,36 @@ export class Compiler {
         let concatCount = this.settings.concatCount;
         gutil.log('Resolving', gutil.colors.cyan(concatCount.toString()), 'concatenation targets...');
 
-        let concatTask = undefined;
-
-        if (concatCount) {
-            concatTask = async () => {
-                if (this.watchMode) {
-                    gutil.log("Concatenation task will be run once and", gutil.colors.red("NOT watched!"));
-                }
-
-                let resolution = await this.resolveConcatModules();
-                //console.log(resolution);
-
-                let concatStreams = [];
-
-                for (let target in resolution) {
-                    let targetFiles = resolution[target];
-                    let targetStream = gulp.src(targetFiles)
-                        .pipe(concat(target))
-                        .pipe(To.MinifyProductionJs(this.productionMode))
-
-                    concatStreams.push(targetStream);
-                }
-
-                return es.merge(concatStreams)
-                    .pipe(To.BuildLog('JS concatenation'))
-                    .pipe(this.server ? this.server.Update() : gulp.dest(this.settings.outputJsFolder));
-            };
+        if (concatCount === 0) {
+            gulp.task('concat', undefined);
+            return;
         }
 
-        gulp.task('concat', concatTask);
+        if (this.watchMode) {
+            gutil.log("Concatenation task will be run once and", gutil.colors.red("NOT watched!"));
+        }
+
+        gulp.task('concat', () => {
+            let g = through2.obj();
+            let resolution = this.settings.concat;
+
+            for (let target in resolution) {
+                this.resolveThenConcatenate(resolution[target]).then(result => {
+                    g.push(new vinyl({
+                        path: target,
+                        contents: Buffer.from(result)
+                    }));
+
+                    concatCount--;
+                    if (concatCount === 0){
+                        g.push(null);
+                    }
+                });
+            }
+
+            return g.pipe(To.MinifyProductionJs(this.productionMode))
+                .pipe(To.BuildLog('JS concatenation'))
+                .pipe(this.server ? this.server.Update() : gulp.dest(this.settings.outputJsFolder));
+        });
     }
 }

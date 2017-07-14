@@ -4,8 +4,8 @@ const tslib_1 = require("tslib");
 const gulp = require("gulp");
 const gutil = require("gulp-util");
 const sourcemaps = require("gulp-sourcemaps");
-const concat = require("gulp-concat");
-const es = require("event-stream");
+const through2 = require("through2");
+const vinyl = require("vinyl");
 const resolve = require("resolve");
 const fs = require("fs-extra");
 const browserify = require("browserify");
@@ -155,61 +155,59 @@ class Compiler {
         }
         return restore;
     }
-    resolveConcatModules() {
+    resolveAsPromise(path) {
+        return new Promise((ok, reject) => {
+            resolve(path, {
+                basedir: this.settings.root
+            }, (error, result) => {
+                if (error) {
+                    reject(error);
+                }
+                else {
+                    ok(result);
+                }
+            });
+        });
+    }
+    resolveThenConcatenate(paths) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            let resolveOption = { basedir: this.settings.root };
-            let resolver = {};
-            let promises = [];
-            for (let target in this.settings.concat) {
-                let resolveList = [];
-                this.settings.concat[target].forEach(s => {
-                    let p = new Promise((ok, reject) => {
-                        resolve(s, resolveOption, (error, result) => {
-                            if (error) {
-                                reject(error);
-                            }
-                            else {
-                                ok(result);
-                            }
-                        });
-                    });
-                    resolveList.push(p);
-                    promises.push(p);
-                });
-                resolver[target] = resolveList;
+            let concat = '';
+            for (let path of paths) {
+                let absolute = yield this.resolveAsPromise(path);
+                concat += (yield fs.readFile(absolute, 'utf8')) + '\n';
             }
-            yield Promise.all(promises);
-            let resolution = {};
-            for (let target in resolver) {
-                resolution[target + '.js'] = yield Promise.all(resolver[target]);
-            }
-            return resolution;
+            return concat;
         });
     }
     registerConcatTask() {
         let concatCount = this.settings.concatCount;
         gutil.log('Resolving', gutil.colors.cyan(concatCount.toString()), 'concatenation targets...');
-        let concatTask = undefined;
-        if (concatCount) {
-            concatTask = () => tslib_1.__awaiter(this, void 0, void 0, function* () {
-                if (this.watchMode) {
-                    gutil.log("Concatenation task will be run once and", gutil.colors.red("NOT watched!"));
-                }
-                let resolution = yield this.resolveConcatModules();
-                let concatStreams = [];
-                for (let target in resolution) {
-                    let targetFiles = resolution[target];
-                    let targetStream = gulp.src(targetFiles)
-                        .pipe(concat(target))
-                        .pipe(To.MinifyProductionJs(this.productionMode));
-                    concatStreams.push(targetStream);
-                }
-                return es.merge(concatStreams)
-                    .pipe(To.BuildLog('JS concatenation'))
-                    .pipe(this.server ? this.server.Update() : gulp.dest(this.settings.outputJsFolder));
-            });
+        if (concatCount === 0) {
+            gulp.task('concat', undefined);
+            return;
         }
-        gulp.task('concat', concatTask);
+        if (this.watchMode) {
+            gutil.log("Concatenation task will be run once and", gutil.colors.red("NOT watched!"));
+        }
+        gulp.task('concat', () => {
+            let g = through2.obj();
+            let resolution = this.settings.concat;
+            for (let target in resolution) {
+                this.resolveThenConcatenate(resolution[target]).then(result => {
+                    g.push(new vinyl({
+                        path: target,
+                        contents: Buffer.from(result)
+                    }));
+                    concatCount--;
+                    if (concatCount === 0) {
+                        g.push(null);
+                    }
+                });
+            }
+            return g.pipe(To.MinifyProductionJs(this.productionMode))
+                .pipe(To.BuildLog('JS concatenation'))
+                .pipe(this.server ? this.server.Update() : gulp.dest(this.settings.outputJsFolder));
+        });
     }
 }
 exports.Compiler = Compiler;

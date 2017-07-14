@@ -15,7 +15,7 @@ let packageInfo = {
 };
 let outdated = false;
 let masterVersion = packageInfo.version;
-https.get('https://raw.githubusercontent.com/ryanelian/instapack/master/package.json', response => {
+let updater = https.get('https://raw.githubusercontent.com/ryanelian/instapack/master/package.json', response => {
     let body = '';
     response.setEncoding('utf8');
     response.on('data', data => {
@@ -97,6 +97,7 @@ CLI.command({
 });
 let parse = CLI.strict().help().argv;
 function updateNag() {
+    updater.abort();
     if (outdated) {
         console.log();
         console.log(chalk.yellow('instapack') + ' is outdated. New version: ' + chalk.green(masterVersion));

@@ -8,9 +8,8 @@ import * as applySourceMap from 'vinyl-sourcemaps-apply';
  * Creates a new build pipe that performs compilation against piped Sass file entry point.
  * Allows including folder path for resolving @import.
  * @param includePaths 
- * @param projectFolder 
  */
-export function Sass(includePaths: string[], projectFolder: string) {
+export function Sass(includePaths: string[]) {
     return through2.obj(function (chunk, enc, next) {
 
         if (chunk.isNull()) {
@@ -46,15 +45,7 @@ export function Sass(includePaths: string[], projectFolder: string) {
             }
 
             if (createSourceMap) {
-                let smap: sourceMap.RawSourceMap = JSON.parse(result.map.toString());
-                let entry = path.relative(projectFolder, chunk.path);
-
-                for (let i = 0; i < smap.sources.length; i++) {
-                    // we want the paths to be resolved against [input]/css folder!
-                    let s = path.join(entry, '..', smap.sources[i]);
-                    smap.sources[i] = s;
-                }
-
+                let smap = JSON.parse(result.map.toString()) as sourceMap.RawSourceMap;
                 applySourceMap(chunk, smap);
             }
 

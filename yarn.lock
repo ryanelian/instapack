@@ -72,12 +72,6 @@
   dependencies:
     "@types/node" "*"
 
-"@types/gulp-sourcemaps@^0.0.31":
-  version "0.0.31"
-  resolved "https://registry.yarnpkg.com/@types/gulp-sourcemaps/-/gulp-sourcemaps-0.0.31.tgz#08347f899f4862f63f7586c997aacd41af21c72a"
-  dependencies:
-    "@types/node" "*"
-
 "@types/gulp-util@^3.0.31":
   version "3.0.31"
   resolved "https://registry.yarnpkg.com/@types/gulp-util/-/gulp-util-3.0.31.tgz#272e298220365717e1f7f979b50ebadb44297cbf"
@@ -119,8 +113,8 @@
     "@types/node" "*"
 
 "@types/node@*", "@types/node@^8.0.8":
-  version "8.0.12"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-8.0.12.tgz#0560c3e8c9e3da0aa07d0b86e0b0a02b5fd29480"
+  version "8.0.13"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-8.0.13.tgz#530f0f9254209b0335bf5cc6387822594ef47093"
 
 "@types/prettyjson@^0.0.28":
   version "0.0.28"
@@ -699,8 +693,8 @@ clap@^1.0.9:
     chalk "^1.1.3"
 
 clean-css@4.1.x:
-  version "4.1.6"
-  resolved "https://registry.yarnpkg.com/clean-css/-/clean-css-4.1.6.tgz#5a47beb526994cb4f7bf36188a55ed3b45528f0b"
+  version "4.1.7"
+  resolved "https://registry.yarnpkg.com/clean-css/-/clean-css-4.1.7.tgz#b9aea4f85679889cf3eae8b40349ec4ebdfdd032"
   dependencies:
     source-map "0.5.x"
 

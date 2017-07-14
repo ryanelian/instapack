@@ -17,6 +17,24 @@ const To = require("./PipeTo");
 const Server_1 = require("./Server");
 class Compiler {
     constructor(settings, flags) {
+        this.unfuckBrowserifySourcePaths = (sourcePath, file) => {
+            let folder = this.settings.input + '/js/';
+            if (sourcePath.startsWith('node_modules')) {
+                return '../' + sourcePath;
+            }
+            else if (sourcePath.startsWith(folder)) {
+                return sourcePath.substring(folder.length);
+            }
+            else {
+                return sourcePath;
+            }
+        };
+        this.unfuckPostCssSourcePath = (sourcePath, file) => {
+            if (sourcePath === 'site.css') {
+                return "__POSTCSS/site.css";
+            }
+            return sourcePath;
+        };
         this.settings = settings;
         this.productionMode = flags.productionMode;
         this.watchMode = flags.watchMode;
@@ -84,6 +102,7 @@ class Compiler {
                 .pipe(To.ErrorHandler())
                 .pipe(sourcemaps.init({ loadMaps: true }))
                 .pipe(To.MinifyProductionJs(this.productionMode))
+                .pipe(sourcemaps.mapSources(this.unfuckBrowserifySourcePaths))
                 .pipe(sourcemaps.write('./'))
                 .pipe(To.BuildLog('JS compilation'))
                 .pipe(this.server ? this.server.Update() : gulp.dest(this.settings.outputJsFolder));
@@ -110,8 +129,9 @@ class Compiler {
             return gulp.src(cssEntry)
                 .pipe(To.ErrorHandler())
                 .pipe(sourcemaps.init())
-                .pipe(To.Sass(sassImports, projectFolder))
+                .pipe(To.Sass(sassImports))
                 .pipe(To.CssProcessors(this.productionMode))
+                .pipe(sourcemaps.mapSources(this.unfuckPostCssSourcePath))
                 .pipe(sourcemaps.write('./'))
                 .pipe(To.BuildLog('CSS compilation'))
                 .pipe(this.server ? this.server.Update() : gulp.dest(this.settings.outputCssFolder));

@@ -23,14 +23,20 @@ class Settings {
     get inputFolder() {
         return path.join(this.root, this.input);
     }
+    get inputJsFolder() {
+        return path.join(this.inputFolder, 'js');
+    }
+    get inputCssFolder() {
+        return path.join(this.inputFolder, 'css');
+    }
     get jsEntry() {
-        return path.join(this.inputFolder, 'js', 'index.ts');
+        return path.join(this.inputJsFolder, 'index.ts');
     }
     get cssEntry() {
-        return path.join(this.inputFolder, 'css', 'site.scss');
+        return path.join(this.inputCssFolder, 'site.scss');
     }
     get cssWatchGlob() {
-        return path.join(this.inputFolder, 'css', '**', '*.scss');
+        return path.join(this.inputCssFolder, '**', '*.scss');
     }
     get outputFolder() {
         return path.join(this.root, this.output);

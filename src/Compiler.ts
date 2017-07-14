@@ -118,6 +118,32 @@ export class Compiler {
     build(taskName) {
         gulp.start(taskName);
     }
+    
+    /**
+     * Flattens abyssmal sourcemap paths resulting from Browserify compilation.
+     */
+    unfuckBrowserifySourcePaths = (sourcePath: string, file) => {
+        let folder = this.settings.input + '/js/';
+
+        if (sourcePath.startsWith('node_modules')) {
+            return '../' + sourcePath;
+        } else if (sourcePath.startsWith(folder)) {
+            return sourcePath.substring(folder.length);
+        } else {
+            return sourcePath;
+        }
+    }
+
+    /**
+     * Hides a phantom sourcemap resulting from PostCSS compilation into a folder.
+     */
+    unfuckPostCssSourcePath = (sourcePath: string, file) => {
+        if (sourcePath === 'site.css') {
+            // TODO: Find a way to destroy this source map completely...
+            return "__POSTCSS/site.css";
+        }
+        return sourcePath;
+    }
 
     /**
      * Registers a JavaScript compilation task using TypeScript piped into Browserify.
@@ -155,6 +181,7 @@ export class Compiler {
                 .pipe(To.ErrorHandler())
                 .pipe(sourcemaps.init({ loadMaps: true }))
                 .pipe(To.MinifyProductionJs(this.productionMode))
+                .pipe(sourcemaps.mapSources(this.unfuckBrowserifySourcePaths))
                 .pipe(sourcemaps.write('./'))
                 .pipe(To.BuildLog('JS compilation'))
                 .pipe(this.server ? this.server.Update() : gulp.dest(this.settings.outputJsFolder));
@@ -190,8 +217,9 @@ export class Compiler {
             return gulp.src(cssEntry)
                 .pipe(To.ErrorHandler())
                 .pipe(sourcemaps.init())
-                .pipe(To.Sass(sassImports, projectFolder))
+                .pipe(To.Sass(sassImports))
                 .pipe(To.CssProcessors(this.productionMode))
+                .pipe(sourcemaps.mapSources(this.unfuckPostCssSourcePath))
                 .pipe(sourcemaps.write('./'))
                 .pipe(To.BuildLog('CSS compilation'))
                 .pipe(this.server ? this.server.Update() : gulp.dest(this.settings.outputCssFolder));

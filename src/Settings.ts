@@ -76,31 +76,45 @@ export class Settings {
     }
 
     /**
-     * Gets the full path to the root input folder.
+     * Gets the full path to the root client project folder.
      */
     get inputFolder(): string {
         return path.join(this.root, this.input);
     }
 
     /**
+     * Gets the full path to the root JS project folder.
+     */
+    get inputJsFolder(): string {
+        return path.join(this.inputFolder, 'js');
+    }
+
+    /**
+     * Gets the full path to the root CSS project folder.
+     */
+    get inputCssFolder(): string {
+        return path.join(this.inputFolder, 'css');
+    }
+
+    /**
      * Gets the full path to the index.ts entry point.
      */
     get jsEntry(): string {
-        return path.join(this.inputFolder, 'js', 'index.ts');
+        return path.join(this.inputJsFolder, 'index.ts');
     }
 
     /**
      * Gets the full path to the site.scss entry point.
      */
     get cssEntry(): string {
-        return path.join(this.inputFolder, 'css', 'site.scss');
+        return path.join(this.inputCssFolder, 'site.scss');
     }
 
     /**
      * Gets the glob pattern for watching changes of Sass source code files. 
      */
     get cssWatchGlob(): string {
-        return path.join(this.inputFolder, 'css', '**', '*.scss');
+        return path.join(this.inputCssFolder, '**', '*.scss');
     }
 
     /**

@@ -3,9 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const gutil = require("gulp-util");
 const sass = require("node-sass");
 const through2 = require("through2");
-const path = require("path");
 const applySourceMap = require("vinyl-sourcemaps-apply");
-function Sass(includePaths, projectFolder) {
+function Sass(includePaths) {
     return through2.obj(function (chunk, enc, next) {
         if (chunk.isNull()) {
             return next(null, chunk);
@@ -34,11 +33,6 @@ function Sass(includePaths, projectFolder) {
             }
             if (createSourceMap) {
                 let smap = JSON.parse(result.map.toString());
-                let entry = path.relative(projectFolder, chunk.path);
-                for (let i = 0; i < smap.sources.length; i++) {
-                    let s = path.join(entry, '..', smap.sources[i]);
-                    smap.sources[i] = s;
-                }
                 applySourceMap(chunk, smap);
             }
             chunk.contents = result.css;

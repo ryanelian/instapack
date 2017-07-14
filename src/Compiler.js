@@ -31,7 +31,7 @@ class Compiler {
         };
         this.unfuckPostCssSourcePath = (sourcePath, file) => {
             if (sourcePath === 'site.css') {
-                return "__POSTCSS/site.css";
+                return "__PostCSS/site.css";
             }
             return sourcePath;
         };
@@ -195,7 +195,7 @@ class Compiler {
             for (let target in resolution) {
                 this.resolveThenConcatenate(resolution[target]).then(result => {
                     g.push(new vinyl({
-                        path: target,
+                        path: target + '.js',
                         contents: Buffer.from(result)
                     }));
                     concatCount--;

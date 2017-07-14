@@ -140,7 +140,7 @@ export class Compiler {
     unfuckPostCssSourcePath = (sourcePath: string, file) => {
         if (sourcePath === 'site.css') {
             // TODO: Find a way to destroy this source map completely...
-            return "__POSTCSS/site.css";
+            return "__PostCSS/site.css";
         }
         return sourcePath;
     }
@@ -309,7 +309,7 @@ export class Compiler {
             for (let target in resolution) {
                 this.resolveThenConcatenate(resolution[target]).then(result => {
                     g.push(new vinyl({
-                        path: target,
+                        path: target + '.js',
                         contents: Buffer.from(result)
                     }));
 

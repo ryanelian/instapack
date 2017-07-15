@@ -18,7 +18,7 @@ But seriously, please use Yarn from now on. [Check it out](https://yarnpkg.com/e
 
 ## Quick Start Guide
 
-```cmd
+```powershell
 cd E:\VS\MyWebApp
 ipack new
 ipack
@@ -44,6 +44,21 @@ When using Visual Studio 2017, select the latest **TypeScript 2.X SDK** from the
 Also, VS2017 15.2 user can install TypeScript 2.4.1 out-of-band using a [separate installer](http://download.microsoft.com/download/7/0/A/70A6AC0E-8934-4396-A43E-445059F430EA/2.4.1-TS-release-dev14update3-20170626.1/TypeScript_SDK.exe) from the [release announcement page](https://blogs.msdn.microsoft.com/typescript/2017/06/27/announcing-typescript-2-4/).
 
 Optional but highly recommended, install [Python 2](https://www.python.org/downloads/).
+
+## Building from the Source
+
+```powershell
+yarn global add typescript    # for running "tsc"
+yarn global remove instapack  # "yarn link" does not work...
+npm install -g instapack
+
+git clone https://github.com/ryanelian/instapack.git
+cd .\instapack\
+
+yarn      # package restore...
+npm link  # symlink global to local package for development
+tsc       # compile!
+```
 
 ## Features
 

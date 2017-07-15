@@ -11,7 +11,7 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     
-    "target": "es6",
+    "target": "es2016",
     "module": "commonjs",
     "moduleResolution": "node",
     "removeComments": true,

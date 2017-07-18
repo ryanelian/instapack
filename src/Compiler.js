@@ -4,6 +4,8 @@ const tslib_1 = require("tslib");
 const gulp = require("gulp");
 const gutil = require("gulp-util");
 const sourcemaps = require("gulp-sourcemaps");
+const plumber = require("gulp-plumber");
+const PipeErrorHandler_1 = require("./PipeErrorHandler");
 const through2 = require("through2");
 const vinyl = require("vinyl");
 const resolve = require("resolve");
@@ -92,14 +94,10 @@ class Compiler {
         let bundler = browserify(browserifyOptions).transform(Templatify_1.Templatify).add(jsEntry).plugin(tsify);
         let compileJs = () => {
             gutil.log('Compiling JS', gutil.colors.cyan(jsEntry));
-            return bundler.bundle()
-                .on('error', function (error) {
-                gutil.log(error);
-                this.emit('end');
-            })
+            return bundler.bundle().on('error', PipeErrorHandler_1.PipeErrorHandler)
                 .pipe(To.Vinyl('bundle.js'))
                 .pipe(To.VinylBuffer())
-                .pipe(To.ErrorHandler())
+                .pipe(plumber({ errorHandler: PipeErrorHandler_1.PipeErrorHandler }))
                 .pipe(sourcemaps.init({ loadMaps: true }))
                 .pipe(To.MinifyProductionJs(this.productionMode))
                 .pipe(sourcemaps.mapSources(this.unfuckBrowserifySourcePaths))
@@ -127,7 +125,7 @@ class Compiler {
             gutil.log('Compiling CSS', gutil.colors.cyan(cssEntry));
             let sassImports = [this.settings.npmFolder];
             return gulp.src(cssEntry)
-                .pipe(To.ErrorHandler())
+                .pipe(plumber({ errorHandler: PipeErrorHandler_1.PipeErrorHandler }))
                 .pipe(sourcemaps.init())
                 .pipe(To.Sass(sassImports))
                 .pipe(To.CssProcessors(this.productionMode))

@@ -2,6 +2,8 @@
 import * as gulp from 'gulp';
 import * as gutil from 'gulp-util';
 import * as sourcemaps from 'gulp-sourcemaps';
+import * as plumber from 'gulp-plumber';
+import { PipeErrorHandler } from './PipeErrorHandler';
 
 // These are used by concat task
 import * as through2 from 'through2';
@@ -171,14 +173,10 @@ export class Compiler {
         let compileJs = () => {
             gutil.log('Compiling JS', gutil.colors.cyan(jsEntry));
 
-            return bundler.bundle()
-                .on('error', function (this: any, error) {
-                    gutil.log(error);
-                    this.emit('end');
-                })
+            return bundler.bundle().on('error', PipeErrorHandler)
                 .pipe(To.Vinyl('bundle.js'))
                 .pipe(To.VinylBuffer())
-                .pipe(To.ErrorHandler())
+                .pipe(plumber({ errorHandler: PipeErrorHandler }))
                 .pipe(sourcemaps.init({ loadMaps: true }))
                 .pipe(To.MinifyProductionJs(this.productionMode))
                 .pipe(sourcemaps.mapSources(this.unfuckBrowserifySourcePaths))
@@ -215,7 +213,7 @@ export class Compiler {
             let sassImports = [this.settings.npmFolder];
 
             return gulp.src(cssEntry)
-                .pipe(To.ErrorHandler())
+                .pipe(plumber({ errorHandler: PipeErrorHandler }))
                 .pipe(sourcemaps.init())
                 .pipe(To.Sass(sassImports))
                 .pipe(To.CssProcessors(this.productionMode))

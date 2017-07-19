@@ -843,7 +843,6 @@ app.run(['$q', ($q: angular.IQService) => {
 "lib": [
     "dom",
     "es5",
-    "scripthost",
     "es2015.promise"
 ]
 ```

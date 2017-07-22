@@ -17,6 +17,9 @@
   "bugs": {
     "url": "https://github.com/ryanelian/instapack/issues"
   },
+  "scripts": {
+    "build": "tsc"
+  },
   "homepage": "https://github.com/ryanelian/instapack#readme",
   "dependencies": {
     "autoprefixer": "7.1.2",

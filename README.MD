@@ -48,16 +48,15 @@ Optional but highly recommended, install [Python 2](https://www.python.org/downl
 ## Building from the Source
 
 ```powershell
-yarn global add typescript    # for running "tsc"
 yarn global remove instapack  # "yarn link" does not work...
 npm install -g instapack
 
 git clone https://github.com/ryanelian/instapack.git
 cd .\instapack\
 
-yarn      # package restore...
-npm link  # symlink global to local package for development
-tsc       # compile!
+yarn            # package restore...
+npm link        # symlink global to local package for development
+npm run build   # alternatively, "yarn global add typescript" then "tsc"
 ```
 
 ## Features

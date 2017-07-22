@@ -3,7 +3,5 @@ node_js:
   - "6"
   - "7"
   - "8"
-before_script:
-  - yarn global add typescript
 script:
-  - tsc
+  - npm run build

@@ -4,16 +4,7 @@
   "private": true,
   "instapack": {
     "output": "wwwroot",
-    "concat": {
-      "jquery-bootstrap": [
-        "jquery",
-        "bootstrap-sass"
-      ],
-      "aspnet-validation": [
-        "jquery-validation",
-        "jquery-validation-unobtrusive"
-      ]
-    }
+    "concat": {}
   },
   "dependencies": {
     "@types/angular": "^1.6.23",
@@ -26,11 +17,10 @@
     "angular-animate": "^1.6.4",
     "angular-messages": "^1.6.4",
     "angular-ui-bootstrap": "^2.5.0",
+    "aspnet-validation": "latest",
     "bootbox": "^4.4.0",
     "bootstrap-sass": "^3.3.7",
-    "jquery": "^3.2.1",
-    "jquery-validation": "^1.16.0",
-    "jquery-validation-unobtrusive": "^3.2.6",
+    "bootstrap.native": "^2.0.12",
     "lodash": "^4.17.4",
     "moment": "^2.18.1",
     "mustache": "^2.3.0",

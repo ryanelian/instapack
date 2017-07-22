@@ -7,3 +7,13 @@
     border-color: red;
     outline-color: red;
 }
+
+.input-validation-valid {
+    border-color: green;
+    outline-color: green;
+}
+
+.validation-summary-error {
+    color: red;
+    font-style: italic;
+}

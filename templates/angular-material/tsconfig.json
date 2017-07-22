@@ -24,7 +24,7 @@
       "es2015.promise"
     ]
   },
-  "files": [
-    "client/js/index.ts"
+  "exclude": [
+    "node_modules"
   ]
 }

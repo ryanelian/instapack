@@ -8,7 +8,6 @@
   },
   "dependencies": {
     "@types/bootbox": "^4.4.33",
-    "@types/jquery": "^3.2.5",
     "@types/lodash": "^4.14.67",
     "@types/node": "^8.0.8",
     "@types/urijs": "^1.15.32",

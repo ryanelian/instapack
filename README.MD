@@ -171,10 +171,6 @@ Performs compilation against selected project type. Available projects: `all`, `
 
 When compiling JavaScript, `require(...)` against `.html` files will cause the said files to be minified and then stringified. This is handy when working with HTML-based templates for AngularJS and Mustache / Handlebars.
 
-Use concatenation for libraries that cannot be imported / do not need to be imported from within TypeScript (for example, jQuery plugins). This hybrid approach allows great compatibility with older JavaScript libraries, while enjoying the rich development experience using TypeScript.
-
-Obviously, the concatenated libraries must be referenced in your HTML before `bundle.js` (e.g. access jQuery using `window['$']`).
-
 In addition, build flags are available:
 
 - `-w` or `--watch` for enabling compilation on change.
@@ -196,27 +192,19 @@ In addition, build flags are available:
   "private": true,
   "instapack": {
     "output": "wwwroot",
-    "concat": {
-      "jquery-bootstrap": [
-        "jquery",
-        "bootstrap-sass"
-      ],
-      "aspnet-validation": [
-        "jquery-validation",
-        "jquery-validation-unobtrusive"
-      ]
-    }
+    "concat": {}
   },
   "dependencies": {
+    "@types/bootbox": "^4.4.33",
     "@types/jquery": "^3.2.5",
     "@types/lodash": "^4.14.67",
     "@types/node": "^8.0.8",
     "@types/urijs": "^1.15.32",
-    "alertifyjs": "^1.10.0",
+    "aspnet-validation": "^0.0.1",
+    "bootbox": "^4.4.0",
     "bootstrap-sass": "^3.3.7",
-    "jquery": "^3.2.1",
-    "jquery-validation": "^1.16.0",
-    "jquery-validation-unobtrusive": "^3.2.6",
+    "bootstrap.native": "^2.0.12",
+    "es6-promise": "^4.1.1",
     "lodash": "^4.17.4",
     "moment": "^2.18.1",
     "mustache": "^2.3.0",
@@ -230,7 +218,27 @@ In addition, build flags are available:
 
 - `instapack:output` allows setting the output folder location. By default, it is set to `wwwroot`.
 
-- `instapack:concat` allows packing libraries from `node_modules` or a custom folder (for example, `./client/lib/vue.js`). The files will be resolved node-style, bundled, minified, and then placed into the output JS folder.
+- `instapack:concat` allows packing [IIFE](https://en.wikipedia.org/wiki/Immediately-invoked_function_expression) browser libraries to be consumed from `<script src="...">`. The file names will be resolved node-style (but **NOT** the content of the said file), which allows concatenating modules downloaded from `npm`, bundled, minified, and then placed into the output JS folder. For example: (produces `vendor.js` bundle)
+
+```json
+{
+  "instapack": {
+    "concat": {
+      "vendor": [
+        "jquery",
+        "bootstrap-sass",
+        "jquery-validation",
+        "jquery-validation-unobtrusive",
+        "./client/lib/my-jquery-plugin"
+      ]
+    }
+  }
+}
+```
+
+> Use concatenation for older libraries that cannot be imported / do not need to be imported from within TypeScript (for example, jQuery plugins). This hybrid approach allows great compatibility with older JavaScript libraries, while enjoying the rich development experience using TypeScript.
+
+> For consuming the library within TypeScript, reference it before `bundle.js`, then consume the library object from globally exposed variable via window object. (e.g. access jQuery using `window['$']`)
 
 ## FAQ
 

@@ -50,10 +50,8 @@ Additionally, I also like to delete these files and start with something fresh l
 
 ## Referencing Artefacts
 
-Try running `instapack` / `ipack` in your command line. These following files will appear:
+Try running `instapack` / `ipack` in your command line. These files will appear:
 
-- /wwwroot/js/jquery-bootstrap.js
-- /wwwroot/js/aspnet-validation.js
 - /wwwroot/js/bundle.js
 - /wwwroot/css/site.css
 
@@ -74,22 +72,12 @@ We need to reference those files. Our `/Views/Shared/_Layout.cshtml` should look
         @RenderBody()
     </div>
 
-    <script src="~/js/jquery-bootstrap.js"></script>
-    <script src="~/js/aspnet-validation.js"></script>
     <script src="~/js/bundle.js"></script>
 </body>
 </html>
 ```
 
 In this arrangement, the style sheets will be loaded first, then the HTML body, to allow progressive page rendering ahead of the JavaScript code.
-
-The reason that the JavaScript files are referenced in that order, is because of the composition of each files:
-
-- `jquery-bootstrap.js` = `jquery` + `bootstrap-sass` modules concatenation.
-- `aspnet-validation.js` = `jquery-validation` + `jquery-validation-unobtrusive` modules concatenation, which depends on JQuery.
-- `bundle.js` = `/client/js/index.ts` compilation, which may or may not use static JQuery instance from `window['$']` object.
-
-Concatenations are defined in `package.json` and pulled straight from `node_modules`.
 
 ## Hello World
 
@@ -105,7 +93,7 @@ Let's make a `/Views/Home/Index.cshtml` file that looks like this:
 <p id="hello"></p>
 ```
 
-Let us create a very simple greeting. In `/client/js/index.ts`:
+Let us create a very simple greeting. In `/client/js/index.ts`, add the following code:
 
 ```ts
 document.getElementById('hello').innerHTML = 'Hello World';
@@ -134,7 +122,7 @@ We can add libraries into our project from NPM gallery and consume them using `i
 
 Try adding `comma-number` into our project via the command line: `yarn add comma-number`
 
-Then modify our `index.ts` to:
+Then modify our code in `index.ts` to:
 
 ```ts
 import * as cn from 'comma-number';

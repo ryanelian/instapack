@@ -12,7 +12,7 @@
     "@types/lodash": "^4.14.67",
     "@types/node": "^8.0.8",
     "@types/urijs": "^1.15.32",
-    "aspnet-validation": "latest",
+    "aspnet-validation": "^0.0.1",
     "bootbox": "^4.4.0",
     "bootstrap-sass": "^3.3.7",
     "bootstrap.native": "^2.0.12",

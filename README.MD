@@ -196,7 +196,6 @@ In addition, build flags are available:
   },
   "dependencies": {
     "@types/bootbox": "^4.4.33",
-    "@types/jquery": "^3.2.5",
     "@types/lodash": "^4.14.67",
     "@types/node": "^8.0.8",
     "@types/urijs": "^1.15.32",
@@ -218,7 +217,7 @@ In addition, build flags are available:
 
 - `instapack:output` allows setting the output folder location. By default, it is set to `wwwroot`.
 
-- `instapack:concat` allows packing [IIFE](https://en.wikipedia.org/wiki/Immediately-invoked_function_expression) browser libraries to be consumed from `<script src="...">`. The file names will be resolved node-style (but **NOT** the content of the said file), which allows concatenating modules downloaded from `npm`, bundled, minified, and then placed into the output JS folder. For example: (produces `vendor.js` bundle)
+- `instapack:concat` allows packing browser libraries to be consumed directly from `<script src="...">` rather than as a module. The file names will be resolved node-style (but **NOT** their contents), which allows concatenating packages downloaded from `npm` to be bundled, minified, and then placed into the output JS folder. For example: (produces `vendor.js` bundle)
 
 ```json
 {
@@ -236,9 +235,9 @@ In addition, build flags are available:
 }
 ```
 
-> Use concatenation for older libraries that cannot be imported / do not need to be imported from within TypeScript (for example, jQuery plugins). This hybrid approach allows great compatibility with older JavaScript libraries, while enjoying the rich development experience using TypeScript.
+> Use concatenation for libraries that cannot be imported / do not need to be imported (for example, jQuery plugins). This hybrid approach allows great compatibility with older JavaScript libraries, while enjoying the rich development experience using TypeScript.
 
-> For consuming the library within TypeScript, reference it before `bundle.js`, then consume the library object from globally exposed variable via window object. (e.g. access jQuery using `window['$']`)
+> For consuming the libraries within the application code, load them before `bundle.js`, then reference the library objects from the globally exposed variables via window object. (e.g. access jQuery using `window['$']`)
 
 ## FAQ
 

@@ -36,7 +36,7 @@ let minifierOptions = {
 let minifyExt = ['.htm', '.html'];
 let templateExt = ['.txt'].concat(minifyExt);
 
-export let Templatify = function (file) {
+export default function Templatify(file) {
     return through2(function (buffer: Buffer, encoding, next) {
 
         var ext = path.extname(file).toLowerCase();

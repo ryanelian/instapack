@@ -1,15 +1,16 @@
 import * as stream from 'stream';
 import * as prettyJSON from 'prettyjson';
-import * as gutil from 'gulp-util';
+import glog from './GulpLog';
+import * as chalk from 'chalk';
 
-export let PipeErrorHandler = function (this: stream, error) {
+export default function PipeErrorHandler(this: stream, error) {
     try {
         console.log(prettyJSON.render(error, {
             keysColor: 'red',
             dashColor: 'red',
         }));
     } catch (ex) {
-        gutil.log(error);
+        glog(chalk.red(error));
     }
     this.emit('end');
 }

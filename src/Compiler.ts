@@ -1,9 +1,11 @@
 // Core task runner dependencies
 import * as gulp from 'gulp';
-import * as gutil from 'gulp-util';
 import * as sourcemaps from 'gulp-sourcemaps';
 import * as plumber from 'gulp-plumber';
-import { PipeErrorHandler } from './PipeErrorHandler';
+import * as chalk from 'chalk';
+
+import glog from './GulpLog';
+import PipeErrorHandler from './PipeErrorHandler';
 
 // These are used by concat task
 import * as through2 from 'through2';
@@ -15,7 +17,7 @@ import * as fs from 'fs-extra';
 import * as browserify from 'browserify';
 import * as tsify from 'tsify';
 import * as watchify from 'watchify';
-import { Templatify } from './Templatify';
+import templatify from './Templatify';
 
 // These are used by CSS
 import * as gwatch from 'gulp-watch';
@@ -84,22 +86,22 @@ export class Compiler {
      */
     chat() {
         if (this.server) {
-            gutil.log(gutil.colors.yellow("Server"), "mode: Listening on", gutil.colors.cyan('http://localhost:' + this.server.port));
+            glog(chalk.yellow("Server"), "mode: Listening on", chalk.cyan('http://localhost:' + this.server.port));
         } else {
-            gutil.log('Using output folder', gutil.colors.cyan(this.settings.outputFolder));
+            glog('Using output folder', chalk.cyan(this.settings.outputFolder));
         }
 
         if (this.productionMode) {
-            gutil.log(gutil.colors.yellow("Production"), "mode: Outputs will be minified.", gutil.colors.red("This process will slow down your build."));
+            glog(chalk.yellow("Production"), "mode: Outputs will be minified.", chalk.red("This process will slow down your build."));
         } else {
-            gutil.log(gutil.colors.yellow("Development"), "mode: Outputs are", gutil.colors.red("NOT minified"), "in exchange for compilation speed.");
-            gutil.log("Do not forget to minify before pushing to repository or production environment!");
+            glog(chalk.yellow("Development"), "mode: Outputs are", chalk.red("NOT minified"), "in exchange for compilation speed.");
+            glog("Do not forget to minify before pushing to repository or production environment!");
         }
 
         if (this.watchMode) {
-            gutil.log(gutil.colors.yellow("Watch"), "mode: Source codes will be automatically compiled on changes.");
+            glog(chalk.yellow("Watch"), "mode: Source codes will be automatically compiled on changes.");
         } else {
-            gutil.log("Use", gutil.colors.yellow("--watch"), "flag for switching to", gutil.colors.yellow("Watch"), "mode for automatic compilation on source changes.");
+            glog("Use", chalk.yellow("--watch"), "flag for switching to", chalk.yellow("Watch"), "mode for automatic compilation on source changes.");
         }
     }
 
@@ -154,7 +156,7 @@ export class Compiler {
         let jsEntry = this.settings.jsEntry;
 
         if (!fs.existsSync(jsEntry)) {
-            gutil.log('JS entry', gutil.colors.cyan(jsEntry), 'was not found.', gutil.colors.red('Aborting JS build.'));
+            glog('JS entry', chalk.cyan(jsEntry), 'was not found.', chalk.red('Aborting JS build.'));
             gulp.task('js', () => { });
             return;
         }
@@ -168,10 +170,10 @@ export class Compiler {
             browserifyOptions.packageCache = {};
         }
 
-        let bundler = browserify(browserifyOptions).transform(Templatify).add(jsEntry).plugin(tsify);
+        let bundler = browserify(browserifyOptions).transform(templatify).add(jsEntry).plugin(tsify);
 
         let compileJs = () => {
-            gutil.log('Compiling JS', gutil.colors.cyan(jsEntry));
+            glog('Compiling JS', chalk.cyan(jsEntry));
 
             return bundler.bundle().on('error', PipeErrorHandler)
                 .pipe(To.Vinyl('bundle.js'))
@@ -203,13 +205,13 @@ export class Compiler {
         let projectFolder = this.settings.root;
 
         if (!fs.existsSync(cssEntry)) {
-            gutil.log('CSS entry', gutil.colors.cyan(cssEntry), 'was not found.', gutil.colors.red('Aborting CSS build.'));
+            glog('CSS entry', chalk.cyan(cssEntry), 'was not found.', chalk.red('Aborting CSS build.'));
             gulp.task('css', () => { });
             return;
         }
 
         gulp.task('css:compile', () => {
-            gutil.log('Compiling CSS', gutil.colors.cyan(cssEntry));
+            glog('Compiling CSS', chalk.cyan(cssEntry));
             let sassImports = [this.settings.npmFolder];
 
             return gulp.src(cssEntry)
@@ -245,7 +247,7 @@ export class Compiler {
         let restore = hasPackageJson && !hasNodeModules;
 
         if (restore) {
-            gutil.log(gutil.colors.cyan('node_modules'), 'folder not found. Performing automatic package restore...');
+            glog(chalk.cyan('node_modules'), 'folder not found. Performing automatic package restore...');
         }
 
         return restore;
@@ -289,7 +291,7 @@ export class Compiler {
      */
     registerConcatTask() {
         let concatCount = this.settings.concatCount;
-        gutil.log('Resolving', gutil.colors.cyan(concatCount.toString()), 'concatenation targets...');
+        glog('Resolving', chalk.cyan(concatCount.toString()), 'concatenation targets...');
 
         if (concatCount === 0) {
             gulp.task('concat', undefined);
@@ -297,7 +299,7 @@ export class Compiler {
         }
 
         if (this.watchMode) {
-            gutil.log("Concatenation task will be run once and", gutil.colors.red("NOT watched!"));
+            glog("Concatenation task will be run once and", chalk.red("NOT watched!"));
         }
 
         gulp.task('concat', () => {

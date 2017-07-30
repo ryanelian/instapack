@@ -1,8 +1,11 @@
-import * as gutil from 'gulp-util';
 import * as sass from 'node-sass';
 import * as through2 from 'through2';
 import * as path from 'path';
 import * as applySourceMap from 'vinyl-sourcemaps-apply';
+
+function replaceExtension(path: string, newExt: string) {
+    return path.substr(0, path.lastIndexOf('.')) + newExt;
+}
 
 /**
  * Creates a new build pipe that performs compilation against piped Sass file entry point.
@@ -11,15 +14,12 @@ import * as applySourceMap from 'vinyl-sourcemaps-apply';
  */
 export function Sass(includePaths: string[]) {
     return through2.obj(function (chunk, enc, next) {
-
         if (chunk.isNull()) {
             return next(null, chunk);
         }
+        
         if (chunk.isStream()) {
-            let error = new gutil.PluginError({
-                plugin: 'Sass',
-                message: 'Streaming is not supported!'
-            })
+            let error = new Error('Sass: Streaming is not supported!');
             return next(error);
         }
 
@@ -50,7 +50,7 @@ export function Sass(includePaths: string[]) {
             }
 
             chunk.contents = result.css;
-            chunk.path = gutil.replaceExtension(chunk.path, '.css');
+            chunk.path = replaceExtension(chunk.path, '.css');
 
             next(null, chunk);
         });

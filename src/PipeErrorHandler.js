@@ -1,8 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const prettyJSON = require("prettyjson");
-const gutil = require("gulp-util");
-exports.PipeErrorHandler = function (error) {
+const GulpLog_1 = require("./GulpLog");
+const chalk = require("chalk");
+function PipeErrorHandler(error) {
     try {
         console.log(prettyJSON.render(error, {
             keysColor: 'red',
@@ -10,7 +11,8 @@ exports.PipeErrorHandler = function (error) {
         }));
     }
     catch (ex) {
-        gutil.log(error);
+        GulpLog_1.default(chalk.red(error));
     }
     this.emit('end');
-};
+}
+exports.default = PipeErrorHandler;

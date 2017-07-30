@@ -1,22 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const gutil = require("gulp-util");
 const UglifyJS = require("uglify-js");
 const through2 = require("through2");
 const applySourceMap = require("vinyl-sourcemaps-apply");
 function MinifyProductionJs(productionMode) {
-    if (!productionMode) {
-        return gutil.noop();
-    }
     return through2.obj(function (chunk, enc, next) {
-        if (chunk.isNull()) {
+        if (!productionMode || chunk.isNull()) {
             return next(null, chunk);
         }
         if (chunk.isStream()) {
-            let error = new gutil.PluginError({
-                plugin: 'MinifyProductionJs',
-                message: 'Streaming is not supported!'
-            });
+            let error = new Error('MinifyProductionJs: Streaming is not supported!');
             return next(error);
         }
         let options = {};

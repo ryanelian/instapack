@@ -1,4 +1,3 @@
-import * as gutil from 'gulp-util';
 import * as UglifyJS from 'uglify-js';
 import * as through2 from 'through2';
 import * as applySourceMap from 'vinyl-sourcemaps-apply';
@@ -8,20 +7,14 @@ import * as applySourceMap from 'vinyl-sourcemaps-apply';
  * @param productionMode 
  */
 export function MinifyProductionJs(productionMode: boolean) {
-    if (!productionMode) {
-        return gutil.noop();
-    }
-
     return through2.obj(function (chunk, enc, next) {
-
-        if (chunk.isNull()) {
+        if (!productionMode || chunk.isNull()) {
+            // no-op
             return next(null, chunk);
         }
+        
         if (chunk.isStream()) {
-            let error = new gutil.PluginError({
-                plugin: 'MinifyProductionJs',
-                message: 'Streaming is not supported!'
-            })
+            let error = new Error('MinifyProductionJs: Streaming is not supported!');
             return next(error);
         }
 

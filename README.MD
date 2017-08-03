@@ -157,9 +157,9 @@ Scaffolds a new `instapack` project into your existing application from where th
 
 - `empty` when you need a minimal clean slate. Use this template to author a new template!
 
-- `aspnet` when you want to develop an ASP.NET Core MVC project with Bootstrap + JQuery Validation Unobtrusive.
+- `aspnet` when you want to develop an ASP.NET Core MVC project with Bootstrap.
 
-- `angularjs` when you want to develop a component-based application with AngularJS, using Bootstrap.
+- `angularjs` when you want to develop a component-based application with AngularJS, using ASP.NET Core MVC + Bootstrap.
 
 - `angular-material` when you want to develop a single-page application with AngularJS, using Material Design.
 

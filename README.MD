@@ -175,9 +175,11 @@ In addition, build flags are available:
 
 - `-w` or `--watch` for enabling compilation on change.
 
-- `-d` or `--dev` for disabling minification for speed compilation.
+- `-d` or `--dev` for disabling minification, for fast compilation.
 
-- `-dw` shorthand for `watch` and `dev` mode together, for massive productivity.
+- `-u` or `--unmap` for disabling source maps, for slightly faster compilation.
+
+- `-udw` shorthand for `unmap` + `dev` + `watch` mode together (*Unlimited Dev Works*), for massive productivity.
 
 - `-s [port number]` or `--server 19991` for experimental server mode. Build artefacts will be served directly to http://localhost:port using GZIP compression without writing to folder / file system.
 

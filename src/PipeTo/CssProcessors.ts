@@ -3,14 +3,13 @@ import * as autoprefixer from 'autoprefixer';
 import * as cssnano from 'cssnano';
 
 /**
- * Creates a new build pipe for applying vendor-specific prefixes to CSS and 
- * minify the files if productionMode is set to true.
- * @param productionMode 
+ * Creates a new build pipe for applying vendor-specific prefixes and minification to CSS.
+ * @param minify 
  */
-export function CssProcessors(productionMode: boolean) {
+export function CssProcessors(minify: boolean) {
     let cssProcessors = [autoprefixer];
 
-    if (productionMode) {
+    if (minify) {
         let minifier = cssnano({
             discardComments: {
                 removeAll: true
@@ -21,4 +20,4 @@ export function CssProcessors(productionMode: boolean) {
     }
 
     return postcss(cssProcessors);
-};
+}

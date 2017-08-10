@@ -31,11 +31,12 @@ import { Settings, ConcatenationLookup } from './Settings';
 /**
  * Defines build flags to be used by Compiler class.
  */
-export type CompilerFlags = {
-    productionMode: boolean,
-    watchMode: boolean,
+export interface CompilerFlags {
+    minify: boolean,
+    watch: boolean,
+    map: boolean,
     serverPort: number
-};
+}
 
 /**
  * Contains methods for assembling and invoking the compilation tasks.
@@ -48,14 +49,9 @@ export class Compiler {
     readonly settings: Settings;
 
     /**
-     * Gets the minification setting for build output.
+     * Gets the compiler build flags.
      */
-    readonly productionMode: boolean;
-
-    /**
-     * Gets the automatic build setting.
-     */
-    readonly watchMode: boolean;
+    readonly flags: CompilerFlags;
 
     /**
      * Gets the build server instance.
@@ -69,11 +65,10 @@ export class Compiler {
      */
     constructor(settings: Settings, flags: CompilerFlags) {
         this.settings = settings;
-        this.productionMode = flags.productionMode;
-        this.watchMode = flags.watchMode;
+        this.flags = flags;
 
         if (flags.serverPort) {
-            this.watchMode = true;
+            this.flags.watch = true;
             this.server = new Server(flags.serverPort);
         }
 
@@ -91,17 +86,19 @@ export class Compiler {
             glog('Using output folder', chalk.cyan(this.settings.outputFolder));
         }
 
-        if (this.productionMode) {
-            glog(chalk.yellow("Production"), "mode: Outputs will be minified.", chalk.red("This process will slow down your build."));
+        if (this.flags.minify) {
+            glog(chalk.yellow("Production"), "mode: Outputs will be minified.", chalk.red("This process will slow down your build!"));
         } else {
             glog(chalk.yellow("Development"), "mode: Outputs are", chalk.red("NOT minified"), "in exchange for compilation speed.");
             glog("Do not forget to minify before pushing to repository or production environment!");
         }
 
-        if (this.watchMode) {
+        if (this.flags.watch) {
             glog(chalk.yellow("Watch"), "mode: Source codes will be automatically compiled on changes.");
-        } else {
-            glog("Use", chalk.yellow("--watch"), "flag for switching to", chalk.yellow("Watch"), "mode for automatic compilation on source changes.");
+        }
+
+        if (!this.flags.map) {
+            glog(chalk.yellow("Unmap"), "mode: Source maps disabled.");
         }
     }
 
@@ -162,15 +159,17 @@ export class Compiler {
         }
 
         let browserifyOptions: browserify.Options = {
-            debug: true
+            debug: this.flags.map
         };
 
-        if (this.watchMode) {
+        if (this.flags.watch) {
             browserifyOptions.cache = {};
             browserifyOptions.packageCache = {};
         }
 
-        let bundler = browserify(browserifyOptions).transform(templatify).add(jsEntry).plugin(tsify);
+        let bundler = browserify(browserifyOptions).transform(templatify, {
+            minify: this.flags.minify
+        }).add(jsEntry).plugin(tsify);
 
         let compileJs = () => {
             glog('Compiling JS', chalk.cyan(jsEntry));
@@ -179,15 +178,15 @@ export class Compiler {
                 .pipe(To.Vinyl('bundle.js'))
                 .pipe(To.VinylBuffer())
                 .pipe(plumber({ errorHandler: PipeErrorHandler }))
-                .pipe(sourcemaps.init({ loadMaps: true }))
-                .pipe(To.MinifyProductionJs(this.productionMode))
-                .pipe(sourcemaps.mapSources(this.unfuckBrowserifySourcePaths))
-                .pipe(sourcemaps.write('./'))
+                .pipe(this.flags.map ? sourcemaps.init({ loadMaps: true }) : through2.obj())
+                .pipe(this.flags.minify ? To.Uglify() : through2.obj())
+                .pipe(this.flags.map ? sourcemaps.mapSources(this.unfuckBrowserifySourcePaths) : through2.obj())
+                .pipe(this.flags.map ? sourcemaps.write('./') : through2.obj())
                 .pipe(To.BuildLog('JS compilation'))
                 .pipe(this.server ? this.server.Update() : gulp.dest(this.settings.outputJsFolder));
         };
 
-        if (this.watchMode) {
+        if (this.flags.watch) {
             bundler.plugin(watchify);
             bundler.on('update', compileJs);
         }
@@ -216,17 +215,17 @@ export class Compiler {
 
             return gulp.src(cssEntry)
                 .pipe(plumber({ errorHandler: PipeErrorHandler }))
-                .pipe(sourcemaps.init())
+                .pipe(this.flags.map ? sourcemaps.init() : through2.obj())
                 .pipe(To.Sass(sassImports))
-                .pipe(To.CssProcessors(this.productionMode))
-                .pipe(sourcemaps.mapSources(this.unfuckPostCssSourcePath))
-                .pipe(sourcemaps.write('./'))
+                .pipe(To.CssProcessors(this.flags.minify))
+                .pipe(this.flags.map ? sourcemaps.mapSources(this.unfuckPostCssSourcePath) : through2.obj())
+                .pipe(this.flags.map ? sourcemaps.write('./') : through2.obj())
                 .pipe(To.BuildLog('CSS compilation'))
                 .pipe(this.server ? this.server.Update() : gulp.dest(this.settings.outputCssFolder));
         });
 
         let watchCallback = undefined;
-        if (this.watchMode) {
+        if (this.flags.watch) {
             watchCallback = () => {
                 return gwatch(sassGlob, () => {
                     gulp.start('css:compile');
@@ -298,7 +297,7 @@ export class Compiler {
             return;
         }
 
-        if (this.watchMode) {
+        if (this.flags.watch) {
             glog("Concatenation task will be run once and", chalk.red("NOT watched!"));
         }
 
@@ -320,7 +319,7 @@ export class Compiler {
                 });
             }
 
-            return g.pipe(To.MinifyProductionJs(this.productionMode))
+            return g.pipe(this.flags.minify ? To.Uglify() : through2.obj())
                 .pipe(To.BuildLog('JS concatenation'))
                 .pipe(this.server ? this.server.Update() : gulp.dest(this.settings.outputJsFolder));
         });

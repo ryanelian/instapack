@@ -2,3 +2,4 @@ node_modules
 wwwroot
 templates/**/yarn.lock
 templates/**/package-lock.json
+*.log

@@ -39,10 +39,9 @@ class Compiler {
             return sourcePath;
         };
         this.settings = settings;
-        this.productionMode = flags.productionMode;
-        this.watchMode = flags.watchMode;
+        this.flags = flags;
         if (flags.serverPort) {
-            this.watchMode = true;
+            this.flags.watch = true;
             this.server = new Server_1.Server(flags.serverPort);
         }
         this.chat();
@@ -55,18 +54,18 @@ class Compiler {
         else {
             GulpLog_1.default('Using output folder', chalk.cyan(this.settings.outputFolder));
         }
-        if (this.productionMode) {
-            GulpLog_1.default(chalk.yellow("Production"), "mode: Outputs will be minified.", chalk.red("This process will slow down your build."));
+        if (this.flags.minify) {
+            GulpLog_1.default(chalk.yellow("Production"), "mode: Outputs will be minified.", chalk.red("This process will slow down your build!"));
         }
         else {
             GulpLog_1.default(chalk.yellow("Development"), "mode: Outputs are", chalk.red("NOT minified"), "in exchange for compilation speed.");
             GulpLog_1.default("Do not forget to minify before pushing to repository or production environment!");
         }
-        if (this.watchMode) {
+        if (this.flags.watch) {
             GulpLog_1.default(chalk.yellow("Watch"), "mode: Source codes will be automatically compiled on changes.");
         }
-        else {
-            GulpLog_1.default("Use", chalk.yellow("--watch"), "flag for switching to", chalk.yellow("Watch"), "mode for automatic compilation on source changes.");
+        if (!this.flags.map) {
+            GulpLog_1.default(chalk.yellow("Unmap"), "mode: Source maps disabled.");
         }
     }
     registerAllTasks() {
@@ -86,27 +85,29 @@ class Compiler {
             return;
         }
         let browserifyOptions = {
-            debug: true
+            debug: this.flags.map
         };
-        if (this.watchMode) {
+        if (this.flags.watch) {
             browserifyOptions.cache = {};
             browserifyOptions.packageCache = {};
         }
-        let bundler = browserify(browserifyOptions).transform(Templatify_1.default).add(jsEntry).plugin(tsify);
+        let bundler = browserify(browserifyOptions).transform(Templatify_1.default, {
+            minify: this.flags.minify
+        }).add(jsEntry).plugin(tsify);
         let compileJs = () => {
             GulpLog_1.default('Compiling JS', chalk.cyan(jsEntry));
             return bundler.bundle().on('error', PipeErrorHandler_1.default)
                 .pipe(To.Vinyl('bundle.js'))
                 .pipe(To.VinylBuffer())
                 .pipe(plumber({ errorHandler: PipeErrorHandler_1.default }))
-                .pipe(sourcemaps.init({ loadMaps: true }))
-                .pipe(To.MinifyProductionJs(this.productionMode))
-                .pipe(sourcemaps.mapSources(this.unfuckBrowserifySourcePaths))
-                .pipe(sourcemaps.write('./'))
+                .pipe(this.flags.map ? sourcemaps.init({ loadMaps: true }) : through2.obj())
+                .pipe(this.flags.minify ? To.Uglify() : through2.obj())
+                .pipe(this.flags.map ? sourcemaps.mapSources(this.unfuckBrowserifySourcePaths) : through2.obj())
+                .pipe(this.flags.map ? sourcemaps.write('./') : through2.obj())
                 .pipe(To.BuildLog('JS compilation'))
                 .pipe(this.server ? this.server.Update() : gulp.dest(this.settings.outputJsFolder));
         };
-        if (this.watchMode) {
+        if (this.flags.watch) {
             bundler.plugin(watchify);
             bundler.on('update', compileJs);
         }
@@ -127,16 +128,16 @@ class Compiler {
             let sassImports = [this.settings.npmFolder];
             return gulp.src(cssEntry)
                 .pipe(plumber({ errorHandler: PipeErrorHandler_1.default }))
-                .pipe(sourcemaps.init())
+                .pipe(this.flags.map ? sourcemaps.init() : through2.obj())
                 .pipe(To.Sass(sassImports))
-                .pipe(To.CssProcessors(this.productionMode))
-                .pipe(sourcemaps.mapSources(this.unfuckPostCssSourcePath))
-                .pipe(sourcemaps.write('./'))
+                .pipe(To.CssProcessors(this.flags.minify))
+                .pipe(this.flags.map ? sourcemaps.mapSources(this.unfuckPostCssSourcePath) : through2.obj())
+                .pipe(this.flags.map ? sourcemaps.write('./') : through2.obj())
                 .pipe(To.BuildLog('CSS compilation'))
                 .pipe(this.server ? this.server.Update() : gulp.dest(this.settings.outputCssFolder));
         });
         let watchCallback = undefined;
-        if (this.watchMode) {
+        if (this.flags.watch) {
             watchCallback = () => {
                 return gwatch(sassGlob, () => {
                     gulp.start('css:compile');
@@ -185,7 +186,7 @@ class Compiler {
             gulp.task('concat', undefined);
             return;
         }
-        if (this.watchMode) {
+        if (this.flags.watch) {
             GulpLog_1.default("Concatenation task will be run once and", chalk.red("NOT watched!"));
         }
         gulp.task('concat', () => {
@@ -203,7 +204,7 @@ class Compiler {
                     }
                 });
             }
-            return g.pipe(To.MinifyProductionJs(this.productionMode))
+            return g.pipe(this.flags.minify ? To.Uglify() : through2.obj())
                 .pipe(To.BuildLog('JS concatenation'))
                 .pipe(this.server ? this.server.Update() : gulp.dest(this.settings.outputJsFolder));
         });

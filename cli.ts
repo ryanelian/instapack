@@ -72,6 +72,9 @@ CLI.command({
             }).option('d', {
                 alias: 'dev',
                 describe: 'Disables output files minification.'
+            }).option('u', {
+                alias: 'unmap',
+                describe: 'Disables sourcemaps.'
             }).option('s', {
                 alias: 'server',
                 describe: 'Serve the output using an HTTP server listening on a local port.',
@@ -83,7 +86,16 @@ CLI.command({
         let subCommand = argv.project || 'all';
 
         echo('build', subCommand);
-        app.build(subCommand, !argv.dev, argv.watch, argv.server);
+        app.build(subCommand, !argv.dev, argv.watch, !argv.unmap, argv.server);
+    }
+});
+
+CLI.command({
+    command: 'clean',
+    describe: 'Remove files in output folder.',
+    handler: argv => {
+        echo('clean', null);
+        app.clean();
     }
 });
 

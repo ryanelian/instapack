@@ -35,14 +35,14 @@ let minifierOptions = {
 };
 let minifyExt = ['.htm', '.html'];
 let templateExt = ['.txt'].concat(minifyExt);
-function Templatify(file) {
+function Templatify(file, options) {
     return through2(function (buffer, encoding, next) {
         var ext = path.extname(file).toLowerCase();
         if (templateExt.indexOf(ext) === -1) {
             return next(null, buffer);
         }
         let template = buffer.toString('utf8');
-        if (minifyExt.indexOf(ext) !== -1) {
+        if (options.minify && minifyExt.indexOf(ext) !== -1) {
             template = minifier.minify(template, minifierOptions).trim();
         }
         template = 'module.exports = ' + JSON.stringify(template) + ';\n';
@@ -50,4 +50,3 @@ function Templatify(file) {
     });
 }
 exports.default = Templatify;
-;

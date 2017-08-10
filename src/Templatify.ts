@@ -36,7 +36,11 @@ let minifierOptions = {
 let minifyExt = ['.htm', '.html'];
 let templateExt = ['.txt'].concat(minifyExt);
 
-export default function Templatify(file) {
+export interface TemplatifyOptions {
+    minify: boolean
+}
+
+export default function Templatify(file: string, options: TemplatifyOptions) {
     return through2(function (buffer: Buffer, encoding, next) {
 
         var ext = path.extname(file).toLowerCase();
@@ -47,7 +51,7 @@ export default function Templatify(file) {
 
         let template = buffer.toString('utf8');
 
-        if (minifyExt.indexOf(ext) !== -1) {
+        if (options.minify && minifyExt.indexOf(ext) !== -1) {
             template = minifier.minify(template, minifierOptions).trim();
         }
 
@@ -55,4 +59,4 @@ export default function Templatify(file) {
         //console.log("Templatify > " + file + "\n" + template);
         return next(null, template);
     });
-};
+}

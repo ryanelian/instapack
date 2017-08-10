@@ -36,10 +36,18 @@ let minifierOptions = {
 let minifyExt = ['.htm', '.html'];
 let templateExt = ['.txt'].concat(minifyExt);
 
+/**
+ * Passed options when registering Templatify transform to Browserify.
+ */
 export interface TemplatifyOptions {
     minify: boolean
 }
 
+/**
+ * A Browserify Transform for importing a non-JS file content as a string using CommonJS module.
+ * @param file 
+ * @param options 
+ */
 export default function Templatify(file: string, options: TemplatifyOptions) {
     return through2(function (buffer: Buffer, encoding, next) {
 

@@ -9,12 +9,12 @@ function padZeroToDoubleDigits(x) {
     s += x;
     return s;
 }
-function getTimeFormatHHMMSS() {
+function nowFormatted() {
     let t = new Date();
     return padZeroToDoubleDigits(t.getHours()) + ':' + padZeroToDoubleDigits(t.getMinutes()) + ':' + padZeroToDoubleDigits(t.getSeconds());
 }
 function GulpLog(...tokens) {
-    let output = '[' + chalk.grey(getTimeFormatHHMMSS()) + ']';
+    let output = '[' + chalk.grey(nowFormatted()) + ']';
     for (let i = 0; i < tokens.length; i++) {
         output += ' ' + tokens[i];
     }

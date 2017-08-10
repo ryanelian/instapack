@@ -67,6 +67,9 @@ export = class instapack {
         scaffold.usingTemplate(template);
     }
 
+    /**
+     * Empties the content of the JavaScript and CSS output folder.
+     */
     clean() {
         let dir1 = this.settings.outputCssFolder;
         let dir2 = this.settings.outputJsFolder;

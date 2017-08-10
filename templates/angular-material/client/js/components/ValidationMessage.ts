@@ -82,7 +82,7 @@
 
     setPatternErrorMessage() {
         if (!this.patternError) {
-            this.patternError = 'input pattern mismatched';
+            this.patternError = this.display + ' field input pattern mismatched';
 
             if (this.element) {
                 let regex = this.element.getAttribute('pattern');
@@ -94,7 +94,7 @@
     }
 }
 
-let ValidationMessageComponent: angular.IComponentOptions = {
+export let ValidationMessageComponent: angular.IComponentOptions = {
     template: require('./ValidationMessage.html'),
     bindings: {
         input: '<for',
@@ -105,5 +105,3 @@ let ValidationMessageComponent: angular.IComponentOptions = {
     controller: ValidationMessageController,
     controllerAs: 'me'
 };
-
-export { ValidationMessageComponent };

@@ -1,7 +1,7 @@
 "use strict";
-const Compiler_1 = require("./src/Compiler");
-const Settings_1 = require("./src/Settings");
-const Scaffold_1 = require("./src/Scaffold");
+const Compiler_1 = require("./Compiler");
+const Settings_1 = require("./Settings");
+const Scaffold_1 = require("./Scaffold");
 const fse = require("fs-extra");
 module.exports = class instapack {
     get availableTasks() {

@@ -2,7 +2,7 @@
   "name": "instapack",
   "version": "4.0.2",
   "description": "All-in-one web application client project compiler using TypeScript and Sass!",
-  "main": "index.js",
+  "main": "src/index.js",
   "bin": {
     "ipk": "./cli.js",
     "ipack": "./cli.js",

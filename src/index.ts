@@ -1,6 +1,6 @@
-import { Compiler } from './src/Compiler';
-import { Settings } from './src/Settings';
-import { Scaffold } from './src/Scaffold';
+import { Compiler } from './Compiler';
+import { Settings } from './Settings';
+import { Scaffold } from './Scaffold';
 
 import * as fse from 'fs-extra';
 import * as path from 'path';

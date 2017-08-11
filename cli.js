@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const instapack = require("./index");
+const instapack = require("./src");
 const CLI = require("yargs");
 const chalk = require("chalk");
 const https = require("https");

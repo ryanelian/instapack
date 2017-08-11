@@ -2,7 +2,17 @@
 
 For this tutorial, we will not be using Visual Studio 2017, but use the command line tool provided by .NET Core SDK to setup, build, and run the project.
 
-Install .NET Core SDK if you have not done so. https://www.microsoft.com/net/download/core
+## Setup
+
+Install .NET Core SDK: https://www.microsoft.com/net/download/core
+
+Install Node.js (recommended using the latest version 6 LTS): https://nodejs.org/en/download/
+
+(Optional) Install Yarn for managing Node.js packages in place of npm: https://yarnpkg.com/en/docs/install
+
+Install instapack: `yarn global add instapack` or `npm install -g instapack`
+
+(Optional) Install Visual Studio Code for quick and easy code editing: https://code.visualstudio.com/
 
 ## Create Project
 
@@ -42,11 +52,15 @@ Because we are using NPM for managing our packages and `instapack` for bundling 
 - /wwwroot/js/
 - /wwwroot/css/
 
+> Bower is deprecated and should not be used anymore!
+
 Additionally, I also like to delete these files and start with something fresh later:
 
 - /Views/Home/Index.cshtml
 - /Views/Shared/_Layout.cshtml
 - /Views/Shared/_ValidationScriptsPartial.cshtml
+
+> The default instapack `aspnet` template comes with [`aspnet-validation`](https://github.com/ryanelian/aspnet-validation) and [`bootstrap.native`](https://github.com/thednp/bootstrap.native) modules which removed the need for JQuery!
 
 ## Referencing Artefacts
 
@@ -152,7 +166,7 @@ That's it. Basically it is still the very same CSS that you learn ~~and love~~, 
 - Learn SASS at Codecademy: https://www.codecademy.com/learn/learn-sass
 - Learn SASS at Code School: https://www.codeschool.com/courses/assembling-sass
 
-> `instapack` also performs browser compatibility fixes for vendor prefixes (like -moz-* or -webkit-* or -ms-*), for impressive compatibility with over 94% of the browsers in use worldwide!
+> `instapack` also performs browser compatibility fixes for vendor prefixes (like -moz-* or -webkit-* or -ms-*), for impressive compatibility with over 90% of the browsers in use worldwide!
 
 ## Icons
 

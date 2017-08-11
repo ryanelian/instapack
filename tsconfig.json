@@ -15,7 +15,9 @@
     "module": "commonjs",
     "moduleResolution": "node",
     "removeComments": true,
-    "importHelpers": true
+    "importHelpers": true,
+
+    "outDir": "bin"
   },
   "exclude": [
     "node_modules",

@@ -148,6 +148,8 @@ If done correctly, the view should display `1,337`.
 
 > By using TypeScript `import` syntax, we can scale the JavaScript application into multiple files and let `instapack` deal with the build. [Read more](https://www.typescriptlang.org/docs/handbook/modules.html).
 
+> `require(...)` against normal JavaScript file is also supported but not recommended due to the lack of compile-time checks!
+
 ## StyleSheets
 
 In `/client/css/site.scss`, add the following rule:

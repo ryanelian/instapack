@@ -159,7 +159,7 @@ Scaffolds a new `instapack` project into your existing application from where th
 
 - `aspnet` when you want to develop an ASP.NET Core MVC project with Bootstrap.
 
-- `angularjs` when you want to develop a component-based application with AngularJS, using ASP.NET Core MVC + Bootstrap.
+- `angularjs` when you want to develop a component-based application with AngularJS, using Bootstrap.
 
 - `angular-material` when you want to develop a single-page application with AngularJS, using Material Design.
 
@@ -169,7 +169,7 @@ If no template parameter is provided, `aspnet` is chosen.
 
 Performs compilation against selected project type. Available projects: `all`, `js`, `css` and `concat`. If no project parameter is provided, `all` is chosen.
 
-When compiling JavaScript, `require(...)` against `.html` files will cause the said files to be minified and then stringified. This is handy when working with HTML-based templates for AngularJS and Mustache / Handlebars.
+`require(...)` against `.html` file will cause the said file to be minified and then stringified. This is handy when working with HTML-based templates for AngularJS and Mustache / Handlebars.
 
 In addition, build flags are available:
 
@@ -182,6 +182,10 @@ In addition, build flags are available:
 - `-udw` shorthand for `unmap` + `dev` + `watch` mode together (*Unlimited Dev Works*), for massive productivity.
 
 - `-s [port number]` or `--server 19991` for experimental server mode. Build artefacts will be served directly to http://localhost:port using GZIP compression without writing to folder / file system.
+
+### clean
+
+Remove files in the output folders.
 
 ## Configuration
 
@@ -247,7 +251,7 @@ In addition, build flags are available:
 
 Yup, rock solid stable. Our team has used `instapack` to ship multiple AngularJS projects to production.
 
-### Is this Windows only? :(
+### Is this Windows only?
 
 The majority of developers using `instapack` are working full-time on ASP.NET Core MVC projects on Windows with Visual Studio on daily basis. This use case will be the core focus for tooling support.
 
@@ -259,9 +263,9 @@ However, there should be no reason for `instapack` to not to run on OS X and Lin
 
 Yes, absolutely!
 
-In fact, you can just add the packages required and start hacking. We'll take care of the outputs. We have also enabled `tsx` compilation specifically for React in our templates' `tsconfig.json`.
+Add the packages required for your project using yarn / npm then start hacking. We'll take care of the outputs. We have also enabled `tsx` compilation specifically for React in our templates' `tsconfig.json`.
 
-Also, pull requests are welcomed if you have a great starting template for those projects. We'd love to expand our template collections. :)
+Also, pull requests are welcomed if you have a great starting templates and books for those projects. We'd love to expand our collections. :)
 
 ### Why don't your team develop using Angular 2+?
 
@@ -299,25 +303,6 @@ As a testament to TypeScript effectiveness, `instapack` is fully written using T
 - Sass has better language syntax.
 - Sass has more features.
 - Sass is more popular. Bootstrap, Foundation, and Angular-Material are written in Sass!
-
-### Can I just develop using classic JavaScript instead of TypeScript?
-
-Sure thing. You can use `require` to sequentially load external files. For example, in your `index.ts`:
-
-```js
-require('./a');         // client/js/a.js
-require('./b');         // client/js/b.js
-require('./folder/c');  // client/js/folder/c.js
-
-// As you may have guessed already, module.exports also works with this technique.
-// You can also load libraries from node_modules
-// Note that you still need to use window[...] to load libraries referenced before bundle.js
-
-var _ = require('lodash');
-var $ = window['$'];
-```
-
-That said, TypeScript is the key for scaling your application while maintaining source code quality. [Try it](https://www.typescriptlang.org/docs/handbook/basic-types.html), it's not that hard!
 
 ### My package restore / IDE is slow. Help!
 

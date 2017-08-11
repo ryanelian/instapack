@@ -8,18 +8,16 @@
   },
   "dependencies": {
     "@types/bootbox": "^4.4.33",
-    "@types/lodash": "^4.14.67",
-    "@types/node": "^8.0.8",
-    "@types/urijs": "^1.15.32",
+    "@types/node": "^8.0.20",
+    "@types/urijs": "^1.15.34",
     "aspnet-validation": "^0.0.1",
     "bootbox": "^4.4.0",
     "bootstrap-sass": "^3.3.7",
     "bootstrap.native": "^2.0.12",
     "es6-promise": "^4.1.1",
-    "lodash": "^4.17.4",
     "moment": "^2.18.1",
     "mustache": "^2.3.0",
     "tslib": "^1.7.1",
-    "urijs": "^1.18.10"
+    "urijs": "^1.18.12"
   }
 }

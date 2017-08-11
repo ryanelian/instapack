@@ -8,7 +8,7 @@ module.exports = class instapack {
         return ['all', 'js', 'css', 'concat'];
     }
     get availableTemplates() {
-        return ['empty', 'aspnet', 'angularjs', 'angular-material'];
+        return ['empty', 'aspnet', 'angular-bootstrap', 'angular-material'];
     }
     constructor() {
         this.settings = Settings_1.Settings.tryRead();

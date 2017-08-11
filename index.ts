@@ -20,7 +20,7 @@ export = class instapack {
      * Gets a list of string which contains templates available for the scaffold method.
      */
     get availableTemplates() {
-        return ['empty', 'aspnet', 'angularjs', 'angular-material'];
+        return ['empty', 'aspnet', 'angular-bootstrap', 'angular-material'];
     }
 
     /**

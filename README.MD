@@ -24,7 +24,7 @@ ipack new
 ipack
 ```
 
-Programmable API is also provided if you wish to integrate `instapack` into your very own build script:
+Programmable API is also provided if you wish to integrate instapack into your very own build script:
 
 ```js
 const instapack = require('instapack');
@@ -37,13 +37,11 @@ Practical guides can be read in [books](https://github.com/ryanelian/instapack/t
 
 ## System Requirements
 
-Currently supported Node.js is [latest version 6 LTS](https://nodejs.org/en/download/). Version 8 when LTS build is released in [October 2017](https://github.com/nodejs/LTS).
+Currently supported Node.js is [latest version 6 LTS](https://nodejs.org/en/download/).
 
-When using Visual Studio 2017, select the latest **TypeScript 2.X SDK** from the individual component list during setup.
+instapack works with Node.js version 8.3, which is **really fast**. That said, it will be supported once LTS build is released in [October 2017](https://github.com/nodejs/LTS).
 
-Also, VS2017 15.2 user can install TypeScript 2.4.1 out-of-band using a [separate installer](http://download.microsoft.com/download/7/0/A/70A6AC0E-8934-4396-A43E-445059F430EA/2.4.1-TS-release-dev14update3-20170626.1/TypeScript_SDK.exe) from the [release announcement page](https://blogs.msdn.microsoft.com/typescript/2017/06/27/announcing-typescript-2-4/).
-
-Optional but highly recommended, install [Python 2](https://www.python.org/downloads/).
+When using Visual Studio 2017 15.2, [install TypeScript 2.4.1 extension](http://download.microsoft.com/download/7/0/A/70A6AC0E-8934-4396-A43E-445059F430EA/2.4.1-TS-release-dev14update3-20170626.1/TypeScript_SDK.exe) from the [release announcement page](https://blogs.msdn.microsoft.com/typescript/2017/06/27/announcing-typescript-2-4/).
 
 ## Building from the Source
 
@@ -81,19 +79,19 @@ npm run build   # alternatively, "yarn global add typescript" then "tsc"
 
 - Blur the boundary between design time and programming time using blazing fast `watch` + `dev` compilation mode.
 
-- Stand-alone command line interface allows shipping to `npm`, which enables build system upgrade without altering `project.json` in each applications.
+- Stand-alone command line interface allows shipping to npm, which enables build system upgrade without altering `project.json` in each applications.
 
 - High quality tooling supported by latest stable Node.js, using strictly curated, actively maintained dependencies.
 
 ## But... Why?
 
-At a glance, `instapack` looks similar to `webpack`. However, that is where the similarity ends because `instapack` is **not** designed to replace `webpack`. Here is an analogy to help to differentiate these build systems:
+At a glance, instapack looks similar to webpack. However, that is where the similarity ends because instapack is **not** designed to replace webpack. Here is an analogy to help to differentiate these build systems:
 
-- `gulp` is like a DIY PC that you can construct from scratch. Very powerful but requires effort to configure and maintain.
+- gulp is like a DIY PC that you can construct from scratch. Very powerful but requires effort to configure and maintain.
 
-- `webpack` is like a barebone PC that can be plugged-in with off-the-shelf components. Not very versatile but easy to configure and good enough for most people.
+- webpack is like a barebone PC that can be plugged-in with off-the-shelf components. Not very versatile but easy to configure and good enough for most people.
 
-- `instapack` is like a laptop borrowed from your company, batteries included. You are not expected to modify it.
+- instapack is like a laptop borrowed from your company, batteries included. You are not expected to modify it.
 
 Consider the following example: Michael wants to develop a web application using ES6. One of the following events usually happens next...
 
@@ -107,25 +105,25 @@ Consider the following example: Michael wants to develop a web application using
 
 - Suddenly, Jack from the other team of the same company develops his own build system. So does Evan.
 
-`instapack` is developed as an answer those problems and more!
+instapack is developed as an answer those problems and more!
 
 ## How does it work?
 
 ![Build Flow](https://github.com/ryanelian/instapack/raw/master/img/flow.png)
 
-Internally, `instapack` uses the following modules:
+Internally, instapack uses the following modules:
 
-- `gulp` as task orchestrator and build pipeline.
+- [undertaker](https://github.com/gulpjs/undertaker) and [vinyl](https://github.com/gulpjs/vinyl) modules from gulp 4, as the task orchestrator and build engine.
 
-- `typescript` as the compiler service, syntax checker, and type checker for the JavaScript language.
+- [Microsoft's TypeScript](https://github.com/Microsoft/TypeScript) as the compiler service, syntax checker, and type checker for the JavaScript language.
 
-- `node-sass` as the compiler service and syntax checker for the CSS language. It is also configured to enable `@import` from `node_modules`.
+- [node-sass](https://github.com/sass/node-sass) as the compiler service and syntax checker for the CSS language. It is also configured to enable `@import` from `node_modules`.
 
-- `browserify` for merging the JavaScript output modules together.
+- [Browserify](https://github.com/substack/node-browserify) for merging the JavaScript output modules together.
 
-- `uglify-js` for minifying the resulting JavaScript bundle.
+- [UglifyJS](https://github.com/mishoo/UglifyJS2) for minifying the resulting JavaScript bundle.
 
-- `postcss` for applying automatic CSS vendor-prefix using `autoprefixer`, then minifying the result using `cssnano`.
+- [PostCSS](https://github.com/postcss/postcss) for applying automatic CSS vendor-prefix using [Autoprefixer](https://github.com/postcss/autoprefixer), then minifying the result using [cssnano](https://github.com/ben-eb/cssnano).
 
 Out of the box, the following files will be used as the application entry points:
 
@@ -137,7 +135,7 @@ Out of the box, the following files will be used as the application entry points
 
 ## Release Cadence
 
-Starting version 4.0.0, `instapack` follows [Semantic Versioning](http://semver.org/).
+Starting version 4.0.0, instapack follows [Semantic Versioning](http://semver.org/).
 
 Bi-weekly releases will be performed for updating package dependencies. This will increment the patch version.
 
@@ -153,7 +151,7 @@ You may use `instapack` or `ipack` or `ipk` to invoke the command line interface
 
 ### new [template]
 
-Scaffolds a new `instapack` project into your existing application from where the command line is invoked. The following templates are available:
+Scaffolds a new instapack project into your existing application from where the command line is invoked. The following templates are available:
 
 - `empty` when you need a minimal clean slate. Use this template to author a new template!
 
@@ -189,7 +187,7 @@ Remove files in the output folders.
 
 ## Configuration
 
-`instapack` puts configuration inside `package.json` to reduce project files clutter. For example, this is the included `package.json` with `aspnet` template:
+instapack puts configuration inside `package.json` to reduce project files clutter. For example, this is the included `package.json` with `aspnet` template:
 
 ```json
 {
@@ -247,15 +245,15 @@ Remove files in the output folders.
 
 ### Is this stable?
 
-Yup, rock solid stable. Our team has used `instapack` to ship multiple AngularJS projects to production.
+Yup, rock solid stable. Our team has used instapack to ship multiple AngularJS projects to production.
 
 ### Is this Windows only?
 
-The majority of developers using `instapack` are working full-time on ASP.NET Core MVC projects on Windows with Visual Studio on daily basis. This use case will be the core focus for tooling support.
+The majority of developers using instapack are working full-time on ASP.NET Core MVC projects on Windows with Visual Studio on daily basis. This use case will be the core focus for tooling support.
 
-However, there should be no reason for `instapack` to not to run on OS X and Linux.
+However, there should be no reason for instapack to not to run on OS X and Linux.
 
-`instapack` will not suddenly introduce Windows or Visual Studio exclusive feature, and strive to maintain compatibility with multiple platforms.
+instapack will not suddenly introduce Windows or Visual Studio exclusive feature, and strive to maintain compatibility with multiple platforms.
 
 ### Can I use React / Vue / Angular 2+ / Ember / Aurelia / Knockout / ... ?
 
@@ -284,23 +282,6 @@ Nope.
 [Nope.](https://medium.com/@asyncmax/the-right-way-to-bundle-your-assets-for-faster-sites-over-http-2-437c37efe3ff)
 
 Also, in IIS, HTTP/2 is only supported when using Windows Server 2016. Many of our customers are still using Windows Server 2012 R2 to date.
-
-### Why TypeScript?
-
-- Babel is very slow.
-- TypeScript is supported by Microsoft.
-- TypeScript is growing at an [exponential rate](https://github.com/Microsoft/TypeScript/milestones).
-- TypeScript is a strict superset of the JavaScript, which allows porting and refactoring existing code with ease.
-- TypeScript allows writing JavaScript using features that do not exist yet in browsers, then compile them down to [ES5](http://kangax.github.io/compat-table/es5/).
-
-As a testament to TypeScript effectiveness, `instapack` is fully written using TypeScript!
-
-### Why Sass instead of Less.js?
-
-- `libsass` is native and fast.
-- Sass has better language syntax.
-- Sass has more features.
-- Sass is more popular. Bootstrap, Foundation, and Angular-Material are written in Sass!
 
 ### My package restore / IDE is slow. Help!
 

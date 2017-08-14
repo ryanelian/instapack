@@ -4,7 +4,7 @@
 
 `ipack new angular-material`
 
-Use your favorite back-end technology and reference `instapack` build artefacts. If you are not familiar, read the [basic tutorial using ASP.NET Core MVC](tutorial-asp-net-core-mvc.md).
+Use your favorite back-end technology and reference instapack build artefacts. If you are not familiar, read the [basic tutorial using ASP.NET Core MVC](tutorial-asp-net-core-mvc.md).
 
 Your JavaScript project structure should look like this:
 
@@ -102,7 +102,7 @@ export let SumComponent: angular.IComponentOptions = {
 
 > Technically, you do not need to type-hint `angular.IComponentOptions`. However, doing so provides clarity to the source code and serves as a documentation!
 
-`instapack` supports HTML template compilation for convenience. `Sum.html` next to `Sum.ts` will be stringified, minified, then exported as a module. Make a new file `Sum.html` next to `Sum.ts` file:
+instapack supports HTML template compilation for convenience. `Sum.html` next to `Sum.ts` will be stringified, minified, then exported as a module. Make a new file `Sum.html` next to `Sum.ts` file:
 
 ```html
 <p>{{1 + 1}}</p>
@@ -851,7 +851,7 @@ app.run(['$q', ($q: angular.IQService) => {
 
 AngularJS provides basic implementation for common HTML5 input types and attributes for validation. However unlike ASP.NET Core MVC, it does not provide an out-of-the-box component for quickly displaying validation errors.
 
-For this reason, a custom AngularJS input validation message component is provided within a project generated using `instapack`. The component usage is similar to `@Html.ValidationMessageFor` for ASP.NET Core MVC.
+For this reason, a custom AngularJS input validation message component is provided within a project generated using instapack. The component usage is similar to `@Html.ValidationMessageFor` for ASP.NET Core MVC.
 
 Modify `Sum.html` to:
 

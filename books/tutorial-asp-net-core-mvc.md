@@ -43,7 +43,7 @@ Your folder structure should look like this:
 
 ## Cleaning Up
 
-Because we are using NPM for managing our packages and `instapack` for bundling and minifying our project, we can delete some files and folders to reduce noise and clutter:
+Because we are using NPM for managing our packages and instapack for bundling and minifying our project, we can delete some files and folders to reduce noise and clutter:
 
 - /.bowerrc
 - /bower.json
@@ -60,7 +60,7 @@ Additionally, I also like to delete these files and start with something fresh l
 - /Views/Shared/_Layout.cshtml
 - /Views/Shared/_ValidationScriptsPartial.cshtml
 
-> The default instapack `aspnet` template comes with [`aspnet-validation`](https://github.com/ryanelian/aspnet-validation) and [`bootstrap.native`](https://github.com/thednp/bootstrap.native) modules which removed the need for JQuery!
+> The default instapack `aspnet` template comes with [aspnet-validation](https://github.com/ryanelian/aspnet-validation) and [bootstrap.native](https://github.com/thednp/bootstrap.native) modules which removed the need for JQuery!
 
 ## Referencing Artefacts
 
@@ -128,13 +128,13 @@ If done correctly, `Hello World` text should appear under the `Index` header tex
 
 Read more about TypeScript: https://www.typescriptlang.org/docs/home.html
 
-> `instapack` provides rapid development mode that automatically builds on-change by using debug and watch flag: `ipack -dw`
+> instapack provides rapid development mode that automatically builds on-change by using debug and watch flag: `ipack -dw`
 
 ## Imports and NPM
 
-We can add libraries into our project from NPM gallery and consume them using `instapack`.
+We can add libraries into our project from NPM gallery and consume them using instapack.
 
-Try adding `comma-number` into our project via the command line: `yarn add comma-number`
+Try adding comma-number module into our project via the command line: `yarn add comma-number`
 
 Then modify our code in `index.ts` to:
 
@@ -146,7 +146,7 @@ document.getElementById('hello').innerHTML = cn(1337);
 
 If done correctly, the view should display `1,337`.
 
-> By using TypeScript `import` syntax, we can scale the JavaScript application into multiple files and let `instapack` deal with the build. [Read more](https://www.typescriptlang.org/docs/handbook/modules.html).
+> By using TypeScript `import` syntax, we can scale the JavaScript application into multiple files and let instapack deal with the build. [Read more](https://www.typescriptlang.org/docs/handbook/modules.html).
 
 > `require(...)` against normal JavaScript file is also supported but not recommended due to the lack of compile-time checks!
 
@@ -168,7 +168,7 @@ That's it. Basically it is still the very same CSS that you learn ~~and love~~, 
 - Learn SASS at Codecademy: https://www.codecademy.com/learn/learn-sass
 - Learn SASS at Code School: https://www.codeschool.com/courses/assembling-sass
 
-> `instapack` also performs browser compatibility fixes for vendor prefixes (like -moz-* or -webkit-* or -ms-*), for impressive compatibility with over 90% of the browsers in use worldwide!
+> instapack also performs browser compatibility fixes for vendor prefixes (like -moz-* or -webkit-* or -ms-*), for impressive compatibility with over 90% of the browsers in use worldwide!
 
 ## Icons
 
@@ -195,4 +195,4 @@ Now you should be able to use Font Awesome icons in your views. Test by adding t
 
 If done correctly, a thumbs-up icon should appear.
 
-> Yes that's right, `instapack` automatically resolves `@import` from `node_modules` for your convenience!
+> Yes that's right, instapack automatically resolves `@import` from `node_modules` for your convenience!

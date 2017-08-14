@@ -3,21 +3,21 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = require("tslib");
 const Undertaker = require("undertaker");
 const VinylFS = require("vinyl-fs");
+const through2 = require("through2");
 const chalk = require("chalk");
-const sourcemaps = require("gulp-sourcemaps");
+const fse = require("fs-extra");
 const chokidar = require("chokidar");
+const sourcemaps = require("gulp-sourcemaps");
 const GulpLog_1 = require("./GulpLog");
 const PipeErrorHandler_1 = require("./PipeErrorHandler");
 const To = require("./PipeTo");
 const Server_1 = require("./Server");
+const vinyl = require("vinyl");
+const resolve = require("resolve");
 const browserify = require("browserify");
 const tsify = require("tsify");
 const watchify = require("watchify");
 const Templatify_1 = require("./Templatify");
-const through2 = require("through2");
-const vinyl = require("vinyl");
-const resolve = require("resolve");
-const fse = require("fs-extra");
 class Compiler {
     constructor(settings, flags) {
         this.unfuckBrowserifySourcePaths = (sourcePath, file) => {

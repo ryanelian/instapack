@@ -1,9 +1,11 @@
-// Core task runner dependencies
+// Core dependencies
 import * as Undertaker from 'undertaker';
 import * as VinylFS from 'vinyl-fs';
+import * as through2 from 'through2';
 import * as chalk from 'chalk';
-import * as sourcemaps from 'gulp-sourcemaps';
+import * as fse from 'fs-extra';
 import * as chokidar from 'chokidar';
+import * as sourcemaps from 'gulp-sourcemaps';
 
 import glog from './GulpLog';
 import PipeErrorHandler from './PipeErrorHandler';
@@ -12,17 +14,15 @@ import * as To from './PipeTo';
 import { Server } from './Server';
 import { Settings, ConcatenationLookup } from './Settings';
 
+// These are used by concat task
+import * as vinyl from 'vinyl';
+import * as resolve from 'resolve';
+
 // These are used by Browserify
 import * as browserify from 'browserify';
 import * as tsify from 'tsify';
 import * as watchify from 'watchify';
 import templatify from './Templatify';
-
-// These are used by concat task
-import * as through2 from 'through2';
-import * as vinyl from 'vinyl';
-import * as resolve from 'resolve';
-import * as fse from 'fs-extra';
 
 /**
  * Defines build flags to be used by Compiler class.

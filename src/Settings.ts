@@ -113,7 +113,7 @@ export class Settings {
     /**
      * Gets the glob pattern for watching changes of Sass source code files. 
      */
-    get cssWatchGlob(): string {
+    get scssGlob(): string {
         return path.join(this.inputCssFolder, '**', '*.scss');
     }
 

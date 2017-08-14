@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const prettyJSON = require("prettyjson");
-const GulpLog_1 = require("./GulpLog");
 const chalk = require("chalk");
 function PipeErrorHandler(error) {
     try {
@@ -11,7 +10,7 @@ function PipeErrorHandler(error) {
         }));
     }
     catch (ex) {
-        GulpLog_1.default(chalk.red(error));
+        console.log(chalk.red(error));
     }
     this.emit('end');
 }

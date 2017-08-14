@@ -1,17 +1,16 @@
 // Core task runner dependencies
-import * as gulp from 'gulp';
-import * as sourcemaps from 'gulp-sourcemaps';
-import * as plumber from 'gulp-plumber';
+import * as Undertaker from 'undertaker';
+import * as VinylFS from 'vinyl-fs';
 import * as chalk from 'chalk';
+import * as sourcemaps from 'gulp-sourcemaps';
+import * as chokidar from 'chokidar';
 
 import glog from './GulpLog';
 import PipeErrorHandler from './PipeErrorHandler';
 
-// These are used by concat task
-import * as through2 from 'through2';
-import * as vinyl from 'vinyl';
-import * as resolve from 'resolve';
-import * as fs from 'fs-extra';
+import * as To from './PipeTo';
+import { Server } from './Server';
+import { Settings, ConcatenationLookup } from './Settings';
 
 // These are used by Browserify
 import * as browserify from 'browserify';
@@ -19,14 +18,11 @@ import * as tsify from 'tsify';
 import * as watchify from 'watchify';
 import templatify from './Templatify';
 
-// These are used by CSS
-import * as gwatch from 'gulp-watch';
-
-// These are my pipes :V
-import * as To from './PipeTo';
-
-import { Server } from './Server';
-import { Settings, ConcatenationLookup } from './Settings';
+// These are used by concat task
+import * as through2 from 'through2';
+import * as vinyl from 'vinyl';
+import * as resolve from 'resolve';
+import * as fse from 'fs-extra';
 
 /**
  * Defines build flags to be used by Compiler class.
@@ -59,6 +55,11 @@ export class Compiler {
     readonly server: Server;
 
     /**
+     * Gets the task registry.
+     */
+    readonly tasks: Undertaker;
+
+    /**
      * Constructs a new instance of Compiler using specified build flags. 
      * @param settings 
      * @param flags 
@@ -66,6 +67,7 @@ export class Compiler {
     constructor(settings: Settings, flags: CompilerFlags) {
         this.settings = settings;
         this.flags = flags;
+        this.tasks = new Undertaker();
 
         if (flags.serverPort) {
             this.flags.watch = true;
@@ -106,10 +108,10 @@ export class Compiler {
      * Registers all available tasks and registers a task for invoking all those tasks.
      */
     registerAllTasks() {
-        gulp.task('all', ['concat', 'js', 'css']);
         this.registerConcatTask();
         this.registerJsTask();
         this.registerCssTask();
+        this.tasks.task('all', this.tasks.parallel('concat', 'js', 'css'));
     }
 
     /**
@@ -117,7 +119,8 @@ export class Compiler {
      * @param taskName 
      */
     build(taskName) {
-        gulp.start(taskName);
+        let run = this.tasks.task(taskName);
+        run(error => { });
     }
 
     /**
@@ -152,9 +155,10 @@ export class Compiler {
     registerJsTask() {
         let jsEntry = this.settings.jsEntry;
 
-        if (!fs.existsSync(jsEntry)) {
-            glog('JS entry', chalk.cyan(jsEntry), 'was not found.', chalk.red('Aborting JS build.'));
-            gulp.task('js', () => { });
+        if (!fse.existsSync(jsEntry)) {
+            this.tasks.task('js', () => {
+                glog('JS entry', chalk.cyan(jsEntry), 'was not found.', chalk.red('Aborting JS build.'));
+            });
             return;
         }
 
@@ -174,16 +178,17 @@ export class Compiler {
         let compileJs = () => {
             glog('Compiling JS', chalk.cyan(jsEntry));
 
-            return bundler.bundle().on('error', PipeErrorHandler)
+            return bundler.bundle()
+                .on('error', PipeErrorHandler)
                 .pipe(To.Vinyl('bundle.js'))
                 .pipe(To.VinylBuffer())
-                .pipe(plumber({ errorHandler: PipeErrorHandler }))
                 .pipe(this.flags.map ? sourcemaps.init({ loadMaps: true }) : through2.obj())
                 .pipe(this.flags.minify ? To.Uglify() : through2.obj())
+                .on('error', PipeErrorHandler)
                 .pipe(this.flags.map ? sourcemaps.mapSources(this.unfuckBrowserifySourcePaths) : through2.obj())
                 .pipe(this.flags.map ? sourcemaps.write('./') : through2.obj())
                 .pipe(To.BuildLog('JS compilation'))
-                .pipe(this.server ? this.server.Update() : gulp.dest(this.settings.outputJsFolder));
+                .pipe(this.server ? this.server.Update() : VinylFS.dest(this.settings.outputJsFolder));
         };
 
         if (this.flags.watch) {
@@ -191,57 +196,56 @@ export class Compiler {
             bundler.on('update', compileJs);
         }
 
-        gulp.task('js', compileJs);
+        this.tasks.task('js', compileJs);
     }
 
     /**
      * Registers a CSS compilation task using Sass piped into postcss.
      */
     registerCssTask() {
-        let npm = this.settings.npmFolder;
         let cssEntry = this.settings.cssEntry;
-        let sassGlob = this.settings.cssWatchGlob;
-        let projectFolder = this.settings.root;
 
-        if (!fs.existsSync(cssEntry)) {
-            glog('CSS entry', chalk.cyan(cssEntry), 'was not found.', chalk.red('Aborting CSS build.'));
-            gulp.task('css', () => { });
+        if (!fse.existsSync(cssEntry)) {
+            this.tasks.task('css', () => {
+                glog('CSS entry', chalk.cyan(cssEntry), 'was not found.', chalk.red('Aborting CSS build.'));
+            });
             return;
         }
 
-        gulp.task('css:compile', () => {
+        this.tasks.task('css:compile', () => {
             glog('Compiling CSS', chalk.cyan(cssEntry));
             let sassImports = [this.settings.npmFolder];
 
-            return gulp.src(cssEntry)
-                .pipe(plumber({ errorHandler: PipeErrorHandler }))
+            return VinylFS.src(cssEntry)
                 .pipe(this.flags.map ? sourcemaps.init() : through2.obj())
                 .pipe(To.Sass(sassImports))
+                .on('error', PipeErrorHandler)
                 .pipe(To.CssProcessors(this.flags.minify))
+                .on('error', PipeErrorHandler)
                 .pipe(this.flags.map ? sourcemaps.mapSources(this.unfuckPostCssSourcePath) : through2.obj())
                 .pipe(this.flags.map ? sourcemaps.write('./') : through2.obj())
                 .pipe(To.BuildLog('CSS compilation'))
-                .pipe(this.server ? this.server.Update() : gulp.dest(this.settings.outputCssFolder));
+                .pipe(this.server ? this.server.Update() : VinylFS.dest(this.settings.outputCssFolder));
         });
 
-        let watchCallback = undefined;
-        if (this.flags.watch) {
-            watchCallback = () => {
-                return gwatch(sassGlob, () => {
-                    gulp.start('css:compile');
-                });
-            };
-        }
+        this.tasks.task('css', () => {
+            let run = this.tasks.task('css:compile');
+            run(error => { });
 
-        gulp.task('css', ['css:compile'], watchCallback);
+            if (this.flags.watch) {
+                chokidar.watch(this.settings.scssGlob).on('change', path => {
+                    run(error => { });
+                });
+            }
+        });
     }
 
     /**
      * Returns true when package.json exists in project root folder but node_modules folder is missing.
      */
     needPackageRestore() {
-        let hasNodeModules = fs.existsSync(this.settings.npmFolder);
-        let hasPackageJson = fs.existsSync(this.settings.packageJson);
+        let hasNodeModules = fse.existsSync(this.settings.npmFolder);
+        let hasPackageJson = fse.existsSync(this.settings.packageJson);
 
         let restore = hasPackageJson && !hasNodeModules;
 
@@ -279,7 +283,7 @@ export class Compiler {
 
         for (let path of paths) {
             let absolute = await this.resolveAsPromise(path);
-            concat += await fs.readFile(absolute, 'utf8') + '\n';
+            concat += await fse.readFile(absolute, 'utf8') + '\n';
         }
 
         return concat;
@@ -293,7 +297,7 @@ export class Compiler {
         glog('Resolving', chalk.cyan(concatCount.toString()), 'concatenation targets...');
 
         if (concatCount === 0) {
-            gulp.task('concat', undefined);
+            this.tasks.task('concat', () => { });
             return;
         }
 
@@ -301,7 +305,7 @@ export class Compiler {
             glog("Concatenation task will be run once and", chalk.red("NOT watched!"));
         }
 
-        gulp.task('concat', () => {
+        this.tasks.task('concat', () => {
             let g = through2.obj();
             let resolution = this.settings.concat;
 
@@ -320,8 +324,9 @@ export class Compiler {
             }
 
             return g.pipe(this.flags.minify ? To.Uglify() : through2.obj())
+                .on('error', PipeErrorHandler)
                 .pipe(To.BuildLog('JS concatenation'))
-                .pipe(this.server ? this.server.Update() : gulp.dest(this.settings.outputJsFolder));
+                .pipe(this.server ? this.server.Update() : VinylFS.dest(this.settings.outputJsFolder));
         });
     }
 }

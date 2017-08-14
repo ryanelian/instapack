@@ -16,7 +16,7 @@ export default function PipeErrorHandler(this: stream, error) {
             dashColor: 'red',
         }));
     } catch (ex) {
-        glog(chalk.red(error));
+        console.log(chalk.red(error));
     }
     this.emit('end');
 }

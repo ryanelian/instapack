@@ -35,7 +35,7 @@ class Settings {
     get cssEntry() {
         return path.join(this.inputCssFolder, 'site.scss');
     }
-    get cssWatchGlob() {
+    get scssGlob() {
         return path.join(this.inputCssFolder, '**', '*.scss');
     }
     get outputFolder() {

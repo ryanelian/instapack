@@ -1,23 +1,23 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = require("tslib");
-const gulp = require("gulp");
-const sourcemaps = require("gulp-sourcemaps");
-const plumber = require("gulp-plumber");
+const Undertaker = require("undertaker");
+const VinylFS = require("vinyl-fs");
 const chalk = require("chalk");
+const sourcemaps = require("gulp-sourcemaps");
+const chokidar = require("chokidar");
 const GulpLog_1 = require("./GulpLog");
 const PipeErrorHandler_1 = require("./PipeErrorHandler");
-const through2 = require("through2");
-const vinyl = require("vinyl");
-const resolve = require("resolve");
-const fs = require("fs-extra");
+const To = require("./PipeTo");
+const Server_1 = require("./Server");
 const browserify = require("browserify");
 const tsify = require("tsify");
 const watchify = require("watchify");
 const Templatify_1 = require("./Templatify");
-const gwatch = require("gulp-watch");
-const To = require("./PipeTo");
-const Server_1 = require("./Server");
+const through2 = require("through2");
+const vinyl = require("vinyl");
+const resolve = require("resolve");
+const fse = require("fs-extra");
 class Compiler {
     constructor(settings, flags) {
         this.unfuckBrowserifySourcePaths = (sourcePath, file) => {
@@ -40,6 +40,7 @@ class Compiler {
         };
         this.settings = settings;
         this.flags = flags;
+        this.tasks = new Undertaker();
         if (flags.serverPort) {
             this.flags.watch = true;
             this.server = new Server_1.Server(flags.serverPort);
@@ -69,19 +70,21 @@ class Compiler {
         }
     }
     registerAllTasks() {
-        gulp.task('all', ['concat', 'js', 'css']);
         this.registerConcatTask();
         this.registerJsTask();
         this.registerCssTask();
+        this.tasks.task('all', this.tasks.parallel('concat', 'js', 'css'));
     }
     build(taskName) {
-        gulp.start(taskName);
+        let run = this.tasks.task(taskName);
+        run(error => { });
     }
     registerJsTask() {
         let jsEntry = this.settings.jsEntry;
-        if (!fs.existsSync(jsEntry)) {
-            GulpLog_1.default('JS entry', chalk.cyan(jsEntry), 'was not found.', chalk.red('Aborting JS build.'));
-            gulp.task('js', () => { });
+        if (!fse.existsSync(jsEntry)) {
+            this.tasks.task('js', () => {
+                GulpLog_1.default('JS entry', chalk.cyan(jsEntry), 'was not found.', chalk.red('Aborting JS build.'));
+            });
             return;
         }
         let browserifyOptions = {
@@ -96,59 +99,59 @@ class Compiler {
         }).add(jsEntry).plugin(tsify);
         let compileJs = () => {
             GulpLog_1.default('Compiling JS', chalk.cyan(jsEntry));
-            return bundler.bundle().on('error', PipeErrorHandler_1.default)
+            return bundler.bundle()
+                .on('error', PipeErrorHandler_1.default)
                 .pipe(To.Vinyl('bundle.js'))
                 .pipe(To.VinylBuffer())
-                .pipe(plumber({ errorHandler: PipeErrorHandler_1.default }))
                 .pipe(this.flags.map ? sourcemaps.init({ loadMaps: true }) : through2.obj())
                 .pipe(this.flags.minify ? To.Uglify() : through2.obj())
+                .on('error', PipeErrorHandler_1.default)
                 .pipe(this.flags.map ? sourcemaps.mapSources(this.unfuckBrowserifySourcePaths) : through2.obj())
                 .pipe(this.flags.map ? sourcemaps.write('./') : through2.obj())
                 .pipe(To.BuildLog('JS compilation'))
-                .pipe(this.server ? this.server.Update() : gulp.dest(this.settings.outputJsFolder));
+                .pipe(this.server ? this.server.Update() : VinylFS.dest(this.settings.outputJsFolder));
         };
         if (this.flags.watch) {
             bundler.plugin(watchify);
             bundler.on('update', compileJs);
         }
-        gulp.task('js', compileJs);
+        this.tasks.task('js', compileJs);
     }
     registerCssTask() {
-        let npm = this.settings.npmFolder;
         let cssEntry = this.settings.cssEntry;
-        let sassGlob = this.settings.cssWatchGlob;
-        let projectFolder = this.settings.root;
-        if (!fs.existsSync(cssEntry)) {
-            GulpLog_1.default('CSS entry', chalk.cyan(cssEntry), 'was not found.', chalk.red('Aborting CSS build.'));
-            gulp.task('css', () => { });
+        if (!fse.existsSync(cssEntry)) {
+            this.tasks.task('css', () => {
+                GulpLog_1.default('CSS entry', chalk.cyan(cssEntry), 'was not found.', chalk.red('Aborting CSS build.'));
+            });
             return;
         }
-        gulp.task('css:compile', () => {
+        this.tasks.task('css:compile', () => {
             GulpLog_1.default('Compiling CSS', chalk.cyan(cssEntry));
             let sassImports = [this.settings.npmFolder];
-            return gulp.src(cssEntry)
-                .pipe(plumber({ errorHandler: PipeErrorHandler_1.default }))
+            return VinylFS.src(cssEntry)
                 .pipe(this.flags.map ? sourcemaps.init() : through2.obj())
                 .pipe(To.Sass(sassImports))
+                .on('error', PipeErrorHandler_1.default)
                 .pipe(To.CssProcessors(this.flags.minify))
+                .on('error', PipeErrorHandler_1.default)
                 .pipe(this.flags.map ? sourcemaps.mapSources(this.unfuckPostCssSourcePath) : through2.obj())
                 .pipe(this.flags.map ? sourcemaps.write('./') : through2.obj())
                 .pipe(To.BuildLog('CSS compilation'))
-                .pipe(this.server ? this.server.Update() : gulp.dest(this.settings.outputCssFolder));
+                .pipe(this.server ? this.server.Update() : VinylFS.dest(this.settings.outputCssFolder));
         });
-        let watchCallback = undefined;
-        if (this.flags.watch) {
-            watchCallback = () => {
-                return gwatch(sassGlob, () => {
-                    gulp.start('css:compile');
+        this.tasks.task('css', () => {
+            let run = this.tasks.task('css:compile');
+            run(error => { });
+            if (this.flags.watch) {
+                chokidar.watch(this.settings.scssGlob).on('change', path => {
+                    run(error => { });
                 });
-            };
-        }
-        gulp.task('css', ['css:compile'], watchCallback);
+            }
+        });
     }
     needPackageRestore() {
-        let hasNodeModules = fs.existsSync(this.settings.npmFolder);
-        let hasPackageJson = fs.existsSync(this.settings.packageJson);
+        let hasNodeModules = fse.existsSync(this.settings.npmFolder);
+        let hasPackageJson = fse.existsSync(this.settings.packageJson);
         let restore = hasPackageJson && !hasNodeModules;
         if (restore) {
             GulpLog_1.default(chalk.cyan('node_modules'), 'folder not found. Performing automatic package restore...');
@@ -174,7 +177,7 @@ class Compiler {
             let concat = '';
             for (let path of paths) {
                 let absolute = yield this.resolveAsPromise(path);
-                concat += (yield fs.readFile(absolute, 'utf8')) + '\n';
+                concat += (yield fse.readFile(absolute, 'utf8')) + '\n';
             }
             return concat;
         });
@@ -183,13 +186,13 @@ class Compiler {
         let concatCount = this.settings.concatCount;
         GulpLog_1.default('Resolving', chalk.cyan(concatCount.toString()), 'concatenation targets...');
         if (concatCount === 0) {
-            gulp.task('concat', undefined);
+            this.tasks.task('concat', () => { });
             return;
         }
         if (this.flags.watch) {
             GulpLog_1.default("Concatenation task will be run once and", chalk.red("NOT watched!"));
         }
-        gulp.task('concat', () => {
+        this.tasks.task('concat', () => {
             let g = through2.obj();
             let resolution = this.settings.concat;
             for (let target in resolution) {
@@ -205,8 +208,9 @@ class Compiler {
                 });
             }
             return g.pipe(this.flags.minify ? To.Uglify() : through2.obj())
+                .on('error', PipeErrorHandler_1.default)
                 .pipe(To.BuildLog('JS concatenation'))
-                .pipe(this.server ? this.server.Update() : gulp.dest(this.settings.outputJsFolder));
+                .pipe(this.server ? this.server.Update() : VinylFS.dest(this.settings.outputJsFolder));
         });
     }
 }

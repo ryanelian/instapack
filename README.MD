@@ -113,7 +113,7 @@ instapack is developed as an answer those problems and more!
 
 Internally, instapack uses the following modules:
 
-- [undertaker](https://github.com/gulpjs/undertaker) and [vinyl](https://github.com/gulpjs/vinyl) modules from gulp 4, as the task orchestrator and build engine.
+- [undertaker](https://github.com/gulpjs/undertaker) and [vinyl](https://github.com/gulpjs/vinyl) modules from gulp, as the task orchestrator and build engine.
 
 - [Microsoft's TypeScript](https://github.com/Microsoft/TypeScript) as the compiler service, syntax checker, and type checker for the JavaScript language.
 
@@ -269,7 +269,7 @@ Angular 2+ uses [JavaScript Decorators](https://github.com/wycats/javascript-dec
 
 ES Decorators themselves are on [Stage 2 proposal (draft)](https://tc39.github.io/proposal-decorators/).
 
-**You'd be crazy to develop an enterprise application using THAT.**
+**You'd be crazy to develop an enterprise application using that.**
 
 ### Can I change the input / output file / folder name?
 

@@ -7,9 +7,11 @@ function CssProcessors(minify) {
     let cssProcessors = [autoprefixer];
     if (minify) {
         let minifier = cssnano({
-            discardComments: {
-                removeAll: true
-            }
+            preset: ['default', {
+                    discardComments: {
+                        removeAll: true,
+                    },
+                }]
         });
         cssProcessors.push(minifier);
     }

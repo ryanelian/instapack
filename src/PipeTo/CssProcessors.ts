@@ -11,11 +11,12 @@ export function CssProcessors(minify: boolean) {
 
     if (minify) {
         let minifier = cssnano({
-            discardComments: {
-                removeAll: true
-            }
+            preset: ['default', {
+                discardComments: {
+                    removeAll: true,
+                },
+            }]
         });
-
         cssProcessors.push(minifier);
     }
 

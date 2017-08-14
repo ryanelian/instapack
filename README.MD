@@ -265,15 +265,13 @@ Also, pull requests are welcomed if you have a great starting templates and book
 
 ### Why don't your team develop using Angular 2+?
 
-Angular 2+ uses [JavaScript Decorators](https://github.com/wycats/javascript-decorators) feature. This feature is [flagged as experimental](https://www.typescriptlang.org/docs/handbook/decorators.html) in TypeScript.
+Angular 2+ uses [JavaScript Decorators](https://github.com/wycats/javascript-decorators) feature. This feature is [flagged as experimental](https://www.typescriptlang.org/docs/handbook/decorators.html) in TypeScript, which may be changed or removed anytime in the future.
 
-Our management does not like experimental features.
+ES Decorators themselves are on [Stage 2 proposal (draft)](https://tc39.github.io/proposal-decorators/).
 
-### Can I use input / output folder other than `js` and `css`?
+**You'd be crazy to develop an enterprise application using THAT.**
 
-Nope.
-
-### Can I use entry point other than `index.ts` and `site.scss`?
+### Can I change the input / output file / folder name?
 
 Nope.
 

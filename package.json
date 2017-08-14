@@ -26,7 +26,7 @@
     "browserify": "14.4.0",
     "chalk": "2.1.0",
     "chokidar": "1.7.0",
-    "cssnano": "3.10.0",
+    "cssnano": "4.0.0-rc.2",
     "fs-extra": "4.0.1",
     "gulp-postcss": "7.0.0",
     "gulp-sourcemaps": "2.6.0",

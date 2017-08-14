@@ -3040,14 +3040,6 @@ preserve@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/preserve/-/preserve-0.2.0.tgz#815ed1f6ebc65926f865b310c0713bcb3315ce4b"
 
-pretty-bytes@4.0.2:
-  version "4.0.2"
-  resolved "https://registry.yarnpkg.com/pretty-bytes/-/pretty-bytes-4.0.2.tgz#b2bf82e7350d65c6c33aa95aaa5a4f6327f61cd9"
-
-pretty-hrtime@1.0.3:
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/pretty-hrtime/-/pretty-hrtime-1.0.3.tgz#b7e3ea42435a4c9b2759d99e0f201eb195802ee1"
-
 prettyjson@1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/prettyjson/-/prettyjson-1.2.1.tgz#fcffab41d19cab4dfae5e575e64246619b12d289"

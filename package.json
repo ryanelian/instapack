@@ -1,6 +1,6 @@
 {
   "name": "instapack",
-  "version": "4.1.0",
+  "version": "4.1.1-beta1",
   "description": "All-in-one web application client project compiler using TypeScript and Sass!",
   "main": "bin/index.js",
   "bin": {
@@ -32,8 +32,6 @@
     "gulp-sourcemaps": "2.6.0",
     "html-minifier": "3.5.3",
     "node-sass": "4.5.3",
-    "pretty-bytes": "4.0.2",
-    "pretty-hrtime": "1.0.3",
     "prettyjson": "1.2.1",
     "resolve": "1.4.0",
     "through2": "2.0.3",

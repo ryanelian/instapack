@@ -2,92 +2,36 @@ import * as through2 from 'through2';
 import * as chalk from 'chalk';
 import glog from '../GulpLog';
 
+const bigUnitPrefix = ['', 'k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'];
+const nanoUnitPrefix = ['n', 'µ', 'm'];
+
 /**
- * Returns SI prefix scaled from number without prefix. 
- * @param unit 
+ * Returns number scale in multiples of 10e3 in O(1) complexity.
+ * @param x 
  */
-function bigUnitPrefix(unit: number) {
-    switch (unit) {
-        case 0: {
-            return '';
-        }
-        case 1: {
-            return 'k'; // kilo
-        }
-        case 2: {
-            return 'M'; // mega
-        }
-        case 3: {
-            return 'G'; // giga
-        }
-        case 4: {
-            return 'T'; // tera
-        }
-        case 5: {
-            return 'P'; // peta
-        }
-        case 6: {
-            return 'E'; // exa
-        }
-        case 7: {
-            return 'Z'; // zetta
-        }
-        case 8: {
-            return 'Y'; // yotta
-        }
-        default: {
-            return '?';
-        }
-    }
+function siDegree(x: number) {
+    return Math.floor(Math.log10(x) / 3);
 }
 
 /**
- * Returns SI prefix scaled from nano-scale numbers.
- * @param unit 
- */
-function nanoUnitPrefix(unit: number) {
-    switch (unit) {
-        case 0: {
-            return 'n'; // nano
-        }
-        case 1: {
-            return 'µ'; // micro
-        }
-        case 2: {
-            return 'm'; // milli
-        }
-        default: {
-            return '?';
-        }
-    }
-}
-
-/**
- * Returns byte formatted as string as SI unit.
- * @param hrtime 
+ * Returns byte formatted as string with SI prefix.
+ * @param size 
  */
 function prettyBytes(size: number) {
-    let unit = 0;
-    while (size > 1000) {
-        size /= 1000.00;
-        unit++;
-    }
-    return size.toPrecision(3) + ' ' + bigUnitPrefix(unit) + 'B';
+    let unit = siDegree(size);
+    let scale = size * Math.pow(1000, -unit);
+    return scale.toPrecision(3) + ' ' + bigUnitPrefix[unit] + 'B';
 }
 
 /**
- * Returns node high-resolution time formatted as string with seconds as SI unit.
+ * Returns node high-resolution time formatted as string with SI prefix.
  * @param hrtime 
  */
 function prettyTime(hrtime: [number, number]) {
     if (hrtime[0] === 0) {
-        let size = hrtime[1];
-        let unit = 0;
-        while (size > 1000) {
-            size /= 1000.00;
-            unit++;
-        }
-        return size.toPrecision(3) + ' ' + nanoUnitPrefix(unit) + 's';
+        let unit = siDegree(hrtime[1]);
+        let scale = hrtime[1] * Math.pow(1000, -unit);
+        return scale.toPrecision(3) + ' ' + nanoUnitPrefix[unit] + 's';
     } else {
         let t = hrtime[0] + (hrtime[1] / Math.pow(1000, 3));
         return t.toPrecision(3) + ' s';

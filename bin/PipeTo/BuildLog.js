@@ -3,73 +3,21 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const through2 = require("through2");
 const chalk = require("chalk");
 const GulpLog_1 = require("../GulpLog");
-function bigUnitPrefix(unit) {
-    switch (unit) {
-        case 0: {
-            return '';
-        }
-        case 1: {
-            return 'k';
-        }
-        case 2: {
-            return 'M';
-        }
-        case 3: {
-            return 'G';
-        }
-        case 4: {
-            return 'T';
-        }
-        case 5: {
-            return 'P';
-        }
-        case 6: {
-            return 'E';
-        }
-        case 7: {
-            return 'Z';
-        }
-        case 8: {
-            return 'Y';
-        }
-        default: {
-            return '?';
-        }
-    }
-}
-function nanoUnitPrefix(unit) {
-    switch (unit) {
-        case 0: {
-            return 'n';
-        }
-        case 1: {
-            return 'µ';
-        }
-        case 2: {
-            return 'm';
-        }
-        default: {
-            return '?';
-        }
-    }
+const bigUnitPrefix = ['', 'k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'];
+const nanoUnitPrefix = ['n', 'µ', 'm'];
+function siDegree(x) {
+    return Math.floor(Math.log10(x) / 3);
 }
 function prettyBytes(size) {
-    let unit = 0;
-    while (size > 1000) {
-        size /= 1000.00;
-        unit++;
-    }
-    return size.toPrecision(3) + ' ' + bigUnitPrefix(unit) + 'B';
+    let unit = siDegree(size);
+    let scale = size * Math.pow(1000, -unit);
+    return scale.toPrecision(3) + ' ' + bigUnitPrefix[unit] + 'B';
 }
 function prettyTime(hrtime) {
     if (hrtime[0] === 0) {
-        let size = hrtime[1];
-        let unit = 0;
-        while (size > 1000) {
-            size /= 1000.00;
-            unit++;
-        }
-        return size.toPrecision(3) + ' ' + nanoUnitPrefix(unit) + 's';
+        let unit = siDegree(hrtime[1]);
+        let scale = hrtime[1] * Math.pow(1000, -unit);
+        return scale.toPrecision(3) + ' ' + nanoUnitPrefix[unit] + 's';
     }
     else {
         let t = hrtime[0] + (hrtime[1] / Math.pow(1000, 3));

@@ -40,7 +40,6 @@
     "uglify-js": "3.0.27",
     "undertaker": "1.2.0",
     "vinyl": "2.1.0",
-    "vinyl-fs": "2.4.4",
     "vinyl-sourcemaps-apply": "0.2.1",
     "watchify": "3.9.0",
     "yargs": "8.0.2"
@@ -59,7 +58,6 @@
     "@types/through2": "^2.0.33",
     "@types/undertaker": "^1.1.2",
     "@types/vinyl": "^2.0.0",
-    "@types/vinyl-fs": "^2.4.6",
     "@types/watchify": "^3.7.4",
     "@types/yargs": "^8.0.2"
   }

@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const http = require("http");
-const through2 = require("through2");
 const zlib = require("zlib");
 class Server {
     constructor(port) {
@@ -37,22 +36,19 @@ class Server {
         server.listen(port);
         return server;
     }
-    Update() {
-        return through2.obj((chunk, enc, next) => {
-            if (chunk.isBuffer()) {
-                let key = '/' + chunk.relative;
-                zlib.gzip(chunk.contents, {
-                    level: 9
-                }, (error, result) => {
-                    if (error) {
-                        console.log(error);
-                    }
-                    else {
-                        this.files[key] = result;
-                    }
-                });
-            }
-            next(null, chunk);
+    Update(name, contents) {
+        return new Promise((ok, reject) => {
+            zlib.gzip(contents, {
+                level: 9
+            }, (error, result) => {
+                if (error) {
+                    reject(error);
+                }
+                else {
+                    this.files['/' + name] = result;
+                    ok();
+                }
+            });
         });
     }
 }

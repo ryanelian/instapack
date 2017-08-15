@@ -1,22 +1,20 @@
 // Core dependencies
 import * as Undertaker from 'undertaker';
-import * as VinylFS from 'vinyl-fs';
+import * as vinyl from 'vinyl';
 import * as through2 from 'through2';
-import * as chalk from 'chalk';
 import * as fse from 'fs-extra';
+import * as path from 'path';
+import * as resolve from 'resolve';
+import * as chalk from 'chalk';
 import * as chokidar from 'chokidar';
 import * as sourcemaps from 'gulp-sourcemaps';
 
+// These are my stuffs
 import glog from './GulpLog';
 import PipeErrorHandler from './PipeErrorHandler';
-
 import * as To from './PipeTo';
 import { Server } from './Server';
 import { Settings, ConcatenationLookup } from './Settings';
-
-// These are used by concat task
-import * as vinyl from 'vinyl';
-import * as resolve from 'resolve';
 
 // These are used by Browserify
 import * as browserify from 'browserify';
@@ -105,6 +103,25 @@ export class Compiler {
     }
 
     /**
+     * Produces file output to folder or a server.
+     * @param folder 
+     */
+    output(folder: string) {
+        return through2.obj(async (file: vinyl, encoding, next) => {
+            if (file.isBuffer()) {
+                if (this.server) {
+                    await this.server.Update(file.relative, file.contents);
+                } else {
+                    let p = path.join(folder, file.relative);
+                    await fse.outputFile(p, file.contents);
+                }
+            }
+
+            next(null, file);
+        });
+    }
+
+    /**
      * Registers all available tasks and registers a task for invoking all those tasks.
      */
     registerAllTasks() {
@@ -188,7 +205,7 @@ export class Compiler {
                 .pipe(this.flags.map ? sourcemaps.mapSources(this.unfuckBrowserifySourcePaths) : through2.obj())
                 .pipe(this.flags.map ? sourcemaps.write('./') : through2.obj())
                 .pipe(To.BuildLog('JS compilation'))
-                .pipe(this.server ? this.server.Update() : VinylFS.dest(this.settings.outputJsFolder));
+                .pipe(this.output(this.settings.outputJsFolder));
         };
 
         if (this.flags.watch) {
@@ -197,6 +214,26 @@ export class Compiler {
         }
 
         this.tasks.task('js', compileJs);
+    }
+
+    /**
+     * Pipes the CSS project entry point as a Vinyl object. 
+     */
+    getCssEntryVinyl() {
+        let g = through2.obj();
+
+        fse.readFile(this.settings.cssEntry, 'utf8').then(contents => {
+            g.push(new vinyl({
+                path: this.settings.cssEntry,
+                contents: Buffer.from(contents),
+                base: this.settings.inputCssFolder,
+                cwd: this.settings.root
+            }));
+
+            g.push(null);
+        });
+
+        return g;
     }
 
     /**
@@ -216,7 +253,7 @@ export class Compiler {
             glog('Compiling CSS', chalk.cyan(cssEntry));
             let sassImports = [this.settings.npmFolder];
 
-            return VinylFS.src(cssEntry)
+            return this.getCssEntryVinyl()
                 .pipe(this.flags.map ? sourcemaps.init() : through2.obj())
                 .pipe(To.Sass(sassImports))
                 .on('error', PipeErrorHandler)
@@ -225,7 +262,7 @@ export class Compiler {
                 .pipe(this.flags.map ? sourcemaps.mapSources(this.unfuckPostCssSourcePath) : through2.obj())
                 .pipe(this.flags.map ? sourcemaps.write('./') : through2.obj())
                 .pipe(To.BuildLog('CSS compilation'))
-                .pipe(this.server ? this.server.Update() : VinylFS.dest(this.settings.outputCssFolder));
+                .pipe(this.output(this.settings.outputCssFolder));
         });
 
         this.tasks.task('css', () => {
@@ -326,7 +363,7 @@ export class Compiler {
             return g.pipe(this.flags.minify ? To.Uglify() : through2.obj())
                 .on('error', PipeErrorHandler)
                 .pipe(To.BuildLog('JS concatenation'))
-                .pipe(this.server ? this.server.Update() : VinylFS.dest(this.settings.outputJsFolder));
+                .pipe(this.output(this.settings.outputJsFolder));
         });
     }
 }

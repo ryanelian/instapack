@@ -9,18 +9,18 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const Undertaker = require("undertaker");
-const VinylFS = require("vinyl-fs");
+const vinyl = require("vinyl");
 const through2 = require("through2");
-const chalk = require("chalk");
 const fse = require("fs-extra");
+const path = require("path");
+const resolve = require("resolve");
+const chalk = require("chalk");
 const chokidar = require("chokidar");
 const sourcemaps = require("gulp-sourcemaps");
 const GulpLog_1 = require("./GulpLog");
 const PipeErrorHandler_1 = require("./PipeErrorHandler");
 const To = require("./PipeTo");
 const Server_1 = require("./Server");
-const vinyl = require("vinyl");
-const resolve = require("resolve");
 const browserify = require("browserify");
 const tsify = require("tsify");
 const watchify = require("watchify");
@@ -76,6 +76,20 @@ class Compiler {
             GulpLog_1.default(chalk.yellow("Unmap"), "mode: Source maps disabled.");
         }
     }
+    output(folder) {
+        return through2.obj((file, encoding, next) => __awaiter(this, void 0, void 0, function* () {
+            if (file.isBuffer()) {
+                if (this.server) {
+                    yield this.server.Update(file.relative, file.contents);
+                }
+                else {
+                    let p = path.join(folder, file.relative);
+                    yield fse.outputFile(p, file.contents);
+                }
+            }
+            next(null, file);
+        }));
+    }
     registerAllTasks() {
         this.registerConcatTask();
         this.registerJsTask();
@@ -116,13 +130,26 @@ class Compiler {
                 .pipe(this.flags.map ? sourcemaps.mapSources(this.unfuckBrowserifySourcePaths) : through2.obj())
                 .pipe(this.flags.map ? sourcemaps.write('./') : through2.obj())
                 .pipe(To.BuildLog('JS compilation'))
-                .pipe(this.server ? this.server.Update() : VinylFS.dest(this.settings.outputJsFolder));
+                .pipe(this.output(this.settings.outputJsFolder));
         };
         if (this.flags.watch) {
             bundler.plugin(watchify);
             bundler.on('update', compileJs);
         }
         this.tasks.task('js', compileJs);
+    }
+    getCssEntryVinyl() {
+        let g = through2.obj();
+        fse.readFile(this.settings.cssEntry, 'utf8').then(contents => {
+            g.push(new vinyl({
+                path: this.settings.cssEntry,
+                contents: Buffer.from(contents),
+                base: this.settings.inputCssFolder,
+                cwd: this.settings.root
+            }));
+            g.push(null);
+        });
+        return g;
     }
     registerCssTask() {
         let cssEntry = this.settings.cssEntry;
@@ -135,7 +162,7 @@ class Compiler {
         this.tasks.task('css:compile', () => {
             GulpLog_1.default('Compiling CSS', chalk.cyan(cssEntry));
             let sassImports = [this.settings.npmFolder];
-            return VinylFS.src(cssEntry)
+            return this.getCssEntryVinyl()
                 .pipe(this.flags.map ? sourcemaps.init() : through2.obj())
                 .pipe(To.Sass(sassImports))
                 .on('error', PipeErrorHandler_1.default)
@@ -144,7 +171,7 @@ class Compiler {
                 .pipe(this.flags.map ? sourcemaps.mapSources(this.unfuckPostCssSourcePath) : through2.obj())
                 .pipe(this.flags.map ? sourcemaps.write('./') : through2.obj())
                 .pipe(To.BuildLog('CSS compilation'))
-                .pipe(this.server ? this.server.Update() : VinylFS.dest(this.settings.outputCssFolder));
+                .pipe(this.output(this.settings.outputCssFolder));
         });
         this.tasks.task('css', () => {
             let run = this.tasks.task('css:compile');
@@ -217,7 +244,7 @@ class Compiler {
             return g.pipe(this.flags.minify ? To.Uglify() : through2.obj())
                 .on('error', PipeErrorHandler_1.default)
                 .pipe(To.BuildLog('JS concatenation'))
-                .pipe(this.server ? this.server.Update() : VinylFS.dest(this.settings.outputJsFolder));
+                .pipe(this.output(this.settings.outputJsFolder));
         });
     }
 }

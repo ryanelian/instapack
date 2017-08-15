@@ -24,7 +24,7 @@ function prettyBytes(size: number) {
 }
 
 /**
- * Returns node high-resolution time formatted as string with SI prefix.
+ * Returns node high-resolution time formatted as string with SI prefix and hours-minutes-seconds formatting.
  * @param hrtime 
  */
 function prettyTime(hrtime: [number, number]) {
@@ -33,8 +33,22 @@ function prettyTime(hrtime: [number, number]) {
         let scale = hrtime[1] * Math.pow(1000, -unit);
         return scale.toPrecision(3) + ' ' + nanoUnitPrefix[unit] + 's';
     } else {
-        let t = hrtime[0] + (hrtime[1] / Math.pow(1000, 3));
-        return t.toPrecision(3) + ' s';
+        let s = hrtime[0] + (hrtime[1] / Math.pow(1000, 3));
+
+        let h = Math.floor(s / 3600);
+        s -= h * 3600;
+        let m = Math.floor(s / 60);
+        s -= m * 60;
+
+        let result = s.toPrecision(3) + ' s';
+        if (m) {
+            result = m + ' min ' + result;
+        }
+        if (h) {
+            result = h + ' h ' + result;
+        }
+
+        return result;
     }
 }
 

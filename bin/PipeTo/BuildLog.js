@@ -20,8 +20,19 @@ function prettyTime(hrtime) {
         return scale.toPrecision(3) + ' ' + nanoUnitPrefix[unit] + 's';
     }
     else {
-        let t = hrtime[0] + (hrtime[1] / Math.pow(1000, 3));
-        return t.toPrecision(3) + ' s';
+        let s = hrtime[0] + (hrtime[1] / Math.pow(1000, 3));
+        let h = Math.floor(s / 3600);
+        s -= h * 3600;
+        let m = Math.floor(s / 60);
+        s -= m * 60;
+        let result = s.toPrecision(3) + ' s';
+        if (m) {
+            result = m + ' min ' + result;
+        }
+        if (h) {
+            result = h + ' h ' + result;
+        }
+        return result;
     }
 }
 function BuildLog(label) {

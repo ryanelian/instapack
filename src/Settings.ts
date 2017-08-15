@@ -6,13 +6,12 @@ import * as chalk from 'chalk';
  */
 export type ConcatenationLookup = {
     [key: string]: string[]
-};
+}
 
 /**
  * Contains properties for setting the project builder class.
  */
 export class Settings {
-
     /**
      * Gets the project root folder path.
      */

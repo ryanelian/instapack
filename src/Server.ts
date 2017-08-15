@@ -6,7 +6,6 @@ import * as zlib from 'zlib';
  * Server class for managing and rendering output to HTTP server.
  */
 export class Server {
-
     /**
      * Gets the HTTP Server instance.
      */

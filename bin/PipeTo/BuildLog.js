@@ -56,4 +56,3 @@ function BuildLog(label) {
     return stream;
 }
 exports.BuildLog = BuildLog;
-;

@@ -21,4 +21,3 @@ function VinylBuffer() {
     });
 }
 exports.VinylBuffer = VinylBuffer;
-;

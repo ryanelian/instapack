@@ -80,4 +80,4 @@ export function BuildLog(label: string) {
     });
 
     return stream;
-};
+}

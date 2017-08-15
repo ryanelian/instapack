@@ -55,4 +55,4 @@ export function Sass(includePaths: string[]) {
             next(null, chunk);
         });
     });
-};
+}

@@ -41,4 +41,3 @@ function Sass(includePaths) {
     });
 }
 exports.Sass = Sass;
-;

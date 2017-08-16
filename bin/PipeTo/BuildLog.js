@@ -43,9 +43,8 @@ function BuildLog(label) {
             return next(error);
         }
         if (chunk.isBuffer()) {
-            let fileName = chalk.blue(chunk.relative);
-            let size = chalk.magenta(prettyBytes(chunk.contents.length));
-            GulpLog_1.default(fileName, size);
+            let size = prettyBytes(chunk.contents.length);
+            GulpLog_1.default(chalk.blue(chunk.relative), chalk.magenta(size));
         }
         next(null, chunk);
     });

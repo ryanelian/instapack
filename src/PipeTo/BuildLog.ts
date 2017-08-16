@@ -66,9 +66,8 @@ export function BuildLog(label: string) {
         }
 
         if (chunk.isBuffer()) {
-            let fileName = chalk.blue(chunk.relative);
-            let size = chalk.magenta(prettyBytes(chunk.contents.length));
-            glog(fileName, size);
+            let size = prettyBytes(chunk.contents.length);
+            glog(chalk.blue(chunk.relative), chalk.magenta(size));
         }
 
         next(null, chunk);

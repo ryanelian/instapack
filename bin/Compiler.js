@@ -170,7 +170,7 @@ class Compiler {
                 .pipe(this.flags.map ? sourcemaps.init() : through2.obj())
                 .pipe(To.Sass(sassImports))
                 .on('error', PipeErrorHandler_1.default)
-                .pipe(To.CssProcessors(this.flags.minify))
+                .pipe(To.CssProcessors())
                 .on('error', PipeErrorHandler_1.default)
                 .pipe(this.flags.map ? sourcemaps.mapSources(this.unfuckPostCssSourcePath) : through2.obj())
                 .pipe(this.flags.map ? sourcemaps.write('./') : through2.obj())

@@ -103,7 +103,7 @@ export class Compiler {
     }
 
     /**
-     * Produces file output to folder or a server.
+     * Creates a pipe that redirects file to output folder or a server.
      * @param folder 
      */
     output(folder: string) {
@@ -262,7 +262,7 @@ export class Compiler {
                 .pipe(this.flags.map ? sourcemaps.init() : through2.obj())
                 .pipe(To.Sass(sassImports))
                 .on('error', PipeErrorHandler)
-                .pipe(To.CssProcessors(this.flags.minify))
+                .pipe(To.CssProcessors())
                 .on('error', PipeErrorHandler)
                 .pipe(this.flags.map ? sourcemaps.mapSources(this.unfuckPostCssSourcePath) : through2.obj())
                 .pipe(this.flags.map ? sourcemaps.write('./') : through2.obj())

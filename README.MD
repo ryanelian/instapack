@@ -117,13 +117,13 @@ Internally, instapack uses the following modules:
 
 - [Microsoft's TypeScript](https://github.com/Microsoft/TypeScript) as the compiler service, syntax checker, and type checker for the JavaScript language.
 
-- [node-sass](https://github.com/sass/node-sass) as the compiler service and syntax checker for the CSS language. It is also configured to enable `@import` from `node_modules`.
+- [node-sass](https://github.com/sass/node-sass) as the compiler service, syntax checker, and minifier for the CSS language. It is also configured to enable `@import` from `node_modules`.
 
 - [Browserify](https://github.com/substack/node-browserify) for merging the JavaScript output modules together.
 
 - [UglifyJS](https://github.com/mishoo/UglifyJS2) for minifying the resulting JavaScript bundle.
 
-- [PostCSS](https://github.com/postcss/postcss) for applying automatic CSS vendor-prefix using [Autoprefixer](https://github.com/postcss/autoprefixer), then minifying the result using [cssnano](https://github.com/ben-eb/cssnano).
+- [PostCSS](https://github.com/postcss/postcss) for applying automatic CSS vendor-prefix using [Autoprefixer](https://github.com/postcss/autoprefixer).
 
 Out of the box, the following files will be used as the application entry points:
 

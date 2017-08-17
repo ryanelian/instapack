@@ -13,7 +13,7 @@ export function Uglify() {
         }
         
         if (chunk.isStream()) {
-            let error = new Error('MinifyProductionJs: Streaming is not supported!');
+            let error = new Error('Uglify: Streaming is not supported!');
             return next(error);
         }
 

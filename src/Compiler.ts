@@ -108,6 +108,11 @@ export class Compiler {
      */
     output(folder: string) {
         return through2.obj(async (file: vinyl, encoding, next) => {
+            if (file.isStream()) {
+                let error = new Error('instapack output: Streaming is not supported!');
+                return next(error);
+            }
+
             if (file.isBuffer()) {
                 if (this.server) {
                     await this.server.Update(file.relative, file.contents);

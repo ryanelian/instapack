@@ -78,6 +78,10 @@ class Compiler {
     }
     output(folder) {
         return through2.obj((file, encoding, next) => __awaiter(this, void 0, void 0, function* () {
+            if (file.isStream()) {
+                let error = new Error('instapack output: Streaming is not supported!');
+                return next(error);
+            }
             if (file.isBuffer()) {
                 if (this.server) {
                     yield this.server.Update(file.relative, file.contents);

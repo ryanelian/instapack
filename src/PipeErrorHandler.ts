@@ -1,7 +1,9 @@
 import * as stream from 'stream';
-import * as prettyJSON from 'prettyjson';
 import glog from './GulpLog';
 import * as chalk from 'chalk';
+import { PrettyObject } from './PrettyObject';
+
+let p = new PrettyObject();
 
 /**
  * An error handler for gulp compilation using plumber plugin.
@@ -11,10 +13,7 @@ import * as chalk from 'chalk';
  */
 export default function PipeErrorHandler(this: stream, error) {
     try {
-        console.log(prettyJSON.render(error, {
-            keysColor: 'red',
-            dashColor: 'red',
-        }));
+        console.log(p.render(error));
     } catch (ex) {
         console.log(chalk.red(error));
     }

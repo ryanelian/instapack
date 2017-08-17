@@ -6,7 +6,7 @@ import * as chalk from 'chalk';
 import * as https from 'https';
 
 import * as autoprefixer from 'autoprefixer';
-import * as prettyJSON from 'prettyjson';
+import { PrettyObject } from './PrettyObject';
 
 const packageJSON = require('../package.json');
 let packageInfo = {
@@ -119,10 +119,11 @@ CLI.command({
     handler: argv => {
         echo('info', null);
 
-        let pinfo = prettyJSON.render({
+        let p = new PrettyObject('whiteBright');
+        let pinfo = p.render({
             dependencies: packageJSON.dependencies,
             settings: app.settings
-        }, { noColor: true });
+        });
 
         console.log(pinfo);
         console.log();

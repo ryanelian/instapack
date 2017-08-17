@@ -1,13 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const prettyJSON = require("prettyjson");
 const chalk = require("chalk");
+const PrettyObject_1 = require("./PrettyObject");
+let p = new PrettyObject_1.PrettyObject();
 function PipeErrorHandler(error) {
     try {
-        console.log(prettyJSON.render(error, {
-            keysColor: 'red',
-            dashColor: 'red',
-        }));
+        console.log(p.render(error));
     }
     catch (ex) {
         console.log(chalk.red(error));

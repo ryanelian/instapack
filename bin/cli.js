@@ -6,7 +6,7 @@ const CLI = require("yargs");
 const chalk = require("chalk");
 const https = require("https");
 const autoprefixer = require("autoprefixer");
-const prettyJSON = require("prettyjson");
+const PrettyObject_1 = require("./PrettyObject");
 const packageJSON = require('../package.json');
 let packageInfo = {
     name: packageJSON.name,
@@ -97,10 +97,11 @@ CLI.command({
     describe: 'Displays instapack dependencies, loaded settings, and autoprefixer information.',
     handler: argv => {
         echo('info', null);
-        let pinfo = prettyJSON.render({
+        let p = new PrettyObject_1.PrettyObject('whiteBright');
+        let pinfo = p.render({
             dependencies: packageJSON.dependencies,
             settings: app.settings
-        }, { noColor: true });
+        });
         console.log(pinfo);
         console.log();
         console.log(autoprefixer().info());

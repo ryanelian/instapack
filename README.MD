@@ -41,7 +41,7 @@ Currently supported Node.js is [latest version 6 LTS](https://nodejs.org/en/down
 
 instapack works with Node.js version 8.3, which is **really fast**. That said, it will be supported once LTS build is released in [October 2017](https://github.com/nodejs/LTS).
 
-When using Visual Studio 2017 15.2, [install TypeScript 2.4.1 extension](http://download.microsoft.com/download/7/0/A/70A6AC0E-8934-4396-A43E-445059F430EA/2.4.1-TS-release-dev14update3-20170626.1/TypeScript_SDK.exe) from the [release announcement page](https://blogs.msdn.microsoft.com/typescript/2017/06/27/announcing-typescript-2-4/).
+When using Visual Studio 2017 15.2, [install TypeScript 2.5.0 extension](http://download.microsoft.com/download/7/0/A/70A6AC0E-8934-4396-A43E-445059F430EA/2.5.0-TS-release-dev14update3-20170816.2/TypeScript_SDK.exe) from the [release announcement page](https://blogs.msdn.microsoft.com/typescript/2017/08/17/announcing-typescript-2-5-rc/).
 
 ## Building from the Source
 

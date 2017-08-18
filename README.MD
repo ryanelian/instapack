@@ -41,7 +41,7 @@ Currently supported Node.js is [latest version 6 LTS](https://nodejs.org/en/down
 
 instapack works with Node.js version 8.3, which is **really fast**. That said, it will be supported once LTS build is released in [October 2017](https://github.com/nodejs/LTS).
 
-When using Visual Studio 2017 15.2, [install TypeScript 2.5.0 extension](http://download.microsoft.com/download/7/0/A/70A6AC0E-8934-4396-A43E-445059F430EA/2.5.0-TS-release-dev14update3-20170816.2/TypeScript_SDK.exe) from the [release announcement page](https://blogs.msdn.microsoft.com/typescript/2017/08/17/announcing-typescript-2-5-rc/).
+When using Visual Studio 2017 15.2 or above, [install TypeScript 2.5.0 extension](http://download.microsoft.com/download/7/0/A/70A6AC0E-8934-4396-A43E-445059F430EA/2.5.0-TS-release-dev14update3-20170816.2/TypeScript_SDK.exe) from the [release announcement page](https://blogs.msdn.microsoft.com/typescript/2017/08/17/announcing-typescript-2-5-rc/).
 
 ## Building from the Source
 
@@ -109,7 +109,13 @@ instapack is developed as an answer those problems and more!
 
 ## How does it work?
 
-![Build Flow](https://github.com/ryanelian/instapack/raw/master/img/flow.png)
+Out of the box, the following files will be used as the application entry points:
+
+- `client/js/index.ts`, compiled to `wwwroot/js/bundle.js`.
+
+- `client/css/site.scss`, compiled to `wwwroot/css/site.css`.
+
+- Concatenate files listed in `package.json`. Read more below.
 
 Internally, instapack uses the following modules:
 
@@ -124,14 +130,6 @@ Internally, instapack uses the following modules:
 - [UglifyJS](https://github.com/mishoo/UglifyJS2) for minifying the resulting JavaScript bundle.
 
 - [PostCSS](https://github.com/postcss/postcss) for applying automatic CSS vendor-prefix using [Autoprefixer](https://github.com/postcss/autoprefixer).
-
-Out of the box, the following files will be used as the application entry points:
-
-- `client/js/index.ts`, compiled to `wwwroot/js/bundle.js`.
-
-- `client/css/site.scss`, compiled to `wwwroot/css/site.css`.
-
-- Concatenate files listed in `package.json`. Read more below.
 
 ## Release Cadence
 
@@ -173,11 +171,11 @@ In addition, build flags are available:
 
 - `-w` or `--watch` for enabling compilation on change.
 
-- `-d` or `--dev` for disabling minification, for fast compilation.
+- `-d` or `--dev` for disabling minification, for **fast** compilation.
 
 - `-u` or `--unmap` for disabling source maps, for slightly faster compilation.
 
-- `-udw` shorthand for `unmap` + `dev` + `watch` mode together (*Unlimited Dev Works*), for massive productivity.
+- `-udw` shorthand for `unmap` + `dev` + `watch` mode together, jokingly known as *Unlimited Dev Works*.
 
 - `-s [port number]` or `--server 19991` for experimental server mode. Build artefacts will be served directly to http://localhost:port using GZIP compression without writing to folder / file system.
 
@@ -215,9 +213,9 @@ instapack puts configuration inside `package.json` to reduce project files clutt
 }
 ```
 
-- `instapack:input` allows setting the input folder location. By default, it is set to `client`.
+- `instapack:input` allows setting the input folder name. By default, it is set to `client`.
 
-- `instapack:output` allows setting the output folder location. By default, it is set to `wwwroot`.
+- `instapack:output` allows setting the output folder name. By default, it is set to `wwwroot`.
 
 - `instapack:concat` allows packing browser libraries to be consumed directly from `<script src="...">` rather than as a module. The file names will be resolved node-style (but **NOT** their contents), which allows concatenating packages downloaded from `npm` to be bundled, minified, and then placed into the output JS folder. For example: (produces `vendor.js` bundle)
 
@@ -269,9 +267,9 @@ Angular 2+ uses [JavaScript Decorators](https://github.com/wycats/javascript-dec
 
 ES Decorators themselves are on [Stage 2 proposal (draft)](https://tc39.github.io/proposal-decorators/).
 
-**You'd be crazy to develop an enterprise application using that.**
+**You'd be crazy to develop an application using THAT.**
 
-### Can I change the input / output file / folder name?
+### Can I change the js / css file / folder name?
 
 Nope.
 

@@ -39,12 +39,6 @@ class Compiler {
                 return sourcePath;
             }
         };
-        this.unfuckPostCssSourcePath = (sourcePath, file) => {
-            if (sourcePath === 'site.css') {
-                return "__PostCSS/site.css";
-            }
-            return sourcePath;
-        };
         this.settings = settings;
         this.flags = flags;
         this.tasks = new Undertaker();
@@ -172,7 +166,6 @@ class Compiler {
                 .on('error', PipeErrorHandler_1.default)
                 .pipe(To.CssProcessors())
                 .on('error', PipeErrorHandler_1.default)
-                .pipe(this.flags.map ? sourcemaps.mapSources(this.unfuckPostCssSourcePath) : through2.obj())
                 .pipe(this.flags.map ? sourcemaps.write('./') : through2.obj())
                 .pipe(To.BuildLog('CSS compilation'))
                 .pipe(this.output(this.settings.outputCssFolder));

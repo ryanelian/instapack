@@ -1,5 +1,8 @@
 import * as chalk from 'chalk';
 
+/**
+ * Contain methods for creating a colored and formatted string representation of an object to CLI output.
+ */
 export class PrettyObject {
     /**
      * Gets the coloring chalk for field names and symbols.

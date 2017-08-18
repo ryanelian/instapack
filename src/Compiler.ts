@@ -161,17 +161,6 @@ export class Compiler {
     }
 
     /**
-     * Hides a phantom sourcemap resulting from PostCSS compilation into a folder.
-     */
-    unfuckPostCssSourcePath = (sourcePath: string, file) => {
-        if (sourcePath === 'site.css') {
-            // TODO: Find a way to destroy this source map completely...
-            return "__PostCSS/site.css";
-        }
-        return sourcePath;
-    }
-
-    /**
      * Registers a JavaScript compilation task using TypeScript piped into Browserify.
      */
     registerJsTask() {
@@ -264,7 +253,6 @@ export class Compiler {
                 .on('error', PipeErrorHandler)
                 .pipe(To.CssProcessors())
                 .on('error', PipeErrorHandler)
-                .pipe(this.flags.map ? sourcemaps.mapSources(this.unfuckPostCssSourcePath) : through2.obj())
                 .pipe(this.flags.map ? sourcemaps.write('./') : through2.obj())
                 .pipe(To.BuildLog('CSS compilation'))
                 .pipe(this.output(this.settings.outputCssFolder));

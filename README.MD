@@ -129,7 +129,7 @@ Internally, instapack uses the following modules:
 
 - [UglifyJS](https://github.com/mishoo/UglifyJS2) for minifying the resulting JavaScript bundle.
 
-- [PostCSS](https://github.com/postcss/postcss) for applying automatic CSS vendor-prefix using [Autoprefixer](https://github.com/postcss/autoprefixer).
+- [Autoprefixer](https://github.com/postcss/autoprefixer) for applying automatic CSS vendor-prefixes.
 
 ## Release Cadence
 

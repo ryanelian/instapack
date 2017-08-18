@@ -7,9 +7,9 @@
     "concat": {}
   },
   "dependencies": {
-    "@types/angular": "^1.6.28",
+    "@types/angular": "^1.6.29",
     "@types/bootbox": "^4.4.33",
-    "@types/node": "^8.0.20",
+    "@types/node": "^8.0.24",
     "@types/urijs": "^1.15.34",
     "angular": "^1.6.5",
     "angular-animate": "^1.6.5",
@@ -18,7 +18,7 @@
     "aspnet-validation": "^0.0.1",
     "bootbox": "^4.4.0",
     "bootstrap-sass": "^3.3.7",
-    "bootstrap.native": "^2.0.12",
+    "bootstrap.native": "^2.0.13",
     "moment": "^2.18.1",
     "mustache": "^2.3.0",
     "tslib": "^1.7.1",

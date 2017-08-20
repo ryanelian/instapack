@@ -1,6 +1,6 @@
 {
   "name": "instapack",
-  "version": "4.1.1-beta4",
+  "version": "4.1.1-beta5",
   "description": "All-in-one web application client project compiler using TypeScript and Sass!",
   "main": "bin/index.js",
   "bin": {
@@ -35,8 +35,8 @@
     "resolve": "1.4.0",
     "through2": "2.0.3",
     "tsify": "3.0.1",
-    "typescript": "2.5.0",
-    "uglify-js": "3.0.27",
+    "typescript": "2.5.1",
+    "uglify-js": "3.0.28",
     "undertaker": "1.2.0",
     "vinyl": "2.1.0",
     "vinyl-sourcemaps-apply": "0.2.1",

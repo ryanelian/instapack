@@ -80,7 +80,7 @@ export class PrettyObject {
     }
 
     /**
-     * Prevents error due to missing require(...) from Browserify to throw up a wall of text to the screen.
+     * Detects whether an object is Browserify Error.
      * @param o 
      */
     isBrowserifyError(o): boolean {
@@ -88,7 +88,7 @@ export class PrettyObject {
     }
 
     /**
-     * Detect whether an object is Sass Error object!
+     * Detects whether an object is Sass Error.
      * @param o 
      */
     isSassError(o): boolean {
@@ -124,6 +124,7 @@ export class PrettyObject {
             return result.join('\n');
         } else if (typeof o === 'object') {
             if (this.isBrowserifyError(o)) {
+                // Prevents error due to missing require(...) from Browserify to throw up a gigantic wall of text to the screen.
                 return this.render({
                     name: 'Browserify error',
                     message: o.message

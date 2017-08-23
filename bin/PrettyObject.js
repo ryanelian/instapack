@@ -34,6 +34,9 @@ class PrettyObject {
     isBrowserifyError(o) {
         return (o instanceof Error) && o.stack && o.message && o.name && o['stream'];
     }
+    isSassError(o) {
+        return (o instanceof Error) && o.message && o['column'] && o['file'] && o['line'] && o['formatted'];
+    }
     render(o, level = 0) {
         if (o === undefined) {
             return this.nullChalk('undefined');
@@ -66,8 +69,12 @@ class PrettyObject {
                     message: o.message
                 }, level);
             }
+            let sassError = this.isSassError(o);
             let result = [];
-            for (let key in o) {
+            for (let key of Object.keys(o).sort()) {
+                if (sassError && key === 'formatted') {
+                    continue;
+                }
                 if (this.isFunction(o[key])) {
                     continue;
                 }
@@ -77,6 +84,9 @@ class PrettyObject {
                 line += this.getPropertySpacer(o[key]);
                 line += this.render(o[key], level + 1);
                 result.push(line);
+            }
+            if (sassError && o['formatted']) {
+                result.push(o['formatted']);
             }
             return result.join('\n');
         }

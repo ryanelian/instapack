@@ -9,7 +9,7 @@ function Uglify() {
             return next(null, chunk);
         }
         if (chunk.isStream()) {
-            let error = new Error('MinifyProductionJs: Streaming is not supported!');
+            let error = new Error('Uglify: Streaming is not supported!');
             return next(error);
         }
         let options = {};

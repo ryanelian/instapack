@@ -2,17 +2,12 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const postcss = require("gulp-postcss");
 const autoprefixer = require("autoprefixer");
-const cssnano = require("cssnano");
-function CssProcessors(minify) {
+const discardComments = require("postcss-discard-comments");
+function CssProcessors() {
     let cssProcessors = [autoprefixer];
-    if (minify) {
-        let minifier = cssnano({
-            discardComments: {
-                removeAll: true
-            }
-        });
-        cssProcessors.push(minifier);
-    }
+    cssProcessors.push(discardComments({
+        removeAll: true
+    }));
     return postcss(cssProcessors);
 }
 exports.CssProcessors = CssProcessors;

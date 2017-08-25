@@ -6,7 +6,6 @@ import * as zlib from 'zlib';
  * Server class for managing and rendering output to HTTP server.
  */
 export class Server {
-
     /**
      * Gets the HTTP Server instance.
      */
@@ -73,25 +72,20 @@ export class Server {
     }
 
     /**
-     * Create a streaming pipe for storing output buffers as GZip buffers into an internal map.
+     * Returns a Promise for storing output buffers as GZip buffers into an internal map.
      */
-    Update() {
-        return through2.obj((chunk, enc, next) => {
-
-            if (chunk.isBuffer()) {
-                let key = '/' + chunk.relative;
-                zlib.gzip(chunk.contents, {
-                    level: 9 // maximum compression
-                }, (error, result) => {
-                    if (error) {
-                        console.log(error);
-                    } else {
-                        this.files[key] = result;
-                    }
-                });
-            }
-
-            next(null, chunk);
+    Update(name: string, contents: Buffer) {
+        return new Promise((ok, reject) => {
+            zlib.gzip(contents, {
+                level: 9 // maximum compression
+            }, (error, result) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    this.files['/' + name] = result;
+                    ok();
+                }
+            });
         });
     }
 }

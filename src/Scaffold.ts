@@ -7,7 +7,6 @@ import * as chalk from 'chalk';
  * Contains methods for initializing new project.
  */
 export class Scaffold {
-
     /**
      * Runs a child process that displays outputs to current command line output.
      * @param command 

@@ -15,7 +15,9 @@ function Sass(includePaths) {
             let error = new Error('Sass: Streaming is not supported!');
             return next(error);
         }
-        let options = {};
+        let options = {
+            outputStyle: 'compressed'
+        };
         let createSourceMap = Boolean(chunk.sourceMap);
         options.data = chunk.contents.toString();
         options.file = chunk.path;
@@ -41,4 +43,3 @@ function Sass(includePaths) {
     });
 }
 exports.Sass = Sass;
-;

@@ -1,23 +1,16 @@
 import * as postcss from 'gulp-postcss';
 import * as autoprefixer from 'autoprefixer';
-import * as cssnano from 'cssnano';
+import * as discardComments from 'postcss-discard-comments';
 
 /**
  * Creates a new build pipe for applying vendor-specific prefixes and minification to CSS.
- * @param minify 
  */
-export function CssProcessors(minify: boolean) {
+export function CssProcessors() {
     let cssProcessors = [autoprefixer];
 
-    if (minify) {
-        let minifier = cssnano({
-            discardComments: {
-                removeAll: true
-            }
-        });
-
-        cssProcessors.push(minifier);
-    }
+    cssProcessors.push(discardComments({
+        removeAll: true
+    }));
 
     return postcss(cssProcessors);
 }

@@ -17,14 +17,15 @@ export function Sass(includePaths: string[]) {
         if (chunk.isNull()) {
             return next(null, chunk);
         }
-        
+
         if (chunk.isStream()) {
             let error = new Error('Sass: Streaming is not supported!');
             return next(error);
         }
 
+        // outputStyle "compressed" on Sass options + cssnano discardComments eliminated the PostCSS phantom source map. BUT HOW?!?
         let options: sass.Options = {
-            //outputStyle: 'expanded'
+            outputStyle: 'compressed'
         };
         let createSourceMap = Boolean(chunk.sourceMap);
 
@@ -55,4 +56,4 @@ export function Sass(includePaths: string[]) {
             next(null, chunk);
         });
     });
-};
+}

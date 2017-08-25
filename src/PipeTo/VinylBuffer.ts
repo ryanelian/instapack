@@ -26,4 +26,4 @@ export function VinylBuffer() {
             next(null, chunk);
         });
     });
-};
+}

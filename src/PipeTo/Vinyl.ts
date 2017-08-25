@@ -25,4 +25,4 @@ export function Vinyl(filename: string) {
         stream.push(null);
         this.push(null);
     });
-};
+}

@@ -7,13 +7,13 @@
     "concat": {}
   },
   "dependencies": {
-    "@types/bootbox": "^4.4.33",
-    "@types/node": "^8.0.24",
+    "@types/bootbox": "^4.4.34",
+    "@types/node": "^8.0.25",
     "@types/urijs": "^1.15.34",
     "aspnet-validation": "^0.0.1",
     "bootbox": "^4.4.0",
     "bootstrap-sass": "^3.3.7",
-    "bootstrap.native": "^2.0.13",
+    "bootstrap.native": "^2.0.14",
     "es6-promise": "^4.1.1",
     "moment": "^2.18.1",
     "mustache": "^2.3.0",

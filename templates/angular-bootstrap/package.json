@@ -7,9 +7,9 @@
     "concat": {}
   },
   "dependencies": {
-    "@types/angular": "^1.6.31",
+    "@types/angular": "^1.6.32",
     "@types/bootbox": "^4.4.34",
-    "@types/node": "^8.0.25",
+    "@types/node": "^8.0.28",
     "@types/urijs": "^1.15.34",
     "angular": "^1.6.6",
     "angular-animate": "^1.6.6",

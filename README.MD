@@ -75,7 +75,7 @@ npm run build   # alternatively, "yarn global add typescript" then "tsc"
 
 - Enforce best practices when building the application, which may significantly impact page load time. (e.g. bundling and minification) :cop:
 
-- Unify team build system across multiple projects using different frameworks. :fist:
+- Unify team build system across multiple projects each using different frameworks. :fist:
 
 - Blur the boundary between design time and programming time using blazing fast `watch` + `dev` compilation mode. :zap:
 

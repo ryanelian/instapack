@@ -39,7 +39,7 @@ Practical guides can be read in [books](https://github.com/ryanelian/instapack/t
 
 Currently supported Node.js is [latest version 6 LTS](https://nodejs.org/en/download/).
 
-instapack works with Node.js version 8.3, which is **really fast**. That said, it will be supported once LTS build is released in [October 2017](https://github.com/nodejs/LTS).
+instapack works with Node.js version 8, which is **really fast**. That said, it will be supported once LTS build is released in [October 2017](https://github.com/nodejs/LTS).
 
 When using Visual Studio 2017 Update 2 or above, [install TypeScript 2.5.2 extension](http://download.microsoft.com/download/7/0/A/70A6AC0E-8934-4396-A43E-445059F430EA/2.5.2-TS-release-dev14update3-20170830.5/TypeScript_SDK.exe) from the [release announcement page](https://blogs.msdn.microsoft.com/typescript/2017/08/31/announcing-typescript-2-5).
 
@@ -189,7 +189,7 @@ Remove files in the output folders.
 
 ## Configuration
 
-instapack puts configuration inside `package.json` to reduce project files clutter. For example, this is the included `package.json` with `aspnet` template:
+instapack puts configuration inside `package.json` to reduce project files clutter. For example, this is the included `package.json` with `vue` template:
 
 ```json
 {
@@ -198,21 +198,26 @@ instapack puts configuration inside `package.json` to reduce project files clutt
   "private": true,
   "instapack": {
     "output": "wwwroot",
-    "concat": {}
+    "concat": {},
+    "alias": {
+      "vue": "vue/dist/vue.common"
+    }
   },
   "dependencies": {
-    "@types/bootbox": "^4.4.33",
-    "@types/node": "^8.0.20",
+    "@types/node": "^8.0.28",
     "@types/urijs": "^1.15.34",
     "aspnet-validation": "^0.0.1",
-    "bootbox": "^4.4.0",
-    "bootstrap-sass": "^3.3.7",
-    "bootstrap.native": "^2.0.12",
+    "axios": "^0.16.2",
+    "bootstrap": "4.0.0-beta",
+    "bootstrap.native": "^2.0.14",
     "es6-promise": "^4.1.1",
+    "font-awesome": "^4.7.0",
     "moment": "^2.18.1",
-    "mustache": "^2.3.0",
+    "noty": "^3.1.3",
     "tslib": "^1.7.1",
-    "urijs": "^1.18.12"
+    "urijs": "^1.18.12",
+    "vue": "^2.4.4",
+    "vue-class-component": "^5.0.2"
   }
 }
 ```
@@ -220,6 +225,8 @@ instapack puts configuration inside `package.json` to reduce project files clutt
 - `instapack:input` allows setting the input folder name. By default, it is set to `client`.
 
 - `instapack:output` allows setting the output folder name. By default, it is set to `wwwroot`.
+
+- `instapack:alias` allows overriding `require` calls from all files, including dependencies. This is needed because default Vue.js package main file ships with only runtime and not the HTML template compiler (`browser` field does not override `require` calls for dependencies).
 
 - `instapack:concat` allows packing browser libraries to be consumed directly from `<script src="...">` rather than as a module. The file names will be resolved node-style (but **NOT** their contents), which allows concatenating packages downloaded from `npm` to be bundled, minified, and then placed into the output JS folder. For example: (produces `vendor.js` bundle)
 
@@ -229,10 +236,11 @@ instapack puts configuration inside `package.json` to reduce project files clutt
     "concat": {
       "vendor": [
         "jquery",
-        "bootstrap-sass",
+        "popper.js"
+        "bootstrap",
         "jquery-validation",
         "jquery-validation-unobtrusive",
-        "./client/lib/my-jquery-plugin"
+        "./client/lib/my-old-jquery-plugin"
       ]
     }
   }

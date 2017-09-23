@@ -4,8 +4,15 @@ import * as chalk from 'chalk';
 /**
  * Dictionary<string, List<string>>
  */
-export type ConcatenationLookup = {
+export interface ConcatenationLookup {
     [key: string]: string[]
+}
+
+/**
+ * Dictionary<string, string>
+ */
+export interface ModuleAliases {
+    [key: string]: string
 }
 
 /**
@@ -33,17 +40,23 @@ export class Settings {
     readonly concat: ConcatenationLookup;
 
     /**
+     * Overrides module imports, including sub-dependencies. For example: {'vue': 'vue/dist/vue.common'}
+     */
+    readonly alias: ModuleAliases;
+    
+    /**
      * Constructs a new instance of Settings.
      * @param root 
      * @param input 
      * @param output 
      * @param concat 
      */
-    constructor(root: string, input: string, output: string, concat: ConcatenationLookup) {
+    constructor(root: string, input: string, output: string, concat: ConcatenationLookup, alias: ModuleAliases) {
         this.root = root || process.cwd();
         this.input = input || 'client';
         this.output = output || 'wwwroot';
         this.concat = concat || {};
+        this.alias = alias || {};
     }
 
     /**
@@ -156,6 +169,6 @@ export class Settings {
             parse = {};
         }
 
-        return new Settings(folder, parse.input, parse.output, parse.concat);
+        return new Settings(folder, parse.input, parse.output, parse.concat, parse.alias);
     }
 }

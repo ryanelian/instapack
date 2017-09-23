@@ -24,6 +24,7 @@
   "dependencies": {
     "autoprefixer": "7.1.4",
     "browserify": "14.4.0",
+    "browserify-transform-tools": "1.7.0",
     "chalk": "2.1.0",
     "chokidar": "1.7.0",
     "fs-extra": "4.0.2",
@@ -36,12 +37,12 @@
     "through2": "2.0.3",
     "tsify": "3.0.3",
     "typescript": "2.5.2",
-    "uglify-js": "3.1.0",
+    "uglify-js": "3.1.1",
     "undertaker": "1.2.0",
     "vinyl": "2.1.0",
     "vinyl-sourcemaps-apply": "0.2.1",
     "watchify": "3.9.0",
-    "yargs": "9.0.0"
+    "yargs": "9.0.1"
   },
   "devDependencies": {
     "@types/autoprefixer": "^6.7.3",

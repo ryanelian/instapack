@@ -25,6 +25,7 @@ const browserify = require("browserify");
 const tsify = require("tsify");
 const watchify = require("watchify");
 const Templatify_1 = require("./Templatify");
+const Aliasify_1 = require("./Aliasify");
 class Compiler {
     constructor(settings, flags) {
         this.unfuckBrowserifySourcePaths = (sourcePath, file) => {
@@ -116,6 +117,10 @@ class Compiler {
         let bundler = browserify(browserifyOptions).transform(Templatify_1.default, {
             minify: this.flags.minify
         }).add(jsEntry).plugin(tsify);
+        if (Object.keys(this.settings.alias).length) {
+            let aliasTransform = Aliasify_1.default(this.settings.alias);
+            bundler = bundler.transform({ global: true }, aliasTransform);
+        }
         let compileJs = () => {
             GulpLog_1.default('Compiling JS', chalk.cyan(jsEntry));
             return bundler.bundle()

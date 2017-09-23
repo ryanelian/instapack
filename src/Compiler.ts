@@ -21,6 +21,7 @@ import * as browserify from 'browserify';
 import * as tsify from 'tsify';
 import * as watchify from 'watchify';
 import templatify from './Templatify';
+import aliasify from './Aliasify';
 
 /**
  * Defines build flags to be used by Compiler class.
@@ -185,6 +186,11 @@ export class Compiler {
         let bundler = browserify(browserifyOptions).transform(templatify, {
             minify: this.flags.minify
         }).add(jsEntry).plugin(tsify);
+
+        if (Object.keys(this.settings.alias).length) {
+            let aliasTransform = aliasify(this.settings.alias);
+            bundler = (bundler as any).transform({ global: true }, aliasTransform);
+        }
 
         let compileJs = () => {
             glog('Compiling JS', chalk.cyan(jsEntry));

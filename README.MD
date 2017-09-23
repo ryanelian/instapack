@@ -155,9 +155,13 @@ Scaffolds a new instapack project into your existing application from where the 
 
 - `aspnet` when you want to develop an ASP.NET Core MVC project with Bootstrap.
 
-- `angular-bootstrap` when you want to develop a component-based application with AngularJS, using Bootstrap.
+- `vue` when you want to develop a web app with Vue.js and Bootstrap 4.
 
-- `angular-material` when you want to develop a single-page application with AngularJS, using Material Design.
+- `react` when you want to develop a web app with React and Semantic UI.
+
+- `angular-bootstrap` when you want to develop a component-based app with AngularJS (1.X), using Bootstrap 3.
+
+- `angular-material` when you want to develop an SPA app with AngularJS (1.X), using Material Design.
 
 If no template parameter is provided, `aspnet` is chosen.
 
@@ -241,10 +245,6 @@ instapack puts configuration inside `package.json` to reduce project files clutt
 
 ## FAQ
 
-### Is this stable?
-
-Yup, rock solid stable. Our team has used instapack to ship multiple AngularJS projects to production.
-
 ### Is this Windows only?
 
 The majority of developers using instapack are working full-time on ASP.NET Core MVC projects on Windows with Visual Studio on daily basis. This use case will be the core focus for tooling support.
@@ -253,23 +253,15 @@ However, there should be no reason for instapack to not to run on OS X and Linux
 
 instapack will not suddenly introduce Windows or Visual Studio exclusive feature, and strive to maintain compatibility with multiple platforms.
 
-### Can I use React / Vue / Angular 2+ / Ember / Aurelia / Knockout / ... ?
+### Can I use Angular 2+ / Ember / Aurelia / Knockout / ... ?
 
 Yes, absolutely!
 
-Add the packages required for your project using yarn / npm then start hacking. We'll take care of the outputs. We have also enabled `tsx` compilation specifically for React in our templates' `tsconfig.json`.
+Add the packages required for your project using yarn / npm then start hacking. We'll take care of the outputs.
 
 Also, pull requests are welcomed if you have a great starting templates and books for those projects. We'd love to expand our collections. :)
 
-### Why don't your team develop using Angular 2+?
-
-Angular 2+ uses [JavaScript Decorators](https://github.com/wycats/javascript-decorators) feature. This feature is [flagged as experimental](https://www.typescriptlang.org/docs/handbook/decorators.html) in TypeScript, which may be changed or removed anytime in the future.
-
-ES Decorators themselves are on [Stage 2 proposal (draft)](https://tc39.github.io/proposal-decorators/).
-
-**You'd be crazy to develop an application using THAT.**
-
-### Can I change the js / css file / folder name?
+### Can I change the js / css folder name?
 
 Nope.
 

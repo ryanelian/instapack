@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    "noImplicitAny": false,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+    "strictNullChecks": false,
+    "skipLibCheck": true,
+    
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "experimentalDecorators":true,
+
+    "noEmit": true,
+    "target": "es5",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "importHelpers": true,
+    "jsx": "react",
+
+    "lib": [
+      "dom",
+      "es5",
+      "es2015.promise"
+    ]
+  },
+  "exclude": [
+    "node_modules"
+  ]
+}

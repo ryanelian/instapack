@@ -1,0 +1,10 @@
+﻿@import 'bootstrap/scss/bootstrap';
+@import 'font-awesome/scss/font-awesome';
+@import 'noty/lib/noty';
+@import 'aspnet-validation';
+
+body {
+    min-height: 100vh;
+}
+
+// if you need a sidebar, use this: https://getbootstrap.com/docs/4.0/examples/dashboard/

@@ -20,7 +20,6 @@
     "bootstrap-sass": "^3.3.7",
     "bootstrap.native": "^2.0.14",
     "moment": "^2.18.1",
-    "mustache": "^2.3.0",
     "tslib": "^1.7.1",
     "urijs": "^1.18.12"
   }

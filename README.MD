@@ -153,15 +153,15 @@ Scaffolds a new instapack project into your existing application from where the 
 
 - `empty` when you need a minimal clean slate. Use this template to author a new template!
 
-- `aspnet` when you want to develop an ASP.NET Core MVC project with Bootstrap.
+- `aspnet` when you want to develop an ASP.NET Core MVC project using Bootstrap 4.
 
 - `vue` when you want to develop a web app with Vue.js and Bootstrap 4.
 
 - `react` when you want to develop a web app with React and Semantic UI.
 
-- `angular-bootstrap` when you want to develop a component-based app with AngularJS (1.X), using Bootstrap 3.
+- `angular-bootstrap` when you want to develop a web app with AngularJS (1.X) and Bootstrap 3.
 
-- `angular-material` when you want to develop an SPA app with AngularJS (1.X), using Material Design.
+- `angular-material` when you want to develop a web app with AngularJS (1.X) and Material Design.
 
 If no template parameter is provided, `aspnet` is chosen.
 
@@ -245,6 +245,16 @@ instapack puts configuration inside `package.json` to reduce project files clutt
 
 ## FAQ
 
+### Can I use [insert_framework_name_here] ?
+
+Yes, absolutely!
+
+You can even use jQuery or plain vanilla JS, I'm not going to judge. :smile:
+
+Add the packages required for your project using yarn / npm then start hacking. We'll take care of the outputs.
+
+Also, pull requests are welcomed if you have a great starting templates and books for those projects. We'd love to expand our collections!
+
 ### Is this Windows only?
 
 The majority of developers using instapack are working full-time on ASP.NET Core MVC projects on Windows with Visual Studio on daily basis. This use case will be the core focus for tooling support.
@@ -252,14 +262,6 @@ The majority of developers using instapack are working full-time on ASP.NET Core
 However, there should be no reason for instapack to not to run on OS X and Linux.
 
 instapack will not suddenly introduce Windows or Visual Studio exclusive feature, and strive to maintain compatibility with multiple platforms.
-
-### Can I use Angular 2+ / Ember / Aurelia / Knockout / ... ?
-
-Yes, absolutely!
-
-Add the packages required for your project using yarn / npm then start hacking. We'll take care of the outputs.
-
-Also, pull requests are welcomed if you have a great starting templates and books for those projects. We'd love to expand our collections. :)
 
 ### Can I change the js / css folder name?
 

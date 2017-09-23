@@ -1,4 +1,4 @@
-# Developing Single-Page Application With AngularJS
+# Developing Single-Page Application with AngularJS
 
 ## Getting Started
 

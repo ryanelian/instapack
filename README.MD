@@ -59,29 +59,29 @@ npm run build   # alternatively, "yarn global add typescript" then "tsc"
 
 ## Features
 
-- Hyper-opinionated web application client project builder with zero configurations. It just works.
+- Hyper-opinionated web application client project builder with zero configurations. It just works. :fire:
 
-- Built-in new project scaffold tool.
+- Built-in new project scaffold tool. :gift:
 
-- Rich debugging experience using Google Chrome DevTools. 
+- Rich debugging experience using Google Chrome DevTools. You can set breakpoints, view variable values, and step over / into the TypeScript source code directly in the browser! :mag:
 
 ## Design Goals
 
-- Lower the barrier of entry for developing a modern web application.
+- Lower the barrier of entry for developing a modern web application. :angel:
 
-- Introduce structure to the application client source code.
+- Introduce structure to the application client source code. :office:
 
-- Improve source code quality and maintainability with type hints and compile-time checks.
+- Improve source code quality and maintainability with type hints and compile-time checks. :airplane:
 
-- Enforce best practices when building the application, which may significantly impact page load time. (e.g. bundling and minification)
+- Enforce best practices when building the application, which may significantly impact page load time. (e.g. bundling and minification) :cop:
 
-- Unify team build system across multiple projects.
+- Unify team build system across multiple projects using different frameworks. :fist:
 
-- Blur the boundary between design time and programming time using blazing fast `watch` + `dev` compilation mode.
+- Blur the boundary between design time and programming time using blazing fast `watch` + `dev` compilation mode. :zap:
 
-- Stand-alone command line interface allows shipping to npm, which enables build system upgrade without altering `project.json` in each applications.
+- Stand-alone command line interface allows shipping to npm, which enables build system upgrade without altering `project.json` in each applications. :package:
 
-- High quality tooling supported by latest stable Node.js, using strictly curated, actively maintained dependencies.
+- High quality tooling supported by latest stable Node.js, using strictly curated, actively maintained dependencies. :gem:
 
 ## But... Why?
 
@@ -91,19 +91,17 @@ At a glance, instapack looks similar to webpack. However, that is where the simi
 
 - webpack is like a barebone PC that can be plugged-in with off-the-shelf components. Not very versatile but easy to configure and good enough for most people.
 
-- instapack is like a laptop borrowed from your company, batteries included. You are not expected to modify it.
+- instapack is like a laptop borrowed from your company, batteries included. You are not expected to modify it. :coffee:
 
-Consider the following example: Michael wants to develop a web application using ES6. One of the following events usually happens next...
+Consider the following example: Michael wants to develop a web application using TypeScript. One of the following events usually happens next...
 
-- Michael needs to scramble the internet for a [gulp](http://gulpjs.com/) or [Grunt](https://gruntjs.com/) or [webpack](https://webpack.js.org/) or [Broccoli](http://broccolijs.com/) or [Brunch](http://brunch.io/) recipe, configuring it for hours before starting to code...
+- Michael needs to explore the vast internet for a [gulp](http://gulpjs.com/) or [Grunt](https://gruntjs.com/) or [webpack](https://webpack.js.org/) or [Broccoli](http://broccolijs.com/) or [Brunch](http://brunch.io/) build recipe. :earth_asia:
 
-- Michael hits a dead end, gives up on the entire thing, then writes the application in old-school JavaScript...
+- Recently, every f-ing framework on this planet has their own CLI, but only few are able to support TypeScript out of the box... So Michael simply gives up on TypeScript! :broken_heart:
 
-- Michael's next project uses an evolved version of his build system. However, when he needs to maintain his older applications, he needs to upgrade the build scripts manually...
+- Michael's next project uses an evolved version of his build system. However, when he needs to maintain his older applications, he needs to upgrade the build scripts manually... Furthermore, Michael's hard drive is now full because each project has its own build system! :skull:
 
-- Michael's hard drive is now full because each project has its own build system. Ouch.
-
-- Suddenly, Jack from the other team of the same company develops his own build system. So does Evan.
+- Suddenly, Jack from the other team of the same company develops his own build system. So does Jono! :collision:
 
 instapack is developed as an answer those problems and more!
 
@@ -129,19 +127,7 @@ Internally, instapack uses the following modules:
 
 - [UglifyJS](https://github.com/mishoo/UglifyJS2) for minifying the resulting JavaScript bundle.
 
-- [Autoprefixer](https://github.com/postcss/autoprefixer) for applying automatic CSS vendor-prefixes.
-
-## Release Cadence
-
-Starting version 4.0.0, instapack follows [Semantic Versioning](http://semver.org/).
-
-Bi-weekly releases will be performed for updating package dependencies. This will increment the patch version.
-
-Bug reports will be dealt promptly. This will increment the patch version.
-
-New non-breaking features, such as addition of new task pipeline, will increment the minor version.
-
-Breaking changes, such as behavior or configuration changes to existing task pipeline, will increment the major version.
+- [PostCSS Autoprefixer](https://github.com/postcss/autoprefixer) for applying CSS vendor-prefixes automatically.
 
 ## Commands
 
@@ -163,11 +149,11 @@ Scaffolds a new instapack project into your existing application from where the 
 
 - `angular-material` when you want to develop a web app with AngularJS (1.X) and Material Design.
 
-If no template parameter is provided, `aspnet` is chosen.
+If no template parameters are provided, `aspnet` is chosen.
 
 ### build [project]
 
-Performs compilation against selected project type. Available projects: `all`, `js`, `css` and `concat`. If no project parameter is provided, `all` is chosen.
+Performs compilation against selected project type. Available projects: `all`, `js`, `css` and `concat`. If no project parameters are provided, `all` is chosen.
 
 `require(...)` against `.html` file will cause the said file to be minified and then stringified. This is handy when working with HTML-based templates for AngularJS and Mustache / Handlebars.
 
@@ -250,6 +236,14 @@ instapack puts configuration inside `package.json` to reduce project files clutt
 > Use concatenation for libraries that cannot be imported / do not need to be imported (for example, jQuery plugins). This hybrid approach allows great compatibility with older JavaScript libraries, while enjoying the rich development experience using TypeScript.
 
 > For consuming the libraries within the application code, load them before `bundle.js`, then reference the library objects from the globally exposed variables via window object. (e.g. access jQuery using `window['$']`)
+
+## Release Cadence
+
+Starting version 4.0.0, instapack follows [Semantic Versioning](http://semver.org/).
+
+Bi-weekly releases will be performed for updating package dependencies and bug reports will be dealt promptly. These actions will increment the patch version.
+
+New non-breaking features will increment the minor version. Breaking changes will increment the major version.
 
 ## FAQ
 

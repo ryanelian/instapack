@@ -1,6 +1,6 @@
 # instapack
 
-> All-in-one web application client project compiler using TypeScript and Sass!
+> All-in-one web application client project compiler using TypeScript and Sass! :package: :truck: :bullettrain_side: :rocket:
 
 [![npm](https://img.shields.io/npm/v/instapack.svg)](https://www.npmjs.com/package/instapack) [![Build Status](https://travis-ci.org/ryanelian/instapack.svg?branch=master)](https://travis-ci.org/ryanelian/instapack)
 

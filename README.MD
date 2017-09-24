@@ -43,20 +43,6 @@ instapack works with Node.js version 8, which is **really fast**. That said, it 
 
 When using Visual Studio 2017 Update 2 or above, [install TypeScript 2.5.2 extension](http://download.microsoft.com/download/7/0/A/70A6AC0E-8934-4396-A43E-445059F430EA/2.5.2-TS-release-dev14update3-20170830.5/TypeScript_SDK.exe) from the [release announcement page](https://blogs.msdn.microsoft.com/typescript/2017/08/31/announcing-typescript-2-5).
 
-## Building from the Source
-
-```powershell
-yarn global remove instapack  # "yarn link" does not work...
-npm install -g instapack
-
-git clone https://github.com/ryanelian/instapack.git
-cd .\instapack\
-
-yarn            # package restore...
-npm link        # symlink global to local package for development
-npm run build   # alternatively, "yarn global add typescript" then "tsc"
-```
-
 ## Features
 
 - Hyper-opinionated web application client project builder with zero configurations. It just works. :fire:
@@ -237,14 +223,6 @@ instapack puts configuration inside `package.json` to reduce project files clutt
 
 > For consuming the libraries within the application code, load them before `bundle.js`, then reference the library objects from the globally exposed variables via window object. (e.g. access jQuery using `window['$']`)
 
-## Release Cadence
-
-Starting version 4.0.0, instapack follows [Semantic Versioning](http://semver.org/).
-
-Bi-weekly releases will be performed for updating package dependencies and bug reports will be dealt promptly. These actions will increment the patch version.
-
-New non-breaking features will increment the minor version. Breaking changes will increment the major version.
-
 ## FAQ
 
 ### Can I use [insert_framework_name_here] ?
@@ -265,15 +243,37 @@ However, there should be no reason for instapack to not to run on OS X and Linux
 
 instapack will not suddenly introduce Windows or Visual Studio exclusive feature, and strive to maintain compatibility with multiple platforms.
 
-### Can I change the js / css folder name?
-
-Nope.
-
 ### I thought files should not be bundled because of HTTP/2?
 
 [Nope.](https://medium.com/@asyncmax/the-right-way-to-bundle-your-assets-for-faster-sites-over-http-2-437c37efe3ff)
 
 Also, in IIS, HTTP/2 is only supported when using Windows Server 2016. Many of our customers are still using Windows Server 2012 R2 to date.
+
+### Can I change the js / css folder name?
+
+Nope.
+
+### Release Cadence
+
+Starting version 4.0.0, instapack follows [Semantic Versioning](http://semver.org/).
+
+Bi-weekly releases will be performed for updating package dependencies and bug reports will be dealt promptly. These actions will increment the patch version.
+
+New non-breaking features will increment the minor version. Breaking changes will increment the major version.
+
+### Building from the Source
+
+```powershell
+yarn global remove instapack  # "yarn link" does not work...
+npm install -g instapack
+
+git clone https://github.com/ryanelian/instapack.git
+cd .\instapack\
+
+yarn            # package restore...
+npm link        # symlink global to local package for development
+npm run build   # alternatively, "yarn global add typescript" then "tsc"
+```
 
 ### My package restore / IDE is slow. Help!
 

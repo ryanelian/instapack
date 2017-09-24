@@ -8,7 +8,7 @@ module.exports = class instapack {
         return ['all', 'js', 'css', 'concat'];
     }
     get availableTemplates() {
-        return ['empty', 'aspnet', 'vue', 'react', 'angular-bootstrap', 'angular-material'];
+        return ['empty', 'aspnet', 'vue', 'react', 'inferno', 'angular-bootstrap', 'angular-material'];
     }
     constructor() {
         this.settings = Settings_1.Settings.tryRead();

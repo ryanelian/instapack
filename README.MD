@@ -145,6 +145,8 @@ Scaffolds a new instapack project into your existing application from where the 
 
 - `react` when you want to develop a web app with React and Semantic UI.
 
+- `inferno` when you want to develop a web app with Inferno and Bootstrap 4.
+
 - `angular-bootstrap` when you want to develop a web app with AngularJS (1.X) and Bootstrap 3.
 
 - `angular-material` when you want to develop a web app with AngularJS (1.X) and Material Design.

@@ -1,4 +1,6 @@
-import * as React from 'react';
+import * as Inferno from 'inferno';
+import createElement from 'inferno-create-element';
+import Component from 'inferno-component';
 
 interface HelloProps {
     compiler: string;
@@ -6,8 +8,9 @@ interface HelloProps {
 }
 
 // State is never set so we use the `undefined` type.
-export class Hello extends React.Component<HelloProps, undefined> {
+export class Hello extends Component<HelloProps, undefined> {
     render() {
+        console.log(this.props);
         return <h1>Hello from {this.props.compiler} and {this.props.framework}!</h1>;
     }
 }

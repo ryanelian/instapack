@@ -1,6 +1,5 @@
-import * as Inferno from 'inferno';
-import createElement from 'inferno-create-element';
 import Component from 'inferno-component';
+import createElement from 'inferno-create-element';
 
 interface HelloProps {
     compiler: string;

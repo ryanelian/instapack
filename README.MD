@@ -79,10 +79,6 @@ npm run build   # alternatively, "yarn global add typescript" then "tsc"
 
 - Blur the boundary between design time and programming time using blazing fast `watch` + `dev` compilation mode. :zap:
 
-- Stand-alone command line interface allows shipping to npm, which enables build system upgrade without altering `project.json` in each applications. :package:
-
-- High quality tooling supported by latest stable Node.js, using strictly curated, actively maintained dependencies. :gem:
-
 ## But... Why?
 
 At a glance, instapack looks similar to webpack. However, that is where the similarity ends because instapack is **not** designed to replace webpack. Here is an analogy to help to differentiate these build systems:
@@ -99,7 +95,9 @@ Consider the following example: Michael wants to develop a web application using
 
 - Recently, every f-ing framework on this planet has their own CLI, but only few are able to support TypeScript out of the box... So Michael simply gives up on TypeScript! :broken_heart:
 
-- Michael's next project uses an evolved version of his build system. However, when he needs to maintain his older applications, he needs to upgrade the build scripts manually... Furthermore, Michael's hard drive is now full because each project has its own build system! :skull:
+- Michael's next project uses an evolved version of his build system. However, when he needs to maintain his older apps, every build script in each application needs to be upgraded manually... :hourglass:
+
+- Consequently, Michael's SSD is now full because all projects have their own build system! :skull:
 
 - Suddenly, Jack from the other team of the same company develops his own build system. So does Jono! :collision:
 
@@ -139,7 +137,7 @@ Scaffolds a new instapack project into your existing application from where the 
 
 - `empty` when you need a minimal clean slate. Use this template to author a new template!
 
-- `aspnet` when you want to develop an ASP.NET Core MVC project using Bootstrap 4.
+- `aspnet` when you want to develop an ASP.NET Core MVC project using only Bootstrap 4.
 
 - `vue` when you want to develop a web app with Vue.js and Bootstrap 4.
 
@@ -167,7 +165,7 @@ In addition, build flags are available:
 
 - `-u` or `--unmap` for disabling source maps, for slightly faster compilation.
 
-- `-udw` shorthand for `unmap` + `dev` + `watch` mode together, amusingly named as *Unlimited Dev Works* mode.
+- `-udw` shorthand for `unmap` + `dev` + `watch` mode together, amusingly named as *Unlimited Dev Works* mode, for **massive productivity gainz**.
 
 - `-s [port number]` or `--server 19991` for experimental server mode. Build artefacts will be served directly to http://localhost:port using GZIP compression without writing to folder / file system.
 
@@ -192,12 +190,12 @@ instapack puts configuration inside `package.json` to reduce project files clutt
     }
   },
   "dependencies": {
-    "@types/node": "^8.0.28",
+    "@types/node": "^8.0.30",
     "@types/urijs": "^1.15.34",
     "aspnet-validation": "^0.0.1",
     "axios": "^0.16.2",
     "bootstrap": "4.0.0-beta",
-    "bootstrap.native": "^2.0.14",
+    "bootstrap.native": "^2.0.15",
     "es6-promise": "^4.1.1",
     "font-awesome": "^4.7.0",
     "moment": "^2.18.1",
@@ -279,7 +277,7 @@ Also, in IIS, HTTP/2 is only supported when using Windows Server 2016. Many of o
 
 ### My package restore / IDE is slow. Help!
 
-Windows Defender or other anti-virus software apparently slow down package restore and IDEs when opening projects.
+Windows Defender or other anti-virus software appear to slow down package restore and IDEs when opening projects.
 
 For this very reason, it is highly recommended to:
 
@@ -291,7 +289,7 @@ For this very reason, it is highly recommended to:
 
 - Add anti-virus exclusion to Git installation folder: `C:\Program Files\Git`. To double check, type: `where.exe git`.
 
-- Use very short root folder name for projects, such as `D:\VS`, to avoid problems with Windows system paths over 260 characters long. Then exclude the folder from the anti-virus.
+- Use very short root folder name for projects, such as `D:\VS`, to avoid potential problems with Windows system paths over 260 characters long. Then exclude the folder from the anti-virus.
 
 ### Your PowerShell is cute. How to?
 

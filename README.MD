@@ -1,6 +1,6 @@
 # instapack
 
-> All-in-one web application client project compiler using TypeScript and Sass! :package: :truck: :bullettrain_side: :rocket:
+> All-in-one web application client project compiler using TypeScript and Sass! :package: :rocket:
 
 [![npm](https://img.shields.io/npm/v/instapack.svg)](https://www.npmjs.com/package/instapack) [![Build Status](https://travis-ci.org/ryanelian/instapack.svg?branch=master)](https://travis-ci.org/ryanelian/instapack)
 
@@ -253,27 +253,28 @@ Also, in IIS, HTTP/2 is only supported when using Windows Server 2016. Many of o
 
 Nope.
 
-### Release Cadence
+### How do I use the source directly?
+
+```powershell
+yarn global remove instapack  # `yarn link` does not work...
+npm install -g instapack
+
+git clone https://github.com/ryanelian/instapack.git
+cd instapack
+
+yarn            # package restore... You can also use `npm install` here.
+npm link        # symlink global to local package for development
+npm run build   # alternatively, `yarn global add typescript` then `tsc`
+ipack --help
+```
+
+### Release Cadence?
 
 Starting version 4.0.0, instapack follows [Semantic Versioning](http://semver.org/).
 
 Bi-weekly releases will be performed for updating package dependencies and bug reports will be dealt promptly. These actions will increment the patch version.
 
 New non-breaking features will increment the minor version. Breaking changes will increment the major version.
-
-### Building from the Source
-
-```powershell
-yarn global remove instapack  # "yarn link" does not work...
-npm install -g instapack
-
-git clone https://github.com/ryanelian/instapack.git
-cd .\instapack\
-
-yarn            # package restore...
-npm link        # symlink global to local package for development
-npm run build   # alternatively, "yarn global add typescript" then "tsc"
-```
 
 ### My package restore / IDE is slow. Help!
 

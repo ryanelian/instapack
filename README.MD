@@ -24,13 +24,13 @@ ipack new
 ipack
 ```
 
-Programmable API is also provided if you wish to integrate instapack into your very own build script:
+[Programmable API](https://github.com/ryanelian/instapack/blob/master/src/index.ts) is also provided if you wish to integrate instapack into your very own build script:
 
 ```js
 const instapack = require('instapack');
 
 let ipack = new instapack();
-ipack.build('all', false, false);
+ipack.build('all');
 ```
 
 Practical guides can be read in [books](https://github.com/ryanelian/instapack/tree/master/books) folder.
@@ -223,6 +223,31 @@ instapack puts configuration inside `package.json` to reduce project files clutt
 
 > For consuming the libraries within the application code, load them before `bundle.js`, then reference the library objects from the globally exposed variables via window object. (e.g. access jQuery using `window['$']`)
 
+## Release Cadence
+
+Starting version 4.0.0, instapack follows [Semantic Versioning](http://semver.org/).
+
+Bi-weekly releases (usually on 14th and 28th date of each month) will be performed for updating package dependencies. Bug reports will be dealt promptly. These actions will increment the patch version.
+
+New non-breaking features will increment the minor version. Breaking changes will increment the major version.
+
+Occasionally, beta builds will be published (`instapack@beta`) for showcasing the bleeding edge version of the tool.
+
+Alternatively, you may use the nightly build directly from the source code repository:
+
+```powershell
+yarn global remove instapack  # `yarn link` does not work...
+npm install -g instapack
+
+git clone https://github.com/ryanelian/instapack.git
+cd instapack
+
+yarn            # package restore... You can also use `npm install` here.
+npm link        # symlink global to local package for development
+npm run build   # alternatively, `yarn global add typescript` then `tsc`
+ipack --help
+```
+
 ## FAQ
 
 ### Can I use [insert_framework_name_here] ?
@@ -252,29 +277,6 @@ Also, in IIS, HTTP/2 is only supported when using Windows Server 2016. Many of o
 ### Can I change the js / css folder name?
 
 Nope.
-
-### How do I use the source directly?
-
-```powershell
-yarn global remove instapack  # `yarn link` does not work...
-npm install -g instapack
-
-git clone https://github.com/ryanelian/instapack.git
-cd instapack
-
-yarn            # package restore... You can also use `npm install` here.
-npm link        # symlink global to local package for development
-npm run build   # alternatively, `yarn global add typescript` then `tsc`
-ipack --help
-```
-
-### Release Cadence?
-
-Starting version 4.0.0, instapack follows [Semantic Versioning](http://semver.org/).
-
-Bi-weekly releases will be performed for updating package dependencies and bug reports will be dealt promptly. These actions will increment the patch version.
-
-New non-breaking features will increment the minor version. Breaking changes will increment the major version.
 
 ### My package restore / IDE is slow. Help!
 

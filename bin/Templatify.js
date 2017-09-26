@@ -33,16 +33,21 @@ let minifierOptions = {
     trimCustomFragments: false,
     useShortDoctype: false
 };
-let minifyExt = ['.htm', '.html'];
-let templateExt = ['.txt'].concat(minifyExt);
-function Templatify(file, options) {
+let minifyExt = new Set();
+minifyExt.add('.htm');
+minifyExt.add('.html');
+let otherExt = new Set();
+otherExt.add('.txt');
+function Templatify(file) {
     return through2(function (buffer, encoding, next) {
-        var ext = path.extname(file).toLowerCase();
-        if (templateExt.indexOf(ext) === -1) {
+        let ext = path.extname(file).toLowerCase();
+        let shouldMinify = minifyExt.has(ext);
+        let isTemplate = shouldMinify || otherExt.has(ext);
+        if (!isTemplate) {
             return next(null, buffer);
         }
         let template = buffer.toString('utf8');
-        if (options.minify && minifyExt.indexOf(ext) !== -1) {
+        if (shouldMinify) {
             template = minifier.minify(template, minifierOptions).trim();
         }
         template = 'module.exports = ' + JSON.stringify(template) + ';\n';

@@ -114,9 +114,7 @@ class Compiler {
             browserifyOptions.cache = {};
             browserifyOptions.packageCache = {};
         }
-        let bundler = browserify(browserifyOptions).transform(Templatify_1.default, {
-            minify: this.flags.minify
-        }).add(jsEntry).plugin(tsify);
+        let bundler = browserify(browserifyOptions).transform(Templatify_1.default).add(jsEntry).plugin(tsify);
         if (Object.keys(this.settings.alias).length) {
             let aliasTransform = Aliasify_1.default(this.settings.alias);
             bundler = bundler.transform({ global: true }, aliasTransform);

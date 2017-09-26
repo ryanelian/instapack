@@ -33,33 +33,32 @@ let minifierOptions = {
     useShortDoctype: false
 };
 
-let minifyExt = ['.htm', '.html'];
-let templateExt = ['.txt'].concat(minifyExt);
+let minifyExt = new Set<string>();
+minifyExt.add('.htm');
+minifyExt.add('.html');
 
-/**
- * Passed options when registering Templatify transform to Browserify.
- */
-export interface TemplatifyOptions {
-    minify: boolean
-}
+let otherExt = new Set<string>();
+otherExt.add('.txt');
 
 /**
  * A Browserify Transform for importing a non-JS file content as a string using CommonJS module.
  * @param file 
  * @param options 
  */
-export default function Templatify(file: string, options: TemplatifyOptions) {
+export default function Templatify(file: string) {
     return through2(function (buffer: Buffer, encoding, next) {
+        let ext = path.extname(file).toLowerCase();
 
-        var ext = path.extname(file).toLowerCase();
+        let shouldMinify = minifyExt.has(ext);
+        let isTemplate = shouldMinify || otherExt.has(ext);
 
-        if (templateExt.indexOf(ext) === -1) {
+        if (!isTemplate) {
             return next(null, buffer);
         }
 
         let template = buffer.toString('utf8');
 
-        if (options.minify && minifyExt.indexOf(ext) !== -1) {
+        if (shouldMinify) {
             template = minifier.minify(template, minifierOptions).trim();
         }
 

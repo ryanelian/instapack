@@ -183,9 +183,7 @@ export class Compiler {
             browserifyOptions.packageCache = {};
         }
 
-        let bundler = browserify(browserifyOptions).transform(templatify, {
-            minify: this.flags.minify
-        }).add(jsEntry).plugin(tsify);
+        let bundler = browserify(browserifyOptions).transform(templatify).add(jsEntry).plugin(tsify);
 
         if (Object.keys(this.settings.alias).length) {
             let aliasTransform = aliasify(this.settings.alias);

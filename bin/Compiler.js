@@ -230,7 +230,16 @@ class Compiler {
             let g = through2.obj();
             let resolution = this.settings.concat;
             for (let target in resolution) {
-                this.resolveThenConcatenate(resolution[target]).then(result => {
+                let ar = resolution[target];
+                if (!ar || ar.length === 0) {
+                    GulpLog_1.default(chalk.red('WARNING'), 'concat modules definition for', chalk.blue(target), 'is empty!');
+                    continue;
+                }
+                if (typeof ar === 'string') {
+                    ar = [ar];
+                    GulpLog_1.default(chalk.red('WARNING'), 'concat modules definition for', chalk.blue(target), 'is not a', chalk.yellow('string[]'));
+                }
+                this.resolveThenConcatenate(ar).then(result => {
                     g.push(new vinyl({
                         path: target + '.js',
                         contents: Buffer.from(result)

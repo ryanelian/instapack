@@ -344,7 +344,17 @@ export class Compiler {
             let resolution = this.settings.concat;
 
             for (let target in resolution) {
-                this.resolveThenConcatenate(resolution[target]).then(result => {
+                let ar = resolution[target];
+                if (!ar || ar.length === 0) {
+                    glog(chalk.red('WARNING'), 'concat modules definition for', chalk.blue(target), 'is empty!');
+                    continue;
+                }
+                if (typeof ar === 'string') {
+                    ar = [ar];
+                    glog(chalk.red('WARNING'), 'concat modules definition for', chalk.blue(target), 'is not a', chalk.yellow('string[]'));
+                }
+
+                this.resolveThenConcatenate(ar).then(result => {
                     g.push(new vinyl({
                         path: target + '.js',
                         contents: Buffer.from(result)

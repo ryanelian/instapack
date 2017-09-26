@@ -254,7 +254,7 @@ ipack --help
 
 Yes, absolutely!
 
-You can even use jQuery or plain vanilla JS, I'm not going to judge. :smile:
+You can even use jQuery or plain vanilla JS; don't worry, we're not gonna judge. :smile:
 
 Add the packages required for your project using yarn / npm then start hacking. We'll take care of the outputs.
 

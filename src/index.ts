@@ -20,7 +20,17 @@ export = class instapack {
      * Gets a list of string which contains templates available for the scaffold method.
      */
     get availableTemplates() {
-        return ['empty', 'aspnet', 'vue', 'react', 'inferno', 'angular-bootstrap', 'angular-material'];
+        let templatesFolder = path.join(__dirname, '..', 'templates');
+
+        let ar = fse.readdirSync(templatesFolder);
+        let templates = ar.filter(Q => {
+            let test = path.join(templatesFolder, Q);
+            return fse.lstatSync(test).isDirectory();
+        });
+
+        // This getter should only be called on `ipack new` command call. 
+        // console.log(templates);
+        return templates;
     }
 
     /**

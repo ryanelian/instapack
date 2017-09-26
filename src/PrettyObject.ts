@@ -100,7 +100,7 @@ export class PrettyObject {
      * @param o 
      * @param level 
      */
-    render(o, level = 0) {
+    render(o, level = 0): string {
         if (o === undefined) {
             return this.nullChalk('undefined');
         } else if (o === null) {

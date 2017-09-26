@@ -233,17 +233,25 @@ class Compiler {
                 let ar = resolution[target];
                 if (!ar || ar.length === 0) {
                     GulpLog_1.default(chalk.red('WARNING'), 'concat modules definition for', chalk.blue(target), 'is empty!');
+                    concatCount--;
+                    if (concatCount === 0) {
+                        g.push(null);
+                    }
                     continue;
                 }
                 if (typeof ar === 'string') {
                     ar = [ar];
-                    GulpLog_1.default(chalk.red('WARNING'), 'concat modules definition for', chalk.blue(target), 'is not a', chalk.yellow('string[]'));
+                    GulpLog_1.default(chalk.red('WARNING'), 'concat modules definition for', chalk.blue(target), 'is a', chalk.yellow('string'), 'instead of a', chalk.yellow('string[]'));
                 }
                 this.resolveThenConcatenate(ar).then(result => {
                     g.push(new vinyl({
                         path: target + '.js',
                         contents: Buffer.from(result)
                     }));
+                }).catch(error => {
+                    GulpLog_1.default(chalk.red('ERROR'), 'when concatenating', chalk.blue(target));
+                    console.log(error);
+                }).then(() => {
                     concatCount--;
                     if (concatCount === 0) {
                         g.push(null);

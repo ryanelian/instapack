@@ -347,11 +347,16 @@ export class Compiler {
                 let ar = resolution[target];
                 if (!ar || ar.length === 0) {
                     glog(chalk.red('WARNING'), 'concat modules definition for', chalk.blue(target), 'is empty!');
+
+                    concatCount--;
+                    if (concatCount === 0) {
+                        g.push(null);
+                    }
                     continue;
                 }
                 if (typeof ar === 'string') {
                     ar = [ar];
-                    glog(chalk.red('WARNING'), 'concat modules definition for', chalk.blue(target), 'is not a', chalk.yellow('string[]'));
+                    glog(chalk.red('WARNING'), 'concat modules definition for', chalk.blue(target), 'is a', chalk.yellow('string'), 'instead of a', chalk.yellow('string[]'));
                 }
 
                 this.resolveThenConcatenate(ar).then(result => {
@@ -359,7 +364,11 @@ export class Compiler {
                         path: target + '.js',
                         contents: Buffer.from(result)
                     }));
-
+                }).catch(error => {
+                    glog(chalk.red('ERROR'), 'when concatenating', chalk.blue(target))
+                    console.log(error);
+                }).then(() => {
+                    // this code block is equivalent to: .finally()
                     concatCount--;
                     if (concatCount === 0) {
                         g.push(null);

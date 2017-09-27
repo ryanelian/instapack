@@ -87,7 +87,7 @@ CLI.command({
         return yargs.choices('template', app.availableTemplates);
     },
     handler: argv => {
-        let subCommand = argv.template || 'aspnet';
+        let subCommand = argv.template || 'vue';
         echo('new', subCommand);
         app.scaffold(subCommand);
     }

@@ -123,19 +123,17 @@ Scaffolds a new instapack project into your existing application from where the 
 
 - `empty` when you need a minimal clean slate. Use this template to author a new template!
 
-- `aspnet` when you want to develop an ASP.NET Core MVC project using only Bootstrap 4.
-
-- `vue` when you want to develop a web app with Vue.js and Bootstrap 4.
+- `vue` when you want to develop a web app with Vue.js and Bootstrap 4 (includes ASP.NET Core MVC validation).
 
 - `react` when you want to develop a web app with React and Semantic UI.
 
 - `inferno` when you want to develop a web app with Inferno and Bootstrap 4.
 
-- `angular-bootstrap` when you want to develop a web app with AngularJS (1.X) and Bootstrap 3.
+- `angular-bootstrap` when you want to develop a web app with AngularJS (1.X) and Bootstrap 3 (includes ASP.NET Core MVC validation).
 
-- `angular-material` when you want to develop a web app with AngularJS (1.X) and Material Design.
+- `angular-material` when you want to develop a web app with AngularJS (1.X) and Material Design (includes Angular UI Router).
 
-If no template parameters are provided, `aspnet` is chosen.
+If no template parameters are provided, `vue` is chosen.
 
 ### build [project]
 

@@ -36,7 +36,7 @@
     "resolve": "1.4.0",
     "through2": "2.0.3",
     "tsify": "3.0.3",
-    "typescript": "2.5.2",
+    "typescript": "2.5.3",
     "uglify-js": "3.1.2",
     "undertaker": "1.2.0",
     "vinyl": "2.1.0",

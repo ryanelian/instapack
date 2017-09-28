@@ -59,9 +59,9 @@ When using Visual Studio 2017 Update 2 or above, [install TypeScript 2.5.2 exten
 
 - Improve source code quality and maintainability with type hints and compile-time checks. :airplane:
 
-- Enforce best practices when building the application, which may significantly impact page load time. (e.g. bundling and minification) :cop:
+- Enforce best practices when building the application, which may significantly impact page load time. (e.g. bundling and minification) :umbrella:
 
-- Unify team build system across multiple projects each using different frameworks. :fist:
+- Unify team build system across multiple projects, for any frameworks. :fist:
 
 - Blur the boundary between design time and programming time using blazing fast `watch` + `dev` compilation mode. :zap:
 
@@ -77,11 +77,9 @@ At a glance, instapack looks similar to webpack. However, that is where the simi
 
 Consider the following example: Michael wants to develop a web application using TypeScript. One of the following events usually happens next...
 
-- Michael needs to explore the vast internet for a [gulp](http://gulpjs.com/) or [Grunt](https://gruntjs.com/) or [webpack](https://webpack.js.org/) or [Broccoli](http://broccolijs.com/) or [Brunch](http://brunch.io/) build recipe. :earth_asia:
-
 - Recently, every f-ing framework on this planet has their own CLI, but only few are able to support TypeScript out of the box... So Michael simply gives up on TypeScript! :broken_heart:
 
-- Michael's next project uses an evolved version of his build system. However, when he needs to maintain his older apps, every build script in each application needs to be upgraded manually... :hourglass:
+- Michael managed to create a working build recipe for his TypeScript project. However, his next project uses an evolved version of his build system. Therefore, Michael needs to manually upgrade every build script in each application... :hourglass_flowing_sand:
 
 - Consequently, Michael's SSD is now full because all projects have their own build system! :skull:
 
@@ -91,11 +89,11 @@ instapack is developed as an answer those problems and more!
 
 ## How does it work?
 
-Out of the box, the following files will be used as the application entry points:
+Out of the box, the following files will be used as the entry points:
 
-- `client/js/index.ts`, compiled to `wwwroot/js/bundle.js`.
+- `client/js/index.ts`, compiled to `wwwroot/js/bundle.js`
 
-- `client/css/site.scss`, compiled to `wwwroot/css/site.css`.
+- `client/css/site.scss`, compiled to `wwwroot/css/site.css`
 
 - Concatenate files listed in `package.json`. Read more below.
 
@@ -121,7 +119,7 @@ You may use `instapack` or `ipack` or `ipk` to invoke the command line interface
 
 Scaffolds a new instapack project into your existing application from where the command line is invoked. The following templates are available:
 
-- `empty` when you need a minimal clean slate. Use this template to author a new template!
+- `empty` when you need a minimal clean slate. Use this template to author new templates!
 
 - `vue` when you want to develop a web app with Vue.js and Bootstrap 4 (includes ASP.NET Core MVC validation).
 
@@ -133,11 +131,11 @@ Scaffolds a new instapack project into your existing application from where the 
 
 - `angular-material` when you want to develop a web app with AngularJS (1.X) and Material Design (includes Angular UI Router).
 
-If no template parameters are provided, `vue` is chosen.
+If no template parameter is provided, `vue` is chosen.
 
 ### build [project]
 
-Performs compilation against selected project type. Available projects: `all`, `js`, `css` and `concat`. If no project parameters are provided, `all` is chosen.
+Performs compilation against selected project type. Available projects: `all`, `js`, `css` and `concat`. If no project parameter is provided, `all` is chosen.
 
 `require(...)` against `.html` file will cause the said file to be minified and then stringified. This is handy when working with HTML-based templates for AngularJS and Mustache / Handlebars.
 
@@ -282,13 +280,13 @@ Windows Defender or other anti-virus software appear to slow down package restor
 
 For this very reason, it is highly recommended to:
 
-- Add anti-virus exclusion to Yarn installation folder: `C:\Program Files (x86)\Yarn`. To double check, type: `where.exe yarn`.
+- Add anti-virus exclusion to Yarn installation folder: `C:\Program Files (x86)\Yarn`. To double check, type: `where.exe yarn`
 
-- Add anti-virus exclusion to Yarn cache folder: `C:\Users\Ryan\AppData\Local\Yarn`. To double check, type: `yarn cache dir`.
+- Add anti-virus exclusion to Yarn cache folder: `C:\Users\Ryan\AppData\Local\Yarn`. To double check, type: `yarn cache dir`
 
-- Add anti-virus exclusion to NodeJS installation folder: `C:\Program Files\nodejs`. To double check, type: `where.exe node`.
+- Add anti-virus exclusion to NodeJS installation folder: `C:\Program Files\nodejs`. To double check, type: `where.exe node`
 
-- Add anti-virus exclusion to Git installation folder: `C:\Program Files\Git`. To double check, type: `where.exe git`.
+- Add anti-virus exclusion to Git installation folder: `C:\Program Files\Git`. To double check, type: `where.exe git`
 
 - Use very short root folder name for projects, such as `D:\VS`, to avoid potential problems with Windows system paths over 260 characters long. Then exclude the folder from the anti-virus.
 

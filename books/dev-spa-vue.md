@@ -100,7 +100,9 @@ new Vue({
 });
 ```
 
-Vue.js has been setup to bootstrap from a root element with HTML `id="app"`, which exists in our new `_Layout.cshtml` file. **So far, you do not have to do anything**; simply observe and understand the process. **This is important**. Proceed only when you have understood everything written above.
+Vue.js has been setup to bootstrap from a root element with HTML `id="app"`, which exists in our new `_Layout.cshtml` file.
+
+**So far, you do not have to do anything**; simply observe and understand the process. **This is important**.
 
 Now open `/Pages/Index.cshtml`. Replace the content with:
 
@@ -211,5 +213,56 @@ If done correctly, the page should display: **Hello, Cynthia. You are 21 years-o
 > Advanced topic: [props can be validated and set default value](https://vuejs.org/v2/guide/components.html#Prop-Validation).
 
 ## Reacting to Changes
+
+Unlike AngularJS Controllers, Vue.js is unable to automatically detect property additions or deletion within the component class. **However, this restriction is a blessing, not a curse**: it forces the developer to declare and initialize all reactive properties within the class, thus improving code readability and maintainability.
+
+Let us create new component `Todo.ts`:
+
+```ts
+import * as Vue from 'vue';
+import Component from 'vue-class-component';
+
+@Component({
+    template: require('./Todo.html') as string
+})
+export class Todo extends Vue {
+    count: number = 0;
+
+    increment() {
+        this.count++;
+    }
+}
+```
+
+```html
+<div>
+    <p>
+        <button type="button" class="btn btn-primary" v-on:click="increment()">Click me!</button>
+    </p>
+    <p>
+        {{count}}
+    </p>
+</div>
+```
+
+> Just like the `v-bind` prefix, `v-on` also has a shorthand. The `v-on:click` can be expressed as `@click`.
+
+> Fun fact: a Vue.js component template must only have exactly one root element. Wrap everything in `<div>` when in doubt.
+
+Because `count` was declared and initialized in the class, its value will be watched. Whenever the button is clicked, the UI will automatically update!
+
+If you forgot to declare and initialize `count`, it will not be watched and vue will display a convenient warning in browser console: `[Vue warn]: Property or method "count" is not defined on the instance but referenced during render. Make sure to declare reactive data properties in the data option.`
+
+Do not forget to register that component in the `vue-project.ts`:
+
+```ts
+Vue.component('todo', Components.Todo);
+```
+
+> Advanced topic: [Reactivity in Depth](https://vuejs.org/v2/guide/reactivity.html)
+
+> Force re-render view by using `this.$forceUpdate()` from within the component class. However, only use this as a last-resort technique!
+
+## Implementing a To-Do List
 
 > TODO

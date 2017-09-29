@@ -1,4 +1,4 @@
-# Developing Single-Page Application with Vue.js
+# Developing Single-Page Application using Vue.js
 
 > Vue (pronounced /vjuː/, like view) is a progressive framework for building user interfaces. Unlike other monolithic frameworks, Vue is designed from the ground up to be incrementally adoptable. The core library is focused on the view layer only, and is easy to pick up and integrate with other libraries or existing projects. On the other hand, Vue is also perfectly capable of powering sophisticated Single-Page Applications when used in combination with modern tooling and supporting libraries. https://vuejs.org/v2/guide/
 
@@ -6,7 +6,7 @@
 
 For this tutorial, we will be using ASP.NET Core MVC 2.0 to serve as the web server of the app. Install [.NET Core SDK 2.0](https://www.microsoft.com/net/download/core) 
 
-instapack requires [Node.js LTS or 8](https://nodejs.org/en/download) to operate. Install if you have not done so, then using the command line, type: `npm install -g instapack`
+instapack requires [Node.js LTS or 8](https://nodejs.org/en/download) to function. Install if you have not done so, then using the command line, type: `npm install -g instapack`
 
 Verify instapack has been installed successfully by typing `ipack --version`.
 
@@ -16,7 +16,7 @@ Alternatively, you may use [Visual Studio Code](https://code.visualstudio.com) w
 
 ## Create New Project
 
-Create an empty folder, such as `E:\VS\MyWebApp` then run these commands inside the folder:
+Create an empty folder, such as `E:\VS\MyWebApp` then run these commands inside the folder (using PowerShell):
 
 ```powershell
 dotnet new razor
@@ -84,7 +84,7 @@ import './vue-project';
 
 This syntax is called [ECMAScript 2015 Module](https://www.typescriptlang.org/docs/handbook/modules.html) syntax.
 
-For now, just notice that it imports `vue-project.ts` module from the same folder. Open it:
+For now, just keep in mind that it imports `vue-project.ts` module from the same folder. Open it:
 
 ```ts
 import * as Vue from 'vue';
@@ -198,7 +198,7 @@ And create `Greet.html` next to it:
 
 ```html
 <p>
-    Hello, {{name}}. You are {{age}} years-old {{getGender()}}!
+    Hello, {{ name }}. You are {{ age }} years-old {{ getGender() }}!
 </p>
 ```
 
@@ -214,7 +214,9 @@ If done correctly, the page should display: **Hello, Cynthia. You are 21 years-o
 
 ## Reacting to Changes
 
-Unlike AngularJS Controllers, Vue.js is unable to automatically detect property additions or deletion within the component class. **However, this restriction is a blessing, not a curse**: it forces the developer to declare and initialize all reactive properties within the class, thus improving code readability and maintainability.
+Unlike AngularJS Controllers, Vue.js is unable to automatically detect property additions or deletion within the component class.
+
+**However, this restriction is a blessing, not a curse**: it forces the developer to declare and initialize all reactive properties within the class, thus improving code readability and maintainability.
 
 Let us create new component `Todo.ts`:
 
@@ -240,7 +242,7 @@ export class Todo extends Vue {
         <button type="button" class="btn btn-primary" v-on:click="increment()">Click me!</button>
     </p>
     <p>
-        {{count}}
+        {{ count }}
     </p>
 </div>
 ```
@@ -249,20 +251,36 @@ export class Todo extends Vue {
 
 > Fun fact: a Vue.js component template must only have exactly one root element. Wrap everything in `<div>` when in doubt.
 
-Because `count` was declared and initialized in the class, its value will be watched. Whenever the button is clicked, the UI will automatically update!
-
-If you forgot to declare and initialize `count`, it will not be watched and vue will display a convenient warning in browser console: `[Vue warn]: Property or method "count" is not defined on the instance but referenced during render. Make sure to declare reactive data properties in the data option.`
-
 Do not forget to register that component in the `vue-project.ts`:
 
 ```ts
 Vue.component('todo', Components.Todo);
 ```
 
+Because `count` was declared and initialized in the class, its value will be watched. Whenever the button is clicked, the UI will automatically update!
+
+If you forgot to declare and initialize `count`, it will not be watched and vue will display a convenient warning in browser console: `[Vue warn]: Property or method "count" is not defined on the instance but referenced during render. Make sure to declare reactive data properties in the data option.`
+
 > Advanced topic: [Reactivity in Depth](https://vuejs.org/v2/guide/reactivity.html)
 
-> Force re-render view by using `this.$forceUpdate()` from within the component class. However, only use this as a last-resort technique!
+> Force re-render view by using `this.$forceUpdate()` from within the component class. That said, only use this as a last-resort technique!
 
 ## Implementing a To-Do List
 
 > TODO
+
+## Server-Side To-Do List API
+
+> TODO
+
+## Validating Inputs
+
+> TODO
+
+## Global Filters
+
+> TODO 
+
+## Event Handlers
+
+> TODO 

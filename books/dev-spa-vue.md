@@ -120,3 +120,96 @@ Then use your web browser to view the app index page. It should display `2` as a
 
 Component is a building block of a modern web app client. Component represents reusable code that may be invoked using standard HTML tag syntax. Component allows dividing a complex app into simpler and more maintainable parts.
 
+Create a new file `/client/js/components/Greet.ts`:
+
+```ts
+import * as Vue from 'vue'
+import Component from 'vue-class-component'
+
+@Component({
+    template: '<p>Hello World!</p>'
+})
+export class Greet extends Vue {
+}
+```
+
+Let us digest the above code slowly:
+
+- `Vue` imports the entire `vue` modules from the `node_modules` into a single variable, which is defined in the project's `package.json`.
+
+- `Component` imports a default `vue-class-component` modules from the `node_modules`, which is also defined in the project's `package.json`.
+
+- `@Component` is a [ECMAScript decorator](https://tc39.github.io/proposal-decorators/), akin to [C# class attributes](https://docs.microsoft.com/en-us/dotnet/standard/attributes/writing-custom-attributes) or [Java class annotations](https://docs.oracle.com/javase/tutorial/java/annotations/basics.html). It describes the class as a Vue Component which has a template. 
+
+- `class Greet extends Vue` exposes the class members (properties and methods) to the template. For now, there are nothing here; more on this later. We also expose this class to other modules that require it within the app by `export`-ing it.
+
+Open `/client/js/components/index.ts`, modify the content into:
+
+```ts
+export * from './HelloWorld';
+export * from './Greet';
+```
+
+The above code re-exports the Greet module for other modules that imports the components index module, like the `Components` import in `vue-project.ts` file. Now open this file and register the newly-created Greet component:
+
+```ts
+Vue.component('greet', Components.Greet);
+```
+
+Now, add `<greet></greet>` to our `Index.cshtml`. If you refresh the page, you should see `Hello!` text.
+
+> Advanced topic: [components can be locally registered within another component to encapsulate / minimize visibility](https://vuejs.org/v2/guide/components.html#Local-Registration).
+
+## My First Component, Part 2
+
+Let us add more functionality to our new component. First, we'll pass down some values to the component using HTML attributes in the `Index.cshtml`:
+
+```html
+<greet name="Cynthia" v-bind:age="21" :is-male="false"></greet>
+```
+
+- `Cynthia` will be passed down as string parameter to the component. This is called **Literal** prop.
+
+- `21` will be passed down as number parameter to the component. This is called **Dynamic** prop, using `v-bind` syntax. Common newbie mistake is to pass down non-variable, non-string value without binding, which may cause programming errors!
+
+- `false` will also be passed down as boolean parameter to the component using Dynamic prop. `:` is a short-hand syntax for `v-bind`.
+
+Now modify our component declaration in `Greet.ts`:
+
+```ts
+@Component({
+    props: ['name', 'age', 'isMale'],
+    template: require('./Greet.html') as string
+})
+export class Greet extends Vue {
+    name: string;
+    age: number;
+    isMale: boolean;
+
+    getGender() {
+        return this.isMale ? 'male' : 'female';
+    }
+}
+```
+
+And create `Greet.html` next to it:
+
+```html
+<p>
+    Hello, {{name}}. You are {{age}} years-old {{getGender()}}!
+</p>
+```
+
+If done correctly, the page should display: **Hello, Cynthia. You are 21 years-old female!**
+
+- `props` string array values define the attributes to be passed into the component class as its property members. camelCase props will be converted into kebab-case HTML attribute.
+
+- Writing template in JS file would be a chore. Therefore, we can use [CommonJS module require syntax](https://nodejs.org/docs/latest/api/modules.html) to include a template file as a string. instapack will automatically compile and minify the required HTML template files.
+
+- Within the template, all component class members are exposed and can be accessed directly.
+
+> Advanced topic: [props can be validated and set default value](https://vuejs.org/v2/guide/components.html#Prop-Validation).
+
+## Reacting to Changes
+
+> TODO

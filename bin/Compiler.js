@@ -24,6 +24,7 @@ const Server_1 = require("./Server");
 const browserify = require("browserify");
 const tsify = require("tsify");
 const watchify = require("watchify");
+const envify = require("envify/custom");
 const Templatify_1 = require("./Templatify");
 const Aliasify_1 = require("./Aliasify");
 class Compiler {
@@ -118,6 +119,11 @@ class Compiler {
         if (Object.keys(this.settings.alias).length) {
             let aliasTransform = Aliasify_1.default(this.settings.alias);
             bundler = bundler.transform({ global: true }, aliasTransform);
+        }
+        if (this.flags.minify) {
+            bundler = bundler.transform({ global: true }, envify({
+                'NODE_ENV': 'production'
+            }));
         }
         let compileJs = () => {
             GulpLog_1.default('Compiling JS', chalk.cyan(jsEntry));

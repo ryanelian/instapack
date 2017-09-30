@@ -20,6 +20,7 @@ import { Settings, ConcatenationLookup } from './Settings';
 import * as browserify from 'browserify';
 import * as tsify from 'tsify';
 import * as watchify from 'watchify';
+import * as envify from 'envify/custom';
 import templatify from './Templatify';
 import aliasify from './Aliasify';
 
@@ -188,6 +189,14 @@ export class Compiler {
         if (Object.keys(this.settings.alias).length) {
             let aliasTransform = aliasify(this.settings.alias);
             bundler = (bundler as any).transform({ global: true }, aliasTransform);
+        }
+
+        if (this.flags.minify) {
+            // this is for Vue.js to reduce 20kb in minified production build.
+            // let's hope that other libraries also use NODE_ENV=production for this purpose...
+            bundler = (bundler as any).transform({ global: true }, envify({
+                'NODE_ENV': 'production'
+            }));
         }
 
         let compileJs = () => {

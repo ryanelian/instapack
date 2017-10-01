@@ -95,9 +95,7 @@ import * as Components from './components';
 Vue.component('hello', Components.HelloWorld);
 
 // bootstrap the Vue app from the root element <div id="app"></div>
-new Vue({
-    el: '#app'
-});
+new Vue().$mount('#app');
 ```
 
 Vue.js has been setup to bootstrap from a root element with HTML `id="app"`, which exists in our new `_Layout.cshtml` file.
@@ -167,10 +165,10 @@ Now, add `<greet></greet>` to our `Index.cshtml`. If you refresh the page, you s
 Let us add more functionality to our new component. First, we'll pass down some values to the component using HTML attributes in the `Index.cshtml`:
 
 ```html
-<greet name="Cynthia" v-bind:age="21" :is-male="false"></greet>
+<greet name="Jono" v-bind:age="21" :is-male="true"></greet>
 ```
 
-- `Cynthia` will be passed down as string parameter to the component. This is called **Literal** prop.
+- `Jono` will be passed down as string parameter to the component. This is called **Literal** prop.
 
 - `21` will be passed down as number parameter to the component. This is called **Dynamic** prop, using `v-bind` syntax. Common newbie mistake is to pass down non-variable, non-string value without binding, which may cause programming errors!
 
@@ -202,7 +200,7 @@ And create `Greet.html` next to it:
 </p>
 ```
 
-If done correctly, the page should display: **Hello, Cynthia. You are 21 years-old female!**
+If done correctly, the page should display: **Hello, Jono. You are 21 years-old male!**
 
 - `props` string array values define the attributes to be passed into the component class as its property members. camelCase props will be converted into kebab-case HTML attribute.
 
@@ -218,16 +216,16 @@ Unlike AngularJS Controllers, Vue.js is unable to automatically detect property 
 
 **However, this restriction is a blessing, not a curse**: it forces the developer to declare and initialize all reactive properties within the class, thus improving code readability and maintainability.
 
-Let us create new component `Todo.ts`:
+Let us create new component `ClickMe.ts`:
 
 ```ts
 import * as Vue from 'vue';
 import Component from 'vue-class-component';
 
 @Component({
-    template: require('./Todo.html') as string
+    template: require('./ClickMe.html') as string
 })
-export class Todo extends Vue {
+export class ClickMe extends Vue {
     count: number = 0;
 
     increment() {
@@ -254,7 +252,13 @@ export class Todo extends Vue {
 Do not forget to register that component in the `vue-project.ts`:
 
 ```ts
-Vue.component('todo', Components.Todo);
+Vue.component('click-me', Components.ClickMe);
+```
+
+Then try using the component in `index.cshtml`:
+
+```html
+<click-me></click-me>
 ```
 
 Because `count` was declared and initialized in the class, its value will be watched. Whenever the button is clicked, the UI will automatically update!
@@ -265,9 +269,125 @@ If you forgot to declare and initialize `count`, it will not be watched and vue 
 
 > Force re-render view by using `this.$forceUpdate()` from within the component class. That said, only use this as a last-resort technique!
 
-## Implementing a To-Do List
+## Developing a Simple To-Do List
 
-> TODO
+By now you should be more or less familiarized with the Vue.js project. Let's take it to the next level by creating a simple but functional to-do list using an assortment of language and framework features:
+
+**Todo.ts**
+
+```ts
+import * as Vue from 'vue';
+import Component from 'vue-class-component';
+import * as Noty from 'noty';
+
+interface TodoItem {
+    id: number,
+    text: string
+}
+
+let newItemId: number = 0;
+
+@Component({
+    template: require('./Todo.html') as string
+})
+export class Todo extends Vue {
+    items: TodoItem[] = [];
+    newItemText: string = '';
+
+    get hasItem(): boolean {
+        return Boolean(this.items[0]);
+    }
+
+    addNew() {
+        if (!this.newItemText) {
+            new Noty({
+                type: 'error',
+                text: 'New item text input is required!',
+                timeout: 5000
+            }).show();
+
+            return;
+        }
+
+        this.items.push({
+            id: newItemId,
+            text: this.newItemText
+        });
+
+        newItemId++;
+        this.newItemText = '';
+    }
+
+    remove(id: number) {
+        let item = this.items.filter(Q => Q.id == id)[0];
+
+        if (!item) {
+            return;
+        }
+
+        let index = this.items.indexOf(item);
+        this.items.splice(index, 1);
+    }
+}
+```
+
+**Todo.html**
+
+```html
+<div>
+    <form @submit.prevent="addNew()">
+        <div class="form-group">
+            <input v-model="newItemText" class="form-control" placeholder="Add new to-do list item" />
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+    </form>
+    <table class="table" v-if="hasItem">
+        <thead>
+            <tr>
+                <th>My to-do list</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr v-for="item in items" :key="item.id">
+                <td>{{ item.text }}</td>
+                <td>
+                    <button type="button" class="btn btn-danger btn-sm" @click="remove(item.id)">Remove</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <p class="text-muted" v-else>
+        Your to-do list is empty!
+    </p>
+</div>
+```
+
+- `interface TodoItem` is a fantastic way to declare our strongly-typed array object.
+
+    - The reason that we are not using a `class` but an `interface` is because that in JS, there are no such thing as a object-oriented class model. [In JS, a class is just a syntactic sugar over the function expression](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes).
+
+- `let newItemId` declares an incrementing Primary Key for our to-do list items.
+
+- `get hasItem()` is a [JS getter](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/get), similar to [C# getter](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/classes-and-structs/using-properties). In Vue.js world, this is known as a **computed property**, which value is derived from the other properties in the same class.
+
+- `addNew()` is called when the `<form>` is submitted, but prevents the default event / page reload by using the `.prevent` suffix.
+
+- `remove(id)` is called when the remove `<button>` in each row next to the to-do list item is clicked.
+
+- `v-model="newItemText"` binds the text input value to a property in the component class. This is known as **two-way data binding**.
+
+- Various tags are decorated using [Bootstrap 4](https://getbootstrap.com/docs/4.0/getting-started/introduction/) CSS classes, such as `btn btn-primary`, `form-control`, `form-group`, `table`, and `text-muted`.
+
+- Empty input validation error is done using a superior alerting library known as [Noty](https://ned.im/noty).
+
+- To-do list table is not displayed when empty by using `v-if` directive, but instead a empty list helper text by using `v-else`. 
+
+- To-do list items are rendered using `v-for` directive.
+
+    - `:key` must be used if the rendered element has a **unique superkey for improved performance**!
 
 ## Server-Side To-Do List API
 
@@ -284,3 +404,7 @@ If you forgot to declare and initialize `count`, it will not be watched and vue 
 ## Event Handlers
 
 > TODO 
+
+## State Management
+
+> TODO

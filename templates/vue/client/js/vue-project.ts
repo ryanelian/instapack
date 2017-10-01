@@ -6,6 +6,4 @@ import * as Components from './components';
 Vue.component('hello', Components.HelloWorld);
 
 // bootstrap the Vue app from the root element <div id="app"></div>
-new Vue({
-    el: '#app'
-});
+new Vue().$mount('#app');

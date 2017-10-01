@@ -71,6 +71,8 @@ In this arrangement, the style sheets will be loaded first, then the HTML body, 
 
 If using Visual Studio, open the project (by double clicking the `.csproj` file) then launch the app with CTRL + F5 (which, by the way, also recompiles on file changes). Otherwise, use `dotnet run` command.
 
+> Advanced topic: [Learn more about ASP.NET Core Razor Pages](https://docs.microsoft.com/en-us/aspnet/core/mvc/razor-pages/?tabs=visual-studio).
+
 ## Understanding Entry Points
 
 Open `index.ts`. This is our entry point / main file to the JS app. Notice that there are module imports in this file:
@@ -116,6 +118,8 @@ Now open `/Pages/Index.cshtml`. Replace the content with:
 
 Then use your web browser to view the app index page. It should display `2` as a heading. **This is caused by Vue.js compiling and evaluating the values inside the double curly braces.**
 
+> Advanced topic: [Learn more about Vue.js instance lifecycle](https://vuejs.org/v2/guide/instance.html).
+
 ## My First Component
 
 Component is a building block of a modern web app client. Component represents reusable code that may be invoked using standard HTML tag syntax. Component allows dividing a complex app into simpler and more maintainable parts.
@@ -158,7 +162,7 @@ Vue.component('greet', Components.Greet);
 
 Now, add `<greet></greet>` to our `Index.cshtml`. If you refresh the page, you should see `Hello!` text.
 
-> Advanced topic: [components can be locally registered within another component to encapsulate / minimize visibility](https://vuejs.org/v2/guide/components.html#Local-Registration).
+> Advanced topic: [Components can be registered locally within another component to encapsulate / minimize visibility](https://vuejs.org/v2/guide/components.html#Local-Registration).
 
 ## My First Component, Part 2
 
@@ -208,7 +212,7 @@ If done correctly, the page should display: **Hello, Jono. You are 21 years-old 
 
 - Within the template, all component class members are exposed and can be accessed directly.
 
-> Advanced topic: [props can be validated and set default value](https://vuejs.org/v2/guide/components.html#Prop-Validation).
+> Advanced topic: [Props can be validated and set default value](https://vuejs.org/v2/guide/components.html#Prop-Validation).
 
 ## Reacting to Changes
 
@@ -216,7 +220,9 @@ Unlike AngularJS Controllers, Vue.js is unable to automatically detect property 
 
 **However, this restriction is a blessing, not a curse**: it forces the developer to declare and initialize all reactive properties within the class, thus improving code readability and maintainability.
 
-Let us create new component `ClickMe.ts`:
+Let us create a new component:
+
+**ClickMe.ts**
 
 ```ts
 import * as Vue from 'vue';
@@ -233,6 +239,8 @@ export class ClickMe extends Vue {
     }
 }
 ```
+
+**ClickMe.html**
 
 ```html
 <div>
@@ -265,9 +273,9 @@ Because `count` was declared and initialized in the class, its value will be wat
 
 If you forgot to declare and initialize `count`, it will not be watched and vue will display a convenient warning in browser console: `[Vue warn]: Property or method "count" is not defined on the instance but referenced during render. Make sure to declare reactive data properties in the data option.`
 
-> Advanced topic: [Reactivity in Depth](https://vuejs.org/v2/guide/reactivity.html)
-
 > Force re-render view by using `this.$forceUpdate()` from within the component class. That said, only use this as a last-resort technique!
+
+> Advanced topic: Read [Reactivity in Depth](https://vuejs.org/v2/guide/reactivity.html).
 
 ## Developing a Simple To-Do List
 
@@ -388,6 +396,8 @@ export class Todo extends Vue {
 - To-do list items are rendered using `v-for` directive.
 
     - `:key` must be used if the rendered element has a **unique superkey for improved performance**!
+
+> Advanced topic: Read the official [List Rendering](https://vuejs.org/v2/guide/list.html) and [Conditional Rendering](https://vuejs.org/v2/guide/conditional.html) guides.
 
 ## Server-Side To-Do List API
 

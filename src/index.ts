@@ -62,7 +62,7 @@ export = class instapack {
         });
         let scaffold = new Scaffold();
 
-        if (compiler.needPackageRestore()) {
+        if (compiler.needPackageRestore) {
             scaffold.restorePackages();
         }
         compiler.build(taskName);

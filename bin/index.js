@@ -28,7 +28,7 @@ module.exports = class instapack {
             serverPort: serverPort
         });
         let scaffold = new Scaffold_1.Scaffold();
-        if (compiler.needPackageRestore()) {
+        if (compiler.needPackageRestore) {
             scaffold.restorePackages();
         }
         compiler.build(taskName);

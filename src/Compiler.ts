@@ -20,9 +20,9 @@ import { Settings, ConcatenationLookup } from './Settings';
 import * as browserify from 'browserify';
 import * as tsify from 'tsify';
 import * as watchify from 'watchify';
-import * as envify from 'envify/custom';
+import envify = require('envify/custom');
 import templatify from './Templatify';
-import aliasify from './Aliasify';
+import requireify from './Requireify';
 
 /**
  * Defines build flags to be used by Compiler class.
@@ -162,6 +162,13 @@ export class Compiler {
         }
     }
 
+    get useRequireify(){
+        let a = Object.keys(this.settings.alias).length;
+        let b = Object.keys(this.settings.externals).length;
+
+        return Boolean(a) || Boolean(b);
+    }
+
     /**
      * Registers a JavaScript compilation task using TypeScript piped into Browserify.
      */
@@ -186,9 +193,15 @@ export class Compiler {
 
         let bundler = browserify(browserifyOptions).transform(templatify).add(jsEntry).plugin(tsify);
 
-        if (Object.keys(this.settings.alias).length) {
-            let aliasTransform = aliasify(this.settings.alias);
-            bundler = (bundler as any).transform({ global: true }, aliasTransform);
+        if (this.useRequireify) {
+            // this is required because Vue.js package.json "main": "dist/vue.runtime.common.js"
+            // that thing is runtime-only / cannot compile HTML templates.
+            // so the developer would either need to use one of these instapack features:
+            // 1. "alias": {"vue": "vue/dist/vue.common"}
+            // 2. "externals": {"vue": "Vue"} then add from CDN:
+            // <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.4.4/vue.min.js"></script>
+            let requireTransformer = requireify(this.settings.alias, this.settings.externals);
+            bundler = (bundler as any).transform({ global: true }, requireTransformer);
         }
 
         if (this.flags.minify) {
@@ -286,7 +299,7 @@ export class Compiler {
     /**
      * Returns true when package.json exists in project root folder but node_modules folder is missing.
      */
-    needPackageRestore() {
+    get needPackageRestore() {
         let hasNodeModules = fse.existsSync(this.settings.npmFolder);
         let hasPackageJson = fse.existsSync(this.settings.packageJson);
 

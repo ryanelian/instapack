@@ -26,7 +26,7 @@ const tsify = require("tsify");
 const watchify = require("watchify");
 const envify = require("envify/custom");
 const Templatify_1 = require("./Templatify");
-const Aliasify_1 = require("./Aliasify");
+const Requireify_1 = require("./Requireify");
 class Compiler {
     constructor(settings, flags) {
         this.unfuckBrowserifySourcePaths = (sourcePath, file) => {
@@ -100,6 +100,11 @@ class Compiler {
         let run = this.tasks.task(taskName);
         run(error => { });
     }
+    get useRequireify() {
+        let a = Object.keys(this.settings.alias).length;
+        let b = Object.keys(this.settings.externals).length;
+        return Boolean(a) || Boolean(b);
+    }
     registerJsTask() {
         let jsEntry = this.settings.jsEntry;
         if (!fse.existsSync(jsEntry)) {
@@ -116,9 +121,9 @@ class Compiler {
             browserifyOptions.packageCache = {};
         }
         let bundler = browserify(browserifyOptions).transform(Templatify_1.default).add(jsEntry).plugin(tsify);
-        if (Object.keys(this.settings.alias).length) {
-            let aliasTransform = Aliasify_1.default(this.settings.alias);
-            bundler = bundler.transform({ global: true }, aliasTransform);
+        if (this.useRequireify) {
+            let requireTransformer = Requireify_1.default(this.settings.alias, this.settings.externals);
+            bundler = bundler.transform({ global: true }, requireTransformer);
         }
         if (this.flags.minify) {
             bundler = bundler.transform({ global: true }, envify({
@@ -189,7 +194,7 @@ class Compiler {
             }
         });
     }
-    needPackageRestore() {
+    get needPackageRestore() {
         let hasNodeModules = fse.existsSync(this.settings.npmFolder);
         let hasPackageJson = fse.existsSync(this.settings.packageJson);
         let restore = hasPackageJson && !hasNodeModules;

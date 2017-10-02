@@ -11,7 +11,7 @@ export interface ConcatenationLookup {
 /**
  * Dictionary<string, string>
  */
-export interface ModuleAliases {
+export interface ModuleOverrides {
     [key: string]: string
 }
 
@@ -40,10 +40,15 @@ export class Settings {
     readonly concat: ConcatenationLookup;
 
     /**
-     * Overrides module imports, including sub-dependencies. For example: {'vue': 'vue/dist/vue.common'}
+     * Replaces dependency imports to another dependency. For example: {'vue': 'vue/dist/vue.common'}
      */
-    readonly alias: ModuleAliases;
-    
+    readonly alias: ModuleOverrides;
+
+    /**
+     * Rewrites dependency imports to a window object. For example: {'jquery': '$'}
+     */
+    readonly externals: ModuleOverrides;
+
     /**
      * Constructs a new instance of Settings.
      * @param root 
@@ -51,12 +56,14 @@ export class Settings {
      * @param output 
      * @param concat 
      */
-    constructor(root: string, input: string, output: string, concat: ConcatenationLookup, alias: ModuleAliases) {
+    constructor(root: string, input: string, output: string,
+        concat: ConcatenationLookup, alias: ModuleOverrides, externals: ModuleOverrides) {
         this.root = root || process.cwd();
         this.input = input || 'client';
         this.output = output || 'wwwroot';
         this.concat = concat || {};
         this.alias = alias || {};
+        this.externals = externals || {};
     }
 
     /**
@@ -169,6 +176,6 @@ export class Settings {
             parse = {};
         }
 
-        return new Settings(folder, parse.input, parse.output, parse.concat, parse.alias);
+        return new Settings(folder, parse.input, parse.output, parse.concat, parse.alias, parse.externals);
     }
 }

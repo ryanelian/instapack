@@ -6,15 +6,15 @@ const GulpLog_1 = require("./GulpLog");
 function Requireify(alias, externals) {
     let replicant = {};
     for (let key in alias) {
-        let trueKey = key.toLowerCase();
-        replicant[trueKey] = 'require("' + alias[key] + '")';
+        let realKey = key.toLowerCase();
+        replicant[realKey] = 'require("' + alias[key] + '")';
     }
     for (let key in externals) {
-        let trueKey = key.toLowerCase();
-        if (replicant[trueKey]) {
-            GulpLog_1.default(chalk.red('WARNING'), 'module import transform for', chalk.blue(trueKey), 'was defined for both', chalk.yellow('alias'), 'and', chalk.yellow('externals'));
+        let realKey = key.toLowerCase();
+        if (replicant[realKey]) {
+            GulpLog_1.default(chalk.red('WARNING'), 'module import transform for', chalk.blue(realKey), 'was defined for both', chalk.yellow('alias'), 'and', chalk.yellow('externals'));
         }
-        replicant[trueKey] = 'window["' + externals[key] + '"]';
+        replicant[realKey] = 'window["' + externals[key] + '"]';
     }
     return tools.makeRequireTransform('requireify', function (args, context, cb) {
         let key = args[0];

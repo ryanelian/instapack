@@ -12,19 +12,19 @@ export default function Requireify(alias: ModuleOverrides, externals: ModuleOver
     let replicant = {};
 
     for (let key in alias) {
-        let trueKey = key.toLowerCase();
-        replicant[trueKey] = 'require("' + alias[key] + '")';
+        let realKey = key.toLowerCase();
+        replicant[realKey] = 'require("' + alias[key] + '")';
     }
 
     for (let key in externals) {
-        let trueKey = key.toLowerCase();
+        let realKey = key.toLowerCase();
 
-        if (replicant[trueKey]) {
-            glog(chalk.red('WARNING'), 'module import transform for', chalk.blue(trueKey),
+        if (replicant[realKey]) {
+            glog(chalk.red('WARNING'), 'module import transform for', chalk.blue(realKey),
                 'was defined for both', chalk.yellow('alias'), 'and', chalk.yellow('externals'));
         }
 
-        replicant[trueKey] = 'window["' + externals[key] + '"]';
+        replicant[realKey] = 'window["' + externals[key] + '"]';
     }
 
     // console.log(replicant);

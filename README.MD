@@ -105,9 +105,9 @@ Internally, instapack uses the following modules:
 
 - [node-sass](https://github.com/sass/node-sass) as the compiler service, syntax checker, and minifier for the CSS language. It is also configured to enable `@import` from `node_modules`.
 
-- [Browserify](https://github.com/substack/node-browserify) for merging the JavaScript output modules together.
+- [Browserify](https://github.com/substack/node-browserify) for bundling the compiled modules.
 
-- [UglifyJS](https://github.com/mishoo/UglifyJS2) for minifying the resulting JavaScript bundle.
+- [UglifyJS](https://github.com/mishoo/UglifyJS2) for minifying the resulting bundle.
 
 - [PostCSS Autoprefixer](https://github.com/postcss/autoprefixer) for applying CSS vendor-prefixes automatically.
 
@@ -137,7 +137,7 @@ If no template parameter is provided, `vue` is chosen.
 
 Performs compilation against selected project type. Available projects: `all`, `js`, `css` and `concat`. If no project parameter is provided, `all` is chosen.
 
-`require(...)` against `.html` file will cause the said file to be minified and then stringified. This is handy when working with HTML-based templates for AngularJS and Mustache / Handlebars.
+`require(...)` against `.html` file will cause the said file to be minified and then stringified. This is handy when working with HTML-based templates for Vue.js, AngularJS, and Mustache / Handlebars.
 
 In addition, build flags are available:
 
@@ -194,7 +194,33 @@ instapack puts configuration inside `package.json` to reduce project files clutt
 
 - `instapack:output` allows setting the output folder name. By default, it is set to `wwwroot`.
 
-- `instapack:alias` allows overriding `require` calls from all files, including dependencies. This is needed because default Vue.js package main file ships with only runtime and not the HTML template compiler (`browser` field does not override `require` calls for dependencies).
+- `instapack:alias` allows overriding module `import` calls from all files, including sub-dependencies. This is needed because default Vue.js package main file ships with only runtime and not the HTML template compiler.
+
+- `instapack:externals` allows rewriting module `import` calls from all files, including sub-dependencies, to globally exposed objects via `window` object. For example:
+
+```json
+{
+  "instapack": {
+    "externals": {
+      "vue": "Vue"
+    }
+  }
+}
+```
+
+Converts this:
+
+```ts
+import * as Vue from 'vue'
+```
+
+into this:
+
+```ts
+let Vue = window["Vue"];
+```
+
+> This feature allows usage of CDN-hosted scripts or shimming older libraries that do not support module systems!
 
 - `instapack:concat` allows packing browser libraries to be consumed directly from `<script src="...">` rather than as a module. The file names will be resolved node-style (but **NOT** their contents), which allows concatenating packages downloaded from `npm` to be bundled, minified, and then placed into the output JS folder. For example: (produces `vendor.js` bundle)
 
@@ -215,9 +241,9 @@ instapack puts configuration inside `package.json` to reduce project files clutt
 }
 ```
 
-> Use concatenation for libraries that cannot be imported / do not need to be imported (for example, jQuery plugins). This hybrid approach allows great compatibility with older JavaScript libraries, while enjoying the rich development experience using TypeScript.
+> Use concatenation for libraries that cannot be imported / do not need to be imported (for example, jQuery plugins). This hybrid approach allows great compatibility with older libraries, while enjoying the rich development experience using TypeScript.
 
-> For consuming the libraries within the application code, load them before `bundle.js`, then reference the library objects from the globally exposed variables via window object. (e.g. access jQuery using `window['$']`)
+> For consuming the libraries within the application code, load them before `bundle.js`, then reference the library objects from the `window` object (e.g. access jQuery using `window['$']`) or by using the `externals` module definitions!
 
 ## Release Cadence
 

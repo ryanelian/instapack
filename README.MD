@@ -208,19 +208,23 @@ instapack puts configuration inside `package.json` to reduce project files clutt
 }
 ```
 
-Converts this:
+converts this...
 
 ```ts
 import * as Vue from 'vue'
 ```
 
-into this:
+into this...
 
 ```ts
 let Vue = window["Vue"];
 ```
 
-> This feature allows usage of CDN-hosted scripts or shimming older libraries that do not support module systems!
+so that you can use this!
+
+```html
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.4.4/vue.min.js"></script>
+```
 
 - `instapack:concat` allows packing browser libraries to be consumed directly from `<script src="...">` rather than as a module. The file names will be resolved node-style (but **NOT** their contents), which allows concatenating packages downloaded from `npm` to be bundled, minified, and then placed into the output JS folder. For example: (produces `vendor.js` bundle)
 
@@ -243,7 +247,7 @@ let Vue = window["Vue"];
 
 > Use concatenation for libraries that cannot be imported / do not need to be imported (for example, jQuery plugins). This hybrid approach allows great compatibility with older libraries, while enjoying the rich development experience using TypeScript.
 
-> For consuming the libraries within the application code, load them before `bundle.js`, then reference the library objects from the `window` object (e.g. access jQuery using `window['$']`) or by using the `externals` module definitions!
+> For consuming the libraries within the TypeScript app code, load them before `bundle.js` then reference the library objects from the `window` object (e.g. access jQuery using `window['$']`) or use the `externals` module definitions!
 
 ## Release Cadence
 

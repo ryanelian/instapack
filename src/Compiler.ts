@@ -195,8 +195,8 @@ export class Compiler {
 
         if (this.useRequireify) {
             // this is required because Vue.js package.json "main": "dist/vue.runtime.common.js"
-            // that thing is runtime-only / cannot compile HTML templates.
-            // so the developer would either need to use one of these instapack features:
+            // that thing is runtime-only / cannot compile HTML templates...
+            // so the developer would either need to use one of these features:
             // 1. "alias": {"vue": "vue/dist/vue.common"}
             // 2. "externals": {"vue": "Vue"} then add from CDN:
             // <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.4.4/vue.min.js"></script>

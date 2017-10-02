@@ -30,8 +30,12 @@ export default function Requireify(alias: ModuleOverrides, externals: ModuleOver
     // console.log(replicant);
 
     return tools.makeRequireTransform('requireify', function (args, context, cb) {
-        let key = args[0].toLowerCase() as string;
-        let value = replicant[key];
+        let key = args[0] as string;
+        if (!key) {
+            return cb(); // error trap
+        }
+
+        let value = replicant[key.toLowerCase()];
         // console.log(key + ' ' + value);
         if (value) {
             return cb(null, value);

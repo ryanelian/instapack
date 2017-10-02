@@ -17,8 +17,11 @@ function Requireify(alias, externals) {
         replicant[trueKey] = 'window["' + externals[key] + '"]';
     }
     return tools.makeRequireTransform('requireify', function (args, context, cb) {
-        let key = args[0].toLowerCase();
-        let value = replicant[key];
+        let key = args[0];
+        if (!key) {
+            return cb();
+        }
+        let value = replicant[key.toLowerCase()];
         if (value) {
             return cb(null, value);
         }

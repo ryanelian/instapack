@@ -7,7 +7,7 @@
     "concat": {}
   },
   "dependencies": {
-    "@types/node": "^8.0.30",
+    "@types/node": "^8.0.31",
     "es6-promise": "^4.1.1",
     "tslib": "^1.7.1"
   }

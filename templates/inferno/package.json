@@ -7,19 +7,21 @@
     "concat": {}
   },
   "dependencies": {
-    "@types/node": "^8.0.30",
+    "@types/node": "^8.0.31",
     "@types/urijs": "^1.15.34",
     "axios": "^0.16.2",
     "bootstrap": "4.0.0-beta",
-    "bootstrap.native": "^2.0.15",
+    "bootstrap.native": "^2.0.16",
     "es6-promise": "^4.1.1",
     "font-awesome": "^4.7.0",
     "inferno": "^3.9.0",
     "inferno-component": "^3.9.0",
     "inferno-create-element": "^3.9.0",
+    "inferno-redux": "^3.9.0",
     "moment": "^2.18.1",
     "noty": "^3.1.3",
+    "redux": "^3.7.2",
     "tslib": "^1.7.1",
-    "urijs": "^1.18.12"
+    "urijs": "^1.19.0"
   }
 }

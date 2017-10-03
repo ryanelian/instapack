@@ -15,7 +15,7 @@
     "aspnet-validation": "^0.0.1",
     "axios": "^0.16.2",
     "bootstrap": "4.0.0-beta",
-    "bootstrap.native": "^2.0.15",
+    "bootstrap.native": "^2.0.16",
     "es6-promise": "^4.1.1",
     "font-awesome": "^4.7.0",
     "moment": "^2.18.1",

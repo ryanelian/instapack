@@ -8,13 +8,7 @@
 
 ## Install
 
-`yarn global add instapack`
-
-or
-
 `npm install -g instapack`
-
-But seriously, please use Yarn from now on. [Check it out](https://yarnpkg.com/en/).
 
 ## Quick Start Guide
 
@@ -41,7 +35,7 @@ Currently supported Node.js is [latest version 6 LTS](https://nodejs.org/en/down
 
 instapack works with Node.js version 8, which is **really fast**. That said, it will be supported once LTS build is released in [October 2017](https://github.com/nodejs/LTS).
 
-When using Visual Studio 2017 Update 2 or above, [install TypeScript 2.5.2 extension](http://download.microsoft.com/download/7/0/A/70A6AC0E-8934-4396-A43E-445059F430EA/2.5.2-TS-release-dev14update3-20170830.5/TypeScript_SDK.exe) from the [release announcement page](https://blogs.msdn.microsoft.com/typescript/2017/08/31/announcing-typescript-2-5).
+When using Visual Studio 2017 (Update 2 or above), install [the latest TypeScript SDK for Visual Studio 2017](https://www.microsoft.com/en-us/download/details.aspx?id=55258).
 
 ## Features
 
@@ -89,7 +83,7 @@ instapack is developed as an answer those problems and more!
 
 ## How does it work?
 
-Out of the box, the following files will be used as the entry points:
+Out of the box, these files will be used as the entry points:
 
 - `client/js/index.ts`, compiled to `wwwroot/js/bundle.js`
 
@@ -97,7 +91,7 @@ Out of the box, the following files will be used as the entry points:
 
 - Concatenate files listed in `package.json`. Read more below.
 
-Internally, instapack uses the following modules:
+Internally, instapack uses these modules:
 
 - [undertaker](https://github.com/gulpjs/undertaker) and [vinyl](https://github.com/gulpjs/vinyl) modules from gulp, as the task orchestrator and build engine.
 
@@ -172,20 +166,21 @@ instapack puts configuration inside `package.json` to reduce project files clutt
     }
   },
   "dependencies": {
-    "@types/node": "^8.0.30",
+    "@types/node": "^8.0.31",
     "@types/urijs": "^1.15.34",
     "aspnet-validation": "^0.0.1",
     "axios": "^0.16.2",
     "bootstrap": "4.0.0-beta",
-    "bootstrap.native": "^2.0.15",
+    "bootstrap.native": "^2.0.16",
     "es6-promise": "^4.1.1",
     "font-awesome": "^4.7.0",
     "moment": "^2.18.1",
     "noty": "^3.1.3",
     "tslib": "^1.7.1",
-    "urijs": "^1.18.12",
+    "urijs": "^1.19.0",
     "vue": "^2.4.4",
-    "vue-class-component": "^5.0.2"
+    "vue-class-component": "^5.0.2",
+    "vuex": "^2.4.1"
   }
 }
 ```
@@ -259,18 +254,17 @@ New non-breaking features will increment the minor version. Breaking changes wil
 
 Occasionally, beta builds will be published (`instapack@beta`) for showcasing the bleeding edge version of the tool.
 
-Alternatively, you may use the nightly build directly from the source code repository:
+Alternatively, you may build directly from the source code repository:
 
 ```powershell
-yarn global remove instapack  # `yarn link` does not work...
 npm install -g instapack
 
 git clone https://github.com/ryanelian/instapack.git
 cd instapack
 
-yarn            # package restore... You can also use `npm install` here.
+npm install
 npm link        # symlink global to local package for development
-npm run build   # alternatively, `yarn global add typescript` then `tsc`
+npm run build   # alternatively, `npm install -g typescript` then `tsc`
 ipack --help
 ```
 

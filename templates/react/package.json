@@ -7,10 +7,10 @@
     "concat": {}
   },
   "dependencies": {
-    "@types/node": "^8.0.31",
-    "@types/react": "^16.0.7",
-    "@types/react-dom": "^15.5.5",
-    "@types/react-redux": "^5.0.9",
+    "@types/node": "^8.0.33",
+    "@types/react": "^16.0.10",
+    "@types/react-dom": "^16.0.1",
+    "@types/react-redux": "^5.0.10",
     "@types/urijs": "^1.15.34",
     "axios": "^0.16.2",
     "es6-promise": "^4.1.1",

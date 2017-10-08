@@ -6,7 +6,7 @@
 
 For this tutorial, we will be using ASP.NET Core MVC 2.0 to serve as the web server of the app. Install [.NET Core SDK 2.0](https://www.microsoft.com/net/download/core) 
 
-instapack requires [Node.js LTS or 8](https://nodejs.org/en/download) to function. Install if you have not done so, then using the command line, type: `npm install -g instapack`
+instapack requires [the latest Node.js LTS](https://nodejs.org/en/download) to function. Install if you have not done so; using the command line, type: `npm install -g instapack`
 
 Verify instapack has been installed successfully by typing `ipack --version`.
 
@@ -71,7 +71,7 @@ In this arrangement, the style sheets will be loaded first, then the HTML body, 
 
 If using Visual Studio, open the project (by double clicking the `.csproj` file) then launch the app with CTRL + F5 (which, by the way, also recompiles on file changes). Otherwise, use `dotnet run` command.
 
-> Advanced topic: [Learn more about ASP.NET Core Razor Pages](https://docs.microsoft.com/en-us/aspnet/core/mvc/razor-pages/?tabs=visual-studio).
+> Advanced topic: [`dotnet watch run` also recompiles on file changes](https://github.com/aspnet/DotNetTools/tree/dev/src/Microsoft.DotNet.Watcher.Tools)!
 
 ## Understanding Entry Points
 
@@ -145,7 +145,11 @@ Let us digest the above code slowly:
 
 - `@Component` is a [ECMAScript decorator](https://tc39.github.io/proposal-decorators/), akin to [C# class attributes](https://docs.microsoft.com/en-us/dotnet/standard/attributes/writing-custom-attributes) or [Java class annotations](https://docs.oracle.com/javase/tutorial/java/annotations/basics.html). It describes the class as a Vue Component which has a template. 
 
-- `class Greet extends Vue` exposes the class members (properties and methods) to the template. For now, there are nothing here; more on this later. We also expose this class to other modules that require it within the app by `export`-ing it.
+- `class Greet extends Vue` exposes the class members (properties and methods) to the template.
+
+    - In AngularJS world, this is treated as a Controller. For now, there are nothing here; more on this later.
+    
+    - We also expose this class to other modules within the app by `export`-ing it.
 
 Open `/client/js/components/index.ts`, modify the content into:
 
@@ -174,7 +178,11 @@ Let us add more functionality to our new component. First, we'll pass down some 
 
 - `Jono` will be passed down as string parameter to the component. This is called **Literal** prop.
 
-- `21` will be passed down as number parameter to the component. This is called **Dynamic** prop, using `v-bind` syntax. Common newbie mistake is to pass down non-variable, non-string value without binding, which may cause programming errors!
+- `21` will be passed down as number parameter to the component. This is called **Dynamic** prop, using `v-bind` syntax.
+
+    - Common newbie mistake is to pass down non-string value without binding, which may cause programming errors!
+
+    - Use this feature when you need to pass down a variable from parent component to child component. Whenever the data change in the parent component, the change will also propagate down to the child component. This phenomenon is called **one-way data binding**.
 
 - `false` will also be passed down as boolean parameter to the component using Dynamic prop. `:` is a short-hand syntax for `v-bind`.
 
@@ -373,19 +381,25 @@ export class Todo extends Vue {
 </div>
 ```
 
-- `interface TodoItem` is a fantastic way to declare our strongly-typed array object.
+- `interface TodoItem` is a fantastic way to declare our strongly-typed `items` array.
 
     - The reason that we are not using a `class` but an `interface` is because that in JS, there are no such thing as a object-oriented class model. [In JS, a class is just a syntactic sugar over the function expression](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes).
 
 - `let newItemId` declares an incrementing Primary Key for our to-do list items.
 
-- `get hasItem()` is a [JS getter](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/get), similar to [C# getter](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/classes-and-structs/using-properties). In Vue.js world, this is known as a **computed property**, which value is derived from the other properties in the same class.
+- `get hasItem()` is a [JS getter](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/get), similar to [C# getter](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/classes-and-structs/using-properties).
+
+    - A getter is a method which can be accessed just like a class attribute.
+
+    - In Vue.js world, this is known as a **computed property**, which value is derived from the other properties in the same class.
 
 - `addNew()` is called when the `<form>` is submitted, but prevents the default event / page reload by using the `.prevent` suffix.
 
 - `remove(id)` is called when the remove `<button>` in each row next to the to-do list item is clicked.
 
-- `v-model="newItemText"` binds the text input value to a property in the component class. This is known as **two-way data binding**.
+- `v-model="newItemText"` binds the text input value to a property in the component class.
+
+    - This phenomenon is known as **two-way data binding**.
 
 - Various tags are decorated using [Bootstrap 4](https://getbootstrap.com/docs/4.0/getting-started/introduction/) CSS classes, such as `btn btn-primary`, `form-control`, `form-group`, `table`, and `text-muted`.
 
@@ -399,7 +413,119 @@ export class Todo extends Vue {
 
 > Advanced topic: Read the official [List Rendering](https://vuejs.org/v2/guide/list.html) and [Conditional Rendering](https://vuejs.org/v2/guide/conditional.html) guides.
 
-## Server-Side To-Do List API
+## Developing a Simple To-Do List, Part 2
+
+Let's emulate a real-world scenario where the to-do list is being stored in the server. The client will fetch and manipulate the data using [JSON Web Service](https://en.wikipedia.org/wiki/JSON).
+
+### Server-Side API
+
+First, let's create a singleton service to store the persistent data:
+
+**Services/TodoService.cs**
+
+```cs
+public class TodoItem
+{
+    public int Id { set; get; }
+
+    public string Text { set; get; }
+}
+
+public class TodoService
+{
+    public List<TodoItem> Items { get; private set; } = new List<TodoItem>();
+
+    private int AutoIncrement = 0;
+
+    public void Add(string text)
+    {
+        AutoIncrement++;
+        Items.Add(new TodoItem
+        {
+            Id = AutoIncrement,
+            Text = text
+        });
+    }
+
+    public bool Remove(int id)
+    {
+        var item = Items.Where(Q => Q.Id == id).FirstOrDefault();
+        if (item == null)
+        {
+            return false;
+        }
+        Items.Remove(item);
+        return true;
+    }
+}
+```
+
+Register the service class in `ConfigureServices` method in **Startup.cs**:
+
+```cs
+services.AddSingleton<TodoService>();
+```
+
+> **CAUTION:** You should not do this in a real application; our `TodoService` is not thread-safe and [ACID](https://en.wikipedia.org/wiki/ACID). Use database to persist your data and let your services be transient / stateless!
+
+Using ASP.NET Core MVC, we can develop our [REST API](https://en.wikipedia.org/wiki/Representational_state_transfer) using various [HTTP methods](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods):
+
+```cs
+[Produces("application/json")]
+[Route("api/v1/todo")]
+public class TodoApiController : Controller
+{
+    private readonly TodoService Todo;
+
+    public TodoApiController(TodoService todo)
+    {
+        this.Todo = todo;
+    }
+
+    [HttpGet]
+    public IActionResult Get()
+    {
+        return Ok(Todo.Items);
+    }
+
+    [HttpPost]
+    public IActionResult Post([FromBody]string value)
+    {
+        if (string.IsNullOrEmpty(value))
+        {
+            return BadRequest("Todo item text must not be empty!");
+        }
+
+        Todo.Add(value);
+        return Ok("OK");
+    }
+    
+    [HttpDelete("{id}")]
+    public IActionResult Delete(int id)
+    {
+        var success = Todo.Remove(id);
+
+        if (success == false)
+        {
+            return NotFound("Item ID Not Found!");
+        }
+
+        return Ok("Success!");
+    }
+}
+```
+
+- It is always a good idea to version your Web APIs for backward-compatibility.
+
+- `TodoService` is being [dependency-injected](https://en.wikipedia.org/wiki/Dependency_injection) through the controller class constructor.
+
+    - This allows separation of business logic from the actual HTTP endpoints (*Thin Controllers, Fat Services*). This way, when you need to modify the business logic, you can minimize changes to the controller classes!
+
+    - Let controllers be responsible for parsing incoming requests, enforcing validations (and authorizations), calling service methods, and returning appropriate responses.
+
+> Advanced topic: Read [the official ASP.NET Core Web API guide](https://docs.microsoft.com/en-us/aspnet/core/tutorials/first-web-api).
+
+### Client-Side Component
 
 > TODO
 
@@ -415,6 +541,6 @@ export class Todo extends Vue {
 
 > TODO 
 
-## State Management
+## Managing States
 
 > TODO

@@ -1,5 +1,6 @@
 ﻿import * as ES6Promise from 'es6-promise';
-import 'bootstrap.native/dist/bootstrap-native-v4';
 import './inferno-project';
+import 'foundation-sites';
 
 ES6Promise.polyfill();
+$(document).foundation();

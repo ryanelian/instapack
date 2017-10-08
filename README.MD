@@ -14,8 +14,8 @@
 
 ```powershell
 cd E:\VS\MyWebApp
-ipack new
-ipack
+ipack new empty
+ipack -dw
 ```
 
 [Programmable API](https://github.com/ryanelian/instapack/blob/master/src/index.ts) is also provided if you wish to integrate instapack into your very own build script:
@@ -31,9 +31,7 @@ Practical guides can be read in [books](https://github.com/ryanelian/instapack/t
 
 ## System Requirements
 
-Currently supported Node.js is [latest version 6 LTS](https://nodejs.org/en/download/).
-
-instapack works with Node.js version 8, which is **really fast**. That said, it will be supported once LTS build is released in [October 2017](https://github.com/nodejs/LTS).
+Currently supported Node.js is [the latest LTS version](https://nodejs.org/en/download/).
 
 When using Visual Studio 2017 (Update 2 or above), install [the latest TypeScript SDK for Visual Studio 2017](https://www.microsoft.com/en-us/download/details.aspx?id=55258).
 
@@ -119,7 +117,7 @@ Scaffolds a new instapack project into your existing application from where the 
 
 - `react` when you want to develop a web app with React and Semantic UI.
 
-- `inferno` when you want to develop a web app with Inferno and Bootstrap 4.
+- `inferno` when you want to develop a web app with Inferno and Zurb Foundation.
 
 - `angular-bootstrap` when you want to develop a web app with AngularJS (1.X) and Bootstrap 3 (includes ASP.NET Core MVC validation).
 

@@ -1,6 +1,7 @@
 import * as minifier from 'html-minifier';
 import * as through2 from 'through2';
 import * as path from 'path';
+import * as VueCompiler from 'vue-template-compiler';
 
 let minifierOptions = {
     caseSensitive: false,
@@ -33,37 +34,62 @@ let minifierOptions = {
     useShortDoctype: false
 };
 
-let minifyExt = new Set<string>();
-minifyExt.add('.htm');
-minifyExt.add('.html');
+let exts = new Set<string>();
+exts.add('.htm');
+exts.add('.html');
+//exts.add('.txt');
+//exts.add('.xht');
+exts.add('.xhtm');
+exts.add('.xhtml');
+exts.add('.tpl');
 
-let otherExt = new Set<string>();
-otherExt.add('.txt');
+export interface TemplatifyOptions {
+    mode: string
+}
 
 /**
  * A Browserify Transform for importing a non-JS file content as a string using CommonJS module.
  * @param file 
  * @param options 
  */
-export default function Templatify(file: string) {
+export default function Templatify(file: string, options: TemplatifyOptions) {
     return through2(function (buffer: Buffer, encoding, next) {
         let ext = path.extname(file).toLowerCase();
 
-        let shouldMinify = minifyExt.has(ext);
-        let isTemplate = shouldMinify || otherExt.has(ext);
-
+        let isTemplate = exts.has(ext);
         if (!isTemplate) {
             return next(null, buffer);
         }
 
         let template = buffer.toString('utf8');
+        template = minifier.minify(template, minifierOptions).trim();
 
-        if (shouldMinify) {
-            template = minifier.minify(template, minifierOptions).trim();
+        let error: string = '';
+
+        switch (options.mode) {
+            case 'vue': {
+                let vueResult = VueCompiler.compile(template);
+                let error = vueResult.errors[0];
+                if (!error) {
+                    template = 'function(){'+ vueResult.render + '}';
+                }
+                break;
+            }
+            case 'string': {
+                template = JSON.stringify(template);
+                break;
+            }
+            default: {
+                error = 'Unknown templatify compilation mode!';
+            }
         }
 
-        template = 'module.exports = ' + JSON.stringify(template) + ';\n';
-        //console.log("Templatify > " + file + "\n" + template);
+        if (error) {
+            return next(Error(error));
+        }
+
+        template = 'module.exports = ' + template;
+        // console.log("Templatify > " + file + "\n" + template);
         return next(null, template);
     });
 }

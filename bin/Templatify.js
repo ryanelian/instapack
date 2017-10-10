@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const minifier = require("html-minifier");
 const through2 = require("through2");
 const path = require("path");
+const VueCompiler = require("vue-template-compiler");
 let minifierOptions = {
     caseSensitive: false,
     collapseBooleanAttributes: true,
@@ -33,24 +34,43 @@ let minifierOptions = {
     trimCustomFragments: false,
     useShortDoctype: false
 };
-let minifyExt = new Set();
-minifyExt.add('.htm');
-minifyExt.add('.html');
-let otherExt = new Set();
-otherExt.add('.txt');
-function Templatify(file) {
+let exts = new Set();
+exts.add('.htm');
+exts.add('.html');
+exts.add('.xhtm');
+exts.add('.xhtml');
+exts.add('.tpl');
+function Templatify(file, options) {
     return through2(function (buffer, encoding, next) {
         let ext = path.extname(file).toLowerCase();
-        let shouldMinify = minifyExt.has(ext);
-        let isTemplate = shouldMinify || otherExt.has(ext);
+        let isTemplate = exts.has(ext);
         if (!isTemplate) {
             return next(null, buffer);
         }
         let template = buffer.toString('utf8');
-        if (shouldMinify) {
-            template = minifier.minify(template, minifierOptions).trim();
+        template = minifier.minify(template, minifierOptions).trim();
+        let error = '';
+        switch (options.mode) {
+            case 'vue': {
+                let vueResult = VueCompiler.compile(template);
+                let error = vueResult.errors[0];
+                if (!error) {
+                    template = 'function(){' + vueResult.render + '}';
+                }
+                break;
+            }
+            case 'string': {
+                template = JSON.stringify(template);
+                break;
+            }
+            default: {
+                error = 'Unknown templatify compilation mode!';
+            }
         }
-        template = 'module.exports = ' + JSON.stringify(template) + ';\n';
+        if (error) {
+            return next(Error(error));
+        }
+        template = 'module.exports = ' + template;
         return next(null, template);
     });
 }

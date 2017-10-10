@@ -120,7 +120,9 @@ class Compiler {
             browserifyOptions.cache = {};
             browserifyOptions.packageCache = {};
         }
-        let bundler = browserify(browserifyOptions).transform(Templatify_1.default).add(jsEntry).plugin(tsify);
+        let bundler = browserify(browserifyOptions).transform(Templatify_1.default, {
+            mode: this.settings.template
+        }).add(jsEntry).plugin(tsify);
         if (this.useRequireify) {
             let requireTransformer = Requireify_1.default(this.settings.alias, this.settings.externals);
             bundler = bundler.transform({ global: true }, requireTransformer);

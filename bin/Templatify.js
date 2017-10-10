@@ -40,6 +40,13 @@ exts.add('.html');
 exts.add('.xhtm');
 exts.add('.xhtml');
 exts.add('.tpl');
+function functionWrap(s) {
+    return 'function(){' + s + '}';
+}
+function functionArrayWrap(ar) {
+    let result = ar.map(s => functionWrap(s)).join(',');
+    return '[' + result + ']';
+}
 function Templatify(file, options) {
     return through2(function (buffer, encoding, next) {
         let ext = path.extname(file).toLowerCase();
@@ -55,7 +62,9 @@ function Templatify(file, options) {
                 let vueResult = VueCompiler.compile(template);
                 let error = vueResult.errors[0];
                 if (!error) {
-                    template = 'function(){' + vueResult.render + '}';
+                    template = '{render:' + functionWrap(vueResult.render)
+                        + ',staticRenderFns:' + functionArrayWrap(vueResult.staticRenderFns)
+                        + '}';
                 }
                 break;
             }

@@ -37,7 +37,7 @@ When using Visual Studio 2017 (Update 2 or above), install [the latest TypeScrip
 
 ## Features
 
-- Hyper-opinionated web application client project builder with zero configurations. It just works. :fire:
+- Hyper-opinionated web application client project builder with zero configurations. It just works. :sparkling_heart:
 
 - Built-in new project scaffold tool. :gift:
 
@@ -115,7 +115,7 @@ Scaffolds a new instapack project into your existing application from where the 
 
 - `vue` when you want to develop a web app with Vue.js and Bootstrap 4.
 
-- `vue+` when you want to develop a web app with Vue.js and Bootstrap 4 (includes ASP.NET Core MVC validation), plus amazing plugins and pre-compiled template setup. :sparkles:
+- `vue+` when you want to develop a web app with Vue.js and Bootstrap 4, plus :fire: plugins (includes ASP.NET Core MVC validation) and pre-compiled template setup!
 
 - `react` when you want to develop a web app with React and Semantic UI.
 
@@ -240,7 +240,11 @@ so that you can use this!
 
 > For consuming the libraries within the TypeScript app code, load them before `bundle.js` then reference the library objects from the `window` object (e.g. access jQuery using `window['$']`) or use the `externals` module definitions!
 
-- `instapack:template` allows changing the compilation mode of the imported templates. Normally, templates are minified then stringified. However, certain frameworks can utilize pre-compiled templates for improved performance, such as Vue.js. Legal values: `string` (default) or `vue`.
+- `instapack:template` allows changing the compilation mode of the imported templates.
+
+  - Normally, templates are minified then stringified. However, certain frameworks can utilize pre-compiled templates for improved performance, such as Vue.js.
+  
+  - Legal values: `string` (default) or `vue`.
 
 ## Release Cadence
 

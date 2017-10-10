@@ -6,8 +6,8 @@ import * as animate from 'angular-animate';
 import * as messages from 'angular-messages';
 import * as uib from 'angular-ui-bootstrap';
 
-import * as components from './components';
-import * as services from './services';
+import * as Components from './components';
+import * as Services from './services';
 
 let app = angular.module('aspnet', [uib, animate, messages]);
 
@@ -15,4 +15,4 @@ app.run(['$q', ($q: angular.IQService) => {
     window['Promise'] = $q;
 }]);
 
-app.component('validationMessage', components.ValidationMessageComponent);
+app.component('validationMessage', Components.ValidationMessageComponent);

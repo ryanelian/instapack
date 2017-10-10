@@ -42,7 +42,7 @@
     "undertaker": "1.2.0",
     "vinyl": "2.1.0",
     "vinyl-sourcemaps-apply": "0.2.1",
-    "vue-template-compiler": "^2.4.4",
+    "vue-template-compiler": "2.4.4",
     "watchify": "3.9.0",
     "yargs": "9.0.1"
   },
@@ -54,7 +54,7 @@
     "@types/envify": "^0.0.29",
     "@types/fs-extra": "^4.0.2",
     "@types/html-minifier": "^1.1.30",
-    "@types/node": "^8.0.33",
+    "@types/node": "^8.0.34",
     "@types/node-sass": "^3.10.32",
     "@types/resolve": "^0.0.4",
     "@types/through2": "^2.0.33",

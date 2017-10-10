@@ -9,7 +9,7 @@ class HelloController implements angular.IController {
 }
 
 export let HelloComponent: angular.IComponentOptions = {
-    template: require('./Hello.html'),
+    template: require('./Hello.html') as string,
     controller: HelloController,
     controllerAs: 'me',
     bindings: {

@@ -7,15 +7,15 @@
     "concat": {}
   },
   "dependencies": {
-    "@types/node": "^8.0.33",
+    "@types/node": "^8.0.34",
     "@types/react": "^16.0.10",
     "@types/react-dom": "^16.0.1",
     "@types/react-redux": "^5.0.10",
-    "@types/urijs": "^1.15.34",
     "axios": "^0.16.2",
     "es6-promise": "^4.1.1",
     "font-awesome": "^4.7.0",
-    "moment": "^2.18.1",
+    "linqts": "^1.10.0",
+    "moment": "^2.19.0",
     "noty": "^3.1.3",
     "react": "^16.0.0",
     "react-dom": "^16.0.0",
@@ -23,7 +23,6 @@
     "redux": "^3.7.2",
     "semantic-ui-css": "^2.2.12",
     "semantic-ui-react": "^0.74.2",
-    "tslib": "^1.7.1",
-    "urijs": "^1.19.0"
+    "tslib": "^1.7.1"
   }
 }

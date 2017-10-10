@@ -1,6 +1,4 @@
-﻿import * as ES6Promise from 'es6-promise';
+﻿import 'foundation-sites';
 import './inferno-project';
-import 'foundation-sites';
 
-ES6Promise.polyfill();
 $(document).foundation();

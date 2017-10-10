@@ -21,7 +21,7 @@ class HomeController implements angular.IController {
 }
 
 export let HomeComponent: angular.IComponentOptions = {
-    template: require('./Home.html'),
+    template: require('./Home.html') as string,
     controller: HomeController,
     controllerAs: 'me'
 };

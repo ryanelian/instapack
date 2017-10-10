@@ -113,7 +113,9 @@ Scaffolds a new instapack project into your existing application from where the 
 
 - `empty` when you need a minimal clean slate. Use this template to author new templates!
 
-- `vue` when you want to develop a web app with Vue.js and Bootstrap 4 (includes ASP.NET Core MVC validation).
+- `vue` when you want to develop a web app with Vue.js and Bootstrap 4.
+
+- `vue+` when you want to develop a web app with Vue.js and Bootstrap 4 (includes ASP.NET Core MVC validation), plus amazing plugins and pre-compiled template setup. :sparkles:
 
 - `react` when you want to develop a web app with React and Semantic UI.
 
@@ -164,21 +166,18 @@ instapack puts configuration inside `package.json` to reduce project files clutt
     }
   },
   "dependencies": {
-    "@types/node": "^8.0.31",
-    "@types/urijs": "^1.15.34",
-    "aspnet-validation": "^0.0.1",
+    "@types/node": "^8.0.34",
     "axios": "^0.16.2",
     "bootstrap": "4.0.0-beta",
-    "bootstrap.native": "^2.0.16",
+    "bootstrap.native": "^2.0.17",
     "es6-promise": "^4.1.1",
     "font-awesome": "^4.7.0",
-    "moment": "^2.18.1",
+    "linqts": "^1.10.0",
+    "moment": "^2.19.0",
     "noty": "^3.1.3",
     "tslib": "^1.7.1",
-    "urijs": "^1.19.0",
     "vue": "^2.4.4",
-    "vue-class-component": "^5.0.2",
-    "vuex": "^2.4.1"
+    "vue-class-component": "^5.0.2"
   }
 }
 ```
@@ -227,7 +226,6 @@ so that you can use this!
     "concat": {
       "vendor": [
         "jquery",
-        "popper.js"
         "bootstrap",
         "jquery-validation",
         "jquery-validation-unobtrusive",
@@ -242,6 +240,8 @@ so that you can use this!
 
 > For consuming the libraries within the TypeScript app code, load them before `bundle.js` then reference the library objects from the `window` object (e.g. access jQuery using `window['$']`) or use the `externals` module definitions!
 
+- `instapack:template` allows changing the compilation mode of the imported templates. Normally, templates are minified then stringified. However, certain frameworks can utilize pre-compiled templates for improved performance, such as Vue.js. Legal values: `string` (default) or `vue`.
+
 ## Release Cadence
 
 Starting version 4.0.0, instapack follows [Semantic Versioning](http://semver.org/).
@@ -255,15 +255,13 @@ Occasionally, beta builds will be published (`instapack@beta`) for showcasing th
 Alternatively, you may build directly from the source code repository:
 
 ```powershell
-npm install -g instapack
-
 git clone https://github.com/ryanelian/instapack.git
 cd instapack
 
 npm install
 npm link        # symlink global to local package for development
 npm run build   # alternatively, `npm install -g typescript` then `tsc`
-ipack --help
+ipack --version
 ```
 
 ## FAQ

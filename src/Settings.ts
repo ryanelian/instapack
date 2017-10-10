@@ -50,20 +50,30 @@ export class Settings {
     readonly externals: ModuleOverrides;
 
     /**
+     * Gets the template compilation mode.
+     */
+    readonly template: string;
+
+    /**
      * Constructs a new instance of Settings.
      * @param root 
      * @param input 
      * @param output 
      * @param concat 
+     * @param alias 
+     * @param externals 
+     * @param template 
      */
     constructor(root: string, input: string, output: string,
-        concat: ConcatenationLookup, alias: ModuleOverrides, externals: ModuleOverrides) {
+        concat: ConcatenationLookup, alias: ModuleOverrides, externals: ModuleOverrides,
+        template: string) {
         this.root = root || process.cwd();
         this.input = input || 'client';
         this.output = output || 'wwwroot';
         this.concat = concat || {};
         this.alias = alias || {};
         this.externals = externals || {};
+        this.template = template || 'string';
     }
 
     /**
@@ -176,6 +186,6 @@ export class Settings {
             parse = {};
         }
 
-        return new Settings(folder, parse.input, parse.output, parse.concat, parse.alias, parse.externals);
+        return new Settings(folder, parse.input, parse.output, parse.concat, parse.alias, parse.externals, parse.template);
     }
 }

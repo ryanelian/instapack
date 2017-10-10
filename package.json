@@ -42,6 +42,7 @@
     "undertaker": "1.2.0",
     "vinyl": "2.1.0",
     "vinyl-sourcemaps-apply": "0.2.1",
+    "vue-template-compiler": "^2.4.4",
     "watchify": "3.9.0",
     "yargs": "9.0.1"
   },

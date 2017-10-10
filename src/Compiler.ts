@@ -191,7 +191,9 @@ export class Compiler {
             browserifyOptions.packageCache = {};
         }
 
-        let bundler = browserify(browserifyOptions).transform(templatify).add(jsEntry).plugin(tsify);
+        let bundler = browserify(browserifyOptions).transform(templatify, {
+            mode: this.settings.template
+        }).add(jsEntry).plugin(tsify);
 
         if (this.useRequireify) {
             // this is required because Vue.js package.json "main": "dist/vue.runtime.common.js"

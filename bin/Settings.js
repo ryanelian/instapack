@@ -2,13 +2,14 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const path = require("path");
 class Settings {
-    constructor(root, input, output, concat, alias, externals) {
+    constructor(root, input, output, concat, alias, externals, template) {
         this.root = root || process.cwd();
         this.input = input || 'client';
         this.output = output || 'wwwroot';
         this.concat = concat || {};
         this.alias = alias || {};
         this.externals = externals || {};
+        this.template = template || 'string';
     }
     get concatCount() {
         return Object.keys(this.concat).length;
@@ -61,7 +62,7 @@ class Settings {
         if (!parse) {
             parse = {};
         }
-        return new Settings(folder, parse.input, parse.output, parse.concat, parse.alias, parse.externals);
+        return new Settings(folder, parse.input, parse.output, parse.concat, parse.alias, parse.externals, parse.template);
     }
 }
 exports.Settings = Settings;

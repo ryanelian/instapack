@@ -47,6 +47,15 @@ export interface TemplatifyOptions {
     mode: string
 }
 
+function functionWrap(s: string) {
+    return 'function(){' + s + '}';
+}
+
+function functionArrayWrap(ar: string[]) {
+    let result = ar.map(s => functionWrap(s)).join(',');
+    return '[' + result + ']';
+}
+
 /**
  * A Browserify Transform for importing a non-JS file content as a string using CommonJS module.
  * @param file 
@@ -69,9 +78,12 @@ export default function Templatify(file: string, options: TemplatifyOptions) {
         switch (options.mode) {
             case 'vue': {
                 let vueResult = VueCompiler.compile(template);
+                // console.log('vue template: ' + file + '\n' + vueResult);
                 let error = vueResult.errors[0];
                 if (!error) {
-                    template = 'function(){'+ vueResult.render + '}';
+                    template = '{render:' + functionWrap(vueResult.render)
+                        + ',staticRenderFns:' + functionArrayWrap(vueResult.staticRenderFns)
+                        + '}';
                 }
                 break;
             }

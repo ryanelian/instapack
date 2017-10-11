@@ -1,15 +1,15 @@
 import * as Vue from 'vue';
 import * as moment from 'moment';
-import VueSelect = require('vue-select');
-import VeeValidate = require('vee-validate');
+import { VueSelect } from 'vue-select';
+import * as VeeValidate from 'vee-validate';
 import * as Components from './components';
 
 // components and filters must be registered BEFORE the app root declaration
-Vue.filter('tolocal', function (utcDateTime: string) {
+Vue.filter('tolocaltime', function (utcDateTime: string) {
     return moment.utc(utcDateTime).local().format('ddd, DD MMM YYYY, HH:mm');
 });
 
-Vue.component('v-select', VueSelect.VueSelect);
+Vue.component('v-select', VueSelect);
 Vue.use(VeeValidate, {
     classes: true
 });

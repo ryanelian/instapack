@@ -8,7 +8,6 @@
       "vendor": [
         "es6-promise/dist/es6-promise.auto",
         "bootstrap.native/dist/bootstrap-native-v4",
-        "vue/dist/vue",
         "vue-select",
         "vee-validate",
         "noty",
@@ -16,8 +15,10 @@
         "axios/dist/axios"
       ]
     },
+    "alias": {
+      "vue": "vue/dist/vue.common"
+    },
     "externals": {
-      "vue": "Vue",
       "vue-select": "VueSelect",
       "vee-validate": "VeeValidate",
       "noty": "Noty",

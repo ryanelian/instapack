@@ -1,11 +1,10 @@
 import * as Vue from 'vue'
 import Component from 'vue-class-component'
-
-import template = require('./Hello.html');
+import { render, staticRenderFns } from './Hello.html';
 
 @Component({
-    render: template.render,
-    staticRenderFns: template.staticRenderFns,
+    render: render,
+    staticRenderFns: staticRenderFns,
     props: ['framework', 'compiler']
 })
 export class Hello extends Vue {

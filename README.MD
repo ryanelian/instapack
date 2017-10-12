@@ -188,7 +188,7 @@ instapack puts configuration inside `package.json` to reduce project files clutt
 
 - `alias` allows overriding module `import` calls from all files, including sub-dependencies.
 
-  - This was needed because the default Vue.js package main file points to runtime-only build which does not come with the HTML template compiler... To avoid using this, read the template configuration below.
+  - This was needed because the default Vue.js package main file points to runtime-only build, which does not include the HTML template compiler... To avoid using this, read the template configuration below.
 
 - `externals` allows rewriting module `import` calls from all files, including sub-dependencies, to globally exposed objects via `window` object. For example:
 

@@ -254,8 +254,7 @@ import Component from 'vue-class-component'
 import { render, staticRenderFns } from './MyComponent.html'
 
 @Component({
-    render: render,
-    staticRenderFns: staticRenderFns
+    render, staticRenderFns
 })
 export class MyComponent extends Vue {
 }

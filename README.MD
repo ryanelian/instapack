@@ -131,7 +131,7 @@ If no template parameter is provided, `vue` is chosen.
 
 Performs compilation against selected project type. Available projects: `all`, `js`, `css` and `concat`. If no project parameter is provided, `all` is chosen.
 
-`require(...)` against `.html` file will cause the said file to be minified and then stringified. This is handy when working with HTML-based templates for Vue.js, AngularJS, and Mustache / Handlebars.
+Importing `.html` files is supported out of the box. Read more below.
 
 In addition, build flags are available:
 
@@ -182,19 +182,21 @@ instapack puts configuration inside `package.json` to reduce project files clutt
 }
 ```
 
-- `instapack:input` allows setting the input folder name. By default, it is set to `client`.
+- `input` allows setting the input folder name. By default, it is set to `client`.
 
-- `instapack:output` allows setting the output folder name. By default, it is set to `wwwroot`.
+- `output` allows setting the output folder name. By default, it is set to `wwwroot`.
 
-- `instapack:alias` allows overriding module `import` calls from all files, including sub-dependencies. This is needed because default Vue.js package main file ships with only runtime and not the HTML template compiler.
+- `alias` allows overriding module `import` calls from all files, including sub-dependencies.
 
-- `instapack:externals` allows rewriting module `import` calls from all files, including sub-dependencies, to globally exposed objects via `window` object. For example:
+  - This was needed because the default Vue.js package main file points to runtime-only build which does not come with the HTML template compiler... To avoid using this, read the template configuration below.
+
+- `externals` allows rewriting module `import` calls from all files, including sub-dependencies, to globally exposed objects via `window` object. For example:
 
 ```json
 {
   "instapack": {
     "externals": {
-      "vue": "Vue"
+      "vee-validate": "VeeValidate"
     }
   }
 }
@@ -203,22 +205,22 @@ instapack puts configuration inside `package.json` to reduce project files clutt
 converts this...
 
 ```ts
-import * as Vue from 'vue'
+import * as VeeValidate from 'vee-validate'
 ```
 
 into this...
 
 ```ts
-let Vue = window["Vue"];
+const VeeValidate = window["VeeValidate"];
 ```
 
-so that you can use this!
+so that you can use this! :tada:
 
 ```html
-<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.4.4/vue.min.js"></script>
+<script src="https://unpkg.com/vee-validate@2.0.0-rc.18/dist/vee-validate.js"></script>
 ```
 
-- `instapack:concat` allows packing browser libraries to be consumed directly from `<script src="...">` rather than as a module. The file names will be resolved node-style (but **NOT** their contents), which allows concatenating packages downloaded from `npm` to be bundled, minified, and then placed into the output JS folder. For example: (produces `vendor.js` bundle)
+- `concat` allows packing browser libraries to be consumed directly from `<script src="...">` rather than as a module. The file names will be resolved node-style (but **NOT** their contents), which allows concatenating packages downloaded from `npm` to be bundled, minified, and then placed into the output JS folder. For example: (produces `vendor.js` bundle)
 
 ```json
 {
@@ -240,11 +242,26 @@ so that you can use this!
 
 > For consuming the libraries within the TypeScript app code, load them before `bundle.js` then reference the library objects from the `window` object (e.g. access jQuery using `window['$']`) or use the `externals` module definitions!
 
-- `instapack:template` allows changing the compilation mode of the imported templates.
+- `template` allows changing the compilation mode of the imported templates to enable Ahead-of-Time Compilation of HTML templates for certain frameworks, for improved performance.
 
-  - Normally, templates are minified then stringified. However, certain frameworks can utilize pre-compiled templates for improved performance, such as Vue.js.
-  
-  - Legal values: `string` (default) or `vue`.
+  - Default value `string` exports templates as string module. This is handy when working with HTML-based templates for Vue.js, AngularJS, and Mustache / Handlebars using CommonJS module syntax: `require('./MyTemplate.html') as string`
+
+  - `vue` exports HTML templates as a module containing `render` and `staticRenderFns` to be passed into a component options.
+
+```ts
+import * as Vue from 'vue'
+import Component from 'vue-class-component'
+import { render, staticRenderFns } from './MyComponent.html'
+
+@Component({
+    render: render,
+    staticRenderFns: staticRenderFns
+})
+export class MyComponent extends Vue {
+}
+```
+
+> You will need to create [a global TypeScript definition file for `*.html` modules](https://github.com/ryanelian/instapack/blob/master/templates/vue%2B/client/js/template.d.ts) in order to import a template using ES Module syntax!
 
 ## Release Cadence
 

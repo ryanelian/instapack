@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const webpack = require("webpack");
+const webpackNotifier = require("webpack-notifier");
 const Undertaker = require("undertaker");
 const vinyl = require("vinyl");
 const through2 = require("through2");
@@ -116,7 +117,13 @@ class Compiler {
                     }
                 ]
             },
-            plugins: [new webpack.NoEmitOnErrorsPlugin()]
+            plugins: [
+                new webpack.NoEmitOnErrorsPlugin(),
+                new webpackNotifier({
+                    title: 'instapack 5',
+                    contentImage: path.join(__dirname, '../img/icon.png')
+                })
+            ]
         };
         if (this.flags.map) {
             config.devtool = 'source-map';

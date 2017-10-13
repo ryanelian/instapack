@@ -42,6 +42,7 @@
     "vinyl-sourcemaps-apply": "0.2.1",
     "vue-template-compiler": "2.5.0",
     "webpack": "3.7.1",
+    "webpack-notifier": "1.5.0",
     "yargs": "9.0.1"
   },
   "devDependencies": {
@@ -58,6 +59,7 @@
     "@types/undertaker": "^1.1.2",
     "@types/vinyl": "^2.0.1",
     "@types/webpack": "^3.0.13",
+    "@types/webpack-notifier": "^1.5.1",
     "@types/yargs": "^8.0.2"
   }
 }

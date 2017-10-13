@@ -7,5 +7,3 @@ __export(require("./BuildLog"));
 __export(require("./CssProcessors"));
 __export(require("./Uglify"));
 __export(require("./Sass"));
-__export(require("./Vinyl"));
-__export(require("./VinylBuffer"));

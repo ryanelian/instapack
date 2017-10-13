@@ -1,4 +1,5 @@
 // Core dependencies
+import * as webpack from 'webpack';
 import * as Undertaker from 'undertaker';
 import * as vinyl from 'vinyl';
 import * as through2 from 'through2';
@@ -15,14 +16,6 @@ import PipeErrorHandler from './PipeErrorHandler';
 import * as To from './PipeTo';
 import { Server } from './Server';
 import { Settings, ConcatenationLookup } from './Settings';
-
-// These are used by Browserify
-import * as browserify from 'browserify';
-import * as tsify from 'tsify';
-import * as watchify from 'watchify';
-import envify = require('envify/custom');
-import templatify from './Templatify';
-import requireify from './Requireify';
 
 /**
  * Defines build flags to be used by Compiler class.
@@ -147,26 +140,84 @@ export class Compiler {
         run(error => { });
     }
 
-    /**
-     * Flattens abyssmal sourcemap paths resulting from Browserify compilation.
-     */
-    unfuckBrowserifySourcePaths = (sourcePath: string, file) => {
-        let folder = this.settings.input + '/js/';
+    createWebpackConfig() {
+        let tsconfigOverride = {
+            noEmit: false,
+            sourceMap: this.flags.map,
+            module: "es2015",
+            moduleResolution: "node"
+        };
 
-        if (sourcePath.startsWith('node_modules')) {
-            return '../' + sourcePath;
-        } else if (sourcePath.startsWith(folder)) {
-            return sourcePath.substring(folder.length);
-        } else {
-            return sourcePath;
+        let tsLoader = {
+            loader: 'ts-loader',
+            options: {
+                compilerOptions: tsconfigOverride,
+            }
+        };
+
+        let templateLoader = {
+            loader: 'template-loader',
+            options: {
+                mode: this.settings.template
+            }
+        };
+
+        let config: webpack.Configuration = {
+            entry: this.settings.jsEntry,
+            output: {
+                filename: 'bundle.js',
+                path: this.settings.outputJsFolder
+            },
+            externals: this.settings.externals,
+            resolve: {
+                extensions: ['.js', '.ts', '.tsx', '.htm', '.html'],
+                alias: this.settings.alias
+            },
+            resolveLoader: {
+                modules: [
+                    path.resolve(__dirname, '../node_modules'),
+                    path.resolve(__dirname, 'loaders')
+                ]
+            },
+            module: {
+                rules: [
+                    {
+                        test: /\.tsx?$/,
+                        use: [tsLoader]
+                    },
+                    {
+                        test: /\.html?$/,
+                        use: [templateLoader]
+                    }
+                ]
+            },
+            plugins: [new webpack.NoEmitOnErrorsPlugin()]
+        };
+
+        if (this.flags.map) {
+            config.devtool = 'source-map';
         }
-    }
 
-    get useRequireify(){
-        let a = Object.keys(this.settings.alias).length;
-        let b = Object.keys(this.settings.externals).length;
+        if (this.flags.minify) {
+            config.plugins.push(new webpack.DefinePlugin({
+                'process.env': {
+                    'NODE_ENV': '"production"'
+                }
+            }));
+            config.plugins.push(new webpack.optimize.UglifyJsPlugin({
+                sourceMap: this.flags.map
+            }));
+        }
 
-        return Boolean(a) || Boolean(b);
+        if (this.flags.watch) {
+            config.watch = true;
+            config.watchOptions = {
+                ignored: /node_modules/,
+                aggregateTimeout: 500
+            };
+        }
+
+        return config;
     }
 
     /**
@@ -182,60 +233,26 @@ export class Compiler {
             return;
         }
 
-        let browserifyOptions: browserify.Options = {
-            debug: this.flags.map
-        };
-
-        if (this.flags.watch) {
-            browserifyOptions.cache = {};
-            browserifyOptions.packageCache = {};
-        }
-
-        let bundler = browserify(browserifyOptions).transform(templatify, {
-            mode: this.settings.template
-        }).add(jsEntry).plugin(tsify);
-
-        if (this.useRequireify) {
-            // this is required because Vue.js package.json "main": "dist/vue.runtime.common.js"
-            // that thing is runtime-only / cannot compile HTML templates...
-            // so the developer would either need to use one of these features:
-            // 1. "alias": {"vue": "vue/dist/vue.common"}
-            // 2. "externals": {"vue": "Vue"} then add from CDN:
-            // <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.4.4/vue.min.js"></script>
-            let requireTransformer = requireify(this.settings.alias, this.settings.externals);
-            bundler = (bundler as any).transform({ global: true }, requireTransformer);
-        }
-
-        if (this.flags.minify) {
-            // this is for Vue.js to reduce 20kb in minified production build.
-            // let's hope that other libraries also use NODE_ENV=production for this purpose...
-            bundler = (bundler as any).transform({ global: true }, envify({
-                'NODE_ENV': 'production'
-            }));
-        }
-
-        let compileJs = () => {
+        this.tasks.task('js', () => {
             glog('Compiling JS', chalk.cyan(jsEntry));
 
-            return bundler.bundle()
-                .on('error', PipeErrorHandler)
-                .pipe(To.Vinyl('bundle.js'))
-                .pipe(To.VinylBuffer())
-                .pipe(this.flags.map ? sourcemaps.init({ loadMaps: true }) : through2.obj())
-                .pipe(this.flags.minify ? To.Uglify() : through2.obj())
-                .on('error', PipeErrorHandler)
-                .pipe(this.flags.map ? sourcemaps.mapSources(this.unfuckBrowserifySourcePaths) : through2.obj())
-                .pipe(this.flags.map ? sourcemaps.write('./') : through2.obj())
-                .pipe(To.BuildLog('JS compilation'))
-                .pipe(this.output(this.settings.outputJsFolder));
-        };
+            let config = this.createWebpackConfig();
+            webpack(config, (error, stats) => {
+                if (error) {
+                    console.error(error);
+                }
 
-        if (this.flags.watch) {
-            bundler.plugin(watchify);
-            bundler.on('update', compileJs);
-        }
+                glog('Finished JS compilation:');
 
-        this.tasks.task('js', compileJs);
+                console.log(stats.toString({
+                    colors: true,
+                    version: false,
+                    hash: false,
+                    modules: false,
+                    assets: !stats.hasErrors()
+                }));
+            });
+        });
     }
 
     /**

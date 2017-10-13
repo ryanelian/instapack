@@ -13,7 +13,7 @@ function prettyBytes(size) {
     let scale = size * Math.pow(1000, -unit);
     return scale.toPrecision(3) + ' ' + bigUnitPrefix[unit] + 'B';
 }
-function prettyTime(hrtime) {
+function prettyHrTime(hrtime) {
     if (hrtime[0] === 0) {
         let unit = siDegree(hrtime[1]);
         let scale = hrtime[1] * Math.pow(1000, -unit);
@@ -49,7 +49,7 @@ function BuildLog(label) {
         next(null, chunk);
     });
     stream.once('end', () => {
-        let time = prettyTime(process.hrtime(start));
+        let time = prettyHrTime(process.hrtime(start));
         GulpLog_1.default('Finished', label, 'after', chalk.green(time));
     });
     return stream;

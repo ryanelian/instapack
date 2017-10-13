@@ -27,7 +27,7 @@ function prettyBytes(size: number) {
  * Returns node high-resolution time formatted as string with SI prefix and hours-minutes-seconds formatting.
  * @param hrtime 
  */
-function prettyTime(hrtime: [number, number]) {
+function prettyHrTime(hrtime: [number, number]) {
     if (hrtime[0] === 0) {
         let unit = siDegree(hrtime[1]);
         let scale = hrtime[1] * Math.pow(1000, -unit);
@@ -74,7 +74,7 @@ export function BuildLog(label: string) {
     });
 
     stream.once('end', () => {
-        let time = prettyTime(process.hrtime(start));
+        let time = prettyHrTime(process.hrtime(start));
         glog('Finished', label, 'after', chalk.green(time));
     });
 

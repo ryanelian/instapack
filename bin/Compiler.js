@@ -8,6 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const webpack = require("webpack");
 const Undertaker = require("undertaker");
 const vinyl = require("vinyl");
 const through2 = require("through2");
@@ -21,26 +22,8 @@ const GulpLog_1 = require("./GulpLog");
 const PipeErrorHandler_1 = require("./PipeErrorHandler");
 const To = require("./PipeTo");
 const Server_1 = require("./Server");
-const browserify = require("browserify");
-const tsify = require("tsify");
-const watchify = require("watchify");
-const envify = require("envify/custom");
-const Templatify_1 = require("./Templatify");
-const Requireify_1 = require("./Requireify");
 class Compiler {
     constructor(settings, flags) {
-        this.unfuckBrowserifySourcePaths = (sourcePath, file) => {
-            let folder = this.settings.input + '/js/';
-            if (sourcePath.startsWith('node_modules')) {
-                return '../' + sourcePath;
-            }
-            else if (sourcePath.startsWith(folder)) {
-                return sourcePath.substring(folder.length);
-            }
-            else {
-                return sourcePath;
-            }
-        };
         this.settings = settings;
         this.flags = flags;
         this.tasks = new Undertaker();
@@ -100,10 +83,77 @@ class Compiler {
         let run = this.tasks.task(taskName);
         run(error => { });
     }
-    get useRequireify() {
-        let a = Object.keys(this.settings.alias).length;
-        let b = Object.keys(this.settings.externals).length;
-        return Boolean(a) || Boolean(b);
+    createWebpackConfig() {
+        let tsconfigOverride = {
+            noEmit: false,
+            sourceMap: this.flags.map,
+            module: "es2015",
+            moduleResolution: "node"
+        };
+        let tsLoader = {
+            loader: 'ts-loader',
+            options: {
+                compilerOptions: tsconfigOverride,
+            }
+        };
+        let templateLoader = {
+            loader: 'template-loader',
+            options: {
+                mode: this.settings.template
+            }
+        };
+        let config = {
+            entry: this.settings.jsEntry,
+            output: {
+                filename: 'bundle.js',
+                path: this.settings.outputJsFolder
+            },
+            externals: this.settings.externals,
+            resolve: {
+                extensions: ['.js', '.ts', '.tsx', '.htm', '.html'],
+                alias: this.settings.alias
+            },
+            resolveLoader: {
+                modules: [
+                    path.resolve(__dirname, '../node_modules'),
+                    path.resolve(__dirname, 'loaders')
+                ]
+            },
+            module: {
+                rules: [
+                    {
+                        test: /\.tsx?$/,
+                        use: [tsLoader]
+                    },
+                    {
+                        test: /\.html?$/,
+                        use: [templateLoader]
+                    }
+                ]
+            },
+            plugins: [new webpack.NoEmitOnErrorsPlugin()]
+        };
+        if (this.flags.map) {
+            config.devtool = 'source-map';
+        }
+        if (this.flags.minify) {
+            config.plugins.push(new webpack.DefinePlugin({
+                'process.env': {
+                    'NODE_ENV': '"production"'
+                }
+            }));
+            config.plugins.push(new webpack.optimize.UglifyJsPlugin({
+                sourceMap: this.flags.map
+            }));
+        }
+        if (this.flags.watch) {
+            config.watch = true;
+            config.watchOptions = {
+                ignored: /node_modules/,
+                aggregateTimeout: 500
+            };
+        }
+        return config;
     }
     registerJsTask() {
         let jsEntry = this.settings.jsEntry;
@@ -113,44 +163,23 @@ class Compiler {
             });
             return;
         }
-        let browserifyOptions = {
-            debug: this.flags.map
-        };
-        if (this.flags.watch) {
-            browserifyOptions.cache = {};
-            browserifyOptions.packageCache = {};
-        }
-        let bundler = browserify(browserifyOptions).transform(Templatify_1.default, {
-            mode: this.settings.template
-        }).add(jsEntry).plugin(tsify);
-        if (this.useRequireify) {
-            let requireTransformer = Requireify_1.default(this.settings.alias, this.settings.externals);
-            bundler = bundler.transform({ global: true }, requireTransformer);
-        }
-        if (this.flags.minify) {
-            bundler = bundler.transform({ global: true }, envify({
-                'NODE_ENV': 'production'
-            }));
-        }
-        let compileJs = () => {
+        this.tasks.task('js', () => {
             GulpLog_1.default('Compiling JS', chalk.cyan(jsEntry));
-            return bundler.bundle()
-                .on('error', PipeErrorHandler_1.default)
-                .pipe(To.Vinyl('bundle.js'))
-                .pipe(To.VinylBuffer())
-                .pipe(this.flags.map ? sourcemaps.init({ loadMaps: true }) : through2.obj())
-                .pipe(this.flags.minify ? To.Uglify() : through2.obj())
-                .on('error', PipeErrorHandler_1.default)
-                .pipe(this.flags.map ? sourcemaps.mapSources(this.unfuckBrowserifySourcePaths) : through2.obj())
-                .pipe(this.flags.map ? sourcemaps.write('./') : through2.obj())
-                .pipe(To.BuildLog('JS compilation'))
-                .pipe(this.output(this.settings.outputJsFolder));
-        };
-        if (this.flags.watch) {
-            bundler.plugin(watchify);
-            bundler.on('update', compileJs);
-        }
-        this.tasks.task('js', compileJs);
+            let config = this.createWebpackConfig();
+            webpack(config, (error, stats) => {
+                if (error) {
+                    console.error(error);
+                }
+                GulpLog_1.default('Finished JS compilation:');
+                console.log(stats.toString({
+                    colors: true,
+                    version: false,
+                    hash: false,
+                    modules: false,
+                    assets: !stats.hasErrors()
+                }));
+            });
+        });
     }
     getCssEntryVinyl() {
         let g = through2.obj();

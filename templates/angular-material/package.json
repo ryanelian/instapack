@@ -19,7 +19,7 @@
     "angular-sanitize": "^1.6.6",
     "font-awesome": "^4.7.0",
     "linqts": "^1.10.0",
-    "moment": "^2.19.0",
-    "tslib": "^1.7.1"
+    "moment": "^2.19.1",
+    "tslib": "^1.8.0"
   }
 }

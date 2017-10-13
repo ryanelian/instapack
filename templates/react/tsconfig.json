@@ -4,6 +4,7 @@
     "noImplicitThis": true,
     "alwaysStrict": true,
     "strictNullChecks": false,
+    "strictFunctionTypes": false,
     "skipLibCheck": true,
     
     "noUnusedLocals": false,

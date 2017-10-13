@@ -53,7 +53,7 @@ When using Visual Studio 2017 (Update 2 or above), install [the latest TypeScrip
 
 - Enforce best practices when building the app, which may significantly impact page load time. (e.g. bundling and minification) :umbrella:
 
-- Unify team build system across multiple projects, **for any frameworks**. :fist:
+- Unify team build system across multiple projects, for any frameworks. :fist:
 
 - Blur the boundary between design time and programming time using blazing fast `watch` + `dev` compilation mode. :zap:
 
@@ -63,7 +63,7 @@ Recently every f-ing framework on this planet :earth_asia: has their own CLI, bu
 
 instapack is an initiative to develop a command line tool for compiling most apps developed using mainstream JavaScript frameworks, with a :lemon: twist: **It can easily build an app written in TypeScript with minimal or no further configurations!**
 
-Powered by [webpack](https://webpack.js.org), it effortlessly devours modules written using any standards under the sun (ES, CommonJS, AMD) and is capable of importing HTML templates out of the box. instapack is battle-tested and is designed to cover 99.99% normal use cases when developing a modern web app.
+Powered by [webpack](https://webpack.js.org), it effortlessly devours modules written using any standards under the sun (ES, CommonJS, AMD) and is capable of importing HTML templates out of the box. instapack is battle-tested :hocho: and is designed to cover 99.99% normal use cases when developing a modern web app.
 
 With **one compiler to rule them all**, you can save time :watch:, save precious SSD space :space_invader:, and save yourself from the pain of manually maintaining project build scripts! :coffee:
 
@@ -75,9 +75,9 @@ Out of the box, these files will be used as the entry points:
 
 - `client/css/index.scss`, compiled to `wwwroot/css/packed.css`
 
-  - Spiced with :hot_pepper: [PostCSS AutoPrefixer](https://github.com/postcss/autoprefixer) for applying CSS vendor-prefixes automatically!
-
   - The Sass language compiler service has been configured to enable `@import` from `node_modules`!
+
+  - Spiced with :hot_pepper: [PostCSS AutoPrefixer](https://github.com/postcss/autoprefixer) for applying CSS vendor-prefixes automatically!
 
 - Concatenate files listed in `package.json`. Read more below.
 
@@ -149,11 +149,11 @@ instapack puts configuration inside `package.json` to reduce project files clutt
     "es6-promise": "^4.1.1",
     "font-awesome": "^4.7.0",
     "linqts": "^1.10.0",
-    "moment": "^2.19.0",
+    "moment": "^2.19.1",
     "noty": "^3.1.3",
-    "tslib": "^1.7.1",
-    "vue": "^2.4.4",
-    "vue-class-component": "^5.0.2"
+    "tslib": "^1.8.0",
+    "vue": "^2.5.1",
+    "vue-class-component": "^6.0.0"
   }
 }
 ```
@@ -181,7 +181,7 @@ instapack puts configuration inside `package.json` to reduce project files clutt
 converts this...
 
 ```ts
-import * as VeeValidate from 'vee-validate'
+import VeeValidate from 'vee-validate'
 ```
 
 into this...
@@ -218,14 +218,14 @@ so that you can use this! :tada: (Read more: https://webpack.js.org/configuratio
 
 > For consuming the libraries within the TypeScript app code, load them before `bundle.js` then reference the library objects from the `window` object (e.g. access jQuery using `window['$']`) or use the `externals` module definitions!
 
-- `template` allows changing the compilation mode of the imported templates to enable Ahead-of-Time Compilation of HTML templates for certain frameworks, for improved performance.
+- `template` allows changing the compilation mode of the imported templates to enable **Ahead-of-Time Compilation** of HTML templates for certain frameworks, for improved performance.
 
-  - Default value `string` exports templates as string module. This is handy when working with HTML-based templates for Vue.js, AngularJS, and Mustache / Handlebars using CommonJS module syntax: `require('./MyTemplate.html') as string`
+  - Default value `string` exports templates as string module. This is handy when working with HTML-based templates for Vue.js, AngularJS, and Mustache / Handlebars using CommonJS module import syntax: `require('./MyTemplate.html') as string`
 
   - `vue` exports HTML templates as a module containing `render` and `staticRenderFns` to be passed into a component options.
 
 ```ts
-import * as Vue from 'vue'
+import Vue from 'vue'
 import Component from 'vue-class-component'
 import { render, staticRenderFns } from './MyComponent.html'
 

@@ -194,7 +194,17 @@ so that you can use this! :tada: (Read more: https://webpack.js.org/configuratio
 <script src="https://unpkg.com/vee-validate@2.0.0-rc.18/dist/vee-validate.js"></script>
 ```
 
-- `concat` allows packing browser libraries to be consumed directly from `<script src="...">` rather than as a module. The file names will be resolved node-style (but **NOT** their contents), which allows concatenating packages downloaded from `npm` to be bundled, minified, and then placed into the output JS folder. For example: (produces `vendor.js` bundle)
+- `concat` allows packing browser libraries to be consumed directly from `<script src="...">` rather than as a module.
+
+  - The file names will be resolved node-style (but **NOT** their contents), which allows concatenating packages downloaded from `npm` to be bundled, minified, and then placed into the output JS folder. 
+
+  - Use concatenation for libraries that cannot be imported / do not need to be imported (for example, jQuery plugins). This hybrid approach allows great compatibility with older libraries, while enjoying the rich development experience using TypeScript.
+
+  - For consuming the libraries within the TypeScript app code, load them before `bundle.js` then reference the library objects from the `window` object (e.g. access jQuery using `window['$']`) or use the `externals` module definitions!
+
+  - You can also use concat to improve compile time by placing vendored modules out of the app code bundle.
+
+**concat configuration example:** (produces `vendor.js` bundle)
 
 ```json
 {
@@ -211,10 +221,6 @@ so that you can use this! :tada: (Read more: https://webpack.js.org/configuratio
   }
 }
 ```
-
-> Use concatenation for libraries that cannot be imported / do not need to be imported (for example, jQuery plugins). This hybrid approach allows great compatibility with older libraries, while enjoying the rich development experience using TypeScript.
-
-> For consuming the libraries within the TypeScript app code, load them before `bundle.js` then reference the library objects from the `window` object (e.g. access jQuery using `window['$']`) or use the `externals` module definitions!
 
 - `template` allows changing the compilation mode of the imported templates to enable **Ahead-of-Time Compilation** of HTML templates for certain frameworks, for improved performance.
 

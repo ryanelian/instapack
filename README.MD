@@ -170,7 +170,7 @@ instapack puts configuration inside `package.json` to reduce project files clutt
 {
   "instapack": {
     "externals": {
-      "vee-validate": "VeeValidate"
+      "jquery": "$"
     }
   }
 }
@@ -179,19 +179,19 @@ instapack puts configuration inside `package.json` to reduce project files clutt
 converts this...
 
 ```ts
-import VeeValidate from 'vee-validate'
+import jQuery from 'jquery'
 ```
 
 into this...
 
 ```ts
-const VeeValidate = window["VeeValidate"];
+const jQuery = window["$"];
 ```
 
 so that you can use this! :tada: (Read more: https://webpack.js.org/configuration/externals/)
 
 ```html
-<script src="https://unpkg.com/vee-validate@2.0.0-rc.18/dist/vee-validate.js"></script>
+<script src="https://unpkg.com/jquery@3.2.1/dist/jquery.js"></script>
 ```
 
 - `concat` allows packing browser libraries to be consumed directly from `<script src="...">` rather than as a module.

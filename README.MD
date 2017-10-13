@@ -51,7 +51,7 @@ When using Visual Studio 2017 (Update 2 or above), install [the latest TypeScrip
 
 - Improve source code quality and maintainability with type hints and compile-time checks. :airplane:
 
-- Enforce best practices when building the app, which may significantly impact page load time. (e.g. bundling and minification) :umbrella:
+- Enforce best practices when building the app, which may significantly impact page load time. (e.g. bundling and minification) :eyeglasses:
 
 - Unify team build system across multiple projects, for any frameworks. :fist:
 
@@ -117,7 +117,7 @@ In addition, build flags are available:
 
 - `-u` or `--unmap` for disabling source maps, for slightly faster compilation.
 
-- `-udw` shorthand for `unmap` + `dev` + `watch` mode together, amusingly named as *Unlimited Dev Works* mode, for **massive productivity gainz!** :trophy:
+- `-udw` shorthand for `unmap` + `dev` + `watch` mode together, amusingly named as *Unlimited Dev Works* mode, for **massive productivity gainz!** :muscle:
 
 ### clean
 

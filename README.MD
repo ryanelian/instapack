@@ -63,7 +63,7 @@ Recently every f-ing framework on this planet :earth_asia: has their own CLI, bu
 
 instapack is an initiative to develop a command line tool for compiling most apps developed using mainstream JavaScript frameworks, with a :lemon: twist: **It can easily build an app written in TypeScript with minimal or no further configurations!**
 
-Powered by [webpack](https://webpack.js.org), it effortlessly devours modules written using any standards under the sun (ES, CommonJS, AMD) and is capable of importing HTML templates out of the box. instapack is battle-tested :hocho: and is designed to cover 99.99% normal use cases when developing a modern web app.
+Powered by [webpack](https://webpack.js.org), it effortlessly devours modules written using any standards under the sun (ES Harmony, CommonJS, AMD, UMD) and is capable of importing HTML templates out of the box. instapack is battle-tested :hocho: and is designed to cover 99.99% normal use cases when developing a modern web app.
 
 With **one compiler to rule them all**, you can save time :watch:, save precious SSD space :space_invader:, and save yourself from the pain of manually maintaining project build scripts! :coffee:
 

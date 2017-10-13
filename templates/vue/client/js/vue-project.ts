@@ -1,5 +1,4 @@
-import * as Vue from 'vue';
-
+import Vue from 'vue';
 import * as Components from './components';
 
 // components must be registered BEFORE the app root declaration

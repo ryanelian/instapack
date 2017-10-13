@@ -1,4 +1,4 @@
-import * as Vue from 'vue';
+import Vue from 'vue';
 
 declare global {
     interface CompiledVueTemplate {

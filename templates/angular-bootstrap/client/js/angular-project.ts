@@ -1,10 +1,10 @@
-﻿import * as angular from 'angular';
+﻿import angular from 'angular';
 
 // angular-messages is needed by Validation Message component.
 // angular-animate is needed by Angular UI Bootstrap.
-import * as animate from 'angular-animate';
-import * as messages from 'angular-messages';
-import * as uib from 'angular-ui-bootstrap';
+import animate from 'angular-animate';
+import messages from 'angular-messages';
+import uib from 'angular-ui-bootstrap';
 
 import * as Components from './components';
 import * as Services from './services';

@@ -4,13 +4,14 @@
     "noImplicitThis": true,
     "alwaysStrict": true,
     "strictNullChecks": false,
-    "strictFunctionTypes": true,
     "skipLibCheck": true,
 
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
+
+    "strictFunctionTypes": true,
     
     "target": "es2016",
     "module": "commonjs",

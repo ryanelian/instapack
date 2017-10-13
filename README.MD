@@ -198,11 +198,13 @@ so that you can use this! :tada: (Read more: https://webpack.js.org/configuratio
 
   - The file names will be resolved node-style (but **NOT** their contents), which allows concatenating packages downloaded from `npm` to be bundled, minified, and then placed into the output JS folder. 
 
-  - Use concatenation for libraries that cannot be imported / do not need to be imported (for example, jQuery plugins). This hybrid approach allows great compatibility with older libraries, while enjoying the rich development experience using TypeScript.
+  - Use concatenation for libraries that cannot be imported / do not need to be imported (for example, jQuery plugins). This hybrid approach allows greater compatibility with older libraries, while enjoying the rich development experience using TypeScript.
 
-  - For consuming the libraries within the TypeScript app code, load them before `bundle.js` then reference the library objects from the `window` object (e.g. access jQuery using `window['$']`) or use the `externals` module definitions!
+  - You can also use concat to improve compile time by placing vendored modules out of the app code bundle!
 
-  - You can also use concat to improve compile time by placing vendored modules out of the app code bundle.
+  - For consuming the libraries within the TypeScript app code, load them before `bundle.js` then use the `externals` module configuration ([declare a global TypeScript module definition](https://www.typescriptlang.org/docs/handbook/declaration-files/templates/global-modifying-module-d-ts.html) if not a npm module).
+  
+  - Alternatively, reference the library objects directly from the `window` object (e.g. `window['$']`).
 
 **concat configuration example:** (produces `vendor.js` bundle)
 

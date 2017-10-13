@@ -117,9 +117,7 @@ In addition, build flags are available:
 
 - `-u` or `--unmap` for disabling source maps, for slightly faster compilation.
 
-- `-udw` shorthand for `unmap` + `dev` + `watch` mode together, amusingly named as *Unlimited Dev Works* mode, for **massive productivity gainz**.
-
-- `-s [port number]` or `--server 19991` for experimental server mode. Build artefacts will be served directly to http://localhost:port using GZIP compression without writing to folder / file system.
+- `-udw` shorthand for `unmap` + `dev` + `watch` mode together, amusingly named as *Unlimited Dev Works* mode, for **massive productivity gainz!** :trophy:
 
 ### clean
 

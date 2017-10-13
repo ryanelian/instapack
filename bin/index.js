@@ -20,13 +20,8 @@ module.exports = class instapack {
     constructor() {
         this.settings = Settings_1.Settings.tryRead();
     }
-    build(taskName, minify, watch, map, serverPort) {
-        let compiler = new Compiler_1.Compiler(this.settings, {
-            minify: minify,
-            watch: watch,
-            map: map,
-            serverPort: serverPort
-        });
+    build(taskName, flags) {
+        let compiler = new Compiler_1.Compiler(this.settings, flags);
         let scaffold = new Scaffold_1.Scaffold();
         if (compiler.needPackageRestore) {
             scaffold.restorePackages();

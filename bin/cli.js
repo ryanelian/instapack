@@ -60,16 +60,16 @@ CLI.command({
         }).option('u', {
             alias: 'unmap',
             describe: 'Disables sourcemaps.'
-        }).option('s', {
-            alias: 'server',
-            describe: 'Serve the output using an HTTP server listening on a local port.',
-            type: 'number'
         });
     },
     handler: argv => {
         let subCommand = argv.project || 'all';
         echo('build', subCommand);
-        app.build(subCommand, !argv.dev, argv.watch, !argv.unmap, argv.server);
+        app.build(subCommand, {
+            minify: !argv.dev,
+            watch: argv.watch,
+            map: !argv.unmap
+        });
     }
 });
 CLI.command({

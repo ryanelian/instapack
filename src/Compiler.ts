@@ -14,7 +14,6 @@ import * as sourcemaps from 'gulp-sourcemaps';
 import glog from './GulpLog';
 import PipeErrorHandler from './PipeErrorHandler';
 import * as To from './PipeTo';
-import { Server } from './Server';
 import { Settings, ConcatenationLookup } from './Settings';
 
 /**
@@ -23,8 +22,7 @@ import { Settings, ConcatenationLookup } from './Settings';
 export interface CompilerFlags {
     minify: boolean,
     watch: boolean,
-    map: boolean,
-    serverPort: number
+    map: boolean
 }
 
 /**
@@ -43,11 +41,6 @@ export class Compiler {
     readonly flags: CompilerFlags;
 
     /**
-     * Gets the build server instance.
-     */
-    readonly server: Server;
-
-    /**
      * Gets the task registry.
      */
     readonly tasks: Undertaker;
@@ -62,11 +55,6 @@ export class Compiler {
         this.flags = flags;
         this.tasks = new Undertaker();
 
-        if (flags.serverPort) {
-            this.flags.watch = true;
-            this.server = new Server(flags.serverPort);
-        }
-
         this.chat();
         this.registerAllTasks();
     }
@@ -75,11 +63,7 @@ export class Compiler {
      * Displays information about currently used build flags.
      */
     chat() {
-        if (this.server) {
-            glog(chalk.yellow("Server"), "mode: Listening on", chalk.cyan('http://localhost:' + this.server.port));
-        } else {
-            glog('Using output folder', chalk.cyan(this.settings.outputFolder));
-        }
+        glog('Using output folder', chalk.cyan(this.settings.outputFolder));
 
         if (this.flags.minify) {
             glog(chalk.yellow("Production"), "mode: Outputs will be minified.", chalk.red("This process will slow down your build!"));
@@ -109,12 +93,8 @@ export class Compiler {
             }
 
             if (file.isBuffer()) {
-                if (this.server) {
-                    await this.server.Update(file.relative, file.contents);
-                } else {
-                    let p = path.join(folder, file.relative);
-                    await fse.outputFile(p, file.contents);
-                }
+                let p = path.join(folder, file.relative);
+                await fse.outputFile(p, file.contents);
             }
 
             next(null, file);

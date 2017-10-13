@@ -1,4 +1,4 @@
-import { Compiler } from './Compiler';
+import { Compiler, CompilerFlags } from './Compiler';
 import { Settings } from './Settings';
 import { Scaffold } from './Scaffold';
 
@@ -48,18 +48,10 @@ export = class instapack {
     /**
      * Performs web application client project compilation using a pre-configured task and build flags.
      * @param taskName 
-     * @param minify 
-     * @param watch 
-     * @param map 
-     * @param serverPort 
+     * @param flags 
      */
-    build(taskName: string, minify: boolean, watch: boolean, map: boolean, serverPort: number) {
-        let compiler = new Compiler(this.settings, {
-            minify: minify,
-            watch: watch,
-            map: map,
-            serverPort: serverPort
-        });
+    build(taskName: string, flags: CompilerFlags) {
+        let compiler = new Compiler(this.settings, flags);
         let scaffold = new Scaffold();
 
         if (compiler.needPackageRestore) {

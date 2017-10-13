@@ -21,26 +21,16 @@ const sourcemaps = require("gulp-sourcemaps");
 const GulpLog_1 = require("./GulpLog");
 const PipeErrorHandler_1 = require("./PipeErrorHandler");
 const To = require("./PipeTo");
-const Server_1 = require("./Server");
 class Compiler {
     constructor(settings, flags) {
         this.settings = settings;
         this.flags = flags;
         this.tasks = new Undertaker();
-        if (flags.serverPort) {
-            this.flags.watch = true;
-            this.server = new Server_1.Server(flags.serverPort);
-        }
         this.chat();
         this.registerAllTasks();
     }
     chat() {
-        if (this.server) {
-            GulpLog_1.default(chalk.yellow("Server"), "mode: Listening on", chalk.cyan('http://localhost:' + this.server.port));
-        }
-        else {
-            GulpLog_1.default('Using output folder', chalk.cyan(this.settings.outputFolder));
-        }
+        GulpLog_1.default('Using output folder', chalk.cyan(this.settings.outputFolder));
         if (this.flags.minify) {
             GulpLog_1.default(chalk.yellow("Production"), "mode: Outputs will be minified.", chalk.red("This process will slow down your build!"));
         }
@@ -62,13 +52,8 @@ class Compiler {
                 return next(error);
             }
             if (file.isBuffer()) {
-                if (this.server) {
-                    yield this.server.Update(file.relative, file.contents);
-                }
-                else {
-                    let p = path.join(folder, file.relative);
-                    yield fse.outputFile(p, file.contents);
-                }
+                let p = path.join(folder, file.relative);
+                yield fse.outputFile(p, file.contents);
             }
             next(null, file);
         }));

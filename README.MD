@@ -37,7 +37,7 @@ When using Visual Studio 2017 (Update 2 or above), install [the latest TypeScrip
 
 ## Features
 
-- Hyper-opinionated web application client project builder with zero configurations. It just works. :sparkling_heart:
+- Hyper-opinionated web app client project builder with zero configurations. It just works. :sparkling_heart:
 
 - Built-in new project scaffold tool. :gift:
 
@@ -45,63 +45,41 @@ When using Visual Studio 2017 (Update 2 or above), install [the latest TypeScrip
 
 ## Design Goals
 
-- Lower the barrier of entry for developing a modern web application. :angel:
+- Lower the barrier of entry for developing a modern web app. :angel:
 
-- Introduce structure to the application client source code. :office:
+- Introduce structure to the app client source code. :office:
 
 - Improve source code quality and maintainability with type hints and compile-time checks. :airplane:
 
-- Enforce best practices when building the application, which may significantly impact page load time. (e.g. bundling and minification) :umbrella:
+- Enforce best practices when building the app, which may significantly impact page load time. (e.g. bundling and minification) :umbrella:
 
-- Unify team build system across multiple projects, for any frameworks. :fist:
+- Unify team build system across multiple projects, **for any frameworks**. :fist:
 
 - Blur the boundary between design time and programming time using blazing fast `watch` + `dev` compilation mode. :zap:
 
 ## But... Why?
 
-At a glance, instapack looks similar to webpack. However, that is where the similarity ends because instapack is **not** designed to replace webpack. Here is an analogy to help to differentiate these build systems:
+Recently every f-ing framework on this planet :earth_asia: has their own CLI, but only few are able to support TypeScript out of the box. So most people gave up on TypeScript right from the start... :broken_heart:
 
-- gulp is like a DIY PC that you can construct from scratch. Very powerful but requires effort to configure and maintain.
+instapack is an initiative to develop a command line tool for compiling most apps developed using mainstream JavaScript frameworks, with a twist: **It can easily build an app written in TypeScript with minimal or no further configurations!**
 
-- webpack is like a barebone PC that can be plugged-in with off-the-shelf components. Not very versatile but easy to configure and good enough for most people.
+Powered by [webpack](https://webpack.js.org), it effortlessly devours modules written using any standards under the sun (ES, CommonJS, AMD) and is able to import HTML templates out of the box. **It is designed to cover 99.99% normal use cases when developing a modern web app.**
 
-- instapack is like a laptop borrowed from your company, batteries included. You are not expected to modify it. :coffee:
-
-Consider the following example: Michael wants to develop a web application using TypeScript. One of the following events usually happens next...
-
-- Recently, every f-ing framework on this planet has their own CLI, but only few are able to support TypeScript out of the box... So Michael simply gives up on TypeScript! :broken_heart:
-
-- Michael managed to create a working build recipe for his TypeScript project. However, his next project uses an evolved version of his build system. Therefore, Michael needs to manually upgrade every build script in each application... :hourglass_flowing_sand:
-
-- Consequently, Michael's SSD is now full because all projects have their own build system! :skull:
-
-- Suddenly, Jack from the other team of the same company develops his own build system. So does Jono! :collision:
-
-instapack is developed as an answer those problems and more!
+With **one compiler to rule them all**, you can save time :hourglass_flowing_sand:, save precious SSD space :space_invader:, and save yourself from troubles of manually maintaining a build script. :coffee:
 
 ## How does it work?
 
 Out of the box, these files will be used as the entry points:
 
-- `client/js/index.ts`, compiled to `wwwroot/js/bundle.js`
+- `client/js/index.ts`, compiled to `wwwroot/js/packed.js`
 
-- `client/css/site.scss`, compiled to `wwwroot/css/site.css`
+- `client/css/index.scss`, compiled to `wwwroot/css/packed.css`
+
+  - Spiced with :hot_pepper: [PostCSS AutoPrefixer](https://github.com/postcss/autoprefixer) for applying CSS vendor-prefixes automatically!
+
+  - The Sass language compiler service has been configured to enable `@import` from `node_modules`!
 
 - Concatenate files listed in `package.json`. Read more below.
-
-Internally, instapack uses these modules:
-
-- [undertaker](https://github.com/gulpjs/undertaker) and [vinyl](https://github.com/gulpjs/vinyl) modules from gulp, as the task orchestrator and build engine.
-
-- [Microsoft's TypeScript](https://github.com/Microsoft/TypeScript) as the compiler service, syntax checker, and type checker for the JavaScript language.
-
-- [node-sass](https://github.com/sass/node-sass) as the compiler service, syntax checker, and minifier for the CSS language. It is also configured to enable `@import` from `node_modules`.
-
-- [Browserify](https://github.com/substack/node-browserify) for bundling the compiled modules.
-
-- [UglifyJS](https://github.com/mishoo/UglifyJS2) for minifying the resulting bundle.
-
-- [PostCSS Autoprefixer](https://github.com/postcss/autoprefixer) for applying CSS vendor-prefixes automatically.
 
 ## Commands
 
@@ -130,8 +108,6 @@ If no template parameter is provided, `vue` is chosen.
 ### build [project]
 
 Performs compilation against selected project type. Available projects: `all`, `js`, `css` and `concat`. If no project parameter is provided, `all` is chosen.
-
-Importing `.html` files is supported out of the box. Read more below.
 
 In addition, build flags are available:
 
@@ -186,7 +162,7 @@ instapack puts configuration inside `package.json` to reduce project files clutt
 
 - `output` allows setting the output folder name. By default, it is set to `wwwroot`.
 
-- `alias` allows overriding module `import` calls from all files, including sub-dependencies.
+- `alias` allows overriding module `import` calls from all files, including sub-dependencies. Read more: https://webpack.js.org/configuration/resolve/
 
   - This was needed because the default Vue.js package main file points to runtime-only build, which does not include the HTML template compiler... To avoid using this, read the template configuration below.
 
@@ -214,7 +190,7 @@ into this...
 const VeeValidate = window["VeeValidate"];
 ```
 
-so that you can use this! :tada:
+so that you can use this! :tada: (Read more: https://webpack.js.org/configuration/externals/)
 
 ```html
 <script src="https://unpkg.com/vee-validate@2.0.0-rc.18/dist/vee-validate.js"></script>

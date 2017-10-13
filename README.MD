@@ -61,11 +61,11 @@ When using Visual Studio 2017 (Update 2 or above), install [the latest TypeScrip
 
 Recently every f-ing framework on this planet :earth_asia: has their own CLI, but only few are able to support TypeScript out of the box. So most people gave up on TypeScript right from the start... :broken_heart:
 
-instapack is an initiative to develop a command line tool for compiling most apps developed using mainstream JavaScript frameworks, with a twist: **It can easily build an app written in TypeScript with minimal or no further configurations!**
+instapack is an initiative to develop a command line tool for compiling most apps developed using mainstream JavaScript frameworks, with a :lemon: twist: **It can easily build an app written in TypeScript with minimal or no further configurations!**
 
-Powered by [webpack](https://webpack.js.org), it effortlessly devours modules written using any standards under the sun (ES, CommonJS, AMD) and is able to import HTML templates out of the box. **It is designed to cover 99.99% normal use cases when developing a modern web app.**
+Powered by [webpack](https://webpack.js.org), it effortlessly devours modules written using any standards under the sun (ES, CommonJS, AMD) and is capable of importing HTML templates out of the box. **It is designed to cover 99.99% normal use cases when developing a modern web app.**
 
-With **one compiler to rule them all**, you can save time :hourglass_flowing_sand:, save precious SSD space :space_invader:, and save yourself from troubles of manually maintaining a build script. :coffee:
+With **one compiler to rule them all**, you can save time :watch:, save precious SSD space :space_invader:, and save yourself from pain from manually maintaining project build scripts! :coffee:
 
 ## How does it work?
 

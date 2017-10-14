@@ -3349,9 +3349,9 @@ vm-browserify@0.0.4:
   dependencies:
     indexof "0.0.1"
 
-vue-template-compiler@2.5.0:
-  version "2.5.0"
-  resolved "https://registry.yarnpkg.com/vue-template-compiler/-/vue-template-compiler-2.5.0.tgz#2e138f1643e131f24f6e19733690713b7543a937"
+vue-template-compiler@2.5.2:
+  version "2.5.2"
+  resolved "https://registry.yarnpkg.com/vue-template-compiler/-/vue-template-compiler-2.5.2.tgz#6f198ebc677b8f804315cd33b91e849315ae7177"
   dependencies:
     de-indent "^1.0.2"
     he "^1.1.0"

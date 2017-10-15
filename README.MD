@@ -49,9 +49,9 @@ When using Visual Studio 2017 (Update 2 or above), install [the latest TypeScrip
 
 - Introduce structure to the app client source code. :office:
 
-- Improve source code quality and maintainability with type hints and compile-time checks. :airplane:
+- Improve source code quality and maintainability with type hints and compile-time checks. :eyeglasses:
 
-- Enforce best practices when building the app, which may significantly impact page load time. (e.g. bundling and minification) :eyeglasses:
+- Enforce best practices when building the app, which may significantly impact page load time. (e.g. bundling and minification) :airplane:
 
 - Unify team build system across multiple projects, for any frameworks. :fist:
 

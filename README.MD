@@ -164,7 +164,7 @@ instapack puts configuration inside `package.json` to reduce project files clutt
 
   - This was needed because the default Vue.js package main file points to runtime-only build, which does not include the HTML template compiler... To avoid using this, read the template configuration below.
 
-- `externals` allows rewriting module `import` calls from all files, including sub-dependencies, to globally exposed objects via `window` object. For example:
+- `externals` allows rewriting module `import` calls from all files, including sub-dependencies, to globally exposed objects via `window` object. Read more: https://webpack.js.org/configuration/externals/. For example:
 
 ```json
 {
@@ -188,7 +188,7 @@ into this...
 const jQuery = window["$"];
 ```
 
-so that you can use this! :tada: (Read more: https://webpack.js.org/configuration/externals/)
+so that you can use this! :tada:
 
 ```html
 <script src="https://unpkg.com/jquery@3.2.1/dist/jquery.js"></script>
@@ -224,11 +224,11 @@ so that you can use this! :tada: (Read more: https://webpack.js.org/configuratio
 }
 ```
 
-- `template` allows changing the compilation mode of the imported templates to enable **Ahead-of-Time Compilation** of HTML templates for certain frameworks, for improved performance.
+- `template` allows changing the compilation mode of the imported HTML templates to enable **Ahead-of-Time Template Compilation** for certain frameworks, for improved performance.
 
-  - Default value `string` exports templates as string module. This is handy when working with HTML-based templates for Vue.js, AngularJS, and Mustache / Handlebars using CommonJS module import syntax: `require('./MyTemplate.html') as string`
+  - Default value `string` exports templates as string modules. This is handy when working with HTML-based templates for AngularJS, Vue.js, and Mustache / Handlebars using CommonJS module import syntax: `require('./MyTemplate.html') as string`
 
-  - `vue` exports HTML templates as a module containing `render` and `staticRenderFns` to be passed into a component options.
+  - `vue` exports templates as modules containing `render` and `staticRenderFns` properties to be passed into a Vue.js component options.
 
 ```ts
 import Vue from 'vue'

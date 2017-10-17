@@ -10,7 +10,7 @@
     }
   },
   "dependencies": {
-    "@types/node": "^8.0.41",
+    "@types/requirejs": "^2.1.31",
     "axios": "^0.16.2",
     "bootstrap": "4.0.0-beta",
     "bootstrap.native": "^2.0.17",

@@ -9,7 +9,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const webpack = require("webpack");
-const webpackNotifier = require("webpack-notifier");
 const Undertaker = require("undertaker");
 const vinyl = require("vinyl");
 const through2 = require("through2");
@@ -118,11 +117,7 @@ class Compiler {
                 ]
             },
             plugins: [
-                new webpack.NoEmitOnErrorsPlugin(),
-                new webpackNotifier({
-                    title: 'instapack 5',
-                    contentImage: path.join(__dirname, '../img/icon.png')
-                })
+                new webpack.NoEmitOnErrorsPlugin()
             ]
         };
         if (this.flags.map) {
@@ -159,10 +154,11 @@ class Compiler {
             GulpLog_1.default('Compiling JS', chalk.cyan(jsEntry));
             let config = this.createWebpackConfig();
             webpack(config, (error, stats) => {
+                GulpLog_1.default('Finished JS compilation:');
                 if (error) {
                     console.error(error);
+                    return;
                 }
-                GulpLog_1.default('Finished JS compilation:');
                 console.log(stats.toString({
                     colors: true,
                     version: false,
@@ -194,6 +190,9 @@ class Compiler {
             });
             return;
         }
+        let cssMapOptions = {
+            sourceRoot: '/' + this.settings.input + '/css'
+        };
         this.tasks.task('css:compile', () => {
             GulpLog_1.default('Compiling CSS', chalk.cyan(cssEntry));
             let sassImports = [this.settings.npmFolder];
@@ -203,7 +202,7 @@ class Compiler {
                 .on('error', PipeErrorHandler_1.default)
                 .pipe(To.CssProcessors())
                 .on('error', PipeErrorHandler_1.default)
-                .pipe(this.flags.map ? sourcemaps.write('./') : through2.obj())
+                .pipe(this.flags.map ? sourcemaps.write('.', cssMapOptions) : through2.obj())
                 .pipe(To.BuildLog('CSS compilation'))
                 .pipe(this.output(this.settings.outputCssFolder));
         });
@@ -284,7 +283,7 @@ class Compiler {
                     }));
                 }).catch(error => {
                     GulpLog_1.default(chalk.red('ERROR'), 'when concatenating', chalk.blue(target));
-                    console.log(error);
+                    console.error(error);
                 }).then(() => {
                     concatCount--;
                     if (concatCount === 0) {

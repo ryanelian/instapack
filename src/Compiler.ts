@@ -1,6 +1,5 @@
 // Core dependencies
 import * as webpack from 'webpack';
-import * as webpackNotifier from 'webpack-notifier';
 import * as Undertaker from 'undertaker';
 import * as vinyl from 'vinyl';
 import * as through2 from 'through2';
@@ -173,11 +172,7 @@ export class Compiler {
                 ]
             },
             plugins: [
-                new webpack.NoEmitOnErrorsPlugin(),
-                new webpackNotifier({
-                    title: 'instapack 5',
-                    contentImage: path.join(__dirname, '../img/icon.png')
-                })
+                new webpack.NoEmitOnErrorsPlugin()
             ]
         };
 
@@ -225,11 +220,12 @@ export class Compiler {
 
             let config = this.createWebpackConfig();
             webpack(config, (error, stats) => {
+                glog('Finished JS compilation:');
+
                 if (error) {
                     console.error(error);
+                    return;
                 }
-
-                glog('Finished JS compilation:');
 
                 console.log(stats.toString({
                     colors: true,
@@ -275,6 +271,10 @@ export class Compiler {
             return;
         }
 
+        let cssMapOptions = {
+            sourceRoot: '/' + this.settings.input + '/css'
+        };
+
         this.tasks.task('css:compile', () => {
             glog('Compiling CSS', chalk.cyan(cssEntry));
             let sassImports = [this.settings.npmFolder];
@@ -285,7 +285,7 @@ export class Compiler {
                 .on('error', PipeErrorHandler)
                 .pipe(To.CssProcessors())
                 .on('error', PipeErrorHandler)
-                .pipe(this.flags.map ? sourcemaps.write('./') : through2.obj())
+                .pipe(this.flags.map ? sourcemaps.write('.', cssMapOptions) : through2.obj())
                 .pipe(To.BuildLog('CSS compilation'))
                 .pipe(this.output(this.settings.outputCssFolder));
         });
@@ -394,7 +394,7 @@ export class Compiler {
                     }));
                 }).catch(error => {
                     glog(chalk.red('ERROR'), 'when concatenating', chalk.blue(target))
-                    console.log(error);
+                    console.error(error);
                 }).then(() => {
                     // this code block is equivalent to: .finally()
                     concatCount--;

@@ -80,14 +80,6 @@ export class PrettyObject {
     }
 
     /**
-     * Detects whether an object is Browserify Error.
-     * @param o 
-     */
-    isBrowserifyError(o): boolean {
-        return (o instanceof Error) && o.stack && o.message && o.name && o['stream'];
-    }
-
-    /**
      * Detects whether an object is Sass Error.
      * @param o 
      */
@@ -123,20 +115,12 @@ export class PrettyObject {
             }
             return result.join('\n');
         } else if (typeof o === 'object') {
-            if (this.isBrowserifyError(o)) {
-                // Prevents error due to missing require(...) from Browserify to throw up a gigantic wall of text to the screen.
-                return this.render({
-                    name: 'Browserify error',
-                    message: o.message
-                }, level);
+            if (this.isSassError(o)) {
+                return chalk.red(o['formatted']);
             }
 
-            let sassError = this.isSassError(o);
             let result = [];
             for (let key of Object.keys(o).sort()) {
-                if (sassError && key === 'formatted') {
-                    continue;
-                }
                 if (this.isFunction(o[key])) {
                     // Prevents puking out function codes!
                     continue;
@@ -150,10 +134,6 @@ export class PrettyObject {
                 result.push(line);
             }
 
-            if (sassError && o['formatted']) {
-                // For best output, this specific field must be escaped and appended to the very end of the object render. 
-                result.push(o['formatted']);
-            }
             return result.join('\n');
         } else if (typeof (o) === 'number' || typeof (o) === 'boolean') {
             return this.ordinalChalk(o.toString());

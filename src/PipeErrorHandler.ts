@@ -13,9 +13,9 @@ let p = new PrettyObject();
  */
 export default function PipeErrorHandler(this: stream, error) {
     try {
-        console.log(p.render(error));
+        console.error(p.render(error));
     } catch (ex) {
-        console.log(chalk.red(error));
+        console.error(chalk.red(error));
     }
     this.emit('end');
 }

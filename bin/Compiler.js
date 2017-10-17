@@ -72,7 +72,6 @@ class Compiler {
         let tsconfigOverride = {
             noEmit: false,
             sourceMap: this.flags.map,
-            module: "es2015",
             moduleResolution: "node"
         };
         let tsLoader = {

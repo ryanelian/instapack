@@ -1,6 +1,6 @@
 {
   "name": "instapack",
-  "version": "4.2.0",
+  "version": "5.0.0",
   "description": "All-in-one web application client project compiler using TypeScript and Sass!",
   "main": "bin/index.js",
   "bin": {
@@ -41,7 +41,7 @@
     "vinyl": "2.1.0",
     "vinyl-sourcemaps-apply": "0.2.1",
     "vue-template-compiler": "2.5.2",
-    "webpack": "3.7.1",
+    "webpack": "3.8.0",
     "webpack-notifier": "1.5.0",
     "yargs": "9.0.1"
   },
@@ -52,7 +52,7 @@
     "@types/fs-extra": "^4.0.2",
     "@types/html-minifier": "^1.1.30",
     "@types/loader-utils": "^1.1.0",
-    "@types/node": "^8.0.36",
+    "@types/node": "^8.0.41",
     "@types/node-sass": "^3.10.32",
     "@types/resolve": "^0.0.4",
     "@types/through2": "^2.0.33",

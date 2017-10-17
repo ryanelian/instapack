@@ -17,8 +17,8 @@
     }
   },
   "dependencies": {
-    "@types/jquery": "^3.2.13",
-    "@types/node": "^8.0.34",
+    "@types/jquery": "^3.2.14",
+    "@types/node": "^8.0.41",
     "axios": "^0.16.2",
     "es6-promise": "^4.1.1",
     "font-awesome": "^4.7.0",

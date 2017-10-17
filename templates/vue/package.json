@@ -10,7 +10,7 @@
     }
   },
   "dependencies": {
-    "@types/node": "^8.0.34",
+    "@types/node": "^8.0.41",
     "axios": "^0.16.2",
     "bootstrap": "4.0.0-beta",
     "bootstrap.native": "^2.0.17",

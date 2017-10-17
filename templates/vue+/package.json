@@ -28,7 +28,7 @@
     "template": "vue"
   },
   "dependencies": {
-    "@types/node": "^8.0.34",
+    "@types/node": "^8.0.41",
     "aspnet-validation": "^0.0.1",
     "axios": "^0.16.2",
     "bootstrap": "4.0.0-beta",
@@ -43,7 +43,6 @@
     "vue": "^2.5.2",
     "vue-class-component": "^6.0.0",
     "vue-router": "^3.0.1",
-    "vue-select": "^2.3.0",
-    "vuex": "^3.0.0"
+    "vue-select": "^2.3.0"
   }
 }

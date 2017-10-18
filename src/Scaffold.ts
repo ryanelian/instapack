@@ -1,7 +1,7 @@
 import * as fse from 'fs-extra';
 import * as path from 'path';
 import * as cp from 'child_process';
-import * as chalk from 'chalk';
+import chalk from 'chalk';
 
 /**
  * Contains methods for initializing new project.

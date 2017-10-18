@@ -1,6 +1,6 @@
 import * as stream from 'stream';
 import glog from './GulpLog';
-import * as chalk from 'chalk';
+import chalk from 'chalk';
 import { PrettyObject } from './PrettyObject';
 
 let p = new PrettyObject();

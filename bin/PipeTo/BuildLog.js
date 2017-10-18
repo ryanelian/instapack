@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const through2 = require("through2");
-const chalk = require("chalk");
+const chalk_1 = require("chalk");
 const GulpLog_1 = require("../GulpLog");
 const bigUnitPrefix = ['', 'k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'];
 const nanoUnitPrefix = ['n', 'µ', 'm'];
@@ -44,13 +44,13 @@ function BuildLog(label) {
         }
         if (chunk.isBuffer()) {
             let size = prettyBytes(chunk.contents.length);
-            GulpLog_1.default(chalk.blue(chunk.relative), chalk.magenta(size));
+            GulpLog_1.default(chalk_1.default.blue(chunk.relative), chalk_1.default.magenta(size));
         }
         next(null, chunk);
     });
     stream.once('end', () => {
         let time = prettyHrTime(process.hrtime(start));
-        GulpLog_1.default('Finished', label, 'after', chalk.green(time));
+        GulpLog_1.default('Finished', label, 'after', chalk_1.default.green(time));
     });
     return stream;
 }

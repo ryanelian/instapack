@@ -15,7 +15,7 @@ const through2 = require("through2");
 const fse = require("fs-extra");
 const path = require("path");
 const resolve = require("resolve");
-const chalk = require("chalk");
+const chalk_1 = require("chalk");
 const chokidar = require("chokidar");
 const sourcemaps = require("gulp-sourcemaps");
 const GulpLog_1 = require("./GulpLog");
@@ -30,19 +30,19 @@ class Compiler {
         this.registerAllTasks();
     }
     chat() {
-        GulpLog_1.default('Using output folder', chalk.cyan(this.settings.outputFolder));
+        GulpLog_1.default('Using output folder', chalk_1.default.cyan(this.settings.outputFolder));
         if (this.flags.minify) {
-            GulpLog_1.default(chalk.yellow("Production"), "mode: Outputs will be minified.", chalk.red("This process will slow down your build!"));
+            GulpLog_1.default(chalk_1.default.yellow("Production"), "mode: Outputs will be minified.", chalk_1.default.red("This process will slow down your build!"));
         }
         else {
-            GulpLog_1.default(chalk.yellow("Development"), "mode: Outputs are", chalk.red("NOT minified"), "in exchange for compilation speed.");
+            GulpLog_1.default(chalk_1.default.yellow("Development"), "mode: Outputs are", chalk_1.default.red("NOT minified"), "in exchange for compilation speed.");
             GulpLog_1.default("Do not forget to minify before pushing to repository or production environment!");
         }
         if (this.flags.watch) {
-            GulpLog_1.default(chalk.yellow("Watch"), "mode: Source codes will be automatically compiled on changes.");
+            GulpLog_1.default(chalk_1.default.yellow("Watch"), "mode: Source codes will be automatically compiled on changes.");
         }
         if (!this.flags.map) {
-            GulpLog_1.default(chalk.yellow("Unmap"), "mode: Source maps disabled.");
+            GulpLog_1.default(chalk_1.default.yellow("Unmap"), "mode: Source maps disabled.");
         }
     }
     output(folder) {
@@ -145,12 +145,12 @@ class Compiler {
         let jsEntry = this.settings.jsEntry;
         if (!fse.existsSync(jsEntry)) {
             this.tasks.task('js', () => {
-                GulpLog_1.default('JS entry', chalk.cyan(jsEntry), 'was not found.', chalk.red('Aborting JS build.'));
+                GulpLog_1.default('JS entry', chalk_1.default.cyan(jsEntry), 'was not found.', chalk_1.default.red('Aborting JS build.'));
             });
             return;
         }
         this.tasks.task('js', () => {
-            GulpLog_1.default('Compiling JS', chalk.cyan(jsEntry));
+            GulpLog_1.default('Compiling JS', chalk_1.default.cyan(jsEntry));
             let config = this.createWebpackConfig();
             webpack(config, (error, stats) => {
                 GulpLog_1.default('Finished JS compilation:');
@@ -185,7 +185,7 @@ class Compiler {
         let cssEntry = this.settings.cssEntry;
         if (!fse.existsSync(cssEntry)) {
             this.tasks.task('css', () => {
-                GulpLog_1.default('CSS entry', chalk.cyan(cssEntry), 'was not found.', chalk.red('Aborting CSS build.'));
+                GulpLog_1.default('CSS entry', chalk_1.default.cyan(cssEntry), 'was not found.', chalk_1.default.red('Aborting CSS build.'));
             });
             return;
         }
@@ -193,7 +193,7 @@ class Compiler {
             sourceRoot: '/' + this.settings.input + '/css'
         };
         this.tasks.task('css:compile', () => {
-            GulpLog_1.default('Compiling CSS', chalk.cyan(cssEntry));
+            GulpLog_1.default('Compiling CSS', chalk_1.default.cyan(cssEntry));
             let sassImports = [this.settings.npmFolder];
             return this.getCssEntryVinyl()
                 .pipe(this.flags.map ? sourcemaps.init() : through2.obj())
@@ -220,7 +220,7 @@ class Compiler {
         let hasPackageJson = fse.existsSync(this.settings.packageJson);
         let restore = hasPackageJson && !hasNodeModules;
         if (restore) {
-            GulpLog_1.default(chalk.cyan('node_modules'), 'folder not found. Performing automatic package restore...');
+            GulpLog_1.default(chalk_1.default.cyan('node_modules'), 'folder not found. Performing automatic package restore...');
         }
         return restore;
     }
@@ -250,13 +250,13 @@ class Compiler {
     }
     registerConcatTask() {
         let concatCount = this.settings.concatCount;
-        GulpLog_1.default('Resolving', chalk.cyan(concatCount.toString()), 'concatenation targets...');
+        GulpLog_1.default('Resolving', chalk_1.default.cyan(concatCount.toString()), 'concatenation targets...');
         if (concatCount === 0) {
             this.tasks.task('concat', () => { });
             return;
         }
         if (this.flags.watch) {
-            GulpLog_1.default("Concatenation task will be run once and", chalk.red("NOT watched!"));
+            GulpLog_1.default("Concatenation task will be run once and", chalk_1.default.red("NOT watched!"));
         }
         this.tasks.task('concat', () => {
             let g = through2.obj();
@@ -264,7 +264,7 @@ class Compiler {
             for (let target in resolution) {
                 let ar = resolution[target];
                 if (!ar || ar.length === 0) {
-                    GulpLog_1.default(chalk.red('WARNING'), 'concat modules definition for', chalk.blue(target), 'is empty!');
+                    GulpLog_1.default(chalk_1.default.red('WARNING'), 'concat modules definition for', chalk_1.default.blue(target), 'is empty!');
                     concatCount--;
                     if (concatCount === 0) {
                         g.push(null);
@@ -273,7 +273,7 @@ class Compiler {
                 }
                 if (typeof ar === 'string') {
                     ar = [ar];
-                    GulpLog_1.default(chalk.red('WARNING'), 'concat modules definition for', chalk.blue(target), 'is a', chalk.yellow('string'), 'instead of a', chalk.yellow('string[]'));
+                    GulpLog_1.default(chalk_1.default.red('WARNING'), 'concat modules definition for', chalk_1.default.blue(target), 'is a', chalk_1.default.yellow('string'), 'instead of a', chalk_1.default.yellow('string[]'));
                 }
                 this.resolveThenConcatenate(ar).then(result => {
                     g.push(new vinyl({
@@ -281,7 +281,7 @@ class Compiler {
                         contents: Buffer.from(result)
                     }));
                 }).catch(error => {
-                    GulpLog_1.default(chalk.red('ERROR'), 'when concatenating', chalk.blue(target));
+                    GulpLog_1.default(chalk_1.default.red('ERROR'), 'when concatenating', chalk_1.default.blue(target));
                     console.error(error);
                 }).then(() => {
                     concatCount--;

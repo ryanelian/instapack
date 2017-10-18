@@ -2,7 +2,7 @@
 
 import instapack = require('./index');
 import * as CLI from 'yargs';
-import * as chalk from 'chalk';
+import chalk from 'chalk';
 import * as https from 'https';
 
 import * as autoprefixer from 'autoprefixer';

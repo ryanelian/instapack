@@ -1,4 +1,5 @@
-import * as chalk from 'chalk';
+import chalk from 'chalk';
+import { Chalk } from 'chalk';
 
 /**
  * Contain methods for creating a colored and formatted string representation of an object to CLI output.
@@ -7,22 +8,22 @@ export class PrettyObject {
     /**
      * Gets the coloring chalk for field names and symbols.
      */
-    readonly symbolChalk: chalk.ChalkChain;
+    readonly symbolChalk: Chalk;
 
     /**
      * Gets the coloring chalk for number or boolean value types.
      */
-    readonly ordinalChalk: chalk.ChalkChain;
+    readonly ordinalChalk: Chalk;
 
     /**
      * Gets the coloring chalk for string value types.
      */
-    readonly stringChalk: chalk.ChalkChain;
+    readonly stringChalk: Chalk;
 
     /**
      * Gets the coloring chalk for null or undefined value types.
      */
-    readonly nullChalk: chalk.ChalkChain;
+    readonly nullChalk: Chalk;
 
     /**
      * Constructs a pretty renderer using selected color for display components. 
@@ -116,7 +117,7 @@ export class PrettyObject {
             return result.join('\n');
         } else if (typeof o === 'object') {
             if (this.isSassError(o)) {
-                return chalk.red(o['formatted']);
+                return chalk.red(o['formatted'] as string);
             }
 
             let result = [];

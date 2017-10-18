@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const chalk = require("chalk");
+const chalk_1 = require("chalk");
 const PrettyObject_1 = require("./PrettyObject");
 let p = new PrettyObject_1.PrettyObject();
 function PipeErrorHandler(error) {
@@ -8,7 +8,7 @@ function PipeErrorHandler(error) {
         console.error(p.render(error));
     }
     catch (ex) {
-        console.error(chalk.red(error));
+        console.error(chalk_1.default.red(error));
     }
     this.emit('end');
 }

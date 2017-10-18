@@ -1,12 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const chalk = require("chalk");
+const chalk_1 = require("chalk");
 class PrettyObject {
     constructor(symbolColor = 'red', ordinalColor = 'green', stringColor = 'whiteBright', nullColor = 'gray') {
-        this.symbolChalk = chalk[symbolColor];
-        this.ordinalChalk = chalk[ordinalColor];
-        this.stringChalk = chalk[stringColor];
-        this.nullChalk = chalk[nullColor];
+        this.symbolChalk = chalk_1.default[symbolColor];
+        this.ordinalChalk = chalk_1.default[ordinalColor];
+        this.stringChalk = chalk_1.default[stringColor];
+        this.nullChalk = chalk_1.default[nullColor];
     }
     isObject(o) {
         return (o !== null) && (o !== undefined) && (typeof o === 'object');
@@ -61,7 +61,7 @@ class PrettyObject {
         }
         else if (typeof o === 'object') {
             if (this.isSassError(o)) {
-                return chalk.red(o['formatted']);
+                return chalk_1.default.red(o['formatted']);
             }
             let result = [];
             for (let key of Object.keys(o).sort()) {

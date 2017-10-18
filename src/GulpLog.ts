@@ -1,4 +1,4 @@
-import * as chalk from 'chalk';
+import chalk from 'chalk';
 
 /**
  * Converts a number into a string. If the number is less than 10, adds 0 as prefix.

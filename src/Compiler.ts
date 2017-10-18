@@ -6,7 +6,7 @@ import * as through2 from 'through2';
 import * as fse from 'fs-extra';
 import * as path from 'path';
 import * as resolve from 'resolve';
-import * as chalk from 'chalk';
+import chalk from 'chalk';
 import * as chokidar from 'chokidar';
 import * as sourcemaps from 'gulp-sourcemaps';
 

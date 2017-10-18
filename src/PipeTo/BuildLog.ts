@@ -1,5 +1,5 @@
 import * as through2 from 'through2';
-import * as chalk from 'chalk';
+import chalk from 'chalk';
 import glog from '../GulpLog';
 
 const bigUnitPrefix = ['', 'k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'];

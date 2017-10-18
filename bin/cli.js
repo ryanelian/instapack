@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const instapack = require("./index");
 const CLI = require("yargs");
-const chalk = require("chalk");
+const chalk_1 = require("chalk");
 const https = require("https");
 const autoprefixer = require("autoprefixer");
 const PrettyObject_1 = require("./PrettyObject");
@@ -39,7 +39,7 @@ function echo(command, subCommand, writeDescription = false) {
     if (!subCommand) {
         subCommand = '';
     }
-    console.log(chalk.yellow(packageInfo.name) + ' ' + chalk.green(packageInfo.version) + ' ' + command + ' ' + subCommand);
+    console.log(chalk_1.default.yellow(packageInfo.name) + ' ' + chalk_1.default.green(packageInfo.version) + ' ' + command + ' ' + subCommand);
     if (writeDescription) {
         console.log(packageInfo.description);
     }
@@ -112,8 +112,8 @@ function updateNag() {
     updater.abort();
     if (outdated) {
         console.log();
-        console.log(chalk.yellow('instapack') + ' is outdated. New version: ' + chalk.green(masterVersion));
-        console.log('Run ' + chalk.blue('yarn global upgrade instapack') + ' or ' + chalk.blue('npm update -g instapack') + ' to update!');
+        console.log(chalk_1.default.yellow('instapack') + ' is outdated. New version: ' + chalk_1.default.green(masterVersion));
+        console.log('Run ' + chalk_1.default.blue('yarn global upgrade instapack') + ' or ' + chalk_1.default.blue('npm update -g instapack') + ' to update!');
     }
     outdated = false;
 }

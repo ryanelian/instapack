@@ -70,7 +70,7 @@ module.exports = function (this: loader.LoaderContext, template: string) {
             break;
         }
         default: {
-            error = 'Unknown templatify compilation mode!';
+            error = 'Unknown template-loader mode: ' + options.mode;
         }
     }
 

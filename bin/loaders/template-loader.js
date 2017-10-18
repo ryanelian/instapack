@@ -60,7 +60,7 @@ module.exports = function (template) {
             break;
         }
         default: {
-            error = 'Unknown templatify compilation mode!';
+            error = 'Unknown template-loader mode: ' + options.mode;
         }
     }
     template = 'module.exports = ' + template;

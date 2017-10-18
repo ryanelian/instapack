@@ -140,7 +140,7 @@ instapack puts configuration inside `package.json` to reduce project files clutt
     }
   },
   "dependencies": {
-    "@types/node": "^8.0.34",
+    "@types/requirejs": "^2.1.31",
     "axios": "^0.16.2",
     "bootstrap": "4.0.0-beta",
     "bootstrap.native": "^2.0.17",
@@ -150,7 +150,7 @@ instapack puts configuration inside `package.json` to reduce project files clutt
     "moment": "^2.19.1",
     "noty": "^3.1.3",
     "tslib": "^1.8.0",
-    "vue": "^2.5.1",
+    "vue": "^2.5.2",
     "vue-class-component": "^6.0.0"
   }
 }
@@ -160,11 +160,11 @@ instapack puts configuration inside `package.json` to reduce project files clutt
 
 - `output` allows setting the output folder name. By default, it is set to `wwwroot`.
 
-- `alias` allows overriding module `import` calls from all files, including sub-dependencies. Read more: https://webpack.js.org/configuration/resolve/
+- `alias` allows overriding module `import` calls from all files, including dependencies. Read more: https://webpack.js.org/configuration/resolve/
 
   - This was needed because the default Vue.js package main file points to runtime-only build, which does not include the HTML template compiler... To avoid using this, read the template configuration below.
 
-- `externals` allows rewriting module `import` calls from all files, including sub-dependencies, to globally exposed objects via `window` object. Read more: https://webpack.js.org/configuration/externals/. For example:
+- `externals` allows rewriting module `import` calls from all files, including dependencies, to globally exposed objects via `window` object. Read more: https://webpack.js.org/configuration/externals/. For example:
 
 ```json
 {

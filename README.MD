@@ -142,7 +142,7 @@ instapack puts configuration inside `package.json` to reduce project files clutt
   "dependencies": {
     "@types/requirejs": "^2.1.31",
     "axios": "^0.16.2",
-    "bootstrap": "4.0.0-beta",
+    "bootstrap": "4.0.0-beta.2",
     "bootstrap.native": "^2.0.17",
     "es6-promise": "^4.1.1",
     "font-awesome": "^4.7.0",
@@ -156,13 +156,13 @@ instapack puts configuration inside `package.json` to reduce project files clutt
 }
 ```
 
-- `input` allows setting the input folder name. By default, it is set to `client`.
+- `input` allows setting the input folder name. By default, it is set to `client`
 
-- `output` allows setting the output folder name. By default, it is set to `wwwroot`.
+- `output` allows setting the output folder name. By default, it is set to `wwwroot`
 
-- `jsOut` allows setting the JS output file name. By default, it is set to `ipack.js`.
+- `jsOut` allows setting the JS output file name. By default, it is set to `ipack.js`
 
-- `cssOut` allows setting the CSS output file name. By default, it is set to `ipack.css`.
+- `cssOut` allows setting the CSS output file name. By default, it is set to `ipack.css`
 
 - `alias` allows overriding module `import` calls from all files, including dependencies. Read more: https://webpack.js.org/configuration/resolve/
 
@@ -183,7 +183,7 @@ instapack puts configuration inside `package.json` to reduce project files clutt
 converts this...
 
 ```ts
-import jQuery from 'jquery'
+import jQuery from 'jquery';
 ```
 
 into this...
@@ -235,9 +235,9 @@ so that you can use this! :tada:
   - `vue` exports templates as modules containing `render` and `staticRenderFns` properties to be passed into a Vue.js component options.
 
 ```ts
-import Vue from 'vue'
-import Component from 'vue-class-component'
-import { render, staticRenderFns } from './MyComponent.html'
+import Vue from 'vue';
+import Component from 'vue-class-component';
+import { render, staticRenderFns } from './MyComponent.html';
 
 @Component({
     render, staticRenderFns

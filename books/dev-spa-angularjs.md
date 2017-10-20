@@ -1,5 +1,8 @@
 # Developing Single-Page Application with AngularJS
 
+> This guide was written for instapack 4, is outdated, and discontinued. However, the content should still be mostly correct!
+> You should try the newer [Developing Single-Page Application with Vue.js](https://github.com/ryanelian/instapack/blob/master/books/dev-spa-vue.md) guide!
+
 ## Getting Started
 
 `ipack new angular-material`
@@ -893,11 +896,3 @@ Explanation:
     - Read more about AngularJS forms and validations: https://docs.angularjs.org/guide/forms
 
 > **Warning:** Client-side validation cannot alone secure user input. Server side validation is also necessary.
-
-## Routing
-
-If you have successfully followed the guide up to this point, **congratulations**! :tada: You have mastered the ways of building a **component-based web application client**. You may use **server-side routing** to serve pages containing your developed components.
-
-However, there are cases when you need to develop a full **Single-Page Application (SPA)** powered by **client-side routing**.
-
-> TODO

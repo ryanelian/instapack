@@ -89,7 +89,7 @@ class Compiler {
         let config = {
             entry: this.settings.jsEntry,
             output: {
-                filename: 'bundle.js',
+                filename: 'ipack.js',
                 path: this.settings.outputJsFolder
             },
             externals: this.settings.externals,
@@ -168,7 +168,7 @@ class Compiler {
             });
         });
     }
-    getCssEntryVinyl() {
+    pipeCssEntryVinyl() {
         let g = through2.obj();
         fse.readFile(this.settings.cssEntry, 'utf8').then(contents => {
             g.push(new vinyl({
@@ -195,7 +195,7 @@ class Compiler {
         this.tasks.task('css:compile', () => {
             GulpLog_1.default('Compiling CSS', chalk_1.default.cyan(cssEntry));
             let sassImports = [this.settings.npmFolder];
-            return this.getCssEntryVinyl()
+            return this.pipeCssEntryVinyl()
                 .pipe(this.flags.map ? sourcemaps.init() : through2.obj())
                 .pipe(To.Sass(sassImports))
                 .on('error', PipeErrorHandler_1.default)

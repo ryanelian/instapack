@@ -36,7 +36,7 @@ class Settings {
         return path.join(this.inputJsFolder, 'index.ts');
     }
     get cssEntry() {
-        return path.join(this.inputCssFolder, 'site.scss');
+        return path.join(this.inputCssFolder, 'index.scss');
     }
     get scssGlob() {
         return path.join(this.inputCssFolder, '**', '*.scss');

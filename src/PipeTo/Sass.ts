@@ -3,10 +3,6 @@ import * as through2 from 'through2';
 import * as path from 'path';
 import * as applySourceMap from 'vinyl-sourcemaps-apply';
 
-function replaceExtension(path: string, newExt: string) {
-    return path.substr(0, path.lastIndexOf('.')) + newExt;
-}
-
 /**
  * Creates a new build pipe that performs compilation against piped Sass file entry point.
  * Allows including folder path for resolving @import.
@@ -50,8 +46,11 @@ export function Sass(includePaths: string[]) {
                 applySourceMap(chunk, smap);
             }
 
+            let newPath = path.join(path.dirname(chunk.path), 'ipack.css');
+            // E:\VS\TAM.Passport\TAM.Passport\client\css\site.scss --> E:\VS\TAM.Passport\TAM.Passport\client\css\ipack.css
+
             chunk.contents = result.css;
-            chunk.path = replaceExtension(chunk.path, '.css');
+            chunk.path = newPath;
 
             next(null, chunk);
         });

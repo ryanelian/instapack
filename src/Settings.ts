@@ -126,17 +126,17 @@ export class Settings {
     }
 
     /**
-     * Gets the full path to the index.ts entry point.
+     * Gets the full path to the TypeScript project entry point.
      */
     get jsEntry(): string {
         return path.join(this.inputJsFolder, 'index.ts');
     }
 
     /**
-     * Gets the full path to the site.scss entry point.
+     * Gets the full path to the Sass project entry point.
      */
     get cssEntry(): string {
-        return path.join(this.inputCssFolder, 'site.scss');
+        return path.join(this.inputCssFolder, 'index.scss');
     }
 
     /**

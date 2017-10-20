@@ -2,10 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const sass = require("node-sass");
 const through2 = require("through2");
+const path = require("path");
 const applySourceMap = require("vinyl-sourcemaps-apply");
-function replaceExtension(path, newExt) {
-    return path.substr(0, path.lastIndexOf('.')) + newExt;
-}
 function Sass(includePaths) {
     return through2.obj(function (chunk, enc, next) {
         if (chunk.isNull()) {
@@ -36,8 +34,9 @@ function Sass(includePaths) {
                 let smap = JSON.parse(result.map.toString());
                 applySourceMap(chunk, smap);
             }
+            let newPath = path.join(path.dirname(chunk.path), 'ipack.css');
             chunk.contents = result.css;
-            chunk.path = replaceExtension(chunk.path, '.css');
+            chunk.path = newPath;
             next(null, chunk);
         });
     });

@@ -71,9 +71,9 @@ With **one compiler to rule them all**, you can save time :watch:, save precious
 
 Out of the box, these files will be used as the entry points:
 
-- `client/js/index.ts`, compiled to `wwwroot/js/packed.js`
+- `client/js/index.ts`, compiled to `wwwroot/js/ipack.js`
 
-- `client/css/index.scss`, compiled to `wwwroot/css/packed.css`
+- `client/css/index.scss`, compiled to `wwwroot/css/ipack.css`
 
   - The Sass language compiler service has been configured to enable `@import` from `node_modules`!
 

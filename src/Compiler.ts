@@ -144,7 +144,7 @@ export class Compiler {
         let config: webpack.Configuration = {
             entry: this.settings.jsEntry,
             output: {
-                filename: 'bundle.js',
+                filename: 'ipack.js',
                 path: this.settings.outputJsFolder
             },
             externals: this.settings.externals,
@@ -240,7 +240,7 @@ export class Compiler {
     /**
      * Pipes the CSS project entry point as a Vinyl object. 
      */
-    getCssEntryVinyl() {
+    pipeCssEntryVinyl() {
         let g = through2.obj();
 
         fse.readFile(this.settings.cssEntry, 'utf8').then(contents => {
@@ -278,7 +278,7 @@ export class Compiler {
             glog('Compiling CSS', chalk.cyan(cssEntry));
             let sassImports = [this.settings.npmFolder];
 
-            return this.getCssEntryVinyl()
+            return this.pipeCssEntryVinyl()
                 .pipe(this.flags.map ? sourcemaps.init() : through2.obj())
                 .pipe(To.Sass(sassImports))
                 .on('error', PipeErrorHandler)

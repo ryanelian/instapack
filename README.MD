@@ -31,7 +31,7 @@ Practical guides can be read in [books](https://github.com/ryanelian/instapack/t
 
 ## System Requirements
 
-Currently supported Node.js is [the latest LTS version](https://nodejs.org/en/download/).
+Currently supported Node.js is [the latest version 8 LTS](https://nodejs.org/en/download/).
 
 When using Visual Studio 2017 (Update 2 or above), install [the latest TypeScript SDK for Visual Studio 2017](https://www.microsoft.com/en-us/download/details.aspx?id=55258).
 
@@ -160,6 +160,10 @@ instapack puts configuration inside `package.json` to reduce project files clutt
 
 - `output` allows setting the output folder name. By default, it is set to `wwwroot`.
 
+- `jsOut` allows setting the JS output file name. By default, it is set to `ipack.js`.
+
+- `cssOut` allows setting the CSS output file name. By default, it is set to `ipack.css`.
+
 - `alias` allows overriding module `import` calls from all files, including dependencies. Read more: https://webpack.js.org/configuration/resolve/
 
   - This was needed because the default Vue.js package main file points to runtime-only build, which does not include the HTML template compiler... To avoid using this, read the template configuration below.
@@ -278,6 +282,28 @@ Add the packages required for your project using yarn / npm then start hacking. 
 
 Also, pull requests are welcomed if you have a great starting templates and books for those projects. We'd love to expand our collections!
 
+### I'm upgrading from instapack 4, any breaking changes that I should know?
+
+- Our supported Node.js runtime is now the latest version 8 LTS.
+
+  - [Node.js 8.3.0 and above](https://medium.com/the-node-js-collection/node-js-8-3-0-is-now-available-shipping-with-the-ignition-turbofan-execution-pipeline-aa5875ad3367) ships with [Ignition + Turbofan execution pipeline](https://v8project.blogspot.co.id/2017/05/launching-ignition-and-turbofan.html) which boost overall compiler performance and shrink memory footprints!
+
+  - Internally, we've moved from Browserify to the more modern **webpack** module bundler.
+
+- We have a new recommended `tsconfig.json`. Type: `ipack new tsconfig` in your project root folder to upgrade!
+
+  - It uses a brand new `ES2015` module code generation instead of `CommonJS`.
+
+  - It allows **Synthetic Default Imports** syntax for importing non-ES modules just like a default-exported ES modules!
+
+- We've changed the CSS input file entry point to `site.scss` to `index.scss`. **Please rename the said file!**
+
+- We've changed the default JS and CSS output file names to `ipack.js` (from `bundle.js`) and `ipack.css` (from `site.css`).
+
+  - Make sure to update your `<script src="...">` and `<link href="..." />` references from the HTML files!
+  
+  - If that action is prohibitive, simply use the new `jsOut` and `cssOut` options to emit output file names identical to instapack 4.
+
 ### Is this Windows only?
 
 The majority of developers using instapack are working full-time on ASP.NET Core MVC projects on Windows with Visual Studio on daily basis. This use case will be the core focus for tooling support.
@@ -291,6 +317,10 @@ instapack will not suddenly introduce Windows or Visual Studio exclusive feature
 [Nope.](https://medium.com/@asyncmax/the-right-way-to-bundle-your-assets-for-faster-sites-over-http-2-437c37efe3ff)
 
 Also, in IIS, HTTP/2 is only supported when using Windows Server 2016. Many of our customers are still using Windows Server 2012 R2 to date.
+
+### Can I change the index.ts / index.scss entry point?
+
+Nope.
 
 ### Can I change the js / css folder name?
 

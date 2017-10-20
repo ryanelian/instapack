@@ -55,14 +55,14 @@ Modify `/Pages/_Layout.cshtml` to reference the files created by instapack:
     <meta name="viewport" content="width=device-width" />
     <title>@ViewData["Title"]</title>
 
-    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="~/css/ipack.css" />
 </head>
 <body>
     <div class="container" id="app">
         @RenderBody()
     </div>
 
-    <script src="~/js/bundle.js"></script>
+    <script src="~/js/ipack.js"></script>
 </body>
 </html>
 ```

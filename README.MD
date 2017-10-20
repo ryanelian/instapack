@@ -288,19 +288,19 @@ Also, pull requests are welcomed if you have a great starting templates and book
 
   - [Node.js 8.3.0 and above](https://medium.com/the-node-js-collection/node-js-8-3-0-is-now-available-shipping-with-the-ignition-turbofan-execution-pipeline-aa5875ad3367) ships with [Ignition + Turbofan execution pipeline](https://v8project.blogspot.co.id/2017/05/launching-ignition-and-turbofan.html) which boost overall compiler performance and shrink memory footprints!
 
-  - Internally, we've moved from Browserify to the more modern **webpack** module bundler.
+  - Internally, we've moved from Browserify to the more modern webpack module bundler.
 
-- We have a new recommended `tsconfig.json`. Type: `ipack new tsconfig` in your project root folder to upgrade!
+- We have a new recommended `tsconfig.json`. Type: `ipack new tsconfig` in your project root folder (where the `package.json` and `tsconfig.json` is located) to upgrade!
 
-  - It uses a brand new `ES2015` module code generation instead of `CommonJS`.
+  - It uses a standardized `ES2015` module code generation instead of `CommonJS`
 
   - It allows **Synthetic Default Imports** syntax for importing non-ES modules just like a default-exported ES modules!
 
-- We've changed the CSS input file entry point to `site.scss` to `index.scss`. **Please rename the said file!**
+- We've changed the CSS input file entry point from `site.scss` to `index.scss`. **Please rename the said file!**
 
 - We've changed the default JS and CSS output file names to `ipack.js` (from `bundle.js`) and `ipack.css` (from `site.css`).
 
-  - Make sure to update your `<script src="...">` and `<link href="..." />` references from the HTML files!
+  - Make sure to update your `<script src="...">` and `<link href="..." />` references in the HTML files!
   
   - If that action is prohibitive, simply use the new `jsOut` and `cssOut` options to emit output file names identical to instapack 4.
 

@@ -26,7 +26,6 @@ Remove-Item .\bundleconfig.json     # we'll use instapack to bundle and minify J
 Remove-Item .\wwwroot\ -Recurse
 Remove-Item .\Pages\_ValidationScriptsPartial.cshtml    # death to jQuery!
 ipack new vue
-dotnet build
 ipack -dw
 ```
 
@@ -121,7 +120,7 @@ Then use your web browser to view the app index page. It should display `2` as a
 
 ## My First Component
 
-Component is a building block of a modern web app client. Component represents reusable code that may be invoked using standard HTML tag syntax. Component allows dividing a complex app into simpler and more maintainable parts.
+Component is a building block of a modern web app. Component represents reusable code that may be invoked using standard HTML tag syntax. Component allows dividing a complex app into simpler and more maintainable parts.
 
 Create a new file `/client/js/components/Greet.ts`:
 

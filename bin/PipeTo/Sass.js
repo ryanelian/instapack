@@ -4,7 +4,7 @@ const sass = require("node-sass");
 const through2 = require("through2");
 const path = require("path");
 const applySourceMap = require("vinyl-sourcemaps-apply");
-function Sass(includePaths) {
+function Sass(cssOut, includePaths) {
     return through2.obj(function (chunk, enc, next) {
         if (chunk.isNull()) {
             return next(null, chunk);
@@ -34,7 +34,7 @@ function Sass(includePaths) {
                 let smap = JSON.parse(result.map.toString());
                 applySourceMap(chunk, smap);
             }
-            let newPath = path.join(path.dirname(chunk.path), 'ipack.css');
+            let newPath = path.join(path.dirname(chunk.path), cssOut);
             chunk.contents = result.css;
             chunk.path = newPath;
             next(null, chunk);

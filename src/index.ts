@@ -42,7 +42,7 @@ export = class instapack {
      * Constructs instapack class instance using settings read from project.json. 
      */
     constructor() {
-        this.settings = Settings.tryRead();
+        this.settings = Settings.tryReadFromPackageJson();
     }
 
     /**

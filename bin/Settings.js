@@ -1,15 +1,26 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const path = require("path");
+class SettingsCore {
+}
+exports.SettingsCore = SettingsCore;
 class Settings {
-    constructor(root, input, output, concat, alias, externals, template) {
+    constructor(root, settings) {
         this.root = root || process.cwd();
-        this.input = input || 'client';
-        this.output = output || 'wwwroot';
-        this.concat = concat || {};
-        this.alias = alias || {};
-        this.externals = externals || {};
-        this.template = template || 'string';
+        this.input = settings.input || 'client';
+        this.output = settings.output || 'wwwroot';
+        this.concat = settings.concat || {};
+        this.alias = settings.alias || {};
+        this.externals = settings.externals || {};
+        this.template = settings.template || 'string';
+        this.jsOut = settings.jsOut || 'ipack.js';
+        if (this.jsOut.endsWith('.js') === false) {
+            this.jsOut += '.js';
+        }
+        this.cssOut = settings.cssOut || 'ipack.css';
+        if (this.cssOut.endsWith('.css') === false) {
+            this.cssOut += '.css';
+        }
     }
     get concatCount() {
         return Object.keys(this.concat).length;
@@ -50,11 +61,11 @@ class Settings {
     get outputCssFolder() {
         return path.join(this.outputFolder, 'css');
     }
-    static tryRead() {
-        let folder = process.cwd();
+    static tryReadFromPackageJson() {
+        let root = process.cwd();
         let parse;
         try {
-            let json = path.join(folder, 'package.json');
+            let json = path.join(root, 'package.json');
             parse = require(json).instapack;
         }
         catch (ex) {
@@ -62,7 +73,7 @@ class Settings {
         if (!parse) {
             parse = {};
         }
-        return new Settings(folder, parse.input, parse.output, parse.concat, parse.alias, parse.externals, parse.template);
+        return new Settings(root, parse);
     }
 }
 exports.Settings = Settings;

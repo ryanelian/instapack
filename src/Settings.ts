@@ -16,6 +16,20 @@ export interface ModuleOverrides {
 }
 
 /**
+ * Values required to construct an instapack Settings object.
+ */
+export class SettingsCore {
+    input: string;
+    output: string;
+    concat: ConcatenationLookup;
+    alias: ModuleOverrides;
+    externals: ModuleOverrides
+    template: string;
+    jsOut: string;
+    cssOut: string;
+}
+
+/**
  * Contains properties for setting the project builder class.
  */
 export class Settings {
@@ -55,25 +69,38 @@ export class Settings {
     readonly template: string;
 
     /**
-     * Constructs a new instance of Settings.
-     * @param root 
-     * @param input 
-     * @param output 
-     * @param concat 
-     * @param alias 
-     * @param externals 
-     * @param template 
+     * Gets the JS output file name.
      */
-    constructor(root: string, input: string, output: string,
-        concat: ConcatenationLookup, alias: ModuleOverrides, externals: ModuleOverrides,
-        template: string) {
+    readonly jsOut: string;
+
+    /**
+     * Gets the CSS output file name.
+     */
+    readonly cssOut: string;
+
+    /**
+     * Constructs a new instance of Settings using a root folder and an setting object parsed from package.json.
+     * @param root 
+     * @param settings 
+     */
+    constructor(root: string, settings: SettingsCore) {
         this.root = root || process.cwd();
-        this.input = input || 'client';
-        this.output = output || 'wwwroot';
-        this.concat = concat || {};
-        this.alias = alias || {};
-        this.externals = externals || {};
-        this.template = template || 'string';
+        this.input = settings.input || 'client';
+        this.output = settings.output || 'wwwroot';
+        this.concat = settings.concat || {};
+        this.alias = settings.alias || {};
+        this.externals = settings.externals || {};
+        this.template = settings.template || 'string';
+
+        this.jsOut = settings.jsOut || 'ipack.js';
+        if (this.jsOut.endsWith('.js') === false) {
+            this.jsOut += '.js';
+        }
+
+        this.cssOut = settings.cssOut || 'ipack.css';
+        if (this.cssOut.endsWith('.css') === false) {
+            this.cssOut += '.css';
+        }
     }
 
     /**
@@ -170,12 +197,12 @@ export class Settings {
     /**
      * Attempts to read the settings from package.json in the same folder where the command line is invoked at.
      */
-    static tryRead(): Settings {
-        let folder = process.cwd();
+    static tryReadFromPackageJson(): Settings {
+        let root = process.cwd();
         let parse: any;
 
         try {
-            let json = path.join(folder, 'package.json');
+            let json = path.join(root, 'package.json');
             // console.log('Loading settings ' + chalk.cyan(json));
             parse = require(json).instapack;
         } catch (ex) {
@@ -186,6 +213,6 @@ export class Settings {
             parse = {};
         }
 
-        return new Settings(folder, parse.input, parse.output, parse.concat, parse.alias, parse.externals, parse.template);
+        return new Settings(root, parse);
     }
 }

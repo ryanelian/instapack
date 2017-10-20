@@ -144,7 +144,7 @@ export class Compiler {
         let config: webpack.Configuration = {
             entry: this.settings.jsEntry,
             output: {
-                filename: 'ipack.js',
+                filename: this.settings.jsOut,
                 path: this.settings.outputJsFolder
             },
             externals: this.settings.externals,
@@ -280,7 +280,7 @@ export class Compiler {
 
             return this.pipeCssEntryVinyl()
                 .pipe(this.flags.map ? sourcemaps.init() : through2.obj())
-                .pipe(To.Sass(sassImports))
+                .pipe(To.Sass(this.settings.cssOut, sassImports))
                 .on('error', PipeErrorHandler)
                 .pipe(To.CssProcessors())
                 .on('error', PipeErrorHandler)
@@ -387,8 +387,13 @@ export class Compiler {
                 }
 
                 this.resolveThenConcatenate(ar).then(result => {
+                    let o = target;
+                    if (o.endsWith('.js') === false) {
+                        o += '.js';
+                    }
+
                     g.push(new vinyl({
-                        path: target + '.js',
+                        path: o,
                         contents: Buffer.from(result)
                     }));
                 }).catch(error => {

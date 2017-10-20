@@ -18,7 +18,7 @@ module.exports = class instapack {
         return templates;
     }
     constructor() {
-        this.settings = Settings_1.Settings.tryRead();
+        this.settings = Settings_1.Settings.tryReadFromPackageJson();
     }
     build(taskName, flags) {
         let compiler = new Compiler_1.Compiler(this.settings, flags);

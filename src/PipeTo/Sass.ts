@@ -6,9 +6,10 @@ import * as applySourceMap from 'vinyl-sourcemaps-apply';
 /**
  * Creates a new build pipe that performs compilation against piped Sass file entry point.
  * Allows including folder path for resolving @import.
+ * @param cssOut 
  * @param includePaths 
  */
-export function Sass(includePaths: string[]) {
+export function Sass(cssOut: string, includePaths: string[]) {
     return through2.obj(function (chunk, enc, next) {
         if (chunk.isNull()) {
             return next(null, chunk);
@@ -46,7 +47,7 @@ export function Sass(includePaths: string[]) {
                 applySourceMap(chunk, smap);
             }
 
-            let newPath = path.join(path.dirname(chunk.path), 'ipack.css');
+            let newPath = path.join(path.dirname(chunk.path), cssOut);
             // E:\VS\TAM.Passport\TAM.Passport\client\css\site.scss --> E:\VS\TAM.Passport\TAM.Passport\client\css\ipack.css
 
             chunk.contents = result.css;

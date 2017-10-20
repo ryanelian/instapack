@@ -89,7 +89,7 @@ class Compiler {
         let config = {
             entry: this.settings.jsEntry,
             output: {
-                filename: 'ipack.js',
+                filename: this.settings.jsOut,
                 path: this.settings.outputJsFolder
             },
             externals: this.settings.externals,
@@ -197,7 +197,7 @@ class Compiler {
             let sassImports = [this.settings.npmFolder];
             return this.pipeCssEntryVinyl()
                 .pipe(this.flags.map ? sourcemaps.init() : through2.obj())
-                .pipe(To.Sass(sassImports))
+                .pipe(To.Sass(this.settings.cssOut, sassImports))
                 .on('error', PipeErrorHandler_1.default)
                 .pipe(To.CssProcessors())
                 .on('error', PipeErrorHandler_1.default)
@@ -276,8 +276,12 @@ class Compiler {
                     GulpLog_1.default(chalk_1.default.red('WARNING'), 'concat modules definition for', chalk_1.default.blue(target), 'is a', chalk_1.default.yellow('string'), 'instead of a', chalk_1.default.yellow('string[]'));
                 }
                 this.resolveThenConcatenate(ar).then(result => {
+                    let o = target;
+                    if (o.endsWith('.js') === false) {
+                        o += '.js';
+                    }
                     g.push(new vinyl({
-                        path: target + '.js',
+                        path: o,
                         contents: Buffer.from(result)
                     }));
                 }).catch(error => {

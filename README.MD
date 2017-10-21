@@ -33,7 +33,11 @@ Practical guides can be read in [books](https://github.com/ryanelian/instapack/t
 
 Currently supported Node.js is [the latest version 8 LTS](https://nodejs.org/en/download/).
 
-When using Visual Studio 2017 (Update 2 or above), install [the latest TypeScript SDK for Visual Studio 2017](https://www.microsoft.com/en-us/download/details.aspx?id=55258).
+When using [Visual Studio 2017 (Update 2 or above)](https://www.visualstudio.com/downloads/), install [the latest TypeScript SDK for Visual Studio 2017](https://www.microsoft.com/en-us/download/details.aspx?id=55258).
+
+When using Visual Studio 2015 (Update 3 or above), install [the latest TypeScript SDK for Visual Studio 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48593).
+
+If using [the latest Visual Studio Code](https://code.visualstudio.com/), it should come with the latest TypeScript support out of the box.
 
 ## Features
 

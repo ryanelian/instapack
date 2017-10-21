@@ -34,7 +34,7 @@
     "postcss-discard-comments": "4.0.0-rc.2",
     "resolve": "1.4.0",
     "through2": "2.0.3",
-    "ts-loader": "3.0.4",
+    "ts-loader": "3.0.5",
     "typescript": "2.6.0-rc",
     "uglify-js": "3.1.4",
     "undertaker": "1.2.0",

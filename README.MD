@@ -302,7 +302,16 @@ Also, pull requests are welcomed if you have a great starting templates and book
 
   - Make sure to update your `<script src="...">` and `<link href="..." />` references in the HTML files!
   
-  - If that action is prohibitive, simply use the new `jsOut` and `cssOut` options to emit output file names identical to instapack 4.
+  - If that action is prohibitive, simply use the new `jsOut` and `cssOut` options to emit output file names identical to instapack 4:
+
+```json
+{
+  "instapack": {
+    "jsOut": "bundle.js",
+    "cssOut": "site.css",
+  }
+}
+```
 
 ### Is this Windows only?
 

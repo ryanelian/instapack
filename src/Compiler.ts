@@ -15,6 +15,7 @@ import glog from './GulpLog';
 import PipeErrorHandler from './PipeErrorHandler';
 import * as To from './PipeTo';
 import { Settings, ConcatenationLookup } from './Settings';
+import { prettyBytes, prettyMilliseconds } from './PrettyUnits';
 
 /**
  * Defines build flags to be used by Compiler class.
@@ -219,20 +220,36 @@ export class Compiler {
 
             let config = this.createWebpackConfig();
             webpack(config, (error, stats) => {
-                glog('Finished JS compilation:');
 
                 if (error) {
+                    console.error('Fatal error during JS Compilation:');
                     console.error(error);
                     return;
                 }
 
-                console.log(stats.toString({
-                    colors: true,
-                    version: false,
-                    hash: false,
-                    modules: false,
-                    assets: !stats.hasErrors()
-                }));
+                let o = stats.toJson();
+
+                for (let asset of o.assets) {
+                    if (asset.emitted) {
+                        let kb = prettyBytes(asset.size);
+                        glog(chalk.blue(asset.name), chalk.magenta(kb));
+                    }
+                }
+
+                if (stats.hasErrors() || stats.hasWarnings()) {
+                    console.log(stats.toString({
+                        colors: true,
+                        version: false,
+                        hash: false,
+                        timings: false,
+                        modules: false,
+                        assets: false,
+                        chunks: false
+                    }));
+                }
+
+                let t = prettyMilliseconds(o.time);
+                glog('Finished JS compilation after', chalk.green(t));
             });
         });
     }

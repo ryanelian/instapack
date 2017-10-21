@@ -21,6 +21,7 @@ const sourcemaps = require("gulp-sourcemaps");
 const GulpLog_1 = require("./GulpLog");
 const PipeErrorHandler_1 = require("./PipeErrorHandler");
 const To = require("./PipeTo");
+const PrettyUnits_1 = require("./PrettyUnits");
 class Compiler {
     constructor(settings, flags) {
         this.settings = settings;
@@ -153,18 +154,31 @@ class Compiler {
             GulpLog_1.default('Compiling JS', chalk_1.default.cyan(jsEntry));
             let config = this.createWebpackConfig();
             webpack(config, (error, stats) => {
-                GulpLog_1.default('Finished JS compilation:');
                 if (error) {
+                    console.error('Fatal error during JS Compilation:');
                     console.error(error);
                     return;
                 }
-                console.log(stats.toString({
-                    colors: true,
-                    version: false,
-                    hash: false,
-                    modules: false,
-                    assets: !stats.hasErrors()
-                }));
+                let o = stats.toJson();
+                for (let asset of o.assets) {
+                    if (asset.emitted) {
+                        let kb = PrettyUnits_1.prettyBytes(asset.size);
+                        GulpLog_1.default(chalk_1.default.blue(asset.name), chalk_1.default.magenta(kb));
+                    }
+                }
+                if (stats.hasErrors() || stats.hasWarnings()) {
+                    console.log(stats.toString({
+                        colors: true,
+                        version: false,
+                        hash: false,
+                        timings: false,
+                        modules: false,
+                        assets: false,
+                        chunks: false
+                    }));
+                }
+                let t = PrettyUnits_1.prettyMilliseconds(o.time);
+                GulpLog_1.default('Finished JS compilation after', chalk_1.default.green(t));
             });
         });
     }

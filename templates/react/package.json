@@ -7,11 +7,11 @@
     "concat": {}
   },
   "dependencies": {
-    "@types/react": "^16.0.15",
+    "@types/react": "^16.0.17",
     "@types/react-dom": "^16.0.2",
     "@types/react-redux": "^5.0.10",
     "@types/requirejs": "^2.1.31",
-    "axios": "^0.16.2",
+    "axios": "^0.17.0",
     "es6-promise": "^4.1.1",
     "font-awesome": "^4.7.0",
     "linqts": "^1.10.0",

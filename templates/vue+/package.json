@@ -30,7 +30,7 @@
   "dependencies": {
     "@types/requirejs": "^2.1.31",
     "aspnet-validation": "^0.0.3",
-    "axios": "^0.16.2",
+    "axios": "^0.17.0",
     "bootstrap": "4.0.0-beta.2",
     "bootstrap.native": "^2.0.17",
     "es6-promise": "^4.1.1",

@@ -13,8 +13,10 @@ function Sass(cssOut, includePaths) {
             let error = new Error('Sass: Streaming is not supported!');
             return next(error);
         }
+        let outFile = path.join(path.dirname(chunk.path), cssOut);
         let options = {
-            outputStyle: 'compressed'
+            outputStyle: 'compressed',
+            outFile: outFile
         };
         let createSourceMap = Boolean(chunk.sourceMap);
         options.data = chunk.contents.toString();
@@ -30,13 +32,12 @@ function Sass(cssOut, includePaths) {
                 next(error);
                 return;
             }
+            chunk.path = outFile;
+            chunk.contents = result.css;
             if (createSourceMap) {
                 let smap = JSON.parse(result.map.toString());
                 applySourceMap(chunk, smap);
             }
-            let newPath = path.join(path.dirname(chunk.path), cssOut);
-            chunk.contents = result.css;
-            chunk.path = newPath;
             next(null, chunk);
         });
     });

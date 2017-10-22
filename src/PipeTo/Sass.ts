@@ -20,9 +20,13 @@ export function Sass(cssOut: string, includePaths: string[]) {
             return next(error);
         }
 
+        // E:\VS\TAM.Passport\TAM.Passport\client\css\site.scss --> E:\VS\TAM.Passport\TAM.Passport\client\css\ipack.css
+        let outFile = path.join(path.dirname(chunk.path), cssOut);
+
         // outputStyle "compressed" on Sass options + cssnano discardComments eliminated the PostCSS phantom source map. BUT HOW?!?
         let options: sass.Options = {
-            outputStyle: 'compressed'
+            outputStyle: 'compressed',
+            outFile: outFile
         };
         let createSourceMap = Boolean(chunk.sourceMap);
 
@@ -42,16 +46,13 @@ export function Sass(cssOut: string, includePaths: string[]) {
                 return;
             }
 
+            chunk.path = outFile;
+            chunk.contents = result.css;
+
             if (createSourceMap) {
                 let smap = JSON.parse(result.map.toString()) as sourceMap.RawSourceMap;
                 applySourceMap(chunk, smap);
             }
-
-            let newPath = path.join(path.dirname(chunk.path), cssOut);
-            // E:\VS\TAM.Passport\TAM.Passport\client\css\site.scss --> E:\VS\TAM.Passport\TAM.Passport\client\css\ipack.css
-
-            chunk.contents = result.css;
-            chunk.path = newPath;
 
             next(null, chunk);
         });

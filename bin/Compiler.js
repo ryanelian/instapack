@@ -33,7 +33,7 @@ class Compiler {
     chat() {
         GulpLog_1.default('Using output folder', chalk_1.default.cyan(this.settings.outputFolder));
         if (this.flags.minify) {
-            GulpLog_1.default(chalk_1.default.yellow("Production"), "Mode: Outputs will be minified.", chalk_1.default.red("(Slow build!)"));
+            GulpLog_1.default(chalk_1.default.yellow("Production"), "Mode: Outputs will be minified.", chalk_1.default.red("(Slow build)"));
         }
         else {
             GulpLog_1.default(chalk_1.default.yellow("Development"), "Mode: Outputs will", chalk_1.default.red("NOT be minified!"), "(Fast build)");
@@ -145,7 +145,7 @@ class Compiler {
         let jsEntry = this.settings.jsEntry;
         if (!fse.existsSync(jsEntry)) {
             this.tasks.task('js', () => {
-                GulpLog_1.default('JS entry', chalk_1.default.cyan(jsEntry), 'was not found.', chalk_1.default.red('Aborting JS build.'));
+                GulpLog_1.default('Entry file', chalk_1.default.cyan(jsEntry), 'was not found.', chalk_1.default.red('Aborting JS build.'));
             });
             return;
         }
@@ -182,7 +182,7 @@ class Compiler {
             });
         });
     }
-    pipeCssEntryVinyl() {
+    streamCssEntryVinyl() {
         let g = through2.obj();
         fse.readFile(this.settings.cssEntry, 'utf8').then(contents => {
             g.push(new vinyl({
@@ -199,7 +199,7 @@ class Compiler {
         let cssEntry = this.settings.cssEntry;
         if (!fse.existsSync(cssEntry)) {
             this.tasks.task('css', () => {
-                GulpLog_1.default('CSS entry', chalk_1.default.cyan(cssEntry), 'was not found.', chalk_1.default.red('Aborting CSS build.'));
+                GulpLog_1.default('Entry file', chalk_1.default.cyan(cssEntry), 'was not found.', chalk_1.default.red('Aborting CSS build.'));
             });
             return;
         }
@@ -209,7 +209,7 @@ class Compiler {
         this.tasks.task('css:compile', () => {
             GulpLog_1.default('Compiling CSS', chalk_1.default.cyan(cssEntry));
             let sassImports = [this.settings.npmFolder];
-            return this.pipeCssEntryVinyl()
+            return this.streamCssEntryVinyl()
                 .pipe(this.flags.map ? sourcemaps.init() : through2.obj())
                 .pipe(To.Sass(this.settings.cssOut, sassImports))
                 .on('error', PipeErrorHandler_1.default)

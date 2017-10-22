@@ -67,7 +67,7 @@ export class Compiler {
         glog('Using output folder', chalk.cyan(this.settings.outputFolder));
 
         if (this.flags.minify) {
-            glog(chalk.yellow("Production"), "Mode: Outputs will be minified.", chalk.red("(Slow build!)"));
+            glog(chalk.yellow("Production"), "Mode: Outputs will be minified.", chalk.red("(Slow build)"));
         } else {
             glog(chalk.yellow("Development"), "Mode: Outputs will", chalk.red("NOT be minified!"), "(Fast build)");
             glog(chalk.red("Do not forget to minify"), "before pushing to repository or production server!");
@@ -209,7 +209,7 @@ export class Compiler {
 
         if (!fse.existsSync(jsEntry)) {
             this.tasks.task('js', () => {
-                glog('JS entry', chalk.cyan(jsEntry), 'was not found.', chalk.red('Aborting JS build.'));
+                glog('Entry file', chalk.cyan(jsEntry), 'was not found.', chalk.red('Aborting JS build.'));
             });
             return;
         }
@@ -257,7 +257,7 @@ export class Compiler {
     /**
      * Pipes the CSS project entry point as a Vinyl object. 
      */
-    pipeCssEntryVinyl() {
+    streamCssEntryVinyl() {
         let g = through2.obj();
 
         fse.readFile(this.settings.cssEntry, 'utf8').then(contents => {
@@ -282,7 +282,7 @@ export class Compiler {
 
         if (!fse.existsSync(cssEntry)) {
             this.tasks.task('css', () => {
-                glog('CSS entry', chalk.cyan(cssEntry), 'was not found.', chalk.red('Aborting CSS build.'));
+                glog('Entry file', chalk.cyan(cssEntry), 'was not found.', chalk.red('Aborting CSS build.'));
             });
             return;
         }
@@ -295,7 +295,7 @@ export class Compiler {
             glog('Compiling CSS', chalk.cyan(cssEntry));
             let sassImports = [this.settings.npmFolder];
 
-            return this.pipeCssEntryVinyl()
+            return this.streamCssEntryVinyl()
                 .pipe(this.flags.map ? sourcemaps.init() : through2.obj())
                 .pipe(To.Sass(this.settings.cssOut, sassImports))
                 .on('error', PipeErrorHandler)

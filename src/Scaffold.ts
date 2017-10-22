@@ -53,13 +53,13 @@ export class Scaffold {
         }
 
         console.log('Initializing new project using template: ' + chalk.cyan(name));
-        console.log('Scaffolding project into your web application...');
+        console.log('Scaffolding project into your web app...');
         fse.copySync(templateFolder, thisFolder);
         console.log(chalk.green('Scaffold completed.') + ' Restoring packages for you...');
 
         this.restorePackages();
 
         console.log(chalk.green('Package restored successfully!'));
-        console.log('To build the application, type: ' + chalk.yellow('ipack'));
+        console.log('To build the app, type: ' + chalk.yellow('ipack'));
     }
 }

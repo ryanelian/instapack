@@ -43,7 +43,7 @@ let app = new instapack();
 CLI.version(packageInfo.version);
 
 /**
- * Writes application name, version number, command and sub-command to the console output.
+ * Writes app name, version number, command and sub-command to the console output.
  * @param command 
  * @param subCommand 
  * @param writeDescription 
@@ -62,7 +62,7 @@ function echo(command: string, subCommand: string, writeDescription = false) {
 
 CLI.command({
     command: 'build [project]',
-    describe: 'Compiles the web application client project.',
+    describe: 'Builds the web app client project!',
     aliases: ['*'],
     builder: yargs => {
         return yargs.choices('project', app.availableTasks)
@@ -74,7 +74,7 @@ CLI.command({
                 describe: 'Disables output files minification.'
             }).option('u', {
                 alias: 'unmap',
-                describe: 'Disables sourcemaps.'
+                describe: 'Disables source maps.'
             });
     },
     handler: argv => {
@@ -100,7 +100,7 @@ CLI.command({
 
 CLI.command({
     command: 'new [template]',
-    describe: 'Scaffolds a new web application client project.',
+    describe: 'Scaffolds a new web app client project.',
     builder: yargs => {
         return yargs.choices('template', app.availableTemplates);
     },
@@ -114,7 +114,7 @@ CLI.command({
 
 CLI.command({
     command: 'info',
-    describe: 'Displays instapack dependencies, loaded settings, and autoprefixer information.',
+    describe: 'Displays instapack dependencies, loaded configurations, and autoprefixer information.',
     handler: argv => {
         echo('info', null);
 

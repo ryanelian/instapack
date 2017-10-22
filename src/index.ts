@@ -6,7 +6,7 @@ import * as fse from 'fs-extra';
 import * as path from 'path';
 
 /**
- * Exposes methods for developing a web application client project.
+ * Exposes methods for developing a web app client project.
  */
 export = class instapack {
     /**
@@ -46,7 +46,7 @@ export = class instapack {
     }
 
     /**
-     * Performs web application client project compilation using a pre-configured task and build flags.
+     * Performs web app client project compilation using a pre-configured task and build flags.
      * @param taskName 
      * @param flags 
      */
@@ -61,7 +61,7 @@ export = class instapack {
     }
 
     /**
-     * Performs web application client project initialization using a template shipped in templates folder.
+     * Performs new web app client project scaffolding using a template shipped in templates folder.
      * @param template 
      */
     scaffold(template: string) {

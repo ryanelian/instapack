@@ -1,6 +1,6 @@
 # instapack
 
-> All-in-one web application client project compiler using TypeScript and Sass! :package: :rocket:
+> All-in-one web app client project compiler using TypeScript and Sass! :package: :rocket:
 
 [![npm](https://img.shields.io/npm/v/instapack.svg)](https://www.npmjs.com/package/instapack) [![Build Status](https://travis-ci.org/ryanelian/instapack.svg?branch=master)](https://travis-ci.org/ryanelian/instapack)
 
@@ -15,7 +15,7 @@
 ```powershell
 cd E:\VS\MyWebApp
 ipack new empty
-ipack -dw
+ipack
 ```
 
 [Programmable API](https://github.com/ryanelian/instapack/blob/master/src/index.ts) is also provided if you wish to integrate instapack into your very own build script:
@@ -91,7 +91,7 @@ You may use `instapack` or `ipack` or `ipk` to invoke the command line interface
 
 ### new [template]
 
-Scaffolds a new instapack project into your existing application from where the command line is invoked. The following templates are available:
+Scaffolds a new instapack project into your existing app folder where the command line is invoked. The following templates are available:
 
 - `empty` when you need a minimal clean slate. Use this template to author new templates!
 

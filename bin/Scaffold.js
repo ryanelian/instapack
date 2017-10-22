@@ -32,12 +32,12 @@ class Scaffold {
             return;
         }
         console.log('Initializing new project using template: ' + chalk_1.default.cyan(name));
-        console.log('Scaffolding project into your web application...');
+        console.log('Scaffolding project into your web app...');
         fse.copySync(templateFolder, thisFolder);
         console.log(chalk_1.default.green('Scaffold completed.') + ' Restoring packages for you...');
         this.restorePackages();
         console.log(chalk_1.default.green('Package restored successfully!'));
-        console.log('To build the application, type: ' + chalk_1.default.yellow('ipack'));
+        console.log('To build the app, type: ' + chalk_1.default.yellow('ipack'));
     }
 }
 exports.Scaffold = Scaffold;

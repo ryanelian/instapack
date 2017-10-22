@@ -331,10 +331,10 @@ class Compiler {
             this.tasks.task('concat', () => { });
             return;
         }
-        if (this.flags.watch) {
-            GulpLog_1.default("Concat task will be run once and", chalk_1.default.red("NOT watched!"));
-        }
         this.tasks.task('concat', () => {
+            if (this.flags.watch) {
+                GulpLog_1.default("Concat task will be run once and", chalk_1.default.red("NOT watched!"));
+            }
             GulpLog_1.default('Resolving', chalk_1.default.cyan(c.toString()), 'concat target(s)...');
             return this.streamConcatVinyl()
                 .pipe(this.flags.production ? To.Uglify() : through2.obj())

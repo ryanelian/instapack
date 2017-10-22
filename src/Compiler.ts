@@ -458,11 +458,11 @@ export class Compiler {
             return;
         }
 
-        if (this.flags.watch) {
-            glog("Concat task will be run once and", chalk.red("NOT watched!"));
-        }
-
         this.tasks.task('concat', () => {
+            if (this.flags.watch) {
+                glog("Concat task will be run once and", chalk.red("NOT watched!"));
+            }
+
             glog('Resolving', chalk.cyan(c.toString()), 'concat target(s)...');
 
             return this.streamConcatVinyl()

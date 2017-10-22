@@ -58,8 +58,20 @@ class Settings {
     get outputJsFolder() {
         return path.join(this.outputFolder, 'js');
     }
+    get outputJsFile() {
+        return path.join(this.outputJsFolder, this.jsOut);
+    }
+    get outputJsSourceMap() {
+        return this.outputJsFile + '.map';
+    }
     get outputCssFolder() {
         return path.join(this.outputFolder, 'css');
+    }
+    get outputCssFile() {
+        return path.join(this.outputCssFolder, this.cssOut);
+    }
+    get outputCssSourceMap() {
+        return this.outputCssFile + '.map';
     }
     static tryReadFromPackageJson() {
         let root = process.cwd();

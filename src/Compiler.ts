@@ -67,19 +67,17 @@ export class Compiler {
         glog('Using output folder', chalk.cyan(this.settings.outputFolder));
 
         if (this.flags.minify) {
-            glog(chalk.yellow("Production"), "mode: Outputs will be minified.", chalk.red("This process will slow down your build!"));
+            glog(chalk.yellow("Production"), "Mode: Outputs will be minified.", chalk.red("This process will slow down your build!"));
         } else {
-            glog(chalk.yellow("Development"), "mode: Outputs are", chalk.red("NOT minified"), "in exchange for compilation speed.");
+            glog(chalk.yellow("Development"), "Mode: Outputs are", chalk.red("NOT minified"), "in exchange for compilation speed.");
             glog("Do not forget to minify before pushing to repository or production environment!");
         }
 
         if (this.flags.watch) {
-            glog(chalk.yellow("Watch"), "mode: Source codes will be automatically compiled on changes.");
+            glog(chalk.yellow("Watch"), "Mode: Source codes will be automatically compiled on changes.");
         }
 
-        if (!this.flags.map) {
-            glog(chalk.yellow("Unmap"), "mode: Source maps disabled.");
-        }
+        glog('Source Maps:', chalk.yellow(this.flags.map ? 'Enabled' : 'Disabled'));
     }
 
     /**
@@ -178,7 +176,7 @@ export class Compiler {
         };
 
         if (this.flags.map) {
-            config.devtool = 'source-map';
+            config.devtool = (this.flags.minify ? 'source-map' : 'eval-source-map');
         }
 
         if (this.flags.minify) {
@@ -217,6 +215,7 @@ export class Compiler {
         }
 
         this.tasks.task('js', () => {
+            fse.removeSync(this.settings.outputJsSourceMap);
             glog('Compiling JS', chalk.cyan(jsEntry));
 
             let config = this.createWebpackConfig();
@@ -308,6 +307,7 @@ export class Compiler {
         });
 
         this.tasks.task('css', () => {
+            fse.removeSync(this.settings.outputCssSourceMap);
             let run = this.tasks.task('css:compile');
             run(error => { });
 

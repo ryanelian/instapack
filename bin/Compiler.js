@@ -33,18 +33,16 @@ class Compiler {
     chat() {
         GulpLog_1.default('Using output folder', chalk_1.default.cyan(this.settings.outputFolder));
         if (this.flags.minify) {
-            GulpLog_1.default(chalk_1.default.yellow("Production"), "mode: Outputs will be minified.", chalk_1.default.red("This process will slow down your build!"));
+            GulpLog_1.default(chalk_1.default.yellow("Production"), "Mode: Outputs will be minified.", chalk_1.default.red("This process will slow down your build!"));
         }
         else {
-            GulpLog_1.default(chalk_1.default.yellow("Development"), "mode: Outputs are", chalk_1.default.red("NOT minified"), "in exchange for compilation speed.");
+            GulpLog_1.default(chalk_1.default.yellow("Development"), "Mode: Outputs are", chalk_1.default.red("NOT minified"), "in exchange for compilation speed.");
             GulpLog_1.default("Do not forget to minify before pushing to repository or production environment!");
         }
         if (this.flags.watch) {
-            GulpLog_1.default(chalk_1.default.yellow("Watch"), "mode: Source codes will be automatically compiled on changes.");
+            GulpLog_1.default(chalk_1.default.yellow("Watch"), "Mode: Source codes will be automatically compiled on changes.");
         }
-        if (!this.flags.map) {
-            GulpLog_1.default(chalk_1.default.yellow("Unmap"), "mode: Source maps disabled.");
-        }
+        GulpLog_1.default('Source Maps:', chalk_1.default.yellow(this.flags.map ? 'Enabled' : 'Disabled'));
     }
     output(folder) {
         return through2.obj((file, encoding, next) => __awaiter(this, void 0, void 0, function* () {
@@ -122,7 +120,7 @@ class Compiler {
             ]
         };
         if (this.flags.map) {
-            config.devtool = 'source-map';
+            config.devtool = (this.flags.minify ? 'source-map' : 'eval-source-map');
         }
         if (this.flags.minify) {
             config.plugins.push(new webpack.DefinePlugin({
@@ -152,6 +150,7 @@ class Compiler {
             return;
         }
         this.tasks.task('js', () => {
+            fse.removeSync(this.settings.outputJsSourceMap);
             GulpLog_1.default('Compiling JS', chalk_1.default.cyan(jsEntry));
             let config = this.createWebpackConfig();
             webpack(config, (error, stats) => {
@@ -221,6 +220,7 @@ class Compiler {
                 .pipe(this.output(this.settings.outputCssFolder));
         });
         this.tasks.task('css', () => {
+            fse.removeSync(this.settings.outputCssSourceMap);
             let run = this.tasks.task('css:compile');
             run(error => { });
             if (this.flags.watch) {

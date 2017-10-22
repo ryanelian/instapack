@@ -188,10 +188,38 @@ export class Settings {
     }
 
     /**
+     * Gets the full path to the JS compilation output file.
+     */
+    get outputJsFile(): string {
+        return path.join(this.outputJsFolder, this.jsOut);
+    }
+
+    /**
+     * Gets the full path to the JS compilation output source map.
+     */
+    get outputJsSourceMap(): string {
+        return this.outputJsFile + '.map';
+    }
+
+    /**
      * Gets the full path to the CSS compilation and concatenation output folder.
      */
     get outputCssFolder(): string {
         return path.join(this.outputFolder, 'css');
+    }
+
+    /**
+     * Gets the full path to the CSS compilation output file.
+     */
+    get outputCssFile(): string {
+        return path.join(this.outputCssFolder, this.cssOut);
+    }
+
+    /**
+     * Gets the full path to the CSS compilation output source map.
+     */
+    get outputCssSourceMap(): string {
+        return this.outputCssFile + '.map';
     }
 
     /**

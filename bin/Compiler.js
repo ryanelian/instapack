@@ -31,7 +31,7 @@ class Compiler {
         this.registerAllTasks();
     }
     chat() {
-        GulpLog_1.default('Using output folder', chalk_1.default.cyan(this.settings.outputFolder));
+        GulpLog_1.default('Output to folder', chalk_1.default.cyan(this.settings.outputFolder));
         if (this.flags.production) {
             GulpLog_1.default(chalk_1.default.yellow("Production"), "Mode: Outputs will be minified.", chalk_1.default.red("(Slow build)"));
         }

@@ -64,7 +64,7 @@ export class Compiler {
      * Displays information about currently used build flags.
      */
     chat() {
-        glog('Using output folder', chalk.cyan(this.settings.outputFolder));
+        glog('Output to folder', chalk.cyan(this.settings.outputFolder));
 
         if (this.flags.production) {
             glog(chalk.yellow("Production"), "Mode: Outputs will be minified.", chalk.red("(Slow build)"));

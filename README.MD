@@ -286,7 +286,7 @@ Add the packages required for your project using yarn / npm then start hacking. 
 
 Also, pull requests are welcomed if you have a great starting templates and books for those projects. We'd love to expand our collections!
 
-### I'm upgrading from instapack 4, any breaking changes that I should know?
+### I'm upgrading from instapack 4. Are there breaking changes?
 
 - Our supported Node.js runtime is now the latest version 8 LTS.
 

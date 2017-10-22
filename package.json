@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/ryanelian/instapack#readme",
   "dependencies": {
-    "autoprefixer": "7.1.5",
+    "autoprefixer": "7.1.6",
     "chalk": "2.2.0",
     "chokidar": "1.7.0",
     "fs-extra": "4.0.2",
@@ -36,13 +36,13 @@
     "through2": "2.0.3",
     "ts-loader": "3.0.5",
     "typescript": "2.6.0-rc",
-    "uglify-js": "3.1.4",
+    "uglify-js": "3.1.5",
     "undertaker": "1.2.0",
     "vinyl": "2.1.0",
     "vinyl-sourcemaps-apply": "0.2.1",
     "vue-template-compiler": "2.5.2",
     "webpack": "3.8.1",
-    "yargs": "9.0.1"
+    "yargs": "10.0.3"
   },
   "devDependencies": {
     "@types/autoprefixer": "^6.7.3",

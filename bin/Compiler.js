@@ -33,11 +33,11 @@ class Compiler {
     chat() {
         GulpLog_1.default('Using output folder', chalk_1.default.cyan(this.settings.outputFolder));
         if (this.flags.minify) {
-            GulpLog_1.default(chalk_1.default.yellow("Production"), "Mode: Outputs will be minified.", chalk_1.default.red("This process will slow down your build!"));
+            GulpLog_1.default(chalk_1.default.yellow("Production"), "Mode: Outputs will be minified.", chalk_1.default.red("(Slow build!)"));
         }
         else {
-            GulpLog_1.default(chalk_1.default.yellow("Development"), "Mode: Outputs are", chalk_1.default.red("NOT minified"), "in exchange for compilation speed.");
-            GulpLog_1.default("Do not forget to minify before pushing to repository or production environment!");
+            GulpLog_1.default(chalk_1.default.yellow("Development"), "Mode: Outputs will", chalk_1.default.red("NOT be minified!"), "(Fast build)");
+            GulpLog_1.default(chalk_1.default.red("Do not forget to minify"), "before pushing to repository or production server!");
         }
         if (this.flags.watch) {
             GulpLog_1.default(chalk_1.default.yellow("Watch"), "Mode: Source codes will be automatically compiled on changes.");
@@ -155,7 +155,7 @@ class Compiler {
             let config = this.createWebpackConfig();
             webpack(config, (error, stats) => {
                 if (error) {
-                    console.error('Fatal error during JS Compilation:');
+                    console.error('Fatal error during JS build:');
                     console.error(error);
                     return;
                 }
@@ -178,7 +178,7 @@ class Compiler {
                     }));
                 }
                 let t = PrettyUnits_1.prettyMilliseconds(o.time);
-                GulpLog_1.default('Finished JS compilation after', chalk_1.default.green(t));
+                GulpLog_1.default('Finished JS build after', chalk_1.default.green(t));
             });
         });
     }
@@ -216,7 +216,7 @@ class Compiler {
                 .pipe(To.CssProcessors())
                 .on('error', PipeErrorHandler_1.default)
                 .pipe(this.flags.map ? sourcemaps.write('.', cssMapOptions) : through2.obj())
-                .pipe(To.BuildLog('CSS compilation'))
+                .pipe(To.BuildLog('CSS build'))
                 .pipe(this.output(this.settings.outputCssFolder));
         });
         this.tasks.task('css', () => {
@@ -253,7 +253,7 @@ class Compiler {
             });
         });
     }
-    resolveThenConcatenate(paths) {
+    resolveThenConcat(paths) {
         return __awaiter(this, void 0, void 0, function* () {
             let concat = '';
             for (let path of paths) {
@@ -265,13 +265,13 @@ class Compiler {
     }
     registerConcatTask() {
         let concatCount = this.settings.concatCount;
-        GulpLog_1.default('Resolving', chalk_1.default.cyan(concatCount.toString()), 'concatenation targets...');
+        GulpLog_1.default('Resolving', chalk_1.default.cyan(concatCount.toString()), 'concat target(s)...');
         if (concatCount === 0) {
             this.tasks.task('concat', () => { });
             return;
         }
         if (this.flags.watch) {
-            GulpLog_1.default("Concatenation task will be run once and", chalk_1.default.red("NOT watched!"));
+            GulpLog_1.default("Concat task will be run once and", chalk_1.default.red("NOT watched!"));
         }
         this.tasks.task('concat', () => {
             let g = through2.obj();
@@ -290,7 +290,7 @@ class Compiler {
                     ar = [ar];
                     GulpLog_1.default(chalk_1.default.red('WARNING'), 'concat modules definition for', chalk_1.default.blue(target), 'is a', chalk_1.default.yellow('string'), 'instead of a', chalk_1.default.yellow('string[]'));
                 }
-                this.resolveThenConcatenate(ar).then(result => {
+                this.resolveThenConcat(ar).then(result => {
                     let o = target;
                     if (o.endsWith('.js') === false) {
                         o += '.js';
@@ -311,7 +311,7 @@ class Compiler {
             }
             return g.pipe(this.flags.minify ? To.Uglify() : through2.obj())
                 .on('error', PipeErrorHandler_1.default)
-                .pipe(To.BuildLog('JS concatenation'))
+                .pipe(To.BuildLog('JS concat'))
                 .pipe(this.output(this.settings.outputJsFolder));
         });
     }

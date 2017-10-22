@@ -14,7 +14,7 @@ import * as sourcemaps from 'gulp-sourcemaps';
 import glog from './GulpLog';
 import PipeErrorHandler from './PipeErrorHandler';
 import * as To from './PipeTo';
-import { Settings, ConcatenationLookup } from './Settings';
+import { Settings, ConcatLookup } from './Settings';
 import { prettyBytes, prettyMilliseconds } from './PrettyUnits';
 
 /**
@@ -27,7 +27,7 @@ export interface CompilerFlags {
 }
 
 /**
- * Contains methods for assembling and invoking the compilation tasks.
+ * Contains methods for assembling and invoking the build tasks.
  */
 export class Compiler {
 
@@ -67,10 +67,10 @@ export class Compiler {
         glog('Using output folder', chalk.cyan(this.settings.outputFolder));
 
         if (this.flags.minify) {
-            glog(chalk.yellow("Production"), "Mode: Outputs will be minified.", chalk.red("This process will slow down your build!"));
+            glog(chalk.yellow("Production"), "Mode: Outputs will be minified.", chalk.red("(Slow build!)"));
         } else {
-            glog(chalk.yellow("Development"), "Mode: Outputs are", chalk.red("NOT minified"), "in exchange for compilation speed.");
-            glog("Do not forget to minify before pushing to repository or production environment!");
+            glog(chalk.yellow("Development"), "Mode: Outputs will", chalk.red("NOT be minified!"), "(Fast build)");
+            glog(chalk.red("Do not forget to minify"), "before pushing to repository or production server!");
         }
 
         if (this.flags.watch) {
@@ -202,7 +202,7 @@ export class Compiler {
     }
 
     /**
-     * Registers a JavaScript compilation task using TypeScript piped into Browserify.
+     * Registers a JavaScript build task using TypeScript piped into Browserify.
      */
     registerJsTask() {
         let jsEntry = this.settings.jsEntry;
@@ -222,7 +222,7 @@ export class Compiler {
             webpack(config, (error, stats) => {
 
                 if (error) {
-                    console.error('Fatal error during JS Compilation:');
+                    console.error('Fatal error during JS build:');
                     console.error(error);
                     return;
                 }
@@ -249,7 +249,7 @@ export class Compiler {
                 }
 
                 let t = prettyMilliseconds(o.time);
-                glog('Finished JS compilation after', chalk.green(t));
+                glog('Finished JS build after', chalk.green(t));
             });
         });
     }
@@ -275,7 +275,7 @@ export class Compiler {
     }
 
     /**
-     * Registers a CSS compilation task using Sass piped into postcss.
+     * Registers a CSS build task using Sass piped into postcss.
      */
     registerCssTask() {
         let cssEntry = this.settings.cssEntry;
@@ -302,7 +302,7 @@ export class Compiler {
                 .pipe(To.CssProcessors())
                 .on('error', PipeErrorHandler)
                 .pipe(this.flags.map ? sourcemaps.write('.', cssMapOptions) : through2.obj())
-                .pipe(To.BuildLog('CSS compilation'))
+                .pipe(To.BuildLog('CSS build'))
                 .pipe(this.output(this.settings.outputCssFolder));
         });
 
@@ -357,7 +357,7 @@ export class Compiler {
      * Returns a promise for a concatenated file content as string, resulting from a list of node modules.
      * @param paths 
      */
-    async resolveThenConcatenate(paths: string[]) {
+    async resolveThenConcat(paths: string[]) {
         let concat = '';
 
         for (let path of paths) {
@@ -369,11 +369,11 @@ export class Compiler {
     }
 
     /**
-     * Registers a JavaScript concatenation task.
+     * Registers a JavaScript concat task.
      */
     registerConcatTask() {
         let concatCount = this.settings.concatCount;
-        glog('Resolving', chalk.cyan(concatCount.toString()), 'concatenation targets...');
+        glog('Resolving', chalk.cyan(concatCount.toString()), 'concat target(s)...');
 
         if (concatCount === 0) {
             this.tasks.task('concat', () => { });
@@ -381,7 +381,7 @@ export class Compiler {
         }
 
         if (this.flags.watch) {
-            glog("Concatenation task will be run once and", chalk.red("NOT watched!"));
+            glog("Concat task will be run once and", chalk.red("NOT watched!"));
         }
 
         this.tasks.task('concat', () => {
@@ -404,7 +404,7 @@ export class Compiler {
                     glog(chalk.red('WARNING'), 'concat modules definition for', chalk.blue(target), 'is a', chalk.yellow('string'), 'instead of a', chalk.yellow('string[]'));
                 }
 
-                this.resolveThenConcatenate(ar).then(result => {
+                this.resolveThenConcat(ar).then(result => {
                     let o = target;
                     if (o.endsWith('.js') === false) {
                         o += '.js';
@@ -428,7 +428,7 @@ export class Compiler {
 
             return g.pipe(this.flags.minify ? To.Uglify() : through2.obj())
                 .on('error', PipeErrorHandler)
-                .pipe(To.BuildLog('JS concatenation'))
+                .pipe(To.BuildLog('JS concat'))
                 .pipe(this.output(this.settings.outputJsFolder));
         });
     }

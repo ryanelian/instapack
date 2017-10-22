@@ -4,7 +4,7 @@ import * as chalk from 'chalk';
 /**
  * Dictionary<string, List<string>>
  */
-export interface ConcatenationLookup {
+export interface ConcatLookup {
     [key: string]: string[]
 }
 
@@ -21,7 +21,7 @@ export interface ModuleOverrides {
 export class SettingsCore {
     input: string;
     output: string;
-    concat: ConcatenationLookup;
+    concat: ConcatLookup;
     alias: ModuleOverrides;
     externals: ModuleOverrides
     template: string;
@@ -49,9 +49,9 @@ export class Settings {
     readonly output: string;
 
     /**
-     * Gets the unresolved concatenation map.
+     * Gets the unresolved concat map.
      */
-    readonly concat: ConcatenationLookup;
+    readonly concat: ConcatLookup;
 
     /**
      * Replaces dependency imports to another dependency. For example: {'vue': 'vue/dist/vue.common'}
@@ -104,7 +104,7 @@ export class Settings {
     }
 
     /**
-     * Gets the number of keys / target files in the concatenation map.
+     * Gets the number of keys / target files in the concat map.
      */
     get concatCount(): number {
         return Object.keys(this.concat).length;
@@ -181,7 +181,7 @@ export class Settings {
     }
 
     /**
-     * Gets the full path to the JavaScript compilation and concatenation output folder.
+     * Gets the full path to the JavaScript compilation and concat output folder.
      */
     get outputJsFolder(): string {
         return path.join(this.outputFolder, 'js');
@@ -202,7 +202,7 @@ export class Settings {
     }
 
     /**
-     * Gets the full path to the CSS compilation and concatenation output folder.
+     * Gets the full path to the CSS compilation and concat output folder.
      */
     get outputCssFolder(): string {
         return path.join(this.outputFolder, 'css');

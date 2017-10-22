@@ -188,7 +188,7 @@ class Compiler {
             GulpLog_1.default('Compiling JS', chalk_1.default.cyan(jsEntry));
             webpack(this.webpackConfiguration, (error, stats) => {
                 if (error) {
-                    console.error('Fatal error during JS build:');
+                    GulpLog_1.default(chalk_1.default.red('FATAL ERROR'), 'during JS build:');
                     console.error(error);
                     return;
                 }

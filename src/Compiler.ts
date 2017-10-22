@@ -265,7 +265,7 @@ export class Compiler {
 
             webpack(this.webpackConfiguration, (error, stats) => {
                 if (error) {
-                    console.error('Fatal error during JS build:');
+                    glog(chalk.red('FATAL ERROR'), 'during JS build:');
                     console.error(error);
                     return;
                 }

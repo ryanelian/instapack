@@ -46,7 +46,7 @@ export function prettySeconds(s: number) {
  */
 export function prettyMilliseconds(ms: number) {
     if (ms < 1000) {
-        return ms + ' ms';
+        return ms.toPrecision(3) + ' ms';
     } else {
         return prettySeconds(ms / 1000);
     }

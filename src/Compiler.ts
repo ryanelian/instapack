@@ -256,7 +256,7 @@ export class Compiler {
     }
 
     /**
-     * Pipes the CSS project entry point as a Vinyl object. 
+     * Returns a streaming CSS project entry point as a Vinyl object. 
      */
     streamCssEntryVinyl() {
         let g = through2.obj();
@@ -370,13 +370,57 @@ export class Compiler {
     }
 
     /**
+     * Returns a streaming concat results from the resolution map as Vinyl objects.
+     */
+    streamConcatVinyl() {
+        let c = this.settings.concatCount;
+        let g = through2.obj();
+        let resolution = this.settings.concat;
+
+        let countDown = () => {
+            c--;
+            if (c === 0) {
+                g.push(null);
+            }
+        }
+
+        for (let target in resolution) {
+            let ar = resolution[target];
+            if (!ar || ar.length === 0) {
+                glog(chalk.red('WARNING'), 'concat list for', chalk.blue(target), 'is empty!');
+                countDown();
+                continue;
+            }
+            if (typeof ar === 'string') {
+                ar = [ar];
+                glog(chalk.red('WARNING'), 'concat list for', chalk.blue(target), 'is a', chalk.yellow('string'), 'instead of a', chalk.yellow('string[]'));
+            }
+
+            this.resolveThenConcat(ar).then(result => {
+                let o = target;
+                if (o.endsWith('.js') === false) {
+                    o += '.js';
+                }
+
+                g.push(new vinyl({
+                    path: o,
+                    contents: Buffer.from(result)
+                }));
+            }).catch(error => {
+                glog(chalk.red('ERROR'), 'when concatenating', chalk.blue(target))
+                console.error(error);
+            }).then(countDown); // this code block is equivalent to: .finally()
+        }
+
+        return g;
+    }
+
+    /**
      * Registers a JavaScript concat task.
      */
     registerConcatTask() {
-        let concatCount = this.settings.concatCount;
-        glog('Resolving', chalk.cyan(concatCount.toString()), 'concat target(s)...');
-
-        if (concatCount === 0) {
+        let c = this.settings.concatCount;
+        if (c === 0) {
             this.tasks.task('concat', () => { });
             return;
         }
@@ -386,48 +430,10 @@ export class Compiler {
         }
 
         this.tasks.task('concat', () => {
-            let g = through2.obj();
-            let resolution = this.settings.concat;
+            glog('Resolving', chalk.cyan(c.toString()), 'concat target(s)...');
 
-            for (let target in resolution) {
-                let ar = resolution[target];
-                if (!ar || ar.length === 0) {
-                    glog(chalk.red('WARNING'), 'concat modules definition for', chalk.blue(target), 'is empty!');
-
-                    concatCount--;
-                    if (concatCount === 0) {
-                        g.push(null);
-                    }
-                    continue;
-                }
-                if (typeof ar === 'string') {
-                    ar = [ar];
-                    glog(chalk.red('WARNING'), 'concat modules definition for', chalk.blue(target), 'is a', chalk.yellow('string'), 'instead of a', chalk.yellow('string[]'));
-                }
-
-                this.resolveThenConcat(ar).then(result => {
-                    let o = target;
-                    if (o.endsWith('.js') === false) {
-                        o += '.js';
-                    }
-
-                    g.push(new vinyl({
-                        path: o,
-                        contents: Buffer.from(result)
-                    }));
-                }).catch(error => {
-                    glog(chalk.red('ERROR'), 'when concatenating', chalk.blue(target))
-                    console.error(error);
-                }).then(() => {
-                    // this code block is equivalent to: .finally()
-                    concatCount--;
-                    if (concatCount === 0) {
-                        g.push(null);
-                    }
-                });
-            }
-
-            return g.pipe(this.flags.minify ? To.Uglify() : through2.obj())
+            return this.streamConcatVinyl()
+                .pipe(this.flags.minify ? To.Uglify() : through2.obj())
                 .on('error', PipeErrorHandler)
                 .pipe(To.BuildLog('JS concat'))
                 .pipe(this.output(this.settings.outputJsFolder));

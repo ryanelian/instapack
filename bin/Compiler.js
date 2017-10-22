@@ -264,10 +264,46 @@ class Compiler {
             return concat;
         });
     }
+    streamConcatVinyl() {
+        let c = this.settings.concatCount;
+        let g = through2.obj();
+        let resolution = this.settings.concat;
+        let countDown = () => {
+            c--;
+            if (c === 0) {
+                g.push(null);
+            }
+        };
+        for (let target in resolution) {
+            let ar = resolution[target];
+            if (!ar || ar.length === 0) {
+                GulpLog_1.default(chalk_1.default.red('WARNING'), 'concat list for', chalk_1.default.blue(target), 'is empty!');
+                countDown();
+                continue;
+            }
+            if (typeof ar === 'string') {
+                ar = [ar];
+                GulpLog_1.default(chalk_1.default.red('WARNING'), 'concat list for', chalk_1.default.blue(target), 'is a', chalk_1.default.yellow('string'), 'instead of a', chalk_1.default.yellow('string[]'));
+            }
+            this.resolveThenConcat(ar).then(result => {
+                let o = target;
+                if (o.endsWith('.js') === false) {
+                    o += '.js';
+                }
+                g.push(new vinyl({
+                    path: o,
+                    contents: Buffer.from(result)
+                }));
+            }).catch(error => {
+                GulpLog_1.default(chalk_1.default.red('ERROR'), 'when concatenating', chalk_1.default.blue(target));
+                console.error(error);
+            }).then(countDown);
+        }
+        return g;
+    }
     registerConcatTask() {
-        let concatCount = this.settings.concatCount;
-        GulpLog_1.default('Resolving', chalk_1.default.cyan(concatCount.toString()), 'concat target(s)...');
-        if (concatCount === 0) {
+        let c = this.settings.concatCount;
+        if (c === 0) {
             this.tasks.task('concat', () => { });
             return;
         }
@@ -275,42 +311,9 @@ class Compiler {
             GulpLog_1.default("Concat task will be run once and", chalk_1.default.red("NOT watched!"));
         }
         this.tasks.task('concat', () => {
-            let g = through2.obj();
-            let resolution = this.settings.concat;
-            for (let target in resolution) {
-                let ar = resolution[target];
-                if (!ar || ar.length === 0) {
-                    GulpLog_1.default(chalk_1.default.red('WARNING'), 'concat modules definition for', chalk_1.default.blue(target), 'is empty!');
-                    concatCount--;
-                    if (concatCount === 0) {
-                        g.push(null);
-                    }
-                    continue;
-                }
-                if (typeof ar === 'string') {
-                    ar = [ar];
-                    GulpLog_1.default(chalk_1.default.red('WARNING'), 'concat modules definition for', chalk_1.default.blue(target), 'is a', chalk_1.default.yellow('string'), 'instead of a', chalk_1.default.yellow('string[]'));
-                }
-                this.resolveThenConcat(ar).then(result => {
-                    let o = target;
-                    if (o.endsWith('.js') === false) {
-                        o += '.js';
-                    }
-                    g.push(new vinyl({
-                        path: o,
-                        contents: Buffer.from(result)
-                    }));
-                }).catch(error => {
-                    GulpLog_1.default(chalk_1.default.red('ERROR'), 'when concatenating', chalk_1.default.blue(target));
-                    console.error(error);
-                }).then(() => {
-                    concatCount--;
-                    if (concatCount === 0) {
-                        g.push(null);
-                    }
-                });
-            }
-            return g.pipe(this.flags.minify ? To.Uglify() : through2.obj())
+            GulpLog_1.default('Resolving', chalk_1.default.cyan(c.toString()), 'concat target(s)...');
+            return this.streamConcatVinyl()
+                .pipe(this.flags.minify ? To.Uglify() : through2.obj())
                 .on('error', PipeErrorHandler_1.default)
                 .pipe(To.BuildLog('JS concat'))
                 .pipe(this.output(this.settings.outputJsFolder));

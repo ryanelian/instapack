@@ -32,7 +32,7 @@ class Compiler {
     }
     chat() {
         GulpLog_1.default('Using output folder', chalk_1.default.cyan(this.settings.outputFolder));
-        if (this.flags.minify) {
+        if (this.flags.production) {
             GulpLog_1.default(chalk_1.default.yellow("Production"), "Mode: Outputs will be minified.", chalk_1.default.red("(Slow build)"));
         }
         else {
@@ -42,7 +42,7 @@ class Compiler {
         if (this.flags.watch) {
             GulpLog_1.default(chalk_1.default.yellow("Watch"), "Mode: Source codes will be automatically compiled on changes.");
         }
-        GulpLog_1.default('Source Maps:', chalk_1.default.yellow(this.flags.map ? 'Enabled' : 'Disabled'));
+        GulpLog_1.default('Source Maps:', chalk_1.default.yellow(this.flags.sourceMap ? 'Enabled' : 'Disabled'));
     }
     output(folder) {
         return through2.obj((file, encoding, next) => __awaiter(this, void 0, void 0, function* () {
@@ -61,16 +61,16 @@ class Compiler {
         this.registerConcatTask();
         this.registerJsTask();
         this.registerCssTask();
-        this.tasks.task('all', this.tasks.parallel('concat', 'js', 'css'));
+        this.tasks.task('all', this.tasks.parallel('js', 'css', 'concat'));
     }
     build(taskName) {
         let run = this.tasks.task(taskName);
         run(error => { });
     }
-    createWebpackConfig() {
+    get webpackConfiguration() {
         let tsconfigOverride = {
             noEmit: false,
-            sourceMap: this.flags.map,
+            sourceMap: this.flags.sourceMap,
             moduleResolution: "node"
         };
         let tsLoader = {
@@ -119,17 +119,17 @@ class Compiler {
                 new webpack.NoEmitOnErrorsPlugin()
             ]
         };
-        if (this.flags.map) {
-            config.devtool = (this.flags.minify ? 'source-map' : 'eval-source-map');
+        if (this.flags.sourceMap) {
+            config.devtool = (this.flags.production ? 'source-map' : 'eval-source-map');
         }
-        if (this.flags.minify) {
+        if (this.flags.production) {
             config.plugins.push(new webpack.DefinePlugin({
                 'process.env': {
                     'NODE_ENV': JSON.stringify('production')
                 }
             }));
             config.plugins.push(new webpack.optimize.UglifyJsPlugin({
-                sourceMap: this.flags.map,
+                sourceMap: this.flags.sourceMap,
                 comments: false
             }));
         }
@@ -137,10 +137,43 @@ class Compiler {
             config.watch = true;
             config.watchOptions = {
                 ignored: /node_modules/,
-                aggregateTimeout: 500
+                aggregateTimeout: 300
             };
         }
         return config;
+    }
+    get webpackStatsErrorsOnly() {
+        return {
+            colors: true,
+            assets: false,
+            cached: false,
+            children: false,
+            chunks: false,
+            errors: true,
+            hash: false,
+            modules: false,
+            reasons: false,
+            source: false,
+            timings: false,
+            version: false,
+            warnings: true
+        };
+    }
+    get webpackStatsJsonMinimal() {
+        return {
+            assets: true,
+            cached: false,
+            children: false,
+            chunks: false,
+            errors: false,
+            hash: false,
+            modules: false,
+            reasons: false,
+            source: false,
+            timings: true,
+            version: false,
+            warnings: false
+        };
     }
     registerJsTask() {
         let jsEntry = this.settings.jsEntry;
@@ -153,14 +186,13 @@ class Compiler {
         this.tasks.task('js', () => {
             fse.removeSync(this.settings.outputJsSourceMap);
             GulpLog_1.default('Compiling JS', chalk_1.default.cyan(jsEntry));
-            let config = this.createWebpackConfig();
-            webpack(config, (error, stats) => {
+            webpack(this.webpackConfiguration, (error, stats) => {
                 if (error) {
                     console.error('Fatal error during JS build:');
                     console.error(error);
                     return;
                 }
-                let o = stats.toJson();
+                let o = stats.toJson(this.webpackStatsJsonMinimal);
                 for (let asset of o.assets) {
                     if (asset.emitted) {
                         let kb = PrettyUnits_1.prettyBytes(asset.size);
@@ -168,15 +200,7 @@ class Compiler {
                     }
                 }
                 if (stats.hasErrors() || stats.hasWarnings()) {
-                    console.log(stats.toString({
-                        colors: true,
-                        version: false,
-                        hash: false,
-                        timings: false,
-                        modules: false,
-                        assets: false,
-                        chunks: false
-                    }));
+                    console.log(stats.toString(this.webpackStatsErrorsOnly));
                 }
                 let t = PrettyUnits_1.prettyMilliseconds(o.time);
                 GulpLog_1.default('Finished JS build after', chalk_1.default.green(t));
@@ -211,12 +235,12 @@ class Compiler {
             GulpLog_1.default('Compiling CSS', chalk_1.default.cyan(cssEntry));
             let sassImports = [this.settings.npmFolder];
             return this.streamCssEntryVinyl()
-                .pipe(this.flags.map ? sourcemaps.init() : through2.obj())
+                .pipe(this.flags.sourceMap ? sourcemaps.init() : through2.obj())
                 .pipe(To.Sass(this.settings.cssOut, sassImports))
                 .on('error', PipeErrorHandler_1.default)
                 .pipe(To.CssProcessors())
                 .on('error', PipeErrorHandler_1.default)
-                .pipe(this.flags.map ? sourcemaps.write('.', cssMapOptions) : through2.obj())
+                .pipe(this.flags.sourceMap ? sourcemaps.write('.', cssMapOptions) : through2.obj())
                 .pipe(To.BuildLog('CSS build'))
                 .pipe(this.output(this.settings.outputCssFolder));
         });
@@ -313,7 +337,7 @@ class Compiler {
         this.tasks.task('concat', () => {
             GulpLog_1.default('Resolving', chalk_1.default.cyan(c.toString()), 'concat target(s)...');
             return this.streamConcatVinyl()
-                .pipe(this.flags.minify ? To.Uglify() : through2.obj())
+                .pipe(this.flags.production ? To.Uglify() : through2.obj())
                 .on('error', PipeErrorHandler_1.default)
                 .pipe(To.BuildLog('JS concat'))
                 .pipe(this.output(this.settings.outputJsFolder));

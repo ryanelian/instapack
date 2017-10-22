@@ -82,9 +82,9 @@ CLI.command({
 
         echo('build', subCommand);
         app.build(subCommand, {
-            minify: !argv.dev,
+            production: !argv.dev,
             watch: argv.watch,
-            map: !argv.unmap
+            sourceMap: !argv.unmap
         });
     }
 });

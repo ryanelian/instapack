@@ -21,9 +21,9 @@ import { prettyBytes, prettyMilliseconds } from './PrettyUnits';
  * Defines build flags to be used by Compiler class.
  */
 export interface CompilerFlags {
-    minify: boolean,
+    production: boolean,
     watch: boolean,
-    map: boolean
+    sourceMap: boolean
 }
 
 /**
@@ -66,7 +66,7 @@ export class Compiler {
     chat() {
         glog('Using output folder', chalk.cyan(this.settings.outputFolder));
 
-        if (this.flags.minify) {
+        if (this.flags.production) {
             glog(chalk.yellow("Production"), "Mode: Outputs will be minified.", chalk.red("(Slow build)"));
         } else {
             glog(chalk.yellow("Development"), "Mode: Outputs will", chalk.red("NOT be minified!"), "(Fast build)");
@@ -77,7 +77,7 @@ export class Compiler {
             glog(chalk.yellow("Watch"), "Mode: Source codes will be automatically compiled on changes.");
         }
 
-        glog('Source Maps:', chalk.yellow(this.flags.map ? 'Enabled' : 'Disabled'));
+        glog('Source Maps:', chalk.yellow(this.flags.sourceMap ? 'Enabled' : 'Disabled'));
     }
 
     /**
@@ -107,7 +107,7 @@ export class Compiler {
         this.registerConcatTask();
         this.registerJsTask();
         this.registerCssTask();
-        this.tasks.task('all', this.tasks.parallel('concat', 'js', 'css'));
+        this.tasks.task('all', this.tasks.parallel('js', 'css', 'concat'));
     }
 
     /**
@@ -119,10 +119,13 @@ export class Compiler {
         run(error => { });
     }
 
-    createWebpackConfig() {
+    /**
+     * Gets a webpack configuration from blended instapack configuration and build flags.
+     */
+    get webpackConfiguration() {
         let tsconfigOverride = {
             noEmit: false,
-            sourceMap: this.flags.map,
+            sourceMap: this.flags.sourceMap,
             moduleResolution: "node"
         };
 
@@ -175,18 +178,18 @@ export class Compiler {
             ]
         };
 
-        if (this.flags.map) {
-            config.devtool = (this.flags.minify ? 'source-map' : 'eval-source-map');
+        if (this.flags.sourceMap) {
+            config.devtool = (this.flags.production ? 'source-map' : 'eval-source-map');
         }
 
-        if (this.flags.minify) {
+        if (this.flags.production) {
             config.plugins.push(new webpack.DefinePlugin({
                 'process.env': {
                     'NODE_ENV': JSON.stringify('production')
                 }
             }));
             config.plugins.push(new webpack.optimize.UglifyJsPlugin({
-                sourceMap: this.flags.map,
+                sourceMap: this.flags.sourceMap,
                 comments: false
             }));
         }
@@ -195,11 +198,52 @@ export class Compiler {
             config.watch = true;
             config.watchOptions = {
                 ignored: /node_modules/,
-                aggregateTimeout: 500
+                aggregateTimeout: 300
             };
         }
 
         return config;
+    }
+
+    /**
+     * Gets webpack stat render options for colored warnings and errors.
+     */
+    get webpackStatsErrorsOnly() {
+        return {
+            colors: true,
+            assets: false,
+            cached: false,
+            children: false,
+            chunks: false,
+            errors: true,
+            hash: false,
+            modules: false,
+            reasons: false,
+            source: false,
+            timings: false,
+            version: false,
+            warnings: true
+        } as webpack.Stats.ToStringOptions;
+    }
+
+    /**
+     * Gets webpack stat extraction options for assets and build time only.  
+     */
+    get webpackStatsJsonMinimal() {
+        return {
+            assets: true,
+            cached: false,
+            children: false,
+            chunks: false,
+            errors: false,
+            hash: false,
+            modules: false,
+            reasons: false,
+            source: false,
+            timings: true,
+            version: false,
+            warnings: false
+        } as webpack.Stats.ToJsonOptions;
     }
 
     /**
@@ -219,17 +263,14 @@ export class Compiler {
             fse.removeSync(this.settings.outputJsSourceMap);
             glog('Compiling JS', chalk.cyan(jsEntry));
 
-            let config = this.createWebpackConfig();
-            webpack(config, (error, stats) => {
-
+            webpack(this.webpackConfiguration, (error, stats) => {
                 if (error) {
                     console.error('Fatal error during JS build:');
                     console.error(error);
                     return;
                 }
 
-                let o = stats.toJson();
-
+                let o = stats.toJson(this.webpackStatsJsonMinimal);
                 for (let asset of o.assets) {
                     if (asset.emitted) {
                         let kb = prettyBytes(asset.size);
@@ -238,15 +279,7 @@ export class Compiler {
                 }
 
                 if (stats.hasErrors() || stats.hasWarnings()) {
-                    console.log(stats.toString({
-                        colors: true,
-                        version: false,
-                        hash: false,
-                        timings: false,
-                        modules: false,
-                        assets: false,
-                        chunks: false
-                    }));
+                    console.log(stats.toString(this.webpackStatsErrorsOnly));
                 }
 
                 let t = prettyMilliseconds(o.time);
@@ -297,12 +330,12 @@ export class Compiler {
             let sassImports = [this.settings.npmFolder];
 
             return this.streamCssEntryVinyl()
-                .pipe(this.flags.map ? sourcemaps.init() : through2.obj())
+                .pipe(this.flags.sourceMap ? sourcemaps.init() : through2.obj())
                 .pipe(To.Sass(this.settings.cssOut, sassImports))
                 .on('error', PipeErrorHandler)
                 .pipe(To.CssProcessors())
                 .on('error', PipeErrorHandler)
-                .pipe(this.flags.map ? sourcemaps.write('.', cssMapOptions) : through2.obj())
+                .pipe(this.flags.sourceMap ? sourcemaps.write('.', cssMapOptions) : through2.obj())
                 .pipe(To.BuildLog('CSS build'))
                 .pipe(this.output(this.settings.outputCssFolder));
         });
@@ -433,7 +466,7 @@ export class Compiler {
             glog('Resolving', chalk.cyan(c.toString()), 'concat target(s)...');
 
             return this.streamConcatVinyl()
-                .pipe(this.flags.minify ? To.Uglify() : through2.obj())
+                .pipe(this.flags.production ? To.Uglify() : through2.obj())
                 .on('error', PipeErrorHandler)
                 .pipe(To.BuildLog('JS concat'))
                 .pipe(this.output(this.settings.outputJsFolder));

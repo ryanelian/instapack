@@ -11,12 +11,27 @@ function prettyBytes(size) {
     return scale.toPrecision(3) + ' ' + bigUnitPrefix[unit] + 'B';
 }
 exports.prettyBytes = prettyBytes;
+function prettySeconds(s) {
+    let h = Math.floor(s / 3600);
+    s -= h * 3600;
+    let m = Math.floor(s / 60);
+    s -= m * 60;
+    let result = s.toPrecision(3) + ' s';
+    if (m) {
+        result = m + ' min ' + result;
+    }
+    if (h) {
+        result = h + ' h ' + result;
+    }
+    return result;
+}
+exports.prettySeconds = prettySeconds;
 function prettyMilliseconds(ms) {
     if (ms < 1000) {
         return ms + ' ms';
     }
     else {
-        return (ms / 1000).toPrecision(3) + ' s';
+        return prettySeconds(ms / 1000);
     }
 }
 exports.prettyMilliseconds = prettyMilliseconds;
@@ -28,18 +43,7 @@ function prettyHrTime(hrtime) {
     }
     else {
         let s = hrtime[0] + (hrtime[1] / Math.pow(1000, 3));
-        let h = Math.floor(s / 3600);
-        s -= h * 3600;
-        let m = Math.floor(s / 60);
-        s -= m * 60;
-        let result = s.toPrecision(3) + ' s';
-        if (m) {
-            result = m + ' min ' + result;
-        }
-        if (h) {
-            result = h + ' h ' + result;
-        }
-        return result;
+        return prettySeconds(s);
     }
 }
 exports.prettyHrTime = prettyHrTime;

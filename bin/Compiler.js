@@ -129,7 +129,8 @@ class Compiler {
                 }
             }));
             config.plugins.push(new webpack.optimize.UglifyJsPlugin({
-                sourceMap: this.flags.map
+                sourceMap: this.flags.map,
+                comments: false
             }));
         }
         if (this.flags.watch) {

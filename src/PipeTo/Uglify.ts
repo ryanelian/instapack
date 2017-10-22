@@ -11,7 +11,7 @@ export function Uglify() {
         if (chunk.isNull()) {
             return next(null, chunk);
         }
-        
+
         if (chunk.isStream()) {
             let error = new Error('Uglify: Streaming is not supported!');
             return next(error);

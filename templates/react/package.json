@@ -7,7 +7,7 @@
     "concat": {}
   },
   "dependencies": {
-    "@types/react": "^16.0.17",
+    "@types/react": "^16.0.18",
     "@types/react-dom": "^16.0.2",
     "@types/react-redux": "^5.0.10",
     "@types/requirejs": "^2.1.31",

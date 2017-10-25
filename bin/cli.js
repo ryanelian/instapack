@@ -53,16 +53,16 @@ CLI.command({
         return yargs.choices('project', app.availableTasks)
             .option('w', {
             alias: 'watch',
-            describe: 'Enables rebuild on source code changes.'
+            describe: 'Enables incremental compilation on source code changes.'
         }).option('d', {
             alias: 'dev',
-            describe: 'Disables output files minification.'
-        }).option('u', {
-            alias: 'unmap',
+            describe: 'Disables JS build output minification and optimizations.'
+        }).option('o', {
+            alias: 'obfuscate',
             describe: 'Disables source maps.'
         }).option('p', {
             alias: 'parallel',
-            describe: 'Enables experimental parallel build across all logical processors!'
+            describe: 'Enables parallel build across all logical processors!'
         });
     },
     handler: argv => {
@@ -71,7 +71,7 @@ CLI.command({
         app.build(subCommand, {
             production: !argv.dev,
             watch: argv.watch,
-            sourceMap: !argv.unmap,
+            sourceMap: !argv.obfuscate,
             parallel: argv.parallel
         });
     }
@@ -117,7 +117,11 @@ function updateNag() {
     if (outdated) {
         console.log();
         console.log(chalk_1.default.yellow('instapack') + ' is outdated. New version: ' + chalk_1.default.green(masterVersion));
-        console.log('Run ' + chalk_1.default.blue('yarn global upgrade instapack') + ' or ' + chalk_1.default.blue('npm update -g instapack') + ' to update!');
+        if (parseInt(process.versions.node[0]) < 8) {
+            console.log(chalk_1.default.red('BEFORE UPDATING: ') + chalk_1.default.yellow('install the latest Node.js LTS version 8 ') + 'for better build performance!');
+            console.log('Download URL: ' + chalk_1.default.blue('https://nodejs.org/en/download/'));
+        }
+        console.log('Run ' + chalk_1.default.yellow('npm install -g instapack') + ' or ' + chalk_1.default.yellow('yarn global add instapack') + ' to update!');
     }
     outdated = false;
 }

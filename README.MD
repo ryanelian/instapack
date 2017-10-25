@@ -10,6 +10,8 @@
 
 `npm install -g instapack`
 
+or `yarn global add instapack`
+
 ## Quick Start Guide
 
 ```powershell
@@ -107,23 +109,23 @@ Scaffolds a new instapack project into your existing app folder where the comman
 
 - `angular-material` when you want to develop a web app with AngularJS (1.X) and Material Design (includes Angular UI Router).
 
-If no template parameter is provided, `vue` is chosen.
+If no template parameter is provided, `vue` will be chosen.
 
 ### build [project]
 
-Performs compilation against selected project type. Available projects: `all`, `js`, `css` and `concat`. If no project parameter is provided, `all` is chosen.
+Performs compilation against selected project type. Available projects: `all`, `js`, `css` and `concat`. If no project parameter is provided, `all` will be chosen.
 
 In addition, build flags are available:
 
-- `-w` or `--watch` for enabling compilation on change.
+- `-w` or `--watch` enables incremental compilation on source code changes.
 
-- `-d` or `--dev` for disabling minification, for **fast** compilation.
+- `-d` or `--dev` disables JS build output minification and optimizations for **rapid application development**.
 
-- `-u` or `--unmap` for disabling source maps, for slightly faster compilation.
+- `-o` or `--obfuscate` disables source maps. (Slightly improves build speed)
 
-- `-p` or `--parallel` for enabling experimental parallel build across all logical processors. :trident:
+- `-p` or `--parallel` enables experimental parallel build across all logical processors. :trident:
 
-- `-udw` shorthand for `unmap` + `dev` + `watch` mode together, amusingly named as *Unlimited Dev Works* mode, for **massive productivity gainz!** :muscle:
+> You can combine multiple build flags, for example: `ipack -dw` = `dev` + `watch` mode for **massive productivity gainz!** :muscle:
 
 ### clean
 

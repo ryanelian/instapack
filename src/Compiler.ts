@@ -9,6 +9,10 @@ import * as resolve from 'resolve';
 import chalk from 'chalk';
 import * as chokidar from 'chokidar';
 import * as sourcemaps from 'gulp-sourcemaps';
+import * as os from 'os';
+import { tryGetTypeScriptTarget, createUglifyESOptions } from './UglifyESOptions';
+import ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
+import UglifyESWebpackPlugin = require('uglifyjs-webpack-plugin');
 
 // These are my stuffs
 import glog from './GulpLog';
@@ -23,7 +27,8 @@ import { prettyBytes, prettyMilliseconds } from './PrettyUnits';
 export interface CompilerFlags {
     production: boolean,
     watch: boolean,
-    sourceMap: boolean
+    sourceMap: boolean,
+    parallel: boolean
 }
 
 /**
@@ -73,6 +78,10 @@ export class Compiler {
             glog(chalk.red("Do not forget to minify"), "before pushing to repository or production server!");
         }
 
+        if (this.flags.parallel) {
+            glog(chalk.yellow('Parallel'), 'Mode: Build will be scaled across all logical processors.');
+        }
+
         if (this.flags.watch) {
             glog(chalk.yellow("Watch"), "Mode: Source codes will be automatically compiled on changes.");
         }
@@ -120,30 +129,111 @@ export class Compiler {
     }
 
     /**
-     * Gets a webpack configuration from blended instapack configuration and build flags.
+     * Returns a pre-configured loader array with optional cache and parallel capability.
+     * @param cached 
      */
-    get webpackConfiguration() {
-        let tsconfigOverride = {
-            noEmit: false,
-            sourceMap: this.flags.sourceMap,
-            moduleResolution: "node"
-        };
+    getParallelLoaders(cached: boolean) {
+        let loaders = [];
 
-        let tsLoader = {
+        if (this.flags.parallel) {
+            if (cached) {
+                loaders.push({
+                    loader: 'cache-loader',
+                    options: {
+                        cacheDirectory: path.join(os.tmpdir(), 'instapack', 'cache')
+                    }
+                });
+            }
+
+            loaders.push({
+                loader: 'thread-loader',
+                options: {
+                    workers: os.cpus().length - 1
+                }
+            });
+        }
+
+        return loaders;
+    }
+
+    /**
+     * Returns a configured TypeScript rules for webpack.
+     */
+    getTypeScriptWebpackRules() {
+        let loaders = this.getParallelLoaders(true);
+
+        loaders.push({
             loader: 'ts-loader',
             options: {
-                compilerOptions: tsconfigOverride,
-                transpileOnly: false
+                compilerOptions: {
+                    noEmit: false,
+                    sourceMap: this.flags.sourceMap,
+                    moduleResolution: "node"
+                },
+                transpileOnly: this.flags.parallel,
+                happyPackMode: this.flags.parallel
             }
-        };
+        });
 
-        let templateLoader = {
+        return {
+            test: /\.tsx?$/,
+            use: loaders
+        };
+    }
+
+    /**
+     * Returns a configured HTML template rules for webpack.
+     */
+    getTemplatesWebpackRules() {
+        let loaders = this.getParallelLoaders(false);
+
+        loaders.push({
             loader: 'template-loader',
             options: {
                 mode: this.settings.template
             }
-        };
+        });
 
+        return {
+            test: /\.html?$/,
+            use: loaders
+        };
+    }
+
+    /**
+     * Returns a configured webpack plugins.
+     */
+    getWebpackPlugins() {
+        let plugins = [];
+
+        if (this.flags.parallel) {
+            plugins.push(new ForkTsCheckerWebpackPlugin({
+                checkSyntacticErrors: true
+            }));
+        } else {
+            plugins.push(new webpack.NoEmitOnErrorsPlugin());
+        }
+
+        if (this.flags.production) {
+            plugins.push(new webpack.DefinePlugin({
+                'process.env': {
+                    'NODE_ENV': JSON.stringify('production')
+                }
+            }));
+            plugins.push(new UglifyESWebpackPlugin({
+                sourceMap: this.flags.sourceMap,
+                parallel: this.flags.parallel,
+                uglifyOptions: createUglifyESOptions()
+            }));
+        }
+
+        return plugins;
+    }
+
+    /**
+     * Gets a webpack configuration from blended instapack configuration and build flags.
+     */
+    get webpackConfiguration() {
         let config: webpack.Configuration = {
             entry: this.settings.jsEntry,
             output: {
@@ -162,36 +252,13 @@ export class Compiler {
                 ]
             },
             module: {
-                rules: [
-                    {
-                        test: /\.tsx?$/,
-                        use: [tsLoader]
-                    },
-                    {
-                        test: /\.html?$/,
-                        use: [templateLoader]
-                    }
-                ]
+                rules: [this.getTypeScriptWebpackRules(), this.getTemplatesWebpackRules()]
             },
-            plugins: [
-                new webpack.NoEmitOnErrorsPlugin()
-            ]
+            plugins: this.getWebpackPlugins()
         };
 
         if (this.flags.sourceMap) {
             config.devtool = (this.flags.production ? 'source-map' : 'eval-source-map');
-        }
-
-        if (this.flags.production) {
-            config.plugins.push(new webpack.DefinePlugin({
-                'process.env': {
-                    'NODE_ENV': JSON.stringify('production')
-                }
-            }));
-            config.plugins.push(new webpack.optimize.UglifyJsPlugin({
-                sourceMap: this.flags.sourceMap,
-                comments: false
-            }));
         }
 
         if (this.flags.watch) {
@@ -261,7 +328,7 @@ export class Compiler {
 
         this.tasks.task('js', () => {
             fse.removeSync(this.settings.outputJsSourceMap);
-            glog('Compiling JS', chalk.cyan(jsEntry));
+            glog('Compiling JS >', chalk.yellow(tryGetTypeScriptTarget()), chalk.cyan(jsEntry));
 
             webpack(this.webpackConfiguration, (error, stats) => {
                 if (error) {

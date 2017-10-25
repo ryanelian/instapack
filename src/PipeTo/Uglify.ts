@@ -1,6 +1,7 @@
-import * as UglifyJS from 'uglify-js';
+import * as UglifyES from 'uglify-es';
 import * as through2 from 'through2';
 import * as applySourceMap from 'vinyl-sourcemaps-apply';
+import { createUglifyESOptions } from '../UglifyESOptions';
 
 /**
  * Creates a new build pipe that minifies JavaScript output.
@@ -17,9 +18,9 @@ export function Uglify() {
             return next(error);
         }
 
-        let options: any = {};
-        let createSourceMap = Boolean(chunk.sourceMap);
+        let options = createUglifyESOptions();
 
+        let createSourceMap = Boolean(chunk.sourceMap);
         if (createSourceMap) {
             options.sourceMap = {
                 filename: chunk.sourceMap.file,
@@ -31,7 +32,7 @@ export function Uglify() {
         let files: any = {};
         files[chunk.relative] = chunk.contents.toString();
 
-        let result: any = UglifyJS.minify(files, options);
+        let result: any = UglifyES.minify(files, options);
 
         if (result.error) {
             next(result.error);

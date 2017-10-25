@@ -121,6 +121,8 @@ In addition, build flags are available:
 
 - `-u` or `--unmap` for disabling source maps, for slightly faster compilation.
 
+- `-p` or `--parallel` for enabling experimental parallel build across all logical processors. :trident:
+
 - `-udw` shorthand for `unmap` + `dev` + `watch` mode together, amusingly named as *Unlimited Dev Works* mode, for **massive productivity gainz!** :muscle:
 
 ### clean

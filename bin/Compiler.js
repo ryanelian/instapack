@@ -18,6 +18,10 @@ const resolve = require("resolve");
 const chalk_1 = require("chalk");
 const chokidar = require("chokidar");
 const sourcemaps = require("gulp-sourcemaps");
+const os = require("os");
+const UglifyESOptions_1 = require("./UglifyESOptions");
+const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
+const UglifyESWebpackPlugin = require("uglifyjs-webpack-plugin");
 const GulpLog_1 = require("./GulpLog");
 const PipeErrorHandler_1 = require("./PipeErrorHandler");
 const To = require("./PipeTo");
@@ -38,6 +42,9 @@ class Compiler {
         else {
             GulpLog_1.default(chalk_1.default.yellow("Development"), "Mode: Outputs will", chalk_1.default.red("NOT be minified!"), "(Fast build)");
             GulpLog_1.default(chalk_1.default.red("Do not forget to minify"), "before pushing to repository or production server!");
+        }
+        if (this.flags.parallel) {
+            GulpLog_1.default(chalk_1.default.yellow('Parallel'), 'Mode: Build will be scaled across all logical processors.');
         }
         if (this.flags.watch) {
             GulpLog_1.default(chalk_1.default.yellow("Watch"), "Mode: Source codes will be automatically compiled on changes.");
@@ -67,25 +74,83 @@ class Compiler {
         let run = this.tasks.task(taskName);
         run(error => { });
     }
-    get webpackConfiguration() {
-        let tsconfigOverride = {
-            noEmit: false,
-            sourceMap: this.flags.sourceMap,
-            moduleResolution: "node"
-        };
-        let tsLoader = {
+    getParallelLoaders(cached) {
+        let loaders = [];
+        if (this.flags.parallel) {
+            if (cached) {
+                loaders.push({
+                    loader: 'cache-loader',
+                    options: {
+                        cacheDirectory: path.join(os.tmpdir(), 'instapack', 'cache')
+                    }
+                });
+            }
+            loaders.push({
+                loader: 'thread-loader',
+                options: {
+                    workers: os.cpus().length - 1
+                }
+            });
+        }
+        return loaders;
+    }
+    getTypeScriptWebpackRules() {
+        let loaders = this.getParallelLoaders(true);
+        loaders.push({
             loader: 'ts-loader',
             options: {
-                compilerOptions: tsconfigOverride,
-                transpileOnly: false
+                compilerOptions: {
+                    noEmit: false,
+                    sourceMap: this.flags.sourceMap,
+                    moduleResolution: "node"
+                },
+                transpileOnly: this.flags.parallel,
+                happyPackMode: this.flags.parallel
             }
+        });
+        return {
+            test: /\.tsx?$/,
+            use: loaders
         };
-        let templateLoader = {
+    }
+    getTemplatesWebpackRules() {
+        let loaders = this.getParallelLoaders(false);
+        loaders.push({
             loader: 'template-loader',
             options: {
                 mode: this.settings.template
             }
+        });
+        return {
+            test: /\.html?$/,
+            use: loaders
         };
+    }
+    getWebpackPlugins() {
+        let plugins = [];
+        if (this.flags.parallel) {
+            plugins.push(new ForkTsCheckerWebpackPlugin({
+                checkSyntacticErrors: true
+            }));
+        }
+        else {
+            plugins.push(new webpack.NoEmitOnErrorsPlugin());
+        }
+        if (this.flags.production) {
+            plugins.push(new webpack.DefinePlugin({
+                'process.env': {
+                    'NODE_ENV': JSON.stringify('production')
+                }
+            }));
+            plugins.push(new UglifyESWebpackPlugin({
+                sourceMap: this.flags.sourceMap,
+                parallel: this.flags.parallel,
+                uglifyOptions: UglifyESOptions_1.createUglifyESOptions()
+            }));
+        }
+        return plugins;
+    }
+    get webpackConfiguration() {
         let config = {
             entry: this.settings.jsEntry,
             output: {
@@ -104,34 +169,12 @@ class Compiler {
                 ]
             },
             module: {
-                rules: [
-                    {
-                        test: /\.tsx?$/,
-                        use: [tsLoader]
-                    },
-                    {
-                        test: /\.html?$/,
-                        use: [templateLoader]
-                    }
-                ]
+                rules: [this.getTypeScriptWebpackRules(), this.getTemplatesWebpackRules()]
             },
-            plugins: [
-                new webpack.NoEmitOnErrorsPlugin()
-            ]
+            plugins: this.getWebpackPlugins()
         };
         if (this.flags.sourceMap) {
             config.devtool = (this.flags.production ? 'source-map' : 'eval-source-map');
-        }
-        if (this.flags.production) {
-            config.plugins.push(new webpack.DefinePlugin({
-                'process.env': {
-                    'NODE_ENV': JSON.stringify('production')
-                }
-            }));
-            config.plugins.push(new webpack.optimize.UglifyJsPlugin({
-                sourceMap: this.flags.sourceMap,
-                comments: false
-            }));
         }
         if (this.flags.watch) {
             config.watch = true;
@@ -185,7 +228,7 @@ class Compiler {
         }
         this.tasks.task('js', () => {
             fse.removeSync(this.settings.outputJsSourceMap);
-            GulpLog_1.default('Compiling JS', chalk_1.default.cyan(jsEntry));
+            GulpLog_1.default('Compiling JS >', chalk_1.default.yellow(UglifyESOptions_1.tryGetTypeScriptTarget()), chalk_1.default.cyan(jsEntry));
             webpack(this.webpackConfiguration, (error, stats) => {
                 if (error) {
                     GulpLog_1.default(chalk_1.default.red('FATAL ERROR'), 'during JS build:');

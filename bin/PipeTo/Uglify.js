@@ -1,8 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const UglifyJS = require("uglify-js");
+const UglifyES = require("uglify-es");
 const through2 = require("through2");
 const applySourceMap = require("vinyl-sourcemaps-apply");
+const UglifyESOptions_1 = require("../UglifyESOptions");
 function Uglify() {
     return through2.obj(function (chunk, enc, next) {
         if (chunk.isNull()) {
@@ -12,7 +13,7 @@ function Uglify() {
             let error = new Error('Uglify: Streaming is not supported!');
             return next(error);
         }
-        let options = {};
+        let options = UglifyESOptions_1.createUglifyESOptions();
         let createSourceMap = Boolean(chunk.sourceMap);
         if (createSourceMap) {
             options.sourceMap = {
@@ -23,7 +24,7 @@ function Uglify() {
         }
         let files = {};
         files[chunk.relative] = chunk.contents.toString();
-        let result = UglifyJS.minify(files, options);
+        let result = UglifyES.minify(files, options);
         if (result.error) {
             next(result.error);
         }

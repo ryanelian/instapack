@@ -60,6 +60,9 @@ CLI.command({
         }).option('u', {
             alias: 'unmap',
             describe: 'Disables source maps.'
+        }).option('p', {
+            alias: 'parallel',
+            describe: 'Enables experimental parallel build across all logical processors!'
         });
     },
     handler: argv => {
@@ -68,7 +71,8 @@ CLI.command({
         app.build(subCommand, {
             production: !argv.dev,
             watch: argv.watch,
-            sourceMap: !argv.unmap
+            sourceMap: !argv.unmap,
+            parallel: argv.parallel
         });
     }
 });

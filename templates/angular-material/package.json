@@ -7,7 +7,7 @@
     "concat": {}
   },
   "dependencies": {
-    "@types/angular": "^1.6.35",
+    "@types/angular": "^1.6.36",
     "@types/angular-material": "^1.1.55",
     "@types/requirejs": "^2.1.31",
     "@uirouter/angularjs": "^1.0.10",

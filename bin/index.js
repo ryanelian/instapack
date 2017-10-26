@@ -46,16 +46,22 @@ module.exports = class instapack {
         return __awaiter(this, void 0, void 0, function* () {
             let cleanCSS = fse.emptyDir(this.settings.outputCssFolder);
             let cleanJS = fse.emptyDir(this.settings.outputJsFolder);
-            if (yield fse.pathExists(this.settings.cacheFolder)) {
+            let cleanCache = yield fse.pathExists(this.settings.cacheFolder);
+            if (cleanCache) {
                 try {
                     let yesterday = new Date().getTime() - 24 * 60 * 60 * 1000;
+                    let oldCacheCount = 0;
                     let files = yield fse.readdir(this.settings.cacheFolder);
                     for (let file of files) {
                         let filePath = path.join(this.settings.cacheFolder, file);
                         let stat = yield fse.stat(filePath);
                         if (stat.ctimeMs < yesterday) {
                             yield fse.remove(filePath);
+                            oldCacheCount++;
                         }
+                    }
+                    if (oldCacheCount) {
+                        console.log('Clean cache successful: ' + oldCacheCount + ' files');
                     }
                 }
                 catch (error) {

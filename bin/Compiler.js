@@ -104,6 +104,7 @@ class Compiler {
                     sourceMap: this.flags.sourceMap,
                     moduleResolution: "node"
                 },
+                onlyCompileBundledFiles: true,
                 transpileOnly: this.flags.parallel,
                 happyPackMode: this.flags.parallel
             }

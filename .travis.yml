@@ -3,5 +3,25 @@ node_js:
   - "6"
   - "7"
   - "8"
+os:
+  - linux
+  - osx
+env:
+  - TEMPLATE=angular-bootstrap
+  - TEMPLATE=angular-material
+  - TEMPLATE=empty
+  - TEMPLATE=inferno
+  - TEMPLATE=react
+  - TEMPLATE=vue
+  - TEMPLATE=vue+
 script:
   - npm run build
+  - npm link
+  - ipack --version
+  - mkdir demo
+  - cd demo
+  - ipack new $TEMPLATE
+  - ipack
+  - ipack -od
+  - ipack -p
+  - ipack clean

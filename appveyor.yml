@@ -14,6 +14,8 @@ install:
 - ps: >-
     Install-Product node $env:NODEJS_VERSION
 
+    npm install -g npm@5.3      # fixes build break due to npm 5.4 vs fsevents in Windows
+    
     yarn
 
 cache: '%LOCALAPPDATA%\Yarn'
@@ -38,4 +40,3 @@ build_script:
     ipack -p
 
     ipack clean
-    

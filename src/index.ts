@@ -64,34 +64,42 @@ export = class instapack {
      * Performs new web app client project scaffolding using a template shipped in templates folder.
      * @param template 
      */
-    scaffold(template: string) {
+    async scaffold(template: string) {
         let scaffold = new Scaffold();
-        scaffold.usingTemplate(template);
+        await scaffold.usingTemplate(template);
     }
 
     /**
-     * Empties the content of the JavaScript and CSS output folder.
+     * Cleans the JavaScript and CSS output folder and the temporary cache folder.
      */
-    clean() {
-        let dir1 = this.settings.outputCssFolder;
-        let dir2 = this.settings.outputJsFolder;
+    async clean() {
+        let cleanCSS = fse.emptyDir(this.settings.outputCssFolder);
+        let cleanJS = fse.emptyDir(this.settings.outputJsFolder);
 
-        fse.emptyDir(dir1, err => {
-            if (err) {
-                console.log('Error when cleaning ' + dir1);
-                console.log(err);
-            } else {
-                console.log('Successfully cleaned ' + dir1);
-            }
-        });
+        if (await fse.pathExists(this.settings.cacheFolder)) {
+            try {
+                let yesterday = new Date().getTime() - 24 * 60 * 60 * 1000;
 
-        fse.emptyDir(dir2, err => {
-            if (err) {
-                console.log('Error when cleaning ' + dir2);
-                console.log(err);
-            } else {
-                console.log('Successfully cleaned ' + dir2);
+                let files = await fse.readdir(this.settings.cacheFolder);
+                for (let file of files) {
+                    let filePath = path.join(this.settings.cacheFolder, file);
+                    let stat = await fse.stat(filePath);
+                    if (stat.ctimeMs < yesterday) {
+                        await fse.remove(filePath);
+                    }
+                }
+            } catch (error) {
+                console.error(error);
             }
-        });
+        }
+
+        try {
+            await cleanJS;
+            console.log('Clean successful: ' + this.settings.outputJsFolder);
+            await cleanCSS;
+            console.log('Clean successful: ' + this.settings.outputCssFolder);
+        } catch (error) {
+            console.error(error);
+        }
     }
 }

@@ -1,5 +1,6 @@
 import * as path from 'path';
 import * as chalk from 'chalk';
+import * as os from 'os';
 
 /**
  * Dictionary<string, List<string>>
@@ -101,6 +102,13 @@ export class Settings {
         if (this.cssOut.endsWith('.css') === false) {
             this.cssOut += '.css';
         }
+    }
+
+    /**
+     * Cache folder path for cache-loader in user's local temp folder.
+     */
+    get cacheFolder(): string {
+        return path.join(os.tmpdir(), 'instapack', 'cache');
     }
 
     /**

@@ -81,7 +81,7 @@ class Compiler {
                 loaders.push({
                     loader: 'cache-loader',
                     options: {
-                        cacheDirectory: path.join(os.tmpdir(), 'instapack', 'cache')
+                        cacheDirectory: this.settings.cacheFolder
                     }
                 });
             }

@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const path = require("path");
+const os = require("os");
 class SettingsCore {
 }
 exports.SettingsCore = SettingsCore;
@@ -21,6 +22,9 @@ class Settings {
         if (this.cssOut.endsWith('.css') === false) {
             this.cssOut += '.css';
         }
+    }
+    get cacheFolder() {
+        return path.join(os.tmpdir(), 'instapack', 'cache');
     }
     get concatCount() {
         return Object.keys(this.concat).length;

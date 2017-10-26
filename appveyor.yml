@@ -1,0 +1,29 @@
+version: 1.0.{build}
+image: Visual Studio 2017
+environment:
+  NODEJS_VERSION: 8
+  matrix:
+  - TEMPLATE: angular-bootstrap
+  - TEMPLATE: angular-material
+  - TEMPLATE: empty
+  - TEMPLATE: inferno
+  - TEMPLATE: react
+  - TEMPLATE: vue
+  - TEMPLATE: vue+
+install:
+- ps: >-
+    Install-Product node $env:NODEJS_VERSION
+    yarn
+cache: '%LOCALAPPDATA%\Yarn'
+build_script:
+- ps: >-
+    npm run build
+    npm link
+    ipack --version
+    mkdir demo
+    cd demo
+    ipack new $env:TEMPLATE
+    ipack
+    ipack -od
+    ipack -p
+    ipack clean

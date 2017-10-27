@@ -127,7 +127,7 @@ In addition, build flags are available:
 
 - `-w` or `--watch` enables incremental compilation on source code changes.
 
-- `-d` or `--dev` disables JS build output minification and optimizations for **rapid application development**.
+- `-d` or `--dev` disables JS build output minification and optimizations for **fast build!**
 
 - `-o` or `--obfuscate` disables source maps. (Slightly improves build speed)
 
@@ -208,7 +208,7 @@ into this...
 const jQuery = window["$"];
 ```
 
-so that you can use this! :tada:
+so you can use this! :tada:
 
 ```html
 <script src="https://unpkg.com/jquery@3.2.1/dist/jquery.js"></script>
@@ -279,8 +279,6 @@ Alternatively, you may build directly from the source code repository:
 ```powershell
 git clone https://github.com/ryanelian/instapack.git
 cd instapack
-
-npm install
 npm link        # symlink global to local package for development
 npm run build   # alternatively, `npm install -g typescript` then `tsc`
 ipack --version

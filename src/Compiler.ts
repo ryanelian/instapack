@@ -206,13 +206,15 @@ export class Compiler {
      */
     getWebpackPlugins() {
         let plugins = [];
+        plugins.push(new webpack.NoEmitOnErrorsPlugin());
 
         if (this.flags.parallel) {
             plugins.push(new ForkTsCheckerWebpackPlugin({
-                checkSyntacticErrors: true
+                checkSyntacticErrors: true,
+                async: false,
+                silent: true,
+                watch: this.settings.inputJsFolder
             }));
-        } else {
-            plugins.push(new webpack.NoEmitOnErrorsPlugin());
         }
 
         if (this.flags.production) {
@@ -339,15 +341,16 @@ export class Compiler {
                 }
 
                 let o = stats.toJson(this.webpackStatsJsonMinimal);
+
+                if (stats.hasErrors() || stats.hasWarnings()) {
+                    console.log(stats.toString(this.webpackStatsErrorsOnly));
+                }
+
                 for (let asset of o.assets) {
                     if (asset.emitted) {
                         let kb = prettyBytes(asset.size);
                         glog(chalk.blue(asset.name), chalk.magenta(kb));
                     }
-                }
-
-                if (stats.hasErrors() || stats.hasWarnings()) {
-                    console.log(stats.toString(this.webpackStatsErrorsOnly));
                 }
 
                 let t = prettyMilliseconds(o.time);

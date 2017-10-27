@@ -129,13 +129,14 @@ class Compiler {
     }
     getWebpackPlugins() {
         let plugins = [];
+        plugins.push(new webpack.NoEmitOnErrorsPlugin());
         if (this.flags.parallel) {
             plugins.push(new ForkTsCheckerWebpackPlugin({
-                checkSyntacticErrors: true
+                checkSyntacticErrors: true,
+                async: false,
+                silent: true,
+                watch: this.settings.inputJsFolder
             }));
-        }
-        else {
-            plugins.push(new webpack.NoEmitOnErrorsPlugin());
         }
         if (this.flags.production) {
             plugins.push(new webpack.DefinePlugin({
@@ -237,14 +238,14 @@ class Compiler {
                     return;
                 }
                 let o = stats.toJson(this.webpackStatsJsonMinimal);
+                if (stats.hasErrors() || stats.hasWarnings()) {
+                    console.log(stats.toString(this.webpackStatsErrorsOnly));
+                }
                 for (let asset of o.assets) {
                     if (asset.emitted) {
                         let kb = PrettyUnits_1.prettyBytes(asset.size);
                         GulpLog_1.default(chalk_1.default.blue(asset.name), chalk_1.default.magenta(kb));
                     }
-                }
-                if (stats.hasErrors() || stats.hasWarnings()) {
-                    console.log(stats.toString(this.webpackStatsErrorsOnly));
                 }
                 let t = PrettyUnits_1.prettyMilliseconds(o.time);
                 GulpLog_1.default('Finished JS build after', chalk_1.default.green(t));

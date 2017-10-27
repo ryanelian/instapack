@@ -1,6 +1,6 @@
 {
   "name": "instapack",
-  "version": "5.0.0",
+  "version": "5.0.0-beta7",
   "description": "All-in-one web app client project compiler using TypeScript and Sass!",
   "main": "bin/index.js",
   "bin": {

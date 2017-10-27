@@ -44,7 +44,7 @@ class Compiler {
             GulpLog_1.default(chalk_1.default.red("Do not forget to minify"), "before pushing to repository or production server!");
         }
         if (this.flags.parallel) {
-            GulpLog_1.default(chalk_1.default.yellow('Parallel'), 'Mode: Build will be scaled across all logical processors.');
+            GulpLog_1.default(chalk_1.default.yellow('Parallel'), 'Mode: Build will be scaled across all CPU threads!');
         }
         if (this.flags.watch) {
             GulpLog_1.default(chalk_1.default.yellow("Watch"), "Mode: Source codes will be automatically compiled on changes.");

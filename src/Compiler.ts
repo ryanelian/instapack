@@ -79,7 +79,7 @@ export class Compiler {
         }
 
         if (this.flags.parallel) {
-            glog(chalk.yellow('Parallel'), 'Mode: Build will be scaled across all logical processors.');
+            glog(chalk.yellow('Parallel'), 'Mode: Build will be scaled across all CPU threads!');
         }
 
         if (this.flags.watch) {

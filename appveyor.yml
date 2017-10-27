@@ -10,6 +10,9 @@ environment:
   - TEMPLATE: react
   - TEMPLATE: vue
   - TEMPLATE: vue+
+cache:
+    - node_modules
+    - '%LOCALAPPDATA%\Yarn'
 test: off
 install:
 - ps: >-
@@ -19,7 +22,6 @@ install:
     
     yarn
 
-cache: '%LOCALAPPDATA%\Yarn'
 build_script:
 - ps: >-
     npm run build

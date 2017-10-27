@@ -10,6 +10,10 @@ env:
   - TEMPLATE=react
   - TEMPLATE=vue
   - TEMPLATE=vue+
+cache:
+  yarn: true
+  directories:
+    - node_modules
 script:
   - npm run build
   - npm link

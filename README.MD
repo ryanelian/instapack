@@ -12,11 +12,11 @@
 
 If you encounter [errors](https://github.com/npm/npm/issues/18380) during installation, try:
 
-- Install using [Administrator PowerShell](https://stackoverflow.com/questions/32341507/how-open-powershell-as-administrator-from-the-run-window) or as elevated privileges (sudo).
+- Running install [as Administrator](https://www.howtogeek.com/194041/how-to-open-the-command-prompt-as-administrator-in-windows-8.1/) or using elevated privileges (sudo).
 
 - Or clear the npm cache: `npm cache clean --force` then: `npm i -g instapack --no-optional`
 
-- Or downgrade to npm 4: `npm i -g npm@latest-4`
+- Or downgrade to npm 4 to avoid [buggy npm 5](https://github.com/npm/npm/issues/16991): `npm i -g npm@latest-4`
 
 - Or use [Yarn](https://yarnpkg.com/en/docs/install) instead: `yarn global add instapack`
 

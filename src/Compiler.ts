@@ -250,9 +250,9 @@ export class Compiler {
             },
             resolveLoader: {
                 modules: [
-                    path.resolve(__dirname, '..', '..'), // yarn global folder
-                    path.resolve(__dirname, '../node_modules'),
-                    path.resolve(__dirname, 'loaders')
+                    path.resolve(__dirname, 'loaders'),         // custom internal loaders
+                    path.resolve(__dirname, '../node_modules'), // local node_modules
+                    path.resolve(__dirname, '..', '..'),        // yarn's flat global node_modules
                 ]
             },
             module: {

@@ -166,9 +166,9 @@ class Compiler {
             },
             resolveLoader: {
                 modules: [
-                    path.resolve(__dirname, '..', '..'),
+                    path.resolve(__dirname, 'loaders'),
                     path.resolve(__dirname, '../node_modules'),
-                    path.resolve(__dirname, 'loaders')
+                    path.resolve(__dirname, '..', '..'),
                 ]
             },
             module: {

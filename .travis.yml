@@ -1,6 +1,5 @@
 language: node_js
 node_js:
-  - "6"
   - "8"
 env:
   - TEMPLATE=angular-bootstrap
@@ -23,5 +22,3 @@ script:
   - ipack new $TEMPLATE
   - ipack
   - ipack -od
-  - ipack -p
-  - ipack clean

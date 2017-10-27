@@ -10,13 +10,13 @@
 
 `npm install -g instapack`
 
-If you are having [trouble](https://github.com/npm/npm/issues/18380) during installation, try:
+If you encounter [errors](https://github.com/npm/npm/issues/18380) during installation, try:
 
 - Install using [Administrator PowerShell](https://stackoverflow.com/questions/32341507/how-open-powershell-as-administrator-from-the-run-window) or as elevated privileges (sudo).
 
-- Or clear the npm cache: `npm cache clean --force` then passing `--no-optional` flag during install.
+- Or clear the npm cache: `npm cache clean --force` then: `npm i -g instapack --no-optional`
 
-- Or downgrade to npm 4: `npm install -g npm@latest-4`
+- Or downgrade to npm 4: `npm i -g npm@latest-4`
 
 - Or use [Yarn](https://yarnpkg.com/en/docs/install) instead: `yarn global add instapack`
 

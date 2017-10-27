@@ -39,7 +39,3 @@ build_script:
     ipack
 
     ipack -od
-
-    ipack -p
-
-    ipack clean

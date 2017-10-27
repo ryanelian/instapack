@@ -1,5 +1,6 @@
 language: node_js
 node_js:
+  - "6"
   - "8"
 env:
   - TEMPLATE=angular-bootstrap
@@ -12,7 +13,7 @@ env:
 script:
   - npm run build
   - npm link
-  - ipack --version
+  - instapack --version
   - mkdir demo
   - cd demo
   - ipack new $TEMPLATE

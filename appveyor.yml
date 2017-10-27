@@ -10,11 +10,12 @@ environment:
   - TEMPLATE: react
   - TEMPLATE: vue
   - TEMPLATE: vue+
+test: off
 install:
 - ps: >-
     Install-Product node $env:NODEJS_VERSION
 
-    npm install -g npm@latest-4      # fixes build break due to npm 5 vs fsevents in Windows
+    npm install -g npm@latest-4     # fixes build break due to npm 5 vs fsevents in Windows
     
     yarn
 
@@ -25,7 +26,7 @@ build_script:
     
     npm link
 
-    ipack --version
+    instapack --version
 
     mkdir demo
 

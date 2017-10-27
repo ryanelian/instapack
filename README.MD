@@ -2,7 +2,7 @@
 
 > All-in-one web app client project compiler using TypeScript and Sass! :package: :rocket:
 
-[![npm](https://img.shields.io/npm/v/instapack.svg)](https://www.npmjs.com/package/instapack) [![Build Status](https://travis-ci.org/ryanelian/instapack.svg?branch=master)](https://travis-ci.org/ryanelian/instapack)
+[![npm](https://img.shields.io/npm/v/instapack.svg)](https://www.npmjs.com/package/instapack) [![Build Status](https://travis-ci.org/ryanelian/instapack.svg?branch=master)](https://travis-ci.org/ryanelian/instapack) [![Build status](https://ci.appveyor.com/api/projects/status/y6v2hde0mhh9o5an?svg=true)](https://ci.appveyor.com/project/RyanElian/instapack)
 
 ![Screenshot](https://raw.githubusercontent.com/ryanelian/instapack/master/img/screenshot.png)
 
@@ -10,7 +10,15 @@
 
 `npm install -g instapack`
 
-or `yarn global add instapack`
+If you are having [trouble](https://github.com/npm/npm/issues/18380) during installation, try:
+
+- Install using [Administrator PowerShell](https://stackoverflow.com/questions/32341507/how-open-powershell-as-administrator-from-the-run-window) or as elevated privileges (sudo).
+
+- Or clear the npm cache: `npm cache clean --force` then passing `--no-optional` flag during install.
+
+- Or downgrade to npm 4: `npm install -g npm@latest-4`
+
+- Or use [Yarn](https://yarnpkg.com/en/docs/install) instead: `yarn global add instapack`
 
 ## Quick Start Guide
 
@@ -320,14 +328,6 @@ Also, pull requests are welcomed if you have a great starting templates and book
   }
 }
 ```
-
-### Is this Windows only?
-
-The majority of developers using instapack are working full-time on ASP.NET Core MVC projects on Windows with Visual Studio on daily basis. This use case will be the core focus for tooling support.
-
-However, there should be no reason for instapack to not to run on OS X and Linux.
-
-instapack will not suddenly introduce Windows or Visual Studio exclusive feature, and strive to maintain compatibility with multiple platforms.
 
 ### I thought files should not be bundled because of HTTP/2?
 

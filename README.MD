@@ -127,11 +127,11 @@ In addition, build flags are available:
 
 - `-w` or `--watch` enables incremental compilation on source code changes.
 
-- `-d` or `--dev` disables JS build output minification and optimizations for **fast build!**
+- `-d` or `--dev` disables JS output minification for **fast build!**
 
 - `-o` or `--obfuscate` disables source maps. (Slightly improves build speed)
 
-- `-p` or `--parallel` enables experimental parallel build across all logical processors. :trident:
+- `-p` or `--parallel` enables experimental parallel build across all CPU threads! :trident:
 
 > You can combine multiple build flags, for example: `ipack -dw` = `dev` + `watch` mode for **massive productivity gainz!** :muscle:
 

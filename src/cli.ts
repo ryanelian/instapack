@@ -71,13 +71,13 @@ CLI.command({
                 describe: 'Enables incremental compilation on source code changes.'
             }).option('d', {
                 alias: 'dev',
-                describe: 'Disables JS build output minification and optimizations.'
+                describe: 'Disables JS output minification.'
             }).option('o', {
                 alias: 'obfuscate',
                 describe: 'Disables source maps.'
             }).option('p', {
                 alias: 'parallel',
-                describe: 'Enables parallel build across all logical processors!'
+                describe: 'Enables parallel build across all CPU threads!'
             });
     },
     handler: argv => {

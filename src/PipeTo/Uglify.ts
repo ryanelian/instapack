@@ -1,49 +1,49 @@
-import * as UglifyES from 'uglify-es';
-import * as through2 from 'through2';
-import * as applySourceMap from 'vinyl-sourcemaps-apply';
-import { createUglifyESOptions } from '../UglifyESOptions';
+// import * as UglifyES from 'uglify-es';
+// import * as through2 from 'through2';
+// import * as applySourceMap from 'vinyl-sourcemaps-apply';
+// import { createUglifyESOptions } from '../UglifyESOptions';
 
-/**
- * Creates a new build pipe that minifies JavaScript output.
- * @param productionMode 
- */
-export function Uglify() {
-    return through2.obj(function (chunk, enc, next) {
-        if (chunk.isNull()) {
-            return next(null, chunk);
-        }
+// /**
+//  * Creates a new build pipe that minifies JavaScript output.
+//  * @param productionMode 
+//  */
+// export function Uglify() {
+//     return through2.obj(function (chunk, enc, next) {
+//         if (chunk.isNull()) {
+//             return next(null, chunk);
+//         }
 
-        if (chunk.isStream()) {
-            let error = new Error('Uglify: Streaming is not supported!');
-            return next(error);
-        }
+//         if (chunk.isStream()) {
+//             let error = new Error('Uglify: Streaming is not supported!');
+//             return next(error);
+//         }
 
-        let options = createUglifyESOptions();
+//         let options = createUglifyESOptions();
 
-        let createSourceMap = Boolean(chunk.sourceMap);
-        if (createSourceMap) {
-            options.sourceMap = {
-                filename: chunk.sourceMap.file,
-                content: chunk.sourceMap,
-                includeSources: true
-            };
-        }
+//         let createSourceMap = Boolean(chunk.sourceMap);
+//         if (createSourceMap) {
+//             options.sourceMap = {
+//                 filename: chunk.sourceMap.file,
+//                 content: chunk.sourceMap,
+//                 includeSources: true
+//             };
+//         }
 
-        let files: any = {};
-        files[chunk.relative] = chunk.contents.toString();
+//         let files: any = {};
+//         files[chunk.relative] = chunk.contents.toString();
 
-        let result: any = UglifyES.minify(files, options);
+//         let result: any = UglifyES.minify(files, options);
 
-        if (result.error) {
-            next(result.error);
-        }
+//         if (result.error) {
+//             next(result.error);
+//         }
 
-        chunk.contents = Buffer.from(result.code);
+//         chunk.contents = Buffer.from(result.code);
 
-        if (createSourceMap) {
-            applySourceMap(chunk, JSON.parse(result.map));
-        }
+//         if (createSourceMap) {
+//             applySourceMap(chunk, JSON.parse(result.map));
+//         }
 
-        next(null, chunk);
-    });
-}
+//         next(null, chunk);
+//     });
+// }

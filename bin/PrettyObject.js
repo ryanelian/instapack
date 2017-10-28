@@ -86,3 +86,14 @@ class PrettyObject {
     }
 }
 exports.PrettyObject = PrettyObject;
+let p = new PrettyObject();
+exports.default = p;
+function prettyError(error) {
+    try {
+        return p.render(error);
+    }
+    catch (_a) {
+        return chalk_1.default.red(error);
+    }
+}
+exports.prettyError = prettyError;

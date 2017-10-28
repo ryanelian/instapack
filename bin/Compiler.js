@@ -8,24 +8,24 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const webpack = require("webpack");
-const Undertaker = require("undertaker");
-const vinyl = require("vinyl");
-const through2 = require("through2");
-const fse = require("fs-extra");
 const path = require("path");
+const fse = require("fs-extra");
 const resolve = require("resolve");
+const os = require("os");
+const Undertaker = require("undertaker");
 const chalk_1 = require("chalk");
 const chokidar = require("chokidar");
-const sourcemaps = require("gulp-sourcemaps");
-const os = require("os");
+const sass = require("node-sass");
+const postcss = require("postcss");
+const autoprefixer = require("autoprefixer");
+const discardComments = require("postcss-discard-comments");
+const webpack = require("webpack");
 const UglifyESOptions_1 = require("./UglifyESOptions");
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 const UglifyESWebpackPlugin = require("uglifyjs-webpack-plugin");
 const GulpLog_1 = require("./GulpLog");
-const PipeErrorHandler_1 = require("./PipeErrorHandler");
-const To = require("./PipeTo");
 const PrettyUnits_1 = require("./PrettyUnits");
+const PrettyObject_1 = require("./PrettyObject");
 class Compiler {
     constructor(settings, flags) {
         this.settings = settings;
@@ -50,19 +50,6 @@ class Compiler {
             GulpLog_1.default(chalk_1.default.yellow("Watch"), "Mode: Source codes will be automatically compiled on changes.");
         }
         GulpLog_1.default('Source Maps:', chalk_1.default.yellow(this.flags.sourceMap ? 'Enabled' : 'Disabled'));
-    }
-    output(folder) {
-        return through2.obj((file, encoding, next) => __awaiter(this, void 0, void 0, function* () {
-            if (file.isStream()) {
-                let error = new Error('instapack output: Streaming is not supported!');
-                return next(error);
-            }
-            if (file.isBuffer()) {
-                let p = path.join(folder, file.relative);
-                yield fse.outputFile(p, file.contents);
-            }
-            next(null, file);
-        }));
     }
     registerAllTasks() {
         this.registerConcatTask();
@@ -253,18 +240,63 @@ class Compiler {
             });
         });
     }
-    streamCssEntryVinyl() {
-        let g = through2.obj();
-        fse.readFile(this.settings.cssEntry, 'utf8').then(contents => {
-            g.push(new vinyl({
-                path: this.settings.cssEntry,
-                contents: Buffer.from(contents),
-                base: this.settings.inputCssFolder,
-                cwd: this.settings.root
-            }));
-            g.push(null);
+    compileSassAsync(options) {
+        return new Promise((ok, reject) => {
+            sass.render(options, (error, result) => {
+                if (error) {
+                    reject(error);
+                }
+                else {
+                    ok(result);
+                }
+            });
         });
-        return g;
+    }
+    logAndWriteUtf8FileAsync(filePath, content) {
+        let bundle = Buffer.from(content, 'utf8');
+        let name = path.basename(filePath);
+        let size = PrettyUnits_1.prettyBytes(bundle.length);
+        GulpLog_1.default(chalk_1.default.blue(name), chalk_1.default.magenta(size));
+        return fse.writeFile(filePath, bundle);
+    }
+    buildCSS() {
+        return __awaiter(this, void 0, void 0, function* () {
+            let cssEntry = this.settings.cssEntry;
+            let outFile = path.join(path.dirname(cssEntry), this.settings.cssOut);
+            let sassOptions = {
+                file: cssEntry,
+                outFile: outFile,
+                data: yield fse.readFile(cssEntry, 'utf8'),
+                includePaths: [this.settings.npmFolder],
+                outputStyle: (this.flags.production ? 'compressed' : 'expanded'),
+                sourceMap: this.flags.sourceMap,
+                sourceMapEmbed: this.flags.sourceMap,
+                sourceMapContents: this.flags.sourceMap,
+            };
+            let sassResult = yield this.compileSassAsync(sassOptions);
+            let plugins = [autoprefixer];
+            if (this.flags.production) {
+                plugins.push(discardComments({
+                    removeAll: true
+                }));
+            }
+            let cssOutPath = this.settings.outputCssFile;
+            let cssResult = yield postcss(plugins).process(sassResult.css, {
+                from: outFile,
+                to: cssOutPath,
+                map: {
+                    inline: false
+                }
+            });
+            let writeTasks = [];
+            let t1 = this.logAndWriteUtf8FileAsync(cssOutPath, cssResult.css);
+            writeTasks.push(t1);
+            if (this.flags.sourceMap) {
+                let t2 = this.logAndWriteUtf8FileAsync(cssOutPath + '.map', cssResult.map.toString());
+                writeTasks.push(t2);
+            }
+            yield Promise.all(writeTasks);
+        });
     }
     registerCssTask() {
         let cssEntry = this.settings.cssEntry;
@@ -274,29 +306,33 @@ class Compiler {
             });
             return;
         }
-        let cssMapOptions = {
-            sourceRoot: '/' + this.settings.input + '/css'
-        };
-        this.tasks.task('css:compile', () => {
-            GulpLog_1.default('Compiling CSS', chalk_1.default.cyan(cssEntry));
-            let sassImports = [this.settings.npmFolder];
-            return this.streamCssEntryVinyl()
-                .pipe(this.flags.sourceMap ? sourcemaps.init() : through2.obj())
-                .pipe(To.Sass(this.settings.cssOut, sassImports))
-                .on('error', PipeErrorHandler_1.default)
-                .pipe(To.CssProcessors())
-                .on('error', PipeErrorHandler_1.default)
-                .pipe(this.flags.sourceMap ? sourcemaps.write('.', cssMapOptions) : through2.obj())
-                .pipe(To.BuildLog('CSS build'))
-                .pipe(this.output(this.settings.outputCssFolder));
-        });
+        this.tasks.task('css:build', () => __awaiter(this, void 0, void 0, function* () {
+            let start = process.hrtime();
+            try {
+                yield this.buildCSS();
+            }
+            catch (error) {
+                console.error(PrettyObject_1.prettyError(error));
+            }
+            finally {
+                let time = PrettyUnits_1.prettyHrTime(process.hrtime(start));
+                GulpLog_1.default('Finished CSS build after', chalk_1.default.green(time));
+            }
+        }));
         this.tasks.task('css', () => {
             fse.removeSync(this.settings.outputCssSourceMap);
-            let run = this.tasks.task('css:compile');
-            run(error => { });
+            GulpLog_1.default('Compiling CSS', chalk_1.default.cyan(cssEntry));
+            let run = this.tasks.task('css:build');
+            run(error => {
+                GulpLog_1.default(chalk_1.default.red('FATAL ERROR'), 'during CSS build:');
+                console.error(error);
+            });
             if (this.flags.watch) {
                 chokidar.watch(this.settings.scssGlob).on('change', path => {
-                    run(error => { });
+                    run(error => {
+                        GulpLog_1.default(chalk_1.default.red('FATAL ERROR'), 'during CSS build:');
+                        console.error(error);
+                    });
                 });
             }
         });
@@ -334,43 +370,6 @@ class Compiler {
             return concat;
         });
     }
-    streamConcatVinyl() {
-        let c = this.settings.concatCount;
-        let g = through2.obj();
-        let resolution = this.settings.concat;
-        let countDown = () => {
-            c--;
-            if (c === 0) {
-                g.push(null);
-            }
-        };
-        for (let target in resolution) {
-            let ar = resolution[target];
-            if (!ar || ar.length === 0) {
-                GulpLog_1.default(chalk_1.default.red('WARNING'), 'concat list for', chalk_1.default.blue(target), 'is empty!');
-                countDown();
-                continue;
-            }
-            if (typeof ar === 'string') {
-                ar = [ar];
-                GulpLog_1.default(chalk_1.default.red('WARNING'), 'concat list for', chalk_1.default.blue(target), 'is a', chalk_1.default.yellow('string'), 'instead of a', chalk_1.default.yellow('string[]'));
-            }
-            this.resolveThenConcat(ar).then(result => {
-                let o = target;
-                if (o.endsWith('.js') === false) {
-                    o += '.js';
-                }
-                g.push(new vinyl({
-                    path: o,
-                    contents: Buffer.from(result)
-                }));
-            }).catch(error => {
-                GulpLog_1.default(chalk_1.default.red('ERROR'), 'when concatenating', chalk_1.default.blue(target));
-                console.error(error);
-            }).then(countDown);
-        }
-        return g;
-    }
     registerConcatTask() {
         let c = this.settings.concatCount;
         if (c === 0) {
@@ -382,11 +381,6 @@ class Compiler {
                 GulpLog_1.default("Concat task will be run once and", chalk_1.default.red("NOT watched!"));
             }
             GulpLog_1.default('Resolving', chalk_1.default.cyan(c.toString()), 'concat target(s)...');
-            return this.streamConcatVinyl()
-                .pipe(this.flags.production ? To.Uglify() : through2.obj())
-                .on('error', PipeErrorHandler_1.default)
-                .pipe(To.BuildLog('JS concat'))
-                .pipe(this.output(this.settings.outputJsFolder));
         });
     }
 }

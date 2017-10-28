@@ -1,25 +1,31 @@
-// Core dependencies
-import * as webpack from 'webpack';
-import * as Undertaker from 'undertaker';
-import * as vinyl from 'vinyl';
-import * as through2 from 'through2';
-import * as fse from 'fs-extra';
+// Node.js Core
 import * as path from 'path';
+import * as fse from 'fs-extra';
 import * as resolve from 'resolve';
+import * as os from 'os';
+
+// Tasks
+import * as Undertaker from 'undertaker';
 import chalk from 'chalk';
 import * as chokidar from 'chokidar';
-import * as sourcemaps from 'gulp-sourcemaps';
-import * as os from 'os';
+
+// Sass + PostCSS
+import * as sass from 'node-sass';
+import * as postcss from 'postcss';
+import * as autoprefixer from 'autoprefixer';
+import * as discardComments from 'postcss-discard-comments';
+
+// webpack
+import * as webpack from 'webpack';
 import { tryGetTypeScriptTarget, createUglifyESOptions } from './UglifyESOptions';
 import ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 import UglifyESWebpackPlugin = require('uglifyjs-webpack-plugin');
 
 // These are my stuffs
 import glog from './GulpLog';
-import PipeErrorHandler from './PipeErrorHandler';
-import * as To from './PipeTo';
 import { Settings, ConcatLookup } from './Settings';
-import { prettyBytes, prettyMilliseconds } from './PrettyUnits';
+import { prettyBytes, prettyMilliseconds, prettyHrTime } from './PrettyUnits';
+import { prettyError } from './PrettyObject';
 
 /**
  * Defines build flags to be used by Compiler class.
@@ -93,21 +99,21 @@ export class Compiler {
      * Creates a pipe that redirects file to output folder or a server.
      * @param folder 
      */
-    output(folder: string) {
-        return through2.obj(async (file: vinyl, encoding, next) => {
-            if (file.isStream()) {
-                let error = new Error('instapack output: Streaming is not supported!');
-                return next(error);
-            }
+    // output(folder: string) {
+    //     return through2.obj(async (file: vinyl, encoding, next) => {
+    //         if (file.isStream()) {
+    //             let error = new Error('instapack output: Streaming is not supported!');
+    //             return next(error);
+    //         }
 
-            if (file.isBuffer()) {
-                let p = path.join(folder, file.relative);
-                await fse.outputFile(p, file.contents);
-            }
+    //         if (file.isBuffer()) {
+    //             let p = path.join(folder, file.relative);
+    //             await fse.outputFile(p, file.contents);
+    //         }
 
-            next(null, file);
-        });
-    }
+    //         next(null, file);
+    //     });
+    // }
 
     /**
      * Registers all available tasks and registers a task for invoking all those tasks.
@@ -360,24 +366,75 @@ export class Compiler {
         });
     }
 
-    /**
-     * Returns a streaming CSS project entry point as a Vinyl object. 
-     */
-    streamCssEntryVinyl() {
-        let g = through2.obj();
+    compileSassAsync(options: sass.Options) {
+        return new Promise<sass.Result>((ok, reject) => {
+            sass.render(options, (error, result) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    ok(result);
+                }
+            });
+        });
+    }
 
-        fse.readFile(this.settings.cssEntry, 'utf8').then(contents => {
-            g.push(new vinyl({
-                path: this.settings.cssEntry,
-                contents: Buffer.from(contents),
-                base: this.settings.inputCssFolder,
-                cwd: this.settings.root
+    logAndWriteUtf8FileAsync(filePath: string, content: string) {
+        let bundle = Buffer.from(content, 'utf8');
+        let name = path.basename(filePath)
+        let size = prettyBytes(bundle.length);
+
+        glog(chalk.blue(name), chalk.magenta(size));
+        return fse.writeFile(filePath, bundle);
+    }
+
+    async buildCSS() {
+        let cssEntry = this.settings.cssEntry;
+
+        // E:\VS\TAM.Passport\TAM.Passport\client\css\site.scss --> E:\VS\TAM.Passport\TAM.Passport\client\css\ipack.css
+        let outFile = path.join(path.dirname(cssEntry), this.settings.cssOut);
+
+        let sassOptions: sass.Options = {
+            file: cssEntry,
+            outFile: outFile,
+            data: await fse.readFile(cssEntry, 'utf8'),
+            includePaths: [this.settings.npmFolder],
+
+            outputStyle: (this.flags.production ? 'compressed' : 'expanded'),
+            sourceMap: this.flags.sourceMap,
+            sourceMapEmbed: this.flags.sourceMap,
+            sourceMapContents: this.flags.sourceMap,
+        };
+
+        let sassResult = await this.compileSassAsync(sassOptions);
+
+        let plugins: any[] = [autoprefixer];
+        if (this.flags.production) {
+            plugins.push(discardComments({
+                removeAll: true
             }));
+        }
 
-            g.push(null);
+        let cssOutPath = this.settings.outputCssFile;
+        let cssResult = await postcss(plugins).process(sassResult.css, {
+            from: outFile,
+            to: cssOutPath,
+            map: {
+                inline: false
+            }
         });
 
-        return g;
+        let writeTasks: Promise<void>[] = [];
+
+        let t1 = this.logAndWriteUtf8FileAsync(cssOutPath, cssResult.css);
+        writeTasks.push(t1);
+
+        // PostCSS is retarded. It cannot disable source maps lmao.
+        if (this.flags.sourceMap) {
+            let t2 = this.logAndWriteUtf8FileAsync(cssOutPath + '.map', cssResult.map.toString());
+            writeTasks.push(t2);
+        }
+
+        await Promise.all(writeTasks);
     }
 
     /**
@@ -393,33 +450,37 @@ export class Compiler {
             return;
         }
 
-        let cssMapOptions = {
-            sourceRoot: '/' + this.settings.input + '/css'
-        };
-
-        this.tasks.task('css:compile', () => {
-            glog('Compiling CSS', chalk.cyan(cssEntry));
-            let sassImports = [this.settings.npmFolder];
-
-            return this.streamCssEntryVinyl()
-                .pipe(this.flags.sourceMap ? sourcemaps.init() : through2.obj())
-                .pipe(To.Sass(this.settings.cssOut, sassImports))
-                .on('error', PipeErrorHandler)
-                .pipe(To.CssProcessors())
-                .on('error', PipeErrorHandler)
-                .pipe(this.flags.sourceMap ? sourcemaps.write('.', cssMapOptions) : through2.obj())
-                .pipe(To.BuildLog('CSS build'))
-                .pipe(this.output(this.settings.outputCssFolder));
+        this.tasks.task('css:build', async () => {
+            let start = process.hrtime();
+            try {
+                await this.buildCSS();
+            }
+            catch (error) {
+                console.error(prettyError(error));
+            }
+            finally {
+                let time = prettyHrTime(process.hrtime(start));
+                glog('Finished CSS build after', chalk.green(time));
+            }
         });
 
         this.tasks.task('css', () => {
             fse.removeSync(this.settings.outputCssSourceMap);
-            let run = this.tasks.task('css:compile');
-            run(error => { });
+
+            glog('Compiling CSS', chalk.cyan(cssEntry));
+            let run = this.tasks.task('css:build');
+
+            run(error => {
+                glog(chalk.red('FATAL ERROR'), 'during CSS build:');
+                console.error(error);
+            });
 
             if (this.flags.watch) {
                 chokidar.watch(this.settings.scssGlob).on('change', path => {
-                    run(error => { });
+                    run(error => {
+                        glog(chalk.red('FATAL ERROR'), 'during CSS build:');
+                        console.error(error);
+                    });
                 });
             }
         });
@@ -477,48 +538,48 @@ export class Compiler {
     /**
      * Returns a streaming concat results from the resolution map as Vinyl objects.
      */
-    streamConcatVinyl() {
-        let c = this.settings.concatCount;
-        let g = through2.obj();
-        let resolution = this.settings.concat;
+    // streamConcatVinyl() {
+    //     let c = this.settings.concatCount;
+    //     let g = through2.obj();
+    //     let resolution = this.settings.concat;
 
-        let countDown = () => {
-            c--;
-            if (c === 0) {
-                g.push(null);
-            }
-        }
+    //     let countDown = () => {
+    //         c--;
+    //         if (c === 0) {
+    //             g.push(null);
+    //         }
+    //     }
 
-        for (let target in resolution) {
-            let ar = resolution[target];
-            if (!ar || ar.length === 0) {
-                glog(chalk.red('WARNING'), 'concat list for', chalk.blue(target), 'is empty!');
-                countDown();
-                continue;
-            }
-            if (typeof ar === 'string') {
-                ar = [ar];
-                glog(chalk.red('WARNING'), 'concat list for', chalk.blue(target), 'is a', chalk.yellow('string'), 'instead of a', chalk.yellow('string[]'));
-            }
+    //     for (let target in resolution) {
+    //         let ar = resolution[target];
+    //         if (!ar || ar.length === 0) {
+    //             glog(chalk.red('WARNING'), 'concat list for', chalk.blue(target), 'is empty!');
+    //             countDown();
+    //             continue;
+    //         }
+    //         if (typeof ar === 'string') {
+    //             ar = [ar];
+    //             glog(chalk.red('WARNING'), 'concat list for', chalk.blue(target), 'is a', chalk.yellow('string'), 'instead of a', chalk.yellow('string[]'));
+    //         }
 
-            this.resolveThenConcat(ar).then(result => {
-                let o = target;
-                if (o.endsWith('.js') === false) {
-                    o += '.js';
-                }
+    //         this.resolveThenConcat(ar).then(result => {
+    //             let o = target;
+    //             if (o.endsWith('.js') === false) {
+    //                 o += '.js';
+    //             }
 
-                g.push(new vinyl({
-                    path: o,
-                    contents: Buffer.from(result)
-                }));
-            }).catch(error => {
-                glog(chalk.red('ERROR'), 'when concatenating', chalk.blue(target))
-                console.error(error);
-            }).then(countDown); // this code block is equivalent to: .finally()
-        }
+    //             g.push(new vinyl({
+    //                 path: o,
+    //                 contents: Buffer.from(result)
+    //             }));
+    //         }).catch(error => {
+    //             glog(chalk.red('ERROR'), 'when concatenating', chalk.blue(target))
+    //             console.error(error);
+    //         }).then(countDown); // this code block is equivalent to: .finally()
+    //     }
 
-        return g;
-    }
+    //     return g;
+    // }
 
     /**
      * Registers a JavaScript concat task.
@@ -537,11 +598,11 @@ export class Compiler {
 
             glog('Resolving', chalk.cyan(c.toString()), 'concat target(s)...');
 
-            return this.streamConcatVinyl()
-                .pipe(this.flags.production ? To.Uglify() : through2.obj())
-                .on('error', PipeErrorHandler)
-                .pipe(To.BuildLog('JS concat'))
-                .pipe(this.output(this.settings.outputJsFolder));
+            // return this.streamConcatVinyl()
+            //     .pipe(this.flags.production ? To.Uglify() : through2.obj())
+            //     .on('error', PipeErrorHandler)
+            //     .pipe(To.BuildLog('JS concat'))
+            //     .pipe(this.output(this.settings.outputJsFolder));
         });
     }
 }

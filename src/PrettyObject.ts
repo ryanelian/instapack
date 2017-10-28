@@ -143,3 +143,18 @@ export class PrettyObject {
         }
     }
 }
+
+let p = new PrettyObject();
+export default p;
+
+/**
+ * Returns a formatted error.
+ * @param error 
+ */
+export function prettyError(error: Error) {
+    try {
+        return p.render(error);
+    } catch {
+        return chalk.red(error as any);
+    }
+}

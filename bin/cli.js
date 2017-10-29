@@ -56,7 +56,7 @@ CLI.command({
             describe: 'Enables incremental compilation on source code changes.'
         }).option('d', {
             alias: 'dev',
-            describe: 'Disables JS output minification.'
+            describe: 'Disables outputs minification.'
         }).option('u', {
             alias: 'uncharted',
             describe: 'Disables source maps.'

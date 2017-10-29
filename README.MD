@@ -127,7 +127,7 @@ In addition, build flags are available:
 
 - `-w` or `--watch` enables incremental compilation on source code changes.
 
-- `-d` or `--dev` disables JS output minification for **fast build!**
+- `-d` or `--dev` disables outputs minification for **fast build!**
 
 - `-u` or `--uncharted` disables source maps. (Slightly improves build speed)
 

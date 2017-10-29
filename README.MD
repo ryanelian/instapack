@@ -18,7 +18,7 @@ If you encounter [errors](https://github.com/npm/npm/issues/18380) during instal
 
 - Or downgrade to npm 4 to avoid [buggy npm 5](https://github.com/npm/npm/issues/16991): `npm install -g npm@4`
 
-- Or use [Yarn](https://yarnpkg.com/en/docs/install) instead: `yarn global add instapack`
+- **Or use [Yarn](https://yarnpkg.com/en/docs/install) instead:** `yarn global add instapack`
 
 ## Quick Start Guide
 
@@ -55,7 +55,7 @@ If using [the latest Visual Studio Code](https://code.visualstudio.com/), it sho
 
 - Built-in new project scaffold tool. :gift:
 
-- Rich debugging experience using DevTools. You can set breakpoints, view variable values, and step over / into the TypeScript source code directly in the browser! :mag:
+- Rich debugging experience using DevTools: set breakpoints, view variable values, and step into the TypeScript source code directly in the browser! :mag:
 
 ## Design Goals
 
@@ -157,7 +157,7 @@ instapack puts configuration inside `package.json` to reduce project files clutt
   },
   "dependencies": {
     "@types/requirejs": "^2.1.31",
-    "axios": "^0.16.2",
+    "axios": "^0.17.0",
     "bootstrap": "4.0.0-beta.2",
     "bootstrap.native": "^2.0.17",
     "es6-promise": "^4.1.1",

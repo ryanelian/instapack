@@ -387,18 +387,42 @@ export class Compiler {
     }
 
     /**
+     * Accepts absolute path and returns a source-map friendly path relative to that object.
+     * This will probably break for stuffs outside the root project folder, but whatever...
+     * @param s 
+     */
+    convertAbsoluteToSourceMapPath(s: string) {
+        return '/./' + path.relative(this.settings.root, s).replace(/\\/g, '/');
+    }
+
+    /**
+     * Accepts a raw JSON string of a Sass-compiled source map, then normalize the paths.
+     * Returns back a raw JSON string source map. 
+     * @param m 
+     */
+    fixCssSourceMap(sm: sourceMap.RawSourceMap) {
+        sm.sourceRoot = 'instapack://';
+
+        let projectRoot = this.settings.root;
+        let cssProjectFolder = this.settings.inputCssFolder;
+
+        sm.sources = sm.sources.map(s => {
+            let absolute = path.join(cssProjectFolder, s);
+            return this.convertAbsoluteToSourceMapPath(absolute);
+        });
+    }
+
+    /**
      * Builds CSS project asynchronously.
      */
     async buildCSS() {
-        let cssEntry = this.settings.cssEntry;
-
-        // E:\VS\TAM.Passport\TAM.Passport\client\css\site.scss --> E:\VS\TAM.Passport\TAM.Passport\client\css\ipack.css
-        let outFile = path.join(path.dirname(cssEntry), this.settings.cssOut);
+        let cssInput = this.settings.cssEntry;
+        let cssOutput = this.settings.outputCssFile;
 
         let sassOptions: sass.Options = {
-            file: cssEntry,
-            outFile: outFile,
-            data: await fse.readFile(cssEntry, 'utf8'),
+            file: cssInput,
+            outFile: cssOutput,
+            data: await fse.readFile(cssInput, 'utf8'),
             includePaths: [this.settings.npmFolder],
 
             outputStyle: (this.flags.production ? 'compressed' : 'expanded'),
@@ -423,16 +447,17 @@ export class Compiler {
             };
         }
 
-        let cssOutPath = this.settings.outputCssFile;
         let cssResult = await postcss(plugins).process(sassResult.css, {
-            from: outFile,
-            to: cssOutPath,
+            from: cssOutput,
+            to: cssOutput,
             map: postCssSourceMapOption
         });
 
-        let t1 = this.logAndWriteUtf8FileAsync(cssOutPath, cssResult.css);
+        let t1 = this.logAndWriteUtf8FileAsync(cssOutput, cssResult.css);
         if (cssResult.map) {
-            await this.logAndWriteUtf8FileAsync(cssOutPath + '.map', cssResult.map.toString());
+            let sm: sourceMap.RawSourceMap = cssResult.map.toJSON();
+            this.fixCssSourceMap(sm);
+            await this.logAndWriteUtf8FileAsync(cssOutput + '.map', JSON.stringify(sm));
         }
         await t1;
     }
@@ -533,8 +558,7 @@ export class Compiler {
         let files: ConcatFiles = {};
 
         for (let i = 0; i < resolutions.length; i++) {
-            let key = path.relative(this.settings.root, resolutions[i]);
-            key = '/' + key.replace(/\\/g, '/');
+            let key = this.convertAbsoluteToSourceMapPath(resolutions[i]);
             // console.log(resolutions[i] + ' ' + key);
             files[key] = contents[i];
         }
@@ -560,7 +584,7 @@ export class Compiler {
             options.sourceMap = {
                 filename: target,
                 url: target + '.map',
-                // root: 'instapack://',
+                root: 'instapack://',
                 includeSources: true
             };
         }
@@ -615,6 +639,7 @@ export class Compiler {
                 o += '.js';
             }
 
+            fse.removeSync(path.join(this.settings.outputJsFolder, o + '.map'));
             let task = this.concatTarget(o, modules).catch(error => {
                 glog(chalk.red('ERROR'), 'when concatenating', chalk.blue(o));
                 console.error(error);

@@ -260,14 +260,26 @@ class Compiler {
         GulpLog_1.default(chalk_1.default.blue(name), chalk_1.default.magenta(size));
         return fse.writeFile(filePath, bundle);
     }
+    convertAbsoluteToSourceMapPath(s) {
+        return '/./' + path.relative(this.settings.root, s).replace(/\\/g, '/');
+    }
+    fixCssSourceMap(sm) {
+        sm.sourceRoot = 'instapack://';
+        let projectRoot = this.settings.root;
+        let cssProjectFolder = this.settings.inputCssFolder;
+        sm.sources = sm.sources.map(s => {
+            let absolute = path.join(cssProjectFolder, s);
+            return this.convertAbsoluteToSourceMapPath(absolute);
+        });
+    }
     buildCSS() {
         return __awaiter(this, void 0, void 0, function* () {
-            let cssEntry = this.settings.cssEntry;
-            let outFile = path.join(path.dirname(cssEntry), this.settings.cssOut);
+            let cssInput = this.settings.cssEntry;
+            let cssOutput = this.settings.outputCssFile;
             let sassOptions = {
-                file: cssEntry,
-                outFile: outFile,
-                data: yield fse.readFile(cssEntry, 'utf8'),
+                file: cssInput,
+                outFile: cssOutput,
+                data: yield fse.readFile(cssInput, 'utf8'),
                 includePaths: [this.settings.npmFolder],
                 outputStyle: (this.flags.production ? 'compressed' : 'expanded'),
                 sourceMap: this.flags.sourceMap,
@@ -287,15 +299,16 @@ class Compiler {
                     inline: false
                 };
             }
-            let cssOutPath = this.settings.outputCssFile;
             let cssResult = yield postcss(plugins).process(sassResult.css, {
-                from: outFile,
-                to: cssOutPath,
+                from: cssOutput,
+                to: cssOutput,
                 map: postCssSourceMapOption
             });
-            let t1 = this.logAndWriteUtf8FileAsync(cssOutPath, cssResult.css);
+            let t1 = this.logAndWriteUtf8FileAsync(cssOutput, cssResult.css);
             if (cssResult.map) {
-                yield this.logAndWriteUtf8FileAsync(cssOutPath + '.map', cssResult.map.toString());
+                let sm = cssResult.map.toJSON();
+                this.fixCssSourceMap(sm);
+                yield this.logAndWriteUtf8FileAsync(cssOutput + '.map', JSON.stringify(sm));
             }
             yield t1;
         });
@@ -370,8 +383,7 @@ class Compiler {
             let contents = yield Promise.all(p2);
             let files = {};
             for (let i = 0; i < resolutions.length; i++) {
-                let key = path.relative(this.settings.root, resolutions[i]);
-                key = '/' + key.replace(/\\/g, '/');
+                let key = this.convertAbsoluteToSourceMapPath(resolutions[i]);
                 files[key] = contents[i];
             }
             return files;
@@ -390,6 +402,7 @@ class Compiler {
             options.sourceMap = {
                 filename: target,
                 url: target + '.map',
+                root: 'instapack://',
                 includeSources: true
             };
         }
@@ -432,6 +445,7 @@ class Compiler {
             if (o.endsWith('.js') === false) {
                 o += '.js';
             }
+            fse.removeSync(path.join(this.settings.outputJsFolder, o + '.map'));
             let task = this.concatTarget(o, modules).catch(error => {
                 GulpLog_1.default(chalk_1.default.red('ERROR'), 'when concatenating', chalk_1.default.blue(o));
                 console.error(error);

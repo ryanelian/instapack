@@ -51,11 +51,11 @@ If using [the latest Visual Studio Code](https://code.visualstudio.com/), it sho
 
 ## Features
 
-- Hyper-opinionated web app client project builder with zero configurations. It just works. :sparkling_heart:
+- Hyper-opinionated web app client project builder with near-zero configurations. It just works. :sparkling_heart:
 
 - Built-in new project scaffold tool. :gift:
 
-- Rich debugging experience using Google Chrome DevTools. You can set breakpoints, view variable values, and step over / into the TypeScript source code directly in the browser! :mag:
+- Rich debugging experience using DevTools. You can set breakpoints, view variable values, and step over / into the TypeScript source code directly in the browser! :mag:
 
 ## Design Goals
 
@@ -65,7 +65,7 @@ If using [the latest Visual Studio Code](https://code.visualstudio.com/), it sho
 
 - Improve source code quality and maintainability with type hints and compile-time checks. :eyeglasses:
 
-- Enforce best practices when building the app, which may significantly impact page load time. (e.g. bundling and minification) :airplane:
+- Enforce best practices when building apps, which may significantly impact page load time. (e.g. bundling and minification) :airplane:
 
 - Unify team build system across multiple projects, for any frameworks. :fist:
 
@@ -77,9 +77,9 @@ Recently every f-ing framework on this planet :earth_asia: has their own CLI, bu
 
 instapack is an initiative to develop a command line tool for compiling most apps developed using mainstream JavaScript frameworks, with a :lemon: twist: **It can easily build an app written in TypeScript with minimal or no further configurations!**
 
-Powered by [webpack](https://webpack.js.org), it effortlessly devours modules written using any standards under the sun (ES Harmony, CommonJS, AMD, UMD) and is capable of importing HTML templates out of the box. instapack is battle-tested :hocho: and is designed to cover 99.99% normal use cases when developing a modern web app.
+Powered by [webpack](https://webpack.js.org), instapack effortlessly devours modules written using modern JS standards (ES Harmony, CommonJS, AMD, UMD) and is capable of importing HTML templates out of the box. instapack is battle-tested :hocho: and is designed to cover 99.99% *normal* use cases when developing a modern web app.
 
-With a multi-purpose, integrated build tool, you can save time :watch:, save precious SSD space :space_invader:, and save yourself from the pain of manually maintaining project build scripts! :coffee:
+With this powerful tool, you can save time :watch:, save precious SSD space :space_invader:, and save yourself from the pain of manually maintaining project build scripts! :coffee:
 
 ## How does it work?
 

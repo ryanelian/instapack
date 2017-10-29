@@ -79,7 +79,7 @@ instapack is an initiative to develop a command line tool for compiling most app
 
 Powered by [webpack](https://webpack.js.org), it effortlessly devours modules written using any standards under the sun (ES Harmony, CommonJS, AMD, UMD) and is capable of importing HTML templates out of the box. instapack is battle-tested :hocho: and is designed to cover 99.99% normal use cases when developing a modern web app.
 
-With **one compiler to rule them all**, you can save time :watch:, save precious SSD space :space_invader:, and save yourself from the pain of manually maintaining project build scripts! :coffee:
+With a multi-purpose, integrated build tool, you can save time :watch:, save precious SSD space :space_invader:, and save yourself from the pain of manually maintaining project build scripts! :coffee:
 
 ## How does it work?
 

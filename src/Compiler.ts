@@ -380,10 +380,10 @@ export class Compiler {
     logAndWriteUtf8FileAsync(filePath: string, content: string) {
         let bundle = Buffer.from(content, 'utf8');
         let name = path.basename(filePath)
-        let size = prettyBytes(bundle.length);
+        let size = prettyBytes(bundle.byteLength);
 
         glog(chalk.blue(name), chalk.magenta(size));
-        return fse.writeFile(filePath, bundle);
+        return fse.outputFile(filePath, bundle);
     }
 
     /**

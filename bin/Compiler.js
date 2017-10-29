@@ -256,9 +256,9 @@ class Compiler {
     logAndWriteUtf8FileAsync(filePath, content) {
         let bundle = Buffer.from(content, 'utf8');
         let name = path.basename(filePath);
-        let size = PrettyUnits_1.prettyBytes(bundle.length);
+        let size = PrettyUnits_1.prettyBytes(bundle.byteLength);
         GulpLog_1.default(chalk_1.default.blue(name), chalk_1.default.magenta(size));
-        return fse.writeFile(filePath, bundle);
+        return fse.outputFile(filePath, bundle);
     }
     convertAbsoluteToSourceMapPath(s) {
         return '/./' + path.relative(this.settings.root, s).replace(/\\/g, '/');

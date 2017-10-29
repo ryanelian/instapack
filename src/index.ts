@@ -1,4 +1,5 @@
-import { Compiler, CompilerFlags } from './Compiler';
+import { Compiler } from './Compiler';
+import { CompilerFlags } from './CompilerUtilities';
 import { Settings } from './Settings';
 import { Scaffold } from './Scaffold';
 

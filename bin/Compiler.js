@@ -10,7 +10,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const path = require("path");
 const fse = require("fs-extra");
-const resolve = require("resolve");
 const os = require("os");
 const Undertaker = require("undertaker");
 const chalk_1 = require("chalk");
@@ -23,6 +22,8 @@ const webpack = require("webpack");
 const UglifyESOptions_1 = require("./UglifyESOptions");
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 const UglifyESWebpackPlugin = require("uglifyjs-webpack-plugin");
+const resolve = require("resolve");
+const UglifyES = require("uglify-es");
 const GulpLog_1 = require("./GulpLog");
 const PrettyUnits_1 = require("./PrettyUnits");
 const PrettyObject_1 = require("./PrettyObject");
@@ -361,15 +362,83 @@ class Compiler {
             });
         });
     }
-    resolveThenConcat(paths) {
+    resolveThenReadFiles(paths) {
         return __awaiter(this, void 0, void 0, function* () {
-            let concat = '';
-            for (let path of paths) {
-                let absolute = yield this.resolveAsPromise(path);
-                concat += (yield fse.readFile(absolute, 'utf8')) + '\n';
+            let p1 = paths.map(Q => this.resolveAsPromise(Q));
+            let resolutions = yield Promise.all(p1);
+            let p2 = resolutions.map(Q => fse.readFile(Q, 'utf8'));
+            let contents = yield Promise.all(p2);
+            let files = {};
+            for (let i = 0; i < resolutions.length; i++) {
+                let key = path.relative(this.settings.root, resolutions[i]);
+                key = '/' + key.replace(/\\/g, '/');
+                files[key] = contents[i];
             }
-            return concat;
+            return files;
         });
+    }
+    concatFilesAsync(target, files) {
+        let options = UglifyESOptions_1.createUglifyESOptions();
+        if (!this.flags.production) {
+            options.output = {
+                beautify: true
+            };
+            options['compress'] = false;
+            options['mangle'] = false;
+        }
+        if (this.flags.sourceMap) {
+            options.sourceMap = {
+                filename: target,
+                url: target + '.map',
+                includeSources: true
+            };
+        }
+        return new Promise((ok, error) => {
+            let result = UglifyES.minify(files, options);
+            if (result.error) {
+                error(result.error);
+            }
+            else {
+                ok(result);
+            }
+        });
+    }
+    concatTarget(target, modules) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let files = yield this.resolveThenReadFiles(modules);
+            let result = yield this.concatFilesAsync(target, files);
+            let outPath = path.join(this.settings.outputJsFolder, target);
+            let p1 = this.logAndWriteUtf8FileAsync(outPath, result.code);
+            if (result.map) {
+                yield this.logAndWriteUtf8FileAsync(outPath + '.map', result.map);
+            }
+            yield p1;
+        });
+    }
+    buildConcat() {
+        let tasks = [];
+        let targets = this.settings.concat;
+        for (let target in targets) {
+            let modules = targets[target];
+            if (!modules || modules.length === 0) {
+                GulpLog_1.default(chalk_1.default.red('WARNING'), 'concat list for', chalk_1.default.blue(target), 'is empty!');
+                continue;
+            }
+            if (typeof modules === 'string') {
+                modules = [modules];
+                GulpLog_1.default(chalk_1.default.red('WARNING'), 'concat list for', chalk_1.default.blue(target), 'is a', chalk_1.default.yellow('string'), 'instead of a', chalk_1.default.yellow('string[]'));
+            }
+            let o = target;
+            if (o.endsWith('.js') === false) {
+                o += '.js';
+            }
+            let task = this.concatTarget(o, modules).catch(error => {
+                GulpLog_1.default(chalk_1.default.red('ERROR'), 'when concatenating', chalk_1.default.blue(o));
+                console.error(error);
+            }).then(() => { });
+            tasks.push(task);
+        }
+        return Promise.all(tasks);
     }
     registerConcatTask() {
         let c = this.settings.concatCount;
@@ -377,12 +446,20 @@ class Compiler {
             this.tasks.task('concat', () => { });
             return;
         }
-        this.tasks.task('concat', () => {
+        this.tasks.task('concat', () => __awaiter(this, void 0, void 0, function* () {
             if (this.flags.watch) {
                 GulpLog_1.default("Concat task will be run once and", chalk_1.default.red("NOT watched!"));
             }
             GulpLog_1.default('Resolving', chalk_1.default.cyan(c.toString()), 'concat target(s)...');
-        });
+            let start = process.hrtime();
+            try {
+                yield this.buildConcat();
+            }
+            finally {
+                let time = PrettyUnits_1.prettyHrTime(process.hrtime(start));
+                GulpLog_1.default('Finished JS concat after', chalk_1.default.green(time));
+            }
+        }));
     }
 }
 exports.Compiler = Compiler;

@@ -1,7 +1,6 @@
 // Node.js Core
 import * as path from 'path';
 import * as fse from 'fs-extra';
-import * as resolve from 'resolve';
 import * as os from 'os';
 
 // Tasks
@@ -21,6 +20,10 @@ import { tryGetTypeScriptTarget, createUglifyESOptions } from './UglifyESOptions
 import ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 import UglifyESWebpackPlugin = require('uglifyjs-webpack-plugin');
 
+// concat
+import * as resolve from 'resolve';
+import * as UglifyES from 'uglify-es';
+
 // These are my stuffs
 import glog from './GulpLog';
 import { Settings, ConcatLookup } from './Settings';
@@ -35,6 +38,13 @@ export interface CompilerFlags {
     watch: boolean,
     sourceMap: boolean,
     parallel: boolean
+}
+
+/**
+ * A simple key-value pair for UglifyES code input.
+ */
+export interface ConcatFiles {
+    [name: string]: string
 }
 
 /**
@@ -94,26 +104,6 @@ export class Compiler {
 
         glog('Source Maps:', chalk.yellow(this.flags.sourceMap ? 'Enabled' : 'Disabled'));
     }
-
-    /**
-     * Creates a pipe that redirects file to output folder or a server.
-     * @param folder 
-     */
-    // output(folder: string) {
-    //     return through2.obj(async (file: vinyl, encoding, next) => {
-    //         if (file.isStream()) {
-    //             let error = new Error('instapack output: Streaming is not supported!');
-    //             return next(error);
-    //         }
-
-    //         if (file.isBuffer()) {
-    //             let p = path.join(folder, file.relative);
-    //             await fse.outputFile(p, file.contents);
-    //         }
-
-    //         next(null, file);
-    //     });
-    // }
 
     /**
      * Registers all available tasks and registers a task for invoking all those tasks.
@@ -324,7 +314,7 @@ export class Compiler {
     }
 
     /**
-     * Registers a JavaScript build task using TypeScript piped into Browserify.
+     * Registers a JavaScript build task using TypeScript + webpack.
      */
     registerJsTask() {
         let jsEntry = this.settings.jsEntry;
@@ -366,6 +356,10 @@ export class Compiler {
         });
     }
 
+    /**
+     * Asynchronously compiles Sass as a Promise.
+     * @param options 
+     */
     compileSassAsync(options: sass.Options) {
         return new Promise<sass.Result>((ok, reject) => {
             sass.render(options, (error, result) => {
@@ -378,6 +372,11 @@ export class Compiler {
         });
     }
 
+    /**
+     * Logs file output and writes to output directory as a UTF-8 encoded string.
+     * @param filePath 
+     * @param content 
+     */
     logAndWriteUtf8FileAsync(filePath: string, content: string) {
         let bundle = Buffer.from(content, 'utf8');
         let name = path.basename(filePath)
@@ -387,6 +386,9 @@ export class Compiler {
         return fse.writeFile(filePath, bundle);
     }
 
+    /**
+     * Builds CSS project asynchronously.
+     */
     async buildCSS() {
         let cssEntry = this.settings.cssEntry;
 
@@ -436,7 +438,7 @@ export class Compiler {
     }
 
     /**
-     * Registers a CSS build task using Sass piped into postcss.
+     * Registers a CSS build task using Sass + postcss.
      */
     registerCssTask() {
         let cssEntry = this.settings.cssEntry;
@@ -522,65 +524,110 @@ export class Compiler {
      * Returns a promise for a concatenated file content as string, resulting from a list of node modules.
      * @param paths 
      */
-    async resolveThenConcat(paths: string[]) {
-        let concat = '';
+    async resolveThenReadFiles(paths: string[]) {
+        let p1 = paths.map(Q => this.resolveAsPromise(Q));
+        let resolutions = await Promise.all(p1);
+        let p2 = resolutions.map(Q => fse.readFile(Q, 'utf8'));
+        let contents = await Promise.all(p2);
 
-        for (let path of paths) {
-            let absolute = await this.resolveAsPromise(path);
-            concat += await fse.readFile(absolute, 'utf8') + '\n';
+        let files: ConcatFiles = {};
+
+        for (let i = 0; i < resolutions.length; i++) {
+            let key = path.relative(this.settings.root, resolutions[i]);
+            key = '/' + key.replace(/\\/g, '/');
+            // console.log(resolutions[i] + ' ' + key);
+            files[key] = contents[i];
         }
 
-        return concat;
+        return files;
     }
 
     /**
-     * Returns a streaming concat results from the resolution map as Vinyl objects.
+     * Accepts a file name and a list of files to be concatenated using UglifyES as asynchronous Promise with minify result.
+     * @param target 
+     * @param files 
      */
-    // streamConcatVinyl() {
-    //     let c = this.settings.concatCount;
-    //     let g = through2.obj();
-    //     let resolution = this.settings.concat;
+    concatFilesAsync(target: string, files: ConcatFiles) {
+        let options = createUglifyESOptions();
+        if (!this.flags.production) {
+            options.output = {
+                beautify: true
+            }
+            options['compress'] = false;
+            options['mangle'] = false;
+        }
+        if (this.flags.sourceMap) {
+            options.sourceMap = {
+                filename: target,
+                url: target + '.map',
+                // root: 'instapack://',
+                includeSources: true
+            };
+        }
 
-    //     let countDown = () => {
-    //         c--;
-    //         if (c === 0) {
-    //             g.push(null);
-    //         }
-    //     }
-
-    //     for (let target in resolution) {
-    //         let ar = resolution[target];
-    //         if (!ar || ar.length === 0) {
-    //             glog(chalk.red('WARNING'), 'concat list for', chalk.blue(target), 'is empty!');
-    //             countDown();
-    //             continue;
-    //         }
-    //         if (typeof ar === 'string') {
-    //             ar = [ar];
-    //             glog(chalk.red('WARNING'), 'concat list for', chalk.blue(target), 'is a', chalk.yellow('string'), 'instead of a', chalk.yellow('string[]'));
-    //         }
-
-    //         this.resolveThenConcat(ar).then(result => {
-    //             let o = target;
-    //             if (o.endsWith('.js') === false) {
-    //                 o += '.js';
-    //             }
-
-    //             g.push(new vinyl({
-    //                 path: o,
-    //                 contents: Buffer.from(result)
-    //             }));
-    //         }).catch(error => {
-    //             glog(chalk.red('ERROR'), 'when concatenating', chalk.blue(target))
-    //             console.error(error);
-    //         }).then(countDown); // this code block is equivalent to: .finally()
-    //     }
-
-    //     return g;
-    // }
+        return new Promise<any>((ok, error) => {
+            let result = UglifyES.minify(files, options);
+            if (result.error) {
+                error(result.error)
+            } else {
+                ok(result);
+            }
+        });
+    }
 
     /**
-     * Registers a JavaScript concat task.
+     * Accepts a file name and a list of node modules relative to the root project path.
+     * @param target 
+     * @param modules 
+     */
+    async concatTarget(target: string, modules: string[]) {
+        let files = await this.resolveThenReadFiles(modules);
+        let result = await this.concatFilesAsync(target, files);
+
+        let outPath = path.join(this.settings.outputJsFolder, target);
+        let p1 = this.logAndWriteUtf8FileAsync(outPath, result.code);
+        if (result.map) {
+            await this.logAndWriteUtf8FileAsync(outPath + '.map', result.map);
+        }
+        await p1;
+    }
+
+    /**
+     * Returns a Promise which resolves when all concatenation tasks have been completed.
+     */
+    buildConcat() {
+        let tasks: Promise<void>[] = [];
+        let targets = this.settings.concat;
+
+        for (let target in targets) {
+            let modules = targets[target];
+            if (!modules || modules.length === 0) {
+                glog(chalk.red('WARNING'), 'concat list for', chalk.blue(target), 'is empty!');
+                continue;
+            }
+            if (typeof modules === 'string') {
+                modules = [modules];
+                glog(chalk.red('WARNING'), 'concat list for', chalk.blue(target), 'is a', chalk.yellow('string'), 'instead of a', chalk.yellow('string[]'));
+            }
+
+            let o = target;
+            if (o.endsWith('.js') === false) {
+                o += '.js';
+            }
+
+            let task = this.concatTarget(o, modules).catch(error => {
+                glog(chalk.red('ERROR'), 'when concatenating', chalk.blue(o));
+                console.error(error);
+            }).then(/* finally: Promise will never throw any errors! */() => { });
+
+            tasks.push(task);
+        }
+
+        return Promise.all(tasks);
+    }
+
+    /**
+     * Registers a JavaScript concat task using UglifyES.
      */
     registerConcatTask() {
         let c = this.settings.concatCount;
@@ -589,18 +636,20 @@ export class Compiler {
             return;
         }
 
-        this.tasks.task('concat', () => {
+        this.tasks.task('concat', async () => {
             if (this.flags.watch) {
                 glog("Concat task will be run once and", chalk.red("NOT watched!"));
             }
 
             glog('Resolving', chalk.cyan(c.toString()), 'concat target(s)...');
-
-            // return this.streamConcatVinyl()
-            //     .pipe(this.flags.production ? To.Uglify() : through2.obj())
-            //     .on('error', PipeErrorHandler)
-            //     .pipe(To.BuildLog('JS concat'))
-            //     .pipe(this.output(this.settings.outputJsFolder));
+            let start = process.hrtime();
+            try {
+                await this.buildConcat();
+            }
+            finally {
+                let time = prettyHrTime(process.hrtime(start));
+                glog('Finished JS concat after', chalk.green(time));
+            }
         });
     }
 }

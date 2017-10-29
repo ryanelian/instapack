@@ -59,6 +59,9 @@ function getUglifyESTarget() {
 export function createUglifyESOptions() {
     return {
         ecma: getUglifyESTarget(),
-        sourceMap: undefined
+        sourceMap: undefined,
+        output: {
+            beautify: false
+        }
     };
 }

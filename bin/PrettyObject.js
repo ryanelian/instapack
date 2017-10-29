@@ -32,7 +32,7 @@ class PrettyObject {
         return s;
     }
     isSassError(o) {
-        return (o instanceof Error) && o.message && o['column'] && o['file'] && o['line'] && o['formatted'];
+        return (o instanceof Error) && o['formatted'];
     }
     render(o, level = 0) {
         if (o === undefined) {

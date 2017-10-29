@@ -85,7 +85,7 @@ export class PrettyObject {
      * @param o 
      */
     isSassError(o): boolean {
-        return (o instanceof Error) && o.message && o['column'] && o['file'] && o['line'] && o['formatted'];
+        return (o instanceof Error) && o['formatted'];
     }
 
     /**

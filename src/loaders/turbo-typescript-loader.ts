@@ -1,7 +1,5 @@
 import { loader } from 'webpack';
 import * as TypeScript from 'typescript';
-import * as fse from 'fs-extra';
-import * as path from 'path';
 import { tryGetTsConfigCompilerOptions } from '../TypeScriptOptionsReader';
 
 module.exports = function (this: loader.LoaderContext, source: string) {

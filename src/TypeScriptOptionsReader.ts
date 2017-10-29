@@ -1,4 +1,3 @@
-import * as fse from 'fs-extra';
 import * as path from 'path';
 import chalk from 'chalk';
 import * as TypeScript from 'typescript';

@@ -58,10 +58,6 @@ function getUglifyESTarget() {
  */
 export function createUglifyESOptions() {
     return {
-        ecma: getUglifyESTarget(),
-        sourceMap: undefined,
-        output: {
-            beautify: false
-        }
+        ecma: getUglifyESTarget()
     };
 }

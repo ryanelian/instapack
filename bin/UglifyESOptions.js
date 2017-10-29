@@ -42,11 +42,7 @@ function getUglifyESTarget() {
 }
 function createUglifyESOptions() {
     return {
-        ecma: getUglifyESTarget(),
-        sourceMap: undefined,
-        output: {
-            beautify: false
-        }
+        ecma: getUglifyESTarget()
     };
 }
 exports.createUglifyESOptions = createUglifyESOptions;

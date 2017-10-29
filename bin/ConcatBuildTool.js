@@ -52,14 +52,14 @@ class ConcatBuildTool {
     concatFilesAsync(target, files) {
         let options = UglifyESOptions_1.createUglifyESOptions();
         if (!this.flags.production) {
-            options.output = {
-                beautify: true
-            };
             options['compress'] = false;
             options['mangle'] = false;
+            options['output'] = {
+                beautify: true
+            };
         }
         if (this.flags.sourceMap) {
-            options.sourceMap = {
+            options['sourceMap'] = {
                 filename: target,
                 url: target + '.map',
                 root: 'instapack://',

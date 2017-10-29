@@ -67,5 +67,5 @@ export function logAndWriteUtf8FileAsync(filePath: string, content: string) {
  * @param s 
  */
 export function convertAbsoluteToSourceMapPath(root: string, s: string) {
-    return '/./' + path.relative(root, s).replace(/\\/g, '/');
+    return path.relative(root, s).replace(/\\/g, '/');
 }

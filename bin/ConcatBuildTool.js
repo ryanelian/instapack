@@ -43,7 +43,7 @@ class ConcatBuildTool {
             let contents = yield Promise.all(p2);
             let files = {};
             for (let i = 0; i < resolutions.length; i++) {
-                let key = CompilerUtilities_1.convertAbsoluteToSourceMapPath(this.settings.root, resolutions[i]);
+                let key = '/' + CompilerUtilities_1.convertAbsoluteToSourceMapPath(this.settings.root, resolutions[i]);
                 files[key] = contents[i];
             }
             return files;

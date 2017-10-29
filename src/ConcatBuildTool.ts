@@ -72,7 +72,7 @@ export class ConcatBuildTool {
         let files: ConcatFiles = {};
 
         for (let i = 0; i < resolutions.length; i++) {
-            let key = convertAbsoluteToSourceMapPath(this.settings.root, resolutions[i]);
+            let key = '/' + convertAbsoluteToSourceMapPath(this.settings.root, resolutions[i]);
             // console.log(resolutions[i] + ' ' + key);
             files[key] = contents[i];
         }

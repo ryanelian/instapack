@@ -83,6 +83,10 @@ export class TypeScriptBuildTool {
             }
         });
 
+        // loaders.push({
+        //     loader: 'turbo-typescript-loader'
+        // });
+
         return {
             test: /\.tsx?$/,
             use: loaders

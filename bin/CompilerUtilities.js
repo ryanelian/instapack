@@ -33,6 +33,6 @@ function logAndWriteUtf8FileAsync(filePath, content) {
 }
 exports.logAndWriteUtf8FileAsync = logAndWriteUtf8FileAsync;
 function convertAbsoluteToSourceMapPath(root, s) {
-    return '/./' + path.relative(root, s).replace(/\\/g, '/');
+    return path.relative(root, s).replace(/\\/g, '/');
 }
 exports.convertAbsoluteToSourceMapPath = convertAbsoluteToSourceMapPath;

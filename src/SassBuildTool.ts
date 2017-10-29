@@ -63,7 +63,7 @@ export class SassBuildTool {
         let cssProjectFolder = this.settings.inputCssFolder;
         sm.sources = sm.sources.map(s => {
             let absolute = path.join(cssProjectFolder, s);
-            return convertAbsoluteToSourceMapPath(this.settings.root, absolute);
+            return '/' + convertAbsoluteToSourceMapPath(this.settings.root, absolute);
         });
     }
 

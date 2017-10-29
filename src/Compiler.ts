@@ -3,7 +3,7 @@ import * as Undertaker from 'undertaker';
 import chalk from 'chalk';
 
 import { TypeScriptBuildTool } from './TypeScriptBuildTool';
-import { tryGetTypeScriptTarget } from './UglifyESOptions';
+import { tryGetTypeScriptTarget } from './TypeScriptOptionsReader';
 import { SassBuildTool } from './SassBuildTool';
 import { ConcatBuildTool } from './ConcatBuildTool';
 import { Settings } from './Settings';

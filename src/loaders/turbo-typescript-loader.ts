@@ -2,23 +2,15 @@ import { loader } from 'webpack';
 import * as TypeScript from 'typescript';
 import * as fse from 'fs-extra';
 import * as path from 'path';
-import { convertAbsoluteToSourceMapPath } from '../CompilerUtilities';
-
-let basePath = process.cwd();
-let tsconfigPath = path.join(basePath, 'tsconfig.json');
-let tsconfigRaw = TypeScript.readConfigFile(tsconfigPath, TypeScript.sys.readFile).config;
-let tsconfig = TypeScript.parseJsonConfigFileContent(tsconfigRaw, TypeScript.sys, basePath);
-
-// console.log(tsconfig);
-tsconfig.options.moduleResolution = TypeScript.ModuleResolutionKind.NodeJs;
-tsconfig.options.noEmit = false;
+import { tryGetTsConfigCompilerOptions } from '../TypeScriptOptionsReader';
 
 module.exports = function (this: loader.LoaderContext, source: string) {
-    tsconfig.options.sourceMap = this.sourceMap;
-    tsconfig.options.inlineSources = this.sourceMap;
+    let options = tryGetTsConfigCompilerOptions();
+    options.sourceMap = this.sourceMap;
+    options.inlineSources = this.sourceMap;
 
     let result = TypeScript.transpileModule(source, {
-        compilerOptions: tsconfig.options,
+        compilerOptions: options,
         fileName: this.resourcePath
     });
 

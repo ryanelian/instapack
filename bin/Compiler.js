@@ -4,7 +4,7 @@ const fse = require("fs-extra");
 const Undertaker = require("undertaker");
 const chalk_1 = require("chalk");
 const TypeScriptBuildTool_1 = require("./TypeScriptBuildTool");
-const UglifyESOptions_1 = require("./UglifyESOptions");
+const TypeScriptOptionsReader_1 = require("./TypeScriptOptionsReader");
 const SassBuildTool_1 = require("./SassBuildTool");
 const ConcatBuildTool_1 = require("./ConcatBuildTool");
 const CompilerUtilities_1 = require("./CompilerUtilities");
@@ -66,7 +66,7 @@ class Compiler {
         let tool = new TypeScriptBuildTool_1.TypeScriptBuildTool(this.settings, this.flags);
         this.tasks.task('js', () => {
             fse.removeSync(this.settings.outputJsSourceMap);
-            CompilerUtilities_1.timedLog('Compiling JS >', chalk_1.default.yellow(UglifyESOptions_1.tryGetTypeScriptTarget()), chalk_1.default.cyan(jsEntry));
+            CompilerUtilities_1.timedLog('Compiling JS >', chalk_1.default.yellow(TypeScriptOptionsReader_1.tryGetTypeScriptTarget()), chalk_1.default.cyan(jsEntry));
             tool.build();
         });
     }

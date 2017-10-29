@@ -7,7 +7,7 @@ const webpack = require("webpack");
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 const UglifyWebpackPlugin = require("uglifyjs-webpack-plugin");
 const CompilerUtilities_1 = require("./CompilerUtilities");
-const UglifyESOptions_1 = require("./UglifyESOptions");
+const TypeScriptOptionsReader_1 = require("./TypeScriptOptionsReader");
 const PrettyUnits_1 = require("./PrettyUnits");
 class TypeScriptBuildTool {
     constructor(settings, flags) {
@@ -87,7 +87,7 @@ class TypeScriptBuildTool {
             plugins.push(new UglifyWebpackPlugin({
                 sourceMap: this.flags.sourceMap,
                 parallel: this.flags.parallel,
-                uglifyOptions: UglifyESOptions_1.createUglifyESOptions()
+                uglifyOptions: TypeScriptOptionsReader_1.createUglifyESOptions()
             }));
         }
         return plugins;

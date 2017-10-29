@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const fse = require("fs-extra");
 const path = require("path");
 const chalk_1 = require("chalk");
 const TypeScript = require("typescript");
@@ -13,15 +12,18 @@ function tryGetTsConfigCompilerOptions() {
     let tsconfigPath = path.join(basePath, 'tsconfig.json');
     tsCompilerOptions = TypeScript.getDefaultCompilerOptions();
     try {
-        let tsconfigJson = fse.readJsonSync(tsconfigPath);
-        let tsconfig = TypeScript.parseJsonConfigFileContent(tsconfigJson, TypeScript.sys, basePath);
+        let tsconfigJson = TypeScript.readConfigFile(tsconfigPath, TypeScript.sys.readFile);
+        if (tsconfigJson.error) {
+            throw Error(tsconfigJson.error.messageText.toString());
+        }
+        let tsconfig = TypeScript.parseJsonConfigFileContent(tsconfigJson.config, TypeScript.sys, basePath);
         if (tsconfig.errors.length) {
             throw Error(tsconfig.errors[0].messageText.toString());
         }
         tsCompilerOptions = tsconfig.options;
     }
     catch (error) {
-        console.error(chalk_1.default.red('ERROR'), 'Failed to read', chalk_1.default.cyan('tsconfig.json'), '(Fallback to default compiler options!)');
+        console.error(chalk_1.default.red('ERROR'), 'Failed to read', chalk_1.default.cyan('tsconfig.json'), chalk_1.default.grey('(Fallback to default compiler options!)'));
         console.error(error);
     }
     tsCompilerOptions.moduleResolution = TypeScript.ModuleResolutionKind.NodeJs;

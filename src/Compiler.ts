@@ -414,27 +414,25 @@ export class Compiler {
             }));
         }
 
+        let postCssSourceMapOption: postcss.SourceMapOptions = null;
+        if (this.flags.sourceMap) {
+            postCssSourceMapOption = {
+                inline: false
+            };
+        }
+
         let cssOutPath = this.settings.outputCssFile;
         let cssResult = await postcss(plugins).process(sassResult.css, {
             from: outFile,
             to: cssOutPath,
-            map: {
-                inline: false
-            }
+            map: postCssSourceMapOption
         });
 
-        let writeTasks: Promise<void>[] = [];
-
         let t1 = this.logAndWriteUtf8FileAsync(cssOutPath, cssResult.css);
-        writeTasks.push(t1);
-
-        // PostCSS is retarded. It cannot disable source maps lmao.
-        if (this.flags.sourceMap) {
-            let t2 = this.logAndWriteUtf8FileAsync(cssOutPath + '.map', cssResult.map.toString());
-            writeTasks.push(t2);
+        if (cssResult.map) {
+            await this.logAndWriteUtf8FileAsync(cssOutPath + '.map', cssResult.map.toString());
         }
-
-        await Promise.all(writeTasks);
+        await t1;
     }
 
     /**

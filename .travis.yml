@@ -21,4 +21,4 @@ script:
   - cd demo
   - ipack new $TEMPLATE
   - ipack
-  - ipack -od
+  - ipack -ud

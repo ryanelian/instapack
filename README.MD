@@ -129,7 +129,7 @@ In addition, build flags are available:
 
 - `-d` or `--dev` disables JS output minification for **fast build!**
 
-- `-o` or `--obfuscate` disables source maps. (Slightly improves build speed)
+- `-u` or `--uncharted` disables source maps. (Slightly improves build speed)
 
 - `-p` or `--parallel` enables experimental parallel build across all CPU threads! :trident:
 

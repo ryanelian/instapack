@@ -280,22 +280,23 @@ class Compiler {
                     removeAll: true
                 }));
             }
+            let postCssSourceMapOption = null;
+            if (this.flags.sourceMap) {
+                postCssSourceMapOption = {
+                    inline: false
+                };
+            }
             let cssOutPath = this.settings.outputCssFile;
             let cssResult = yield postcss(plugins).process(sassResult.css, {
                 from: outFile,
                 to: cssOutPath,
-                map: {
-                    inline: false
-                }
+                map: postCssSourceMapOption
             });
-            let writeTasks = [];
             let t1 = this.logAndWriteUtf8FileAsync(cssOutPath, cssResult.css);
-            writeTasks.push(t1);
-            if (this.flags.sourceMap) {
-                let t2 = this.logAndWriteUtf8FileAsync(cssOutPath + '.map', cssResult.map.toString());
-                writeTasks.push(t2);
+            if (cssResult.map) {
+                yield this.logAndWriteUtf8FileAsync(cssOutPath + '.map', cssResult.map.toString());
             }
-            yield Promise.all(writeTasks);
+            yield t1;
         });
     }
     registerCssTask() {

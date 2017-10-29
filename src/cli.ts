@@ -72,8 +72,8 @@ CLI.command({
             }).option('d', {
                 alias: 'dev',
                 describe: 'Disables JS output minification.'
-            }).option('o', {
-                alias: 'obfuscate',
+            }).option('u', {
+                alias: 'uncharted',
                 describe: 'Disables source maps.'
             }).option('p', {
                 alias: 'parallel',
@@ -87,7 +87,7 @@ CLI.command({
         app.build(subCommand, {
             production: !argv.dev,
             watch: argv.watch,
-            sourceMap: !argv.obfuscate,
+            sourceMap: !argv.uncharted,
             parallel: argv.parallel
         });
     }

@@ -13,11 +13,11 @@ function nowFormatted() {
     let t = new Date();
     return padZeroToDoubleDigits(t.getHours()) + ':' + padZeroToDoubleDigits(t.getMinutes()) + ':' + padZeroToDoubleDigits(t.getSeconds());
 }
-function GulpLog(...tokens) {
+function timedLog(...tokens) {
     let output = '[' + chalk_1.default.grey(nowFormatted()) + ']';
     for (let i = 0; i < tokens.length; i++) {
         output += ' ' + tokens[i];
     }
     console.log(output);
 }
-exports.default = GulpLog;
+exports.timedLog = timedLog;

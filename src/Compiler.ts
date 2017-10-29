@@ -18,15 +18,15 @@ import * as discardComments from 'postcss-discard-comments';
 import * as webpack from 'webpack';
 import { tryGetTypeScriptTarget, createUglifyESOptions } from './UglifyESOptions';
 import ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
-import UglifyESWebpackPlugin = require('uglifyjs-webpack-plugin');
+import UglifyWebpackPlugin = require('uglifyjs-webpack-plugin');
 
 // concat
 import * as resolve from 'resolve';
 import * as UglifyES from 'uglify-es';
 
 // These are my stuffs
-import glog from './GulpLog';
-import { Settings, ConcatLookup } from './Settings';
+import { timedLog } from './TimedLog';
+import { Settings } from './Settings';
 import { prettyBytes, prettyMilliseconds, prettyHrTime } from './PrettyUnits';
 import { prettyError } from './PrettyObject';
 
@@ -85,24 +85,24 @@ export class Compiler {
      * Displays information about currently used build flags.
      */
     chat() {
-        glog('Output to folder', chalk.cyan(this.settings.outputFolder));
+        timedLog('Output to folder', chalk.cyan(this.settings.outputFolder));
 
         if (this.flags.production) {
-            glog(chalk.yellow("Production"), "Mode: Outputs will be minified.", chalk.red("(Slow build)"));
+            timedLog(chalk.yellow("Production"), "Mode: Outputs will be minified.", chalk.red("(Slow build)"));
         } else {
-            glog(chalk.yellow("Development"), "Mode: Outputs will", chalk.red("NOT be minified!"), "(Fast build)");
-            glog(chalk.red("Do not forget to minify"), "before pushing to repository or production server!");
+            timedLog(chalk.yellow("Development"), "Mode: Outputs will", chalk.red("NOT be minified!"), "(Fast build)");
+            timedLog(chalk.red("Do not forget to minify"), "before pushing to repository or production server!");
         }
 
         if (this.flags.parallel) {
-            glog(chalk.yellow('Parallel'), 'Mode: Build will be scaled across all CPU threads!');
+            timedLog(chalk.yellow('Parallel'), 'Mode: Build will be scaled across all CPU threads!');
         }
 
         if (this.flags.watch) {
-            glog(chalk.yellow("Watch"), "Mode: Source codes will be automatically compiled on changes.");
+            timedLog(chalk.yellow("Watch"), "Mode: Source codes will be automatically compiled on changes.");
         }
 
-        glog('Source Maps:', chalk.yellow(this.flags.sourceMap ? 'Enabled' : 'Disabled'));
+        timedLog('Source Maps:', chalk.yellow(this.flags.sourceMap ? 'Enabled' : 'Disabled'));
     }
 
     /**
@@ -219,7 +219,7 @@ export class Compiler {
                     'NODE_ENV': JSON.stringify('production')
                 }
             }));
-            plugins.push(new UglifyESWebpackPlugin({
+            plugins.push(new UglifyWebpackPlugin({
                 sourceMap: this.flags.sourceMap,
                 parallel: this.flags.parallel,
                 uglifyOptions: createUglifyESOptions()
@@ -321,18 +321,18 @@ export class Compiler {
 
         if (!fse.existsSync(jsEntry)) {
             this.tasks.task('js', () => {
-                glog('Entry file', chalk.cyan(jsEntry), 'was not found.', chalk.red('Aborting JS build.'));
+                timedLog('Entry file', chalk.cyan(jsEntry), 'was not found.', chalk.red('Aborting JS build.'));
             });
             return;
         }
 
         this.tasks.task('js', () => {
             fse.removeSync(this.settings.outputJsSourceMap);
-            glog('Compiling JS >', chalk.yellow(tryGetTypeScriptTarget()), chalk.cyan(jsEntry));
+            timedLog('Compiling JS >', chalk.yellow(tryGetTypeScriptTarget()), chalk.cyan(jsEntry));
 
             webpack(this.webpackConfiguration, (error, stats) => {
                 if (error) {
-                    glog(chalk.red('FATAL ERROR'), 'during JS build:');
+                    timedLog(chalk.red('FATAL ERROR'), 'during JS build:');
                     console.error(error);
                     return;
                 }
@@ -346,12 +346,12 @@ export class Compiler {
                 for (let asset of o.assets) {
                     if (asset.emitted) {
                         let kb = prettyBytes(asset.size);
-                        glog(chalk.blue(asset.name), chalk.magenta(kb));
+                        timedLog(chalk.blue(asset.name), chalk.magenta(kb));
                     }
                 }
 
                 let t = prettyMilliseconds(o.time);
-                glog('Finished JS build after', chalk.green(t));
+                timedLog('Finished JS build after', chalk.green(t));
             });
         });
     }
@@ -382,7 +382,7 @@ export class Compiler {
         let name = path.basename(filePath)
         let size = prettyBytes(bundle.byteLength);
 
-        glog(chalk.blue(name), chalk.magenta(size));
+        timedLog(chalk.blue(name), chalk.magenta(size));
         return fse.outputFile(filePath, bundle);
     }
 
@@ -396,9 +396,8 @@ export class Compiler {
     }
 
     /**
-     * Accepts a raw JSON string of a Sass-compiled source map, then normalize the paths.
-     * Returns back a raw JSON string source map. 
-     * @param m 
+     * Normalize `sources` paths of a Sass-compiled source map.
+     * @param sm 
      */
     fixCssSourceMap(sm: sourceMap.RawSourceMap) {
         sm.sourceRoot = 'instapack://';
@@ -470,7 +469,7 @@ export class Compiler {
 
         if (!fse.existsSync(cssEntry)) {
             this.tasks.task('css', () => {
-                glog('Entry file', chalk.cyan(cssEntry), 'was not found.', chalk.red('Aborting CSS build.'));
+                timedLog('Entry file', chalk.cyan(cssEntry), 'was not found.', chalk.red('Aborting CSS build.'));
             });
             return;
         }
@@ -485,25 +484,25 @@ export class Compiler {
             }
             finally {
                 let time = prettyHrTime(process.hrtime(start));
-                glog('Finished CSS build after', chalk.green(time));
+                timedLog('Finished CSS build after', chalk.green(time));
             }
         });
 
         this.tasks.task('css', () => {
             fse.removeSync(this.settings.outputCssSourceMap);
 
-            glog('Compiling CSS', chalk.cyan(cssEntry));
+            timedLog('Compiling CSS', chalk.cyan(cssEntry));
             let run = this.tasks.task('css:build');
 
             run(error => {
-                glog(chalk.red('FATAL ERROR'), 'during CSS build:');
+                timedLog(chalk.red('FATAL ERROR'), 'during CSS build:');
                 console.error(error);
             });
 
             if (this.flags.watch) {
                 chokidar.watch(this.settings.scssGlob).on('change', path => {
                     run(error => {
-                        glog(chalk.red('FATAL ERROR'), 'during CSS build:');
+                        timedLog(chalk.red('FATAL ERROR'), 'during CSS build:');
                         console.error(error);
                     });
                 });
@@ -521,14 +520,14 @@ export class Compiler {
         let restore = hasPackageJson && !hasNodeModules;
 
         if (restore) {
-            glog(chalk.cyan('node_modules'), 'folder not found. Performing automatic package restore...');
+            timedLog(chalk.cyan('node_modules'), 'folder not found. Performing automatic package restore...');
         }
 
         return restore;
     }
 
     /**
-     * Attempts to resolve a module using node resolution logic, relative to project folder path, asynchronously.
+     * Attempts to asynchronously resolve a module using node resolution logic, relative to project folder path.
      * @param path 
      */
     resolveAsPromise(path: string) {
@@ -626,12 +625,12 @@ export class Compiler {
         for (let target in targets) {
             let modules = targets[target];
             if (!modules || modules.length === 0) {
-                glog(chalk.red('WARNING'), 'concat list for', chalk.blue(target), 'is empty!');
+                timedLog(chalk.red('WARNING'), 'concat list for', chalk.blue(target), 'is empty!');
                 continue;
             }
             if (typeof modules === 'string') {
                 modules = [modules];
-                glog(chalk.red('WARNING'), 'concat list for', chalk.blue(target), 'is a', chalk.yellow('string'), 'instead of a', chalk.yellow('string[]'));
+                timedLog(chalk.red('WARNING'), 'concat list for', chalk.blue(target), 'is a', chalk.yellow('string'), 'instead of a', chalk.yellow('string[]'));
             }
 
             let o = target;
@@ -641,7 +640,7 @@ export class Compiler {
 
             fse.removeSync(path.join(this.settings.outputJsFolder, o + '.map'));
             let task = this.concatTarget(o, modules).catch(error => {
-                glog(chalk.red('ERROR'), 'when concatenating', chalk.blue(o));
+                timedLog(chalk.red('ERROR'), 'when concatenating', chalk.blue(o));
                 console.error(error);
             }).then(/* finally: Promise will never throw any errors! */() => { });
 
@@ -663,17 +662,17 @@ export class Compiler {
 
         this.tasks.task('concat', async () => {
             if (this.flags.watch) {
-                glog("Concat task will be run once and", chalk.red("NOT watched!"));
+                timedLog("Concat task will be run once and", chalk.red("NOT watched!"));
             }
 
-            glog('Resolving', chalk.cyan(c.toString()), 'concat target(s)...');
+            timedLog('Resolving', chalk.cyan(c.toString()), 'concat target(s)...');
             let start = process.hrtime();
             try {
                 await this.buildConcat();
             }
             finally {
                 let time = prettyHrTime(process.hrtime(start));
-                glog('Finished JS concat after', chalk.green(time));
+                timedLog('Finished JS concat after', chalk.green(time));
             }
         });
     }

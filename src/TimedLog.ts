@@ -25,7 +25,7 @@ function nowFormatted(){
  * Compatibility shim for gulp-util log method.
  * @param tokens 
  */
-export default function GulpLog(...tokens: any[]) {
+export function timedLog(...tokens: any[]) {
     let output = '[' + chalk.grey(nowFormatted()) + ']';
     for (let i = 0; i < tokens.length; i++) {
         output += ' ' + tokens[i];

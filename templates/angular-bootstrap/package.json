@@ -17,7 +17,7 @@
     "aspnet-validation": "^0.0.3",
     "bootbox": "^4.4.0",
     "bootstrap-sass": "^3.3.7",
-    "bootstrap.native": "^2.0.17",
+    "bootstrap.native": "^2.0.18",
     "linqts": "^1.10.0",
     "moment": "^2.19.1",
     "tslib": "^1.8.0"

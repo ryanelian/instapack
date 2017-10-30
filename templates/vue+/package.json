@@ -32,7 +32,7 @@
     "aspnet-validation": "^0.0.3",
     "axios": "^0.17.0",
     "bootstrap": "4.0.0-beta.2",
-    "bootstrap.native": "^2.0.17",
+    "bootstrap.native": "^2.0.18",
     "es6-promise": "^4.1.1",
     "font-awesome": "^4.7.0",
     "linqts": "^1.10.0",

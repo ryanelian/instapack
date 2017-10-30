@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const TypeScript = require("typescript");
-const TypeScriptOptionsReader_1 = require("../TypeScriptOptionsReader");
+const TypeScriptConfigurationReader_1 = require("../TypeScriptConfigurationReader");
 module.exports = function (source) {
-    let options = TypeScriptOptionsReader_1.tryGetTsConfigCompilerOptions();
+    let options = TypeScriptConfigurationReader_1.getLazyCompilerOptions();
     options.sourceMap = this.sourceMap;
     options.inlineSources = this.sourceMap;
     let result = TypeScript.transpileModule(source, {

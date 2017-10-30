@@ -4,7 +4,7 @@ import chalk from 'chalk';
 import * as resolve from 'resolve';
 import * as UglifyES from 'uglify-es';
 
-import { createUglifyESOptions } from './TypeScriptOptionsReader';
+import { createUglifyESOptions } from './TypeScriptConfigurationReader';
 import { Settings } from './Settings';
 import { CompilerFlags, convertAbsoluteToSourceMapPath, logAndWriteUtf8FileAsync, timedLog } from './CompilerUtilities';
 import { prettyHrTime } from './PrettyUnits';

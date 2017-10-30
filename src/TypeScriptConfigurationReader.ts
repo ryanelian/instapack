@@ -2,20 +2,13 @@ import * as path from 'path';
 import chalk from 'chalk';
 import * as TypeScript from 'typescript';
 
-let tsCompilerOptions: TypeScript.CompilerOptions;
-
 /**
- * Attempts to lazy parse user's tsconfig.json and force-set sane defaults. If fails, use the default compiler options.
+ * Read the latest TypeScript compiler unit config.
  */
-export function tryGetTsConfigCompilerOptions() {
-    if (tsCompilerOptions) {
-        return tsCompilerOptions;
-    }
-
+export function parseTsConfig() {
     let basePath = process.cwd();
     let tsconfigPath = path.join(basePath, 'tsconfig.json');
 
-    tsCompilerOptions = TypeScript.getDefaultCompilerOptions();
     try {
         let tsconfigJson = TypeScript.readConfigFile(tsconfigPath, TypeScript.sys.readFile);
         if (tsconfigJson.error) {
@@ -25,22 +18,36 @@ export function tryGetTsConfigCompilerOptions() {
         if (tsconfig.errors.length) {
             throw Error(tsconfig.errors[0].messageText.toString());
         }
-        tsCompilerOptions = tsconfig.options;
+        return tsconfig;
     } catch (error) {
-        console.error(chalk.red('ERROR'), 'Failed to read', chalk.cyan('tsconfig.json'), chalk.grey('(Fallback to default compiler options!)'));
+        console.error(chalk.red('ERROR'), 'Failed to read', chalk.cyan('tsconfig.json'));
         console.error(error);
+        throw error;
+    }
+}
+
+let _options: TypeScript.CompilerOptions;
+
+/**
+ * Attempts to lazy-load user's tsconfig.json Compiler Options and force-set sane defaults.
+ */
+export function getLazyCompilerOptions() {
+    if (_options) {
+        return _options;
     }
 
-    tsCompilerOptions.moduleResolution = TypeScript.ModuleResolutionKind.NodeJs;
-    tsCompilerOptions.noEmit = false;
-    return tsCompilerOptions;
+    _options = parseTsConfig().options;
+    _options.moduleResolution = TypeScript.ModuleResolutionKind.NodeJs;
+    _options.noEmit = false;
+
+    return _options
 }
 
 /**
  * Returns compiler options target as its enum name string representative.
  */
-export function tryGetTypeScriptTarget() {
-    let t = tryGetTsConfigCompilerOptions().target;
+export function getTypeScriptTarget() {
+    let t = getLazyCompilerOptions().target;
     if (!t) {
         t = TypeScript.ScriptTarget.ES3;
     }
@@ -51,7 +58,7 @@ export function tryGetTypeScriptTarget() {
  * Returns dynamic UglifyES ECMA minification option based on user's TypeScript build target.
  */
 function getUglifyESTarget() {
-    switch (tryGetTypeScriptTarget()) {
+    switch (getTypeScriptTarget()) {
         case 'ES5': {
             return 5;
         }

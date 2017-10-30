@@ -1,9 +1,9 @@
 import { loader } from 'webpack';
 import * as TypeScript from 'typescript';
-import { tryGetTsConfigCompilerOptions } from '../TypeScriptOptionsReader';
+import { getLazyCompilerOptions } from '../TypeScriptConfigurationReader';
 
 module.exports = function (this: loader.LoaderContext, source: string) {
-    let options = tryGetTsConfigCompilerOptions();
+    let options = getLazyCompilerOptions();
     options.sourceMap = this.sourceMap;
     options.inlineSources = this.sourceMap;
 

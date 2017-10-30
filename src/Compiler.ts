@@ -3,7 +3,7 @@ import * as Undertaker from 'undertaker';
 import chalk from 'chalk';
 
 import { TypeScriptBuildTool } from './TypeScriptBuildTool';
-import { tryGetTypeScriptTarget } from './TypeScriptOptionsReader';
+import { getTypeScriptTarget } from './TypeScriptConfigurationReader';
 import { SassBuildTool } from './SassBuildTool';
 import { ConcatBuildTool } from './ConcatBuildTool';
 import { Settings } from './Settings';
@@ -120,7 +120,7 @@ export class Compiler {
         let tool = new TypeScriptBuildTool(this.settings, this.flags);
         this.tasks.task('js', () => {
             fse.removeSync(this.settings.outputJsSourceMap);
-            timedLog('Compiling JS >', chalk.yellow(tryGetTypeScriptTarget()), chalk.cyan(jsEntry));
+            timedLog('Compiling JS >', chalk.yellow(getTypeScriptTarget()), chalk.cyan(jsEntry));
             tool.build();
         });
     }

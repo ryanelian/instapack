@@ -7,7 +7,7 @@ import * as UglifyWebpackPlugin from 'uglifyjs-webpack-plugin';
 
 import { timedLog, CompilerFlags } from './CompilerUtilities';
 import { Settings } from './Settings';
-import { createUglifyESOptions } from './TypeScriptOptionsReader';
+import { createUglifyESOptions } from './TypeScriptConfigurationReader';
 import { prettyBytes, prettyMilliseconds } from './PrettyUnits';
 
 /**

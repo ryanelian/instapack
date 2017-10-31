@@ -168,6 +168,9 @@ class TypeScriptBuildTool {
             }
             let t = PrettyUnits_1.prettyMilliseconds(o.time);
             CompilerUtilities_1.timedLog('Finished JS build after', chalk_1.default.green(t));
+            if (!this.flags.watch) {
+                process.exit(0);
+            }
         });
     }
 }

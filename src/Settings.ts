@@ -105,6 +105,22 @@ export class Settings {
     }
 
     /**
+     * Obtains simple and serializable object for constructing a full Settings object.
+     */
+    get core() {
+        return {
+            alias: this.alias,
+            concat: this.concat,
+            cssOut: this.cssOut,
+            externals: this.externals,
+            input: this.input,
+            jsOut: this.jsOut,
+            output: this.output,
+            template: this.template
+        } as SettingsCore;
+    }
+
+    /**
      * Cache folder path for cache-loader in user's local temp folder.
      */
     get cacheFolder(): string {

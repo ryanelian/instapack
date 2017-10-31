@@ -1,20 +1,31 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const fse = require("fs-extra");
-const Undertaker = require("undertaker");
 const chalk_1 = require("chalk");
+const child_process_1 = require("child_process");
 const TypeScriptBuildTool_1 = require("./TypeScriptBuildTool");
 const TypeScriptConfigurationReader_1 = require("./TypeScriptConfigurationReader");
 const SassBuildTool_1 = require("./SassBuildTool");
 const ConcatBuildTool_1 = require("./ConcatBuildTool");
+const Settings_1 = require("./Settings");
 const CompilerUtilities_1 = require("./CompilerUtilities");
 class Compiler {
     constructor(settings, flags) {
         this.settings = settings;
         this.flags = flags;
-        this.tasks = new Undertaker();
-        this.chat();
-        this.registerAllTasks();
+    }
+    static fromCommand(command) {
+        let settings = new Settings_1.Settings(command.root, command.settings);
+        let compiler = new Compiler(settings, command.flags);
+        return compiler;
     }
     chat() {
         CompilerUtilities_1.timedLog('Output to folder', chalk_1.default.cyan(this.settings.outputFolder));
@@ -33,18 +44,74 @@ class Compiler {
         }
         CompilerUtilities_1.timedLog('Source Maps:', chalk_1.default.yellow(this.flags.sourceMap ? 'Enabled' : 'Disabled'));
     }
-    registerAllTasks() {
-        this.registerConcatTask();
-        this.registerJsTask();
-        this.registerCssTask();
-        this.tasks.task('all', this.tasks.parallel('js', 'css', 'concat'));
+    startBackgroundTask(taskName) {
+        if (taskName === 'all') {
+            this.startBackgroundTask('js');
+            this.startBackgroundTask('css');
+            this.startBackgroundTask('concat');
+            return;
+        }
+        let valid = this.validateBackgroundTask(taskName);
+        if (valid) {
+            let child = child_process_1.fork(__filename);
+            child.send({
+                build: taskName,
+                root: this.settings.root,
+                flags: this.flags,
+                settings: this.settings.core
+            });
+        }
+    }
+    validateBackgroundTask(taskName) {
+        switch (taskName) {
+            case 'js': {
+                let entry = this.settings.jsEntry;
+                let exist = fse.pathExistsSync(entry);
+                if (!exist) {
+                    CompilerUtilities_1.timedLog('Entry file', chalk_1.default.cyan(entry), 'was not found.', chalk_1.default.red('Aborting JS build.'));
+                }
+                return exist;
+            }
+            case 'css': {
+                let entry = this.settings.cssEntry;
+                let exist = fse.pathExistsSync(entry);
+                if (!exist) {
+                    CompilerUtilities_1.timedLog('Entry file', chalk_1.default.cyan(entry), 'was not found.', chalk_1.default.red('Aborting CSS build.'));
+                }
+                return exist;
+            }
+            case 'concat': {
+                return (this.settings.concatCount > 0);
+            }
+            default: {
+                throw Error('Task `' + taskName + '` does not exists!');
+            }
+        }
     }
     build(taskName) {
-        let run = this.tasks.task(taskName);
-        run(error => {
-            CompilerUtilities_1.timedLog(chalk_1.default.red('UNHANDLED ERROR'), 'during build:');
-            console.error(error);
-        });
+        if (process.send === undefined) {
+            this.chat();
+            this.startBackgroundTask(taskName);
+        }
+        else {
+            switch (taskName) {
+                case 'js': {
+                    this.buildJS();
+                    break;
+                }
+                case 'css': {
+                    this.buildCSS();
+                    break;
+                }
+                case 'concat': {
+                    this.buildConcat();
+                    break;
+                }
+                default: {
+                    throw Error('Task `' + taskName + '` does not exists!');
+                }
+            }
+        }
     }
     get needPackageRestore() {
         let hasNodeModules = fse.existsSync(this.settings.npmFolder);
@@ -55,53 +122,43 @@ class Compiler {
         }
         return restore;
     }
-    registerJsTask() {
-        let jsEntry = this.settings.jsEntry;
-        if (!fse.existsSync(jsEntry)) {
-            this.tasks.task('js', () => {
-                CompilerUtilities_1.timedLog('Entry file', chalk_1.default.cyan(jsEntry), 'was not found.', chalk_1.default.red('Aborting JS build.'));
-            });
-            return;
-        }
-        let tool = new TypeScriptBuildTool_1.TypeScriptBuildTool(this.settings, this.flags);
-        this.tasks.task('js', () => {
-            fse.removeSync(this.settings.outputJsSourceMap);
-            CompilerUtilities_1.timedLog('Compiling JS >', chalk_1.default.yellow(TypeScriptConfigurationReader_1.getTypeScriptTarget()), chalk_1.default.cyan(jsEntry));
+    buildJS() {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield fse.remove(this.settings.outputJsSourceMap);
+            CompilerUtilities_1.timedLog('Compiling JS >', chalk_1.default.yellow(TypeScriptConfigurationReader_1.getTypeScriptTarget()), chalk_1.default.cyan(this.settings.jsEntry));
+            let tool = new TypeScriptBuildTool_1.TypeScriptBuildTool(this.settings, this.flags);
             tool.build();
         });
     }
-    registerCssTask() {
-        let cssEntry = this.settings.cssEntry;
-        if (!fse.existsSync(cssEntry)) {
-            this.tasks.task('css', () => {
-                CompilerUtilities_1.timedLog('Entry file', chalk_1.default.cyan(cssEntry), 'was not found.', chalk_1.default.red('Aborting CSS build.'));
-            });
-            return;
-        }
-        let tool = new SassBuildTool_1.SassBuildTool(this.settings, this.flags);
-        this.tasks.task('css', () => {
-            fse.removeSync(this.settings.outputCssSourceMap);
-            CompilerUtilities_1.timedLog('Compiling CSS', chalk_1.default.cyan(cssEntry));
-            tool.buildWithStopwatch();
+    buildCSS() {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield fse.remove(this.settings.outputCssSourceMap);
+            CompilerUtilities_1.timedLog('Compiling CSS', chalk_1.default.cyan(this.settings.cssEntry));
+            let tool = new SassBuildTool_1.SassBuildTool(this.settings, this.flags);
+            yield tool.buildWithStopwatch();
             if (this.flags.watch) {
                 tool.watch();
             }
+            else {
+                process.exit(0);
+            }
         });
     }
-    registerConcatTask() {
-        let c = this.settings.concatCount;
-        if (c === 0) {
-            this.tasks.task('concat', () => { });
-            return;
-        }
-        let tool = new ConcatBuildTool_1.ConcatBuildTool(this.settings, this.flags);
-        this.tasks.task('concat', () => {
+    buildConcat() {
+        return __awaiter(this, void 0, void 0, function* () {
             if (this.flags.watch) {
                 CompilerUtilities_1.timedLog("Concat task will be run once and", chalk_1.default.red("NOT watched!"));
             }
-            CompilerUtilities_1.timedLog('Resolving', chalk_1.default.cyan(c.toString()), 'concat target(s)...');
-            return tool.buildWithStopwatch();
+            CompilerUtilities_1.timedLog('Resolving', chalk_1.default.cyan(this.settings.concatCount.toString()), 'concat target(s)...');
+            let tool = new ConcatBuildTool_1.ConcatBuildTool(this.settings, this.flags);
+            yield tool.buildWithStopwatch();
+            process.exit(0);
         });
     }
 }
 exports.Compiler = Compiler;
+process.on('message', (command) => {
+    if (command.build) {
+        Compiler.fromCommand(command).build(command.build);
+    }
+});

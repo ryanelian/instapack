@@ -211,7 +211,7 @@ export class TypeScriptBuildTool {
     }
 
     /**
-     * Runs the TypeScript build engine.
+     * Runs the TypeScript build engine. Automatically exits process if not in watch mode.
      */
     build() {
         webpack(this.webpackConfiguration, (error, stats) => {
@@ -236,6 +236,10 @@ export class TypeScriptBuildTool {
 
             let t = prettyMilliseconds(o.time);
             timedLog('Finished JS build after', chalk.green(t));
+
+            if (!this.flags.watch) {
+                process.exit(0);
+            }
         });
     }
 }

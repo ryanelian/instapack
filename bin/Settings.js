@@ -23,6 +23,18 @@ class Settings {
             this.cssOut += '.css';
         }
     }
+    get core() {
+        return {
+            alias: this.alias,
+            concat: this.concat,
+            cssOut: this.cssOut,
+            externals: this.externals,
+            input: this.input,
+            jsOut: this.jsOut,
+            output: this.output,
+            template: this.template
+        };
+    }
     get cacheFolder() {
         return path.join(os.tmpdir(), 'instapack', 'cache');
     }

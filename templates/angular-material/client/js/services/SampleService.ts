@@ -1,4 +1,4 @@
-import * as models from '../models';
+import { SampleModel } from '../models';
 
 export class SampleService {
     static $inject = ['$http'];
@@ -10,7 +10,7 @@ export class SampleService {
     }
 
     hello(name: string) {
-        return this.$http.post<models.SampleModel>('/api/v1/hello', {
+        return this.$http.post<SampleModel>('/api/v1/hello', {
             message: 'Hello ' + name
         });
     }

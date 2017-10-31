@@ -1,4 +1,5 @@
 import { Compiler } from './Compiler';
+import { CompilerFlags } from './CompilerUtilities';
 import { Settings } from './Settings';
 import { Scaffold } from './Scaffold';
 
@@ -6,7 +7,7 @@ import * as fse from 'fs-extra';
 import * as path from 'path';
 
 /**
- * Exposes methods for developing a web application client project.
+ * Exposes methods for developing a web app client project.
  */
 export = class instapack {
     /**
@@ -42,24 +43,16 @@ export = class instapack {
      * Constructs instapack class instance using settings read from project.json. 
      */
     constructor() {
-        this.settings = Settings.tryRead();
+        this.settings = Settings.tryReadFromPackageJson();
     }
 
     /**
-     * Performs web application client project compilation using a pre-configured task and build flags.
+     * Performs web app client project compilation using a pre-configured task and build flags.
      * @param taskName 
-     * @param minify 
-     * @param watch 
-     * @param map 
-     * @param serverPort 
+     * @param flags 
      */
-    build(taskName: string, minify: boolean, watch: boolean, map: boolean, serverPort: number) {
-        let compiler = new Compiler(this.settings, {
-            minify: minify,
-            watch: watch,
-            map: map,
-            serverPort: serverPort
-        });
+    build(taskName: string, flags: CompilerFlags) {
+        let compiler = new Compiler(this.settings, flags);
         let scaffold = new Scaffold();
 
         if (compiler.needPackageRestore) {
@@ -69,37 +62,28 @@ export = class instapack {
     }
 
     /**
-     * Performs web application client project initialization using a template shipped in templates folder.
+     * Performs new web app client project scaffolding using a template shipped in templates folder.
      * @param template 
      */
-    scaffold(template: string) {
+    async scaffold(template: string) {
         let scaffold = new Scaffold();
-        scaffold.usingTemplate(template);
+        await scaffold.usingTemplate(template);
     }
 
     /**
-     * Empties the content of the JavaScript and CSS output folder.
+     * Cleans the JavaScript and CSS output folder and the temporary cache folder.
      */
-    clean() {
-        let dir1 = this.settings.outputCssFolder;
-        let dir2 = this.settings.outputJsFolder;
+    async clean() {
+        let cleanCSS = fse.emptyDir(this.settings.outputCssFolder);
+        let cleanJS = fse.emptyDir(this.settings.outputJsFolder);
 
-        fse.emptyDir(dir1, err => {
-            if (err) {
-                console.log('Error when cleaning ' + dir1);
-                console.log(err);
-            } else {
-                console.log('Successfully cleaned ' + dir1);
-            }
-        });
-
-        fse.emptyDir(dir2, err => {
-            if (err) {
-                console.log('Error when cleaning ' + dir2);
-                console.log(err);
-            } else {
-                console.log('Successfully cleaned ' + dir2);
-            }
-        });
+        try {
+            await cleanJS;
+            console.log('Clean successful: ' + this.settings.outputJsFolder);
+            await cleanCSS;
+            console.log('Clean successful: ' + this.settings.outputCssFolder);
+        } catch (error) {
+            console.error(error);
+        }
     }
 }

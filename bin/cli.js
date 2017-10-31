@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const instapack = require("./index");
 const CLI = require("yargs");
-const chalk = require("chalk");
+const chalk_1 = require("chalk");
 const https = require("https");
 const autoprefixer = require("autoprefixer");
 const PrettyObject_1 = require("./PrettyObject");
@@ -39,7 +39,7 @@ function echo(command, subCommand, writeDescription = false) {
     if (!subCommand) {
         subCommand = '';
     }
-    console.log(chalk.yellow(packageInfo.name) + ' ' + chalk.green(packageInfo.version) + ' ' + command + ' ' + subCommand);
+    console.log(chalk_1.default.yellow(packageInfo.name) + ' ' + chalk_1.default.green(packageInfo.version) + ' ' + command + ' ' + subCommand);
     if (writeDescription) {
         console.log(packageInfo.description);
     }
@@ -47,29 +47,33 @@ function echo(command, subCommand, writeDescription = false) {
 }
 CLI.command({
     command: 'build [project]',
-    describe: 'Compiles the web application client project.',
+    describe: 'Builds the web app client project!',
     aliases: ['*'],
     builder: yargs => {
         return yargs.choices('project', app.availableTasks)
             .option('w', {
             alias: 'watch',
-            describe: 'Enables rebuild on source code changes.'
+            describe: 'Enables incremental compilation on source code changes.'
         }).option('d', {
             alias: 'dev',
-            describe: 'Disables output files minification.'
+            describe: 'Disables outputs minification.'
         }).option('u', {
-            alias: 'unmap',
-            describe: 'Disables sourcemaps.'
-        }).option('s', {
-            alias: 'server',
-            describe: 'Serve the output using an HTTP server listening on a local port.',
-            type: 'number'
+            alias: 'uncharted',
+            describe: 'Disables source maps.'
+        }).option('p', {
+            alias: 'parallel',
+            describe: 'Enables parallel build across all CPU threads!'
         });
     },
     handler: argv => {
         let subCommand = argv.project || 'all';
         echo('build', subCommand);
-        app.build(subCommand, !argv.dev, argv.watch, !argv.unmap, argv.server);
+        app.build(subCommand, {
+            production: !argv.dev,
+            watch: argv.watch,
+            sourceMap: !argv.uncharted,
+            parallel: argv.parallel
+        });
     }
 });
 CLI.command({
@@ -82,7 +86,7 @@ CLI.command({
 });
 CLI.command({
     command: 'new [template]',
-    describe: 'Scaffolds a new web application client project.',
+    describe: 'Scaffolds a new web app client project.',
     builder: yargs => {
         return yargs.choices('template', app.availableTemplates);
     },
@@ -94,7 +98,7 @@ CLI.command({
 });
 CLI.command({
     command: 'info',
-    describe: 'Displays instapack dependencies, loaded settings, and autoprefixer information.',
+    describe: 'Displays instapack dependencies, loaded configurations, and autoprefixer information.',
     handler: argv => {
         echo('info', null);
         let p = new PrettyObject_1.PrettyObject('whiteBright');
@@ -112,8 +116,12 @@ function updateNag() {
     updater.abort();
     if (outdated) {
         console.log();
-        console.log(chalk.yellow('instapack') + ' is outdated. New version: ' + chalk.green(masterVersion));
-        console.log('Run ' + chalk.blue('yarn global upgrade instapack') + ' or ' + chalk.blue('npm update -g instapack') + ' to update!');
+        console.log(chalk_1.default.yellow('instapack') + ' is outdated. New version: ' + chalk_1.default.green(masterVersion));
+        if (parseInt(process.versions.node[0]) < 8) {
+            console.log(chalk_1.default.red('BEFORE UPDATING: ') + chalk_1.default.yellow('install the latest Node.js LTS version 8 ') + 'for better build performance!');
+            console.log('Download URL: ' + chalk_1.default.blue('https://nodejs.org/en/download/'));
+        }
+        console.log('Run ' + chalk_1.default.yellow('npm install -g instapack') + ' or ' + chalk_1.default.yellow('yarn global add instapack') + ' to update!');
     }
     outdated = false;
 }

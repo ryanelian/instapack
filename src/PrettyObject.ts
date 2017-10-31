@@ -1,4 +1,5 @@
-import * as chalk from 'chalk';
+import chalk from 'chalk';
+import { Chalk } from 'chalk';
 
 /**
  * Contain methods for creating a colored and formatted string representation of an object to CLI output.
@@ -7,22 +8,22 @@ export class PrettyObject {
     /**
      * Gets the coloring chalk for field names and symbols.
      */
-    readonly symbolChalk: chalk.ChalkChain;
+    readonly symbolChalk: Chalk;
 
     /**
      * Gets the coloring chalk for number or boolean value types.
      */
-    readonly ordinalChalk: chalk.ChalkChain;
+    readonly ordinalChalk: Chalk;
 
     /**
      * Gets the coloring chalk for string value types.
      */
-    readonly stringChalk: chalk.ChalkChain;
+    readonly stringChalk: Chalk;
 
     /**
      * Gets the coloring chalk for null or undefined value types.
      */
-    readonly nullChalk: chalk.ChalkChain;
+    readonly nullChalk: Chalk;
 
     /**
      * Constructs a pretty renderer using selected color for display components. 
@@ -80,19 +81,11 @@ export class PrettyObject {
     }
 
     /**
-     * Detects whether an object is Browserify Error.
-     * @param o 
-     */
-    isBrowserifyError(o): boolean {
-        return (o instanceof Error) && o.stack && o.message && o.name && o['stream'];
-    }
-
-    /**
      * Detects whether an object is Sass Error.
      * @param o 
      */
     isSassError(o): boolean {
-        return (o instanceof Error) && o.message && o['column'] && o['file'] && o['line'] && o['formatted'];
+        return (o instanceof Error) && o['formatted'];
     }
 
     /**
@@ -123,20 +116,12 @@ export class PrettyObject {
             }
             return result.join('\n');
         } else if (typeof o === 'object') {
-            if (this.isBrowserifyError(o)) {
-                // Prevents error due to missing require(...) from Browserify to throw up a gigantic wall of text to the screen.
-                return this.render({
-                    name: 'Browserify error',
-                    message: o.message
-                }, level);
+            if (this.isSassError(o)) {
+                return chalk.red(o['formatted'] as string);
             }
 
-            let sassError = this.isSassError(o);
             let result = [];
             for (let key of Object.keys(o).sort()) {
-                if (sassError && key === 'formatted') {
-                    continue;
-                }
                 if (this.isFunction(o[key])) {
                     // Prevents puking out function codes!
                     continue;
@@ -150,15 +135,26 @@ export class PrettyObject {
                 result.push(line);
             }
 
-            if (sassError && o['formatted']) {
-                // For best output, this specific field must be escaped and appended to the very end of the object render. 
-                result.push(o['formatted']);
-            }
             return result.join('\n');
         } else if (typeof (o) === 'number' || typeof (o) === 'boolean') {
             return this.ordinalChalk(o.toString());
         } else {
             return '';
         }
+    }
+}
+
+let p = new PrettyObject();
+export default p;
+
+/**
+ * Returns a formatted error.
+ * @param error 
+ */
+export function prettyError(error: Error) {
+    try {
+        return p.render(error);
+    } catch {
+        return chalk.red(error as any);
     }
 }

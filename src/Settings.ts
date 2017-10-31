@@ -1,10 +1,11 @@
 import * as path from 'path';
 import * as chalk from 'chalk';
+import * as os from 'os';
 
 /**
  * Dictionary<string, List<string>>
  */
-export interface ConcatenationLookup {
+export interface ConcatLookup {
     [key: string]: string[]
 }
 
@@ -13,6 +14,20 @@ export interface ConcatenationLookup {
  */
 export interface ModuleOverrides {
     [key: string]: string
+}
+
+/**
+ * Values required to construct an instapack Settings object.
+ */
+export class SettingsCore {
+    input: string;
+    output: string;
+    concat: ConcatLookup;
+    alias: ModuleOverrides;
+    externals: ModuleOverrides
+    template: string;
+    jsOut: string;
+    cssOut: string;
 }
 
 /**
@@ -35,9 +50,9 @@ export class Settings {
     readonly output: string;
 
     /**
-     * Gets the unresolved concatenation map.
+     * Gets the unresolved concat map.
      */
-    readonly concat: ConcatenationLookup;
+    readonly concat: ConcatLookup;
 
     /**
      * Replaces dependency imports to another dependency. For example: {'vue': 'vue/dist/vue.common'}
@@ -55,29 +70,65 @@ export class Settings {
     readonly template: string;
 
     /**
-     * Constructs a new instance of Settings.
-     * @param root 
-     * @param input 
-     * @param output 
-     * @param concat 
-     * @param alias 
-     * @param externals 
-     * @param template 
+     * Gets the JS output file name.
      */
-    constructor(root: string, input: string, output: string,
-        concat: ConcatenationLookup, alias: ModuleOverrides, externals: ModuleOverrides,
-        template: string) {
+    readonly jsOut: string;
+
+    /**
+     * Gets the CSS output file name.
+     */
+    readonly cssOut: string;
+
+    /**
+     * Constructs a new instance of Settings using a root folder and an setting object parsed from package.json.
+     * @param root 
+     * @param settings 
+     */
+    constructor(root: string, settings: SettingsCore) {
         this.root = root || process.cwd();
-        this.input = input || 'client';
-        this.output = output || 'wwwroot';
-        this.concat = concat || {};
-        this.alias = alias || {};
-        this.externals = externals || {};
-        this.template = template || 'string';
+        this.input = settings.input || 'client';
+        this.output = settings.output || 'wwwroot';
+        this.concat = settings.concat || {};
+        this.alias = settings.alias || {};
+        this.externals = settings.externals || {};
+        this.template = settings.template || 'string';
+
+        this.jsOut = settings.jsOut || 'ipack.js';
+        if (this.jsOut.endsWith('.js') === false) {
+            this.jsOut += '.js';
+        }
+
+        this.cssOut = settings.cssOut || 'ipack.css';
+        if (this.cssOut.endsWith('.css') === false) {
+            this.cssOut += '.css';
+        }
     }
 
     /**
-     * Gets the number of keys / target files in the concatenation map.
+     * Obtains simple and serializable object for constructing a full Settings object.
+     */
+    get core() {
+        return {
+            alias: this.alias,
+            concat: this.concat,
+            cssOut: this.cssOut,
+            externals: this.externals,
+            input: this.input,
+            jsOut: this.jsOut,
+            output: this.output,
+            template: this.template
+        } as SettingsCore;
+    }
+
+    /**
+     * Cache folder path for cache-loader in user's local temp folder.
+     */
+    get cacheFolder(): string {
+        return path.join(os.tmpdir(), 'instapack', 'cache');
+    }
+
+    /**
+     * Gets the number of keys / target files in the concat map.
      */
     get concatCount(): number {
         return Object.keys(this.concat).length;
@@ -126,21 +177,21 @@ export class Settings {
     }
 
     /**
-     * Gets the full path to the index.ts entry point.
+     * Gets the full path to the TypeScript project entry point.
      */
     get jsEntry(): string {
         return path.join(this.inputJsFolder, 'index.ts');
     }
 
     /**
-     * Gets the full path to the site.scss entry point.
+     * Gets the full path to the Sass project entry point.
      */
     get cssEntry(): string {
-        return path.join(this.inputCssFolder, 'site.scss');
+        return path.join(this.inputCssFolder, 'index.scss');
     }
 
     /**
-     * Gets the glob pattern for watching changes of Sass source code files. 
+     * Gets the glob pattern for watching Sass source code file changes. 
      */
     get scssGlob(): string {
         return path.join(this.inputCssFolder, '**', '*.scss');
@@ -154,28 +205,56 @@ export class Settings {
     }
 
     /**
-     * Gets the full path to the JavaScript compilation and concatenation output folder.
+     * Gets the full path to the JavaScript compilation and concat output folder.
      */
     get outputJsFolder(): string {
         return path.join(this.outputFolder, 'js');
     }
 
     /**
-     * Gets the full path to the CSS compilation and concatenation output folder.
+     * Gets the full path to the JS compilation output file.
+     */
+    get outputJsFile(): string {
+        return path.join(this.outputJsFolder, this.jsOut);
+    }
+
+    /**
+     * Gets the full path to the JS compilation output source map.
+     */
+    get outputJsSourceMap(): string {
+        return this.outputJsFile + '.map';
+    }
+
+    /**
+     * Gets the full path to the CSS compilation and concat output folder.
      */
     get outputCssFolder(): string {
         return path.join(this.outputFolder, 'css');
     }
 
     /**
+     * Gets the full path to the CSS compilation output file.
+     */
+    get outputCssFile(): string {
+        return path.join(this.outputCssFolder, this.cssOut);
+    }
+
+    /**
+     * Gets the full path to the CSS compilation output source map.
+     */
+    get outputCssSourceMap(): string {
+        return this.outputCssFile + '.map';
+    }
+
+    /**
      * Attempts to read the settings from package.json in the same folder where the command line is invoked at.
      */
-    static tryRead(): Settings {
-        let folder = process.cwd();
+    static tryReadFromPackageJson(): Settings {
+        let root = process.cwd();
         let parse: any;
 
         try {
-            let json = path.join(folder, 'package.json');
+            let json = path.join(root, 'package.json');
             // console.log('Loading settings ' + chalk.cyan(json));
             parse = require(json).instapack;
         } catch (ex) {
@@ -186,6 +265,6 @@ export class Settings {
             parse = {};
         }
 
-        return new Settings(folder, parse.input, parse.output, parse.concat, parse.alias, parse.externals, parse.template);
+        return new Settings(root, parse);
     }
 }

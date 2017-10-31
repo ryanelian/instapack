@@ -1,4 +1,4 @@
-import * as Inferno from 'inferno';
+import Inferno from 'inferno';
 import h from 'inferno-create-element';
 import { Hello } from "./components";
 

@@ -1,7 +1,24 @@
 language: node_js
 node_js:
-  - "6"
-  - "7"
   - "8"
+env:
+  - TEMPLATE=angular-bootstrap
+  - TEMPLATE=angular-material
+  - TEMPLATE=empty
+  - TEMPLATE=inferno
+  - TEMPLATE=react
+  - TEMPLATE=vue
+  - TEMPLATE=vue+
+cache:
+  yarn: true
+  directories:
+    - node_modules
 script:
   - npm run build
+  - npm link
+  - instapack --version
+  - mkdir demo
+  - cd demo
+  - ipack new $TEMPLATE
+  - ipack
+  - ipack -ud

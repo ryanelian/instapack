@@ -1,13 +1,13 @@
-import * as Vue from 'vue';
+import { VNode } from 'vue';
 
 declare global {
-    interface CompiledVueTemplate {
-        render: Vue.CreateElement,
-        staticRenderFns: ((createElement: Vue.CreateElement) => Vue.VNode)[]
+    interface VueCompiledTemplate {
+        render: () => VNode;
+        staticRenderFns: (() => VNode)[];
     }
 
     module '*.html' {
-        let _: CompiledVueTemplate;
+        let _: VueCompiledTemplate;
         export = _;
     }
 }

@@ -1,141 +1,137 @@
-// Core dependencies
-import * as Undertaker from 'undertaker';
-import * as vinyl from 'vinyl';
-import * as through2 from 'through2';
 import * as fse from 'fs-extra';
-import * as path from 'path';
-import * as resolve from 'resolve';
-import * as chalk from 'chalk';
-import * as chokidar from 'chokidar';
-import * as sourcemaps from 'gulp-sourcemaps';
+import chalk from 'chalk';
+import { fork } from 'child_process';
 
-// These are my stuffs
-import glog from './GulpLog';
-import PipeErrorHandler from './PipeErrorHandler';
-import * as To from './PipeTo';
-import { Server } from './Server';
-import { Settings, ConcatenationLookup } from './Settings';
-
-// These are used by Browserify
-import * as browserify from 'browserify';
-import * as tsify from 'tsify';
-import * as watchify from 'watchify';
-import envify = require('envify/custom');
-import templatify from './Templatify';
-import requireify from './Requireify';
+import hub from './EventHub';
+import { TypeScriptBuildTool } from './TypeScriptBuildTool';
+import { SassBuildTool } from './SassBuildTool';
+import { ConcatBuildTool } from './ConcatBuildTool';
+import { Settings, SettingsCore } from './Settings';
+import { timedLog, CompilerFlags } from './CompilerUtilities';
 
 /**
- * Defines build flags to be used by Compiler class.
+ * Represents POJO serializable build metadata for child Compiler process.
  */
-export interface CompilerFlags {
-    minify: boolean,
-    watch: boolean,
-    map: boolean,
-    serverPort: number
+interface BuildCommand {
+    build: string;
+    root: string;
+    settings: SettingsCore;
+    flags: CompilerFlags;
 }
 
 /**
- * Contains methods for assembling and invoking the compilation tasks.
+ * Contains methods for assembling and invoking the build tasks.
  */
 export class Compiler {
 
     /**
-     * Gets the project environment settings.
+     * Gets the project settings.
      */
-    readonly settings: Settings;
+    private readonly settings: Settings;
 
     /**
      * Gets the compiler build flags.
      */
-    readonly flags: CompilerFlags;
+    private readonly flags: CompilerFlags;
 
     /**
-     * Gets the build server instance.
-     */
-    readonly server: Server;
-
-    /**
-     * Gets the task registry.
-     */
-    readonly tasks: Undertaker;
-
-    /**
-     * Constructs a new instance of Compiler using specified build flags. 
+     * Constructs a new instance of Compiler using the specified settings and build flags. 
      * @param settings 
      * @param flags 
      */
     constructor(settings: Settings, flags: CompilerFlags) {
         this.settings = settings;
         this.flags = flags;
-        this.tasks = new Undertaker();
+    }
 
-        if (flags.serverPort) {
-            this.flags.watch = true;
-            this.server = new Server(flags.serverPort);
-        }
-
-        this.chat();
-        this.registerAllTasks();
+    /**
+     * Constructs Compiler instance from child process build command.
+     * @param command 
+     */
+    static fromCommand(command: BuildCommand) {
+        let settings = new Settings(command.root, command.settings);
+        let compiler = new Compiler(settings, command.flags);
+        return compiler;
     }
 
     /**
      * Displays information about currently used build flags.
      */
-    chat() {
-        if (this.server) {
-            glog(chalk.yellow("Server"), "mode: Listening on", chalk.cyan('http://localhost:' + this.server.port));
+    private chat() {
+        timedLog('Output to folder', chalk.cyan(this.settings.outputFolder));
+
+        if (this.flags.production) {
+            timedLog(chalk.yellow("Production"), "Mode: Outputs will be minified.", chalk.red("(Slow build)"));
         } else {
-            glog('Using output folder', chalk.cyan(this.settings.outputFolder));
+            timedLog(chalk.yellow("Development"), "Mode: Outputs will", chalk.red("NOT be minified!"), "(Fast build)");
+            timedLog(chalk.red("Do not forget to minify"), "before pushing to repository or production server!");
         }
 
-        if (this.flags.minify) {
-            glog(chalk.yellow("Production"), "mode: Outputs will be minified.", chalk.red("This process will slow down your build!"));
-        } else {
-            glog(chalk.yellow("Development"), "mode: Outputs are", chalk.red("NOT minified"), "in exchange for compilation speed.");
-            glog("Do not forget to minify before pushing to repository or production environment!");
+        if (this.flags.parallel) {
+            timedLog(chalk.yellow('Parallel'), 'Mode: Build will be scaled across all CPU threads!');
         }
 
         if (this.flags.watch) {
-            glog(chalk.yellow("Watch"), "mode: Source codes will be automatically compiled on changes.");
+            timedLog(chalk.yellow("Watch"), "Mode: Source codes will be automatically compiled on changes.");
         }
 
-        if (!this.flags.map) {
-            glog(chalk.yellow("Unmap"), "mode: Source maps disabled.");
+        timedLog('Source Maps:', chalk.yellow(this.flags.sourceMap ? 'Enabled' : 'Disabled'));
+    }
+
+    /**
+     * Launch Node.js child process using this same Compiler module for building in separate process. 
+     * @param taskName 
+     */
+    private startBackgroundTask(taskName: string) {
+        if (taskName === 'all') {
+            this.startBackgroundTask('js');
+            this.startBackgroundTask('css');
+            this.startBackgroundTask('concat');
+            return;
+        }
+
+        let valid = this.validateBackgroundTask(taskName);
+        if (valid) {
+            // console.log(__filename);            
+            let child = fork(__filename);
+            child.send({
+                build: taskName,
+                root: this.settings.root,
+                flags: this.flags,
+                settings: this.settings.core
+            } as BuildCommand);
         }
     }
 
     /**
-     * Creates a pipe that redirects file to output folder or a server.
-     * @param folder 
+     * Checks whether a build task should be run.
+     * @param taskName 
      */
-    output(folder: string) {
-        return through2.obj(async (file: vinyl, encoding, next) => {
-            if (file.isStream()) {
-                let error = new Error('instapack output: Streaming is not supported!');
-                return next(error);
-            }
-
-            if (file.isBuffer()) {
-                if (this.server) {
-                    await this.server.Update(file.relative, file.contents);
-                } else {
-                    let p = path.join(folder, file.relative);
-                    await fse.outputFile(p, file.contents);
+    private validateBackgroundTask(taskName: string) {
+        switch (taskName) {
+            case 'js': {
+                let entry = this.settings.jsEntry;
+                let exist = fse.pathExistsSync(entry);
+                if (!exist) {
+                    timedLog('Entry file', chalk.cyan(entry), 'was not found.', chalk.red('Aborting JS build.'));
                 }
+                return exist;
             }
-
-            next(null, file);
-        });
-    }
-
-    /**
-     * Registers all available tasks and registers a task for invoking all those tasks.
-     */
-    registerAllTasks() {
-        this.registerConcatTask();
-        this.registerJsTask();
-        this.registerCssTask();
-        this.tasks.task('all', this.tasks.parallel('concat', 'js', 'css'));
+            case 'css': {
+                let entry = this.settings.cssEntry;
+                let exist = fse.pathExistsSync(entry);
+                if (!exist) {
+                    timedLog('Entry file', chalk.cyan(entry), 'was not found.', chalk.red('Aborting CSS build.'));
+                }
+                return exist;
+            }
+            case 'concat': {
+                return (this.settings.concatCount > 0);
+            }
+            default: {
+                throw Error('Task `' + taskName + '` does not exists!');
+            }
+        }
     }
 
     /**
@@ -143,159 +139,32 @@ export class Compiler {
      * @param taskName 
      */
     build(taskName) {
-        let run = this.tasks.task(taskName);
-        run(error => { });
-    }
-
-    /**
-     * Flattens abyssmal sourcemap paths resulting from Browserify compilation.
-     */
-    unfuckBrowserifySourcePaths = (sourcePath: string, file) => {
-        let folder = this.settings.input + '/js/';
-
-        if (sourcePath.startsWith('node_modules')) {
-            return '../' + sourcePath;
-        } else if (sourcePath.startsWith(folder)) {
-            return sourcePath.substring(folder.length);
+        if (process.send === undefined) {
+            // parent
+            this.chat();
+            this.startBackgroundTask(taskName);
         } else {
-            return sourcePath;
-        }
-    }
-
-    get useRequireify(){
-        let a = Object.keys(this.settings.alias).length;
-        let b = Object.keys(this.settings.externals).length;
-
-        return Boolean(a) || Boolean(b);
-    }
-
-    /**
-     * Registers a JavaScript compilation task using TypeScript piped into Browserify.
-     */
-    registerJsTask() {
-        let jsEntry = this.settings.jsEntry;
-
-        if (!fse.existsSync(jsEntry)) {
-            this.tasks.task('js', () => {
-                glog('JS entry', chalk.cyan(jsEntry), 'was not found.', chalk.red('Aborting JS build.'));
-            });
-            return;
-        }
-
-        let browserifyOptions: browserify.Options = {
-            debug: this.flags.map
-        };
-
-        if (this.flags.watch) {
-            browserifyOptions.cache = {};
-            browserifyOptions.packageCache = {};
-        }
-
-        let bundler = browserify(browserifyOptions).transform(templatify, {
-            mode: this.settings.template
-        }).add(jsEntry).plugin(tsify);
-
-        if (this.useRequireify) {
-            // this is required because Vue.js package.json "main": "dist/vue.runtime.common.js"
-            // that thing is runtime-only / cannot compile HTML templates...
-            // so the developer would either need to use one of these features:
-            // 1. "alias": {"vue": "vue/dist/vue.common"}
-            // 2. "externals": {"vue": "Vue"} then add from CDN:
-            // <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.4.4/vue.min.js"></script>
-            let requireTransformer = requireify(this.settings.alias, this.settings.externals);
-            bundler = (bundler as any).transform({ global: true }, requireTransformer);
-        }
-
-        if (this.flags.minify) {
-            // this is for Vue.js to reduce 20kb in minified production build.
-            // let's hope that other libraries also use NODE_ENV=production for this purpose...
-            bundler = (bundler as any).transform({ global: true }, envify({
-                'NODE_ENV': 'production'
-            }));
-        }
-
-        let compileJs = () => {
-            glog('Compiling JS', chalk.cyan(jsEntry));
-
-            return bundler.bundle()
-                .on('error', PipeErrorHandler)
-                .pipe(To.Vinyl('bundle.js'))
-                .pipe(To.VinylBuffer())
-                .pipe(this.flags.map ? sourcemaps.init({ loadMaps: true }) : through2.obj())
-                .pipe(this.flags.minify ? To.Uglify() : through2.obj())
-                .on('error', PipeErrorHandler)
-                .pipe(this.flags.map ? sourcemaps.mapSources(this.unfuckBrowserifySourcePaths) : through2.obj())
-                .pipe(this.flags.map ? sourcemaps.write('./') : through2.obj())
-                .pipe(To.BuildLog('JS compilation'))
-                .pipe(this.output(this.settings.outputJsFolder));
-        };
-
-        if (this.flags.watch) {
-            bundler.plugin(watchify);
-            bundler.on('update', compileJs);
-        }
-
-        this.tasks.task('js', compileJs);
-    }
-
-    /**
-     * Pipes the CSS project entry point as a Vinyl object. 
-     */
-    getCssEntryVinyl() {
-        let g = through2.obj();
-
-        fse.readFile(this.settings.cssEntry, 'utf8').then(contents => {
-            g.push(new vinyl({
-                path: this.settings.cssEntry,
-                contents: Buffer.from(contents),
-                base: this.settings.inputCssFolder,
-                cwd: this.settings.root
-            }));
-
-            g.push(null);
-        });
-
-        return g;
-    }
-
-    /**
-     * Registers a CSS compilation task using Sass piped into postcss.
-     */
-    registerCssTask() {
-        let cssEntry = this.settings.cssEntry;
-
-        if (!fse.existsSync(cssEntry)) {
-            this.tasks.task('css', () => {
-                glog('CSS entry', chalk.cyan(cssEntry), 'was not found.', chalk.red('Aborting CSS build.'));
-            });
-            return;
-        }
-
-        this.tasks.task('css:compile', () => {
-            glog('Compiling CSS', chalk.cyan(cssEntry));
-            let sassImports = [this.settings.npmFolder];
-
-            return this.getCssEntryVinyl()
-                .pipe(this.flags.map ? sourcemaps.init() : through2.obj())
-                .pipe(To.Sass(sassImports))
-                .on('error', PipeErrorHandler)
-                .pipe(To.CssProcessors())
-                .on('error', PipeErrorHandler)
-                .pipe(this.flags.map ? sourcemaps.write('./') : through2.obj())
-                .pipe(To.BuildLog('CSS compilation'))
-                .pipe(this.output(this.settings.outputCssFolder));
-        });
-
-        this.tasks.task('css', () => {
-            let run = this.tasks.task('css:compile');
-            run(error => { });
-
-            if (this.flags.watch) {
-                chokidar.watch(this.settings.scssGlob).on('change', path => {
-                    run(error => { });
-                });
+            // child
+            switch (taskName) {
+                case 'js': {
+                    this.buildJS();
+                    break;
+                }
+                case 'css': {
+                    this.buildCSS();
+                    break;
+                }
+                case 'concat': {
+                    this.buildConcat();
+                    break;
+                }
+                default: {
+                    throw Error('Task `' + taskName + '` does not exists!');
+                }
             }
-        });
+
+            // console.log(taskName);
+        }
     }
 
     /**
@@ -306,104 +175,61 @@ export class Compiler {
         let hasPackageJson = fse.existsSync(this.settings.packageJson);
 
         let restore = hasPackageJson && !hasNodeModules;
-
         if (restore) {
-            glog(chalk.cyan('node_modules'), 'folder not found. Performing automatic package restore...');
+            timedLog(chalk.cyan('node_modules'), 'folder not found. Performing automatic package restore...');
         }
 
         return restore;
     }
 
     /**
-     * Attempts to resolve a module using node resolution logic, relative to project folder path, asynchronously.
-     * @param path 
+     * Compiles the JavaScript project using Compiler settings and build flags. 
      */
-    resolveAsPromise(path: string) {
-        return new Promise<string>((ok, reject) => {
-            resolve(path, {
-                basedir: this.settings.root
-            }, (error, result) => {
-                if (error) {
-                    reject(error);
-                } else {
-                    ok(result);
-                }
-            });
-        });
+    async buildJS() {
+        await fse.remove(this.settings.outputJsSourceMap);
+        let tool = new TypeScriptBuildTool(this.settings, this.flags);
+        tool.build();
     }
 
     /**
-     * Returns a promise for a concatenated file content as string, resulting from a list of node modules.
-     * @param paths 
+     * Compiles the CSS project using Compiler settings and build flags. 
      */
-    async resolveThenConcatenate(paths: string[]) {
-        let concat = '';
-
-        for (let path of paths) {
-            let absolute = await this.resolveAsPromise(path);
-            concat += await fse.readFile(absolute, 'utf8') + '\n';
-        }
-
-        return concat;
-    }
-
-    /**
-     * Registers a JavaScript concatenation task.
-     */
-    registerConcatTask() {
-        let concatCount = this.settings.concatCount;
-        glog('Resolving', chalk.cyan(concatCount.toString()), 'concatenation targets...');
-
-        if (concatCount === 0) {
-            this.tasks.task('concat', () => { });
-            return;
-        }
+    async buildCSS() {
+        await fse.remove(this.settings.outputCssSourceMap);
+        let tool = new SassBuildTool(this.settings, this.flags);
+        await tool.buildWithStopwatch();
 
         if (this.flags.watch) {
-            glog("Concatenation task will be run once and", chalk.red("NOT watched!"));
+            tool.watch();
+        }
+        hub.buildDone();
+    }
+
+    /**
+     * Concat JavaScript files using Compiler settings and build flags. 
+     */
+    async buildConcat() {
+        if (this.flags.watch) {
+            timedLog("Concat task will be run once and", chalk.red("NOT watched!"));
         }
 
-        this.tasks.task('concat', () => {
-            let g = through2.obj();
-            let resolution = this.settings.concat;
+        timedLog('Resolving', chalk.cyan(this.settings.concatCount.toString()), 'concat target(s)...');
 
-            for (let target in resolution) {
-                let ar = resolution[target];
-                if (!ar || ar.length === 0) {
-                    glog(chalk.red('WARNING'), 'concat modules definition for', chalk.blue(target), 'is empty!');
+        let tool = new ConcatBuildTool(this.settings, this.flags);
+        await tool.buildWithStopwatch();
+        hub.buildDone();
+    }
+}
 
-                    concatCount--;
-                    if (concatCount === 0) {
-                        g.push(null);
-                    }
-                    continue;
-                }
-                if (typeof ar === 'string') {
-                    ar = [ar];
-                    glog(chalk.red('WARNING'), 'concat modules definition for', chalk.blue(target), 'is a', chalk.yellow('string'), 'instead of a', chalk.yellow('string[]'));
-                }
-
-                this.resolveThenConcatenate(ar).then(result => {
-                    g.push(new vinyl({
-                        path: target + '.js',
-                        contents: Buffer.from(result)
-                    }));
-                }).catch(error => {
-                    glog(chalk.red('ERROR'), 'when concatenating', chalk.blue(target))
-                    console.log(error);
-                }).then(() => {
-                    // this code block is equivalent to: .finally()
-                    concatCount--;
-                    if (concatCount === 0) {
-                        g.push(null);
-                    }
-                });
+if (process.send) { // Child Process
+    process.on('message', (command: BuildCommand) => {
+        // console.log(command);
+        if (command.build) {
+            if (!command.flags.watch) {
+                hub.exitOnBuildDone();
             }
 
-            return g.pipe(this.flags.minify ? To.Uglify() : through2.obj())
-                .on('error', PipeErrorHandler)
-                .pipe(To.BuildLog('JS concatenation'))
-                .pipe(this.output(this.settings.outputJsFolder));
-        });
-    }
+            Compiler.fromCommand(command).build(command.build);
+        }
+    });
 }

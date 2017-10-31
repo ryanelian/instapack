@@ -1,7 +1,7 @@
 import * as fse from 'fs-extra';
 import * as path from 'path';
 import * as cp from 'child_process';
-import * as chalk from 'chalk';
+import chalk from 'chalk';
 
 /**
  * Contains methods for initializing new project.
@@ -42,24 +42,24 @@ export class Scaffold {
      * Initialize project using an officially shipped template.
      * @param name 
      */
-    usingTemplate(name) {
+    async usingTemplate(name) {
         let templateFolder = path.join(__dirname, '../templates', name);
         let thisFolder = process.cwd();
 
-        let exist = fse.existsSync(templateFolder);
+        let exist = await fse.pathExists(templateFolder);
         if (!exist) {
-            console.log('Unable to find new project template for: ' + chalk.red(name));
+            console.error(chalk.red('ERROR') + ' Unable to find new project template for: ' + chalk.cyan(name));
             return;
         }
 
         console.log('Initializing new project using template: ' + chalk.cyan(name));
-        console.log('Scaffolding project into your web application...');
-        fse.copySync(templateFolder, thisFolder);
+        console.log('Scaffolding project into your web app...');
+        await fse.copy(templateFolder, thisFolder);
         console.log(chalk.green('Scaffold completed.') + ' Restoring packages for you...');
 
         this.restorePackages();
 
         console.log(chalk.green('Package restored successfully!'));
-        console.log('To build the application, type: ' + chalk.yellow('ipack'));
+        console.log('To build the app, type: ' + chalk.yellow('ipack'));
     }
 }

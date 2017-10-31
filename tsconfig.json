@@ -17,7 +17,8 @@
     "moduleResolution": "node",
     "removeComments": true,
 
-    "outDir": "bin"
+    "outDir": "bin",
+    "pretty": true
   },
   "exclude": [
     "node_modules",

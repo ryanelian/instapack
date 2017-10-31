@@ -6,11 +6,11 @@
 
 For this tutorial, we will be using ASP.NET Core MVC 2.0 to serve as the web server of the app. Install [.NET Core SDK 2.0](https://www.microsoft.com/net/download/core) 
 
-instapack requires [the latest Node.js LTS](https://nodejs.org/en/download) to function. Install if you have not done so; using the command line, type: `npm install -g instapack`
+instapack requires [the latest Node.js version 8 LTS](https://nodejs.org/en/download) to function. Install if you have not done so; using the command line, type: `npm install -g instapack`
 
 Verify instapack has been installed successfully by typing `ipack --version`.
 
-You may use Visual Studio for editing the project. Install [Visual Studio 2017 Update 3 or later](https://www.visualstudio.com/downloads) with the **ASP.NET and web development** workload. Do not forget to install the latest [TypeScript SDK for Visual Studio 2017](https://www.microsoft.com/en-us/download/details.aspx?id=55258).
+You may use Visual Studio for editing the project. Install [Visual Studio 2017 Update 4 or later](https://www.visualstudio.com/downloads) with the **ASP.NET and web development** workload. Do not forget to install the latest [TypeScript SDK for Visual Studio 2017](https://www.microsoft.com/en-us/download/details.aspx?id=55258).
 
 Alternatively, you may use [Visual Studio Code](https://code.visualstudio.com) with [C# extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode.csharp).
 
@@ -26,7 +26,6 @@ Remove-Item .\bundleconfig.json     # we'll use instapack to bundle and minify J
 Remove-Item .\wwwroot\ -Recurse
 Remove-Item .\Pages\_ValidationScriptsPartial.cshtml    # death to jQuery!
 ipack new vue
-dotnet build
 ipack -dw
 ```
 
@@ -55,14 +54,14 @@ Modify `/Pages/_Layout.cshtml` to reference the files created by instapack:
     <meta name="viewport" content="width=device-width" />
     <title>@ViewData["Title"]</title>
 
-    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="~/css/ipack.css" />
 </head>
 <body>
     <div class="container" id="app">
         @RenderBody()
     </div>
 
-    <script src="~/js/bundle.js"></script>
+    <script src="~/js/ipack.js"></script>
 </body>
 </html>
 ```
@@ -78,7 +77,7 @@ If using Visual Studio, open the project (by double clicking the `.csproj` file)
 Open `index.ts`. This is our entry point / main file to the JS app. Notice that there are module imports in this file:
 
 ```ts
-import * as ES6Promise from 'es6-promise';
+import ES6Promise from 'es6-promise';
 import { ValidationService } from 'aspnet-validation';
 import 'bootstrap.native/dist/bootstrap-native-v4';
 import './vue-project';
@@ -89,12 +88,11 @@ This syntax is called [ECMAScript 2015 Module](https://www.typescriptlang.org/do
 For now, just keep in mind that it imports `vue-project.ts` module from the same folder. Open it:
 
 ```ts
-import * as Vue from 'vue';
-
+import Vue from 'vue';
 import * as Components from './components';
 
 // components must be registered BEFORE the app root declaration
-Vue.component('hello', Components.HelloWorld);
+Vue.component('hello', Components.Hello);
 
 // bootstrap the Vue app from the root element <div id="app"></div>
 new Vue().$mount('#app');
@@ -122,13 +120,13 @@ Then use your web browser to view the app index page. It should display `2` as a
 
 ## My First Component
 
-Component is a building block of a modern web app client. Component represents reusable code that may be invoked using standard HTML tag syntax. Component allows dividing a complex app into simpler and more maintainable parts.
+Component is a building block of a modern web app. Component represents reusable code that may be invoked using standard HTML tag syntax. Component allows dividing a complex app into simpler and more maintainable parts.
 
 Create a new file `/client/js/components/Greet.ts`:
 
 ```ts
-import * as Vue from 'vue'
-import Component from 'vue-class-component'
+import Vue from 'vue';
+import Component from 'vue-class-component';
 
 @Component({
     template: '<p>Hello World!</p>'
@@ -139,9 +137,9 @@ export class Greet extends Vue {
 
 Let us digest the above code slowly:
 
-- `Vue` imports the entire `vue` modules from the `node_modules` into a single variable, which is defined in the project's `package.json`.
+- `Vue` imports the `vue` module from the `node_modules` into a single variable, which is defined in the project's `package.json`.
 
-- `Component` imports a default `vue-class-component` modules from the `node_modules`, which is also defined in the project's `package.json`.
+- `Component` imports the `vue-class-component` module from the `node_modules`, which is also defined in the project's `package.json`.
 
 - `@Component` is a [ECMAScript decorator](https://tc39.github.io/proposal-decorators/), akin to [C# class attributes](https://docs.microsoft.com/en-us/dotnet/standard/attributes/writing-custom-attributes) or [Java class annotations](https://docs.oracle.com/javase/tutorial/java/annotations/basics.html). It describes the class as a Vue Component which has a template. 
 
@@ -154,7 +152,7 @@ Let us digest the above code slowly:
 Open `/client/js/components/index.ts`, modify the content into:
 
 ```ts
-export * from './HelloWorld';
+export * from './Hello';
 export * from './Greet';
 ```
 
@@ -233,7 +231,7 @@ Let us create a new component:
 **ClickMe.ts**
 
 ```ts
-import * as Vue from 'vue';
+import Vue from 'vue';
 import Component from 'vue-class-component';
 
 @Component({
@@ -292,9 +290,9 @@ By now you should be more or less familiarized with the Vue.js project. Let's ta
 **Todo.ts**
 
 ```ts
-import * as Vue from 'vue';
+import Vue from 'vue';
 import Component from 'vue-class-component';
-import * as Noty from 'noty';
+import Noty from 'noty';
 
 interface TodoItem {
     id: number,
@@ -466,7 +464,7 @@ Register the service class in `ConfigureServices` method in **Startup.cs**:
 services.AddSingleton<TodoService>();
 ```
 
-> **CAUTION:** You should not do this in a real application; our `TodoService` is not thread-safe and [ACID](https://en.wikipedia.org/wiki/ACID). Use database to persist your data and let your services be transient / stateless!
+> **CAUTION:** You should not do this in a real application; our `TodoService` is not [thread-safe](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/threading/thread-synchronization) and [ACID](https://en.wikipedia.org/wiki/ACID). Use database to persist your data and let your services be transient / stateless!
 
 Using ASP.NET Core MVC, we can develop our [REST API](https://en.wikipedia.org/wiki/Representational_state_transfer) using various [HTTP methods](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods):
 
@@ -544,5 +542,9 @@ public class TodoApiController : Controller
 > TODO 
 
 ## Managing States
+
+> TODO
+
+## Ahead-of-Time Compilation
 
 > TODO

@@ -10,7 +10,7 @@ const EventHub_1 = require("./EventHub");
 const CompilerUtilities_1 = require("./CompilerUtilities");
 const TypeScriptConfigurationReader_1 = require("./TypeScriptConfigurationReader");
 const PrettyUnits_1 = require("./PrettyUnits");
-class TypeScriptBuildPlugin {
+class TypeScriptBuildWebpackPlugin {
     constructor(settings, flags) {
         this.settings = settings;
         this.flags = flags;
@@ -72,7 +72,7 @@ class TypeScriptBuildTool {
     getWebpackPlugins() {
         let plugins = [];
         plugins.push(new webpack.NoEmitOnErrorsPlugin());
-        plugins.push(new TypeScriptBuildPlugin(this.settings, this.flags));
+        plugins.push(new TypeScriptBuildWebpackPlugin(this.settings, this.flags));
         plugins.push(new ForkTsCheckerWebpackPlugin({
             checkSyntacticErrors: true,
             async: this.flags.watch,

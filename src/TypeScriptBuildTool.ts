@@ -14,7 +14,7 @@ import { prettyBytes, prettyMilliseconds } from './PrettyUnits';
 /**
  * Custom webpack plugin for managing TypeScript build lifecycle. 
  */
-class TypeScriptBuildPlugin {
+class TypeScriptBuildWebpackPlugin {
 
     /**
      * Gets the project settings.
@@ -138,7 +138,7 @@ export class TypeScriptBuildTool {
     getWebpackPlugins() {
         let plugins = [];
         plugins.push(new webpack.NoEmitOnErrorsPlugin()); // Near-useless in current state...
-        plugins.push(new TypeScriptBuildPlugin(this.settings, this.flags));
+        plugins.push(new TypeScriptBuildWebpackPlugin(this.settings, this.flags));
 
         // TODO: DIY this plugin as a separated build task!
         plugins.push(new ForkTsCheckerWebpackPlugin({

@@ -8,8 +8,44 @@ import * as UglifyWebpackPlugin from 'uglifyjs-webpack-plugin';
 import hub from './EventHub';
 import { timedLog, CompilerFlags } from './CompilerUtilities';
 import { Settings } from './Settings';
-import { getLazyCompilerOptions, createUglifyESOptions } from './TypeScriptConfigurationReader';
+import { getLazyCompilerOptions, createUglifyESOptions, getTypeScriptTarget } from './TypeScriptConfigurationReader';
 import { prettyBytes, prettyMilliseconds } from './PrettyUnits';
+
+/**
+ * Custom webpack plugin for managing TypeScript build lifecycle. 
+ */
+class TypeScriptBuildPlugin {
+
+    /**
+     * Gets the project settings.
+     */
+    private readonly settings: Settings;
+
+    /**
+     * Gets the compiler build flags.
+     */
+    private readonly flags: CompilerFlags;
+
+    /**
+     * Constructs a new instance of TypeScriptBuildPlugin using the specified settings and build flags. 
+     * @param settings 
+     * @param flags 
+     */
+    constructor(settings: Settings, flags: CompilerFlags) {
+        this.settings = settings
+        this.flags = flags;
+    }
+
+    /**
+     * Apply function prototype for registering a webpack plugin.
+     * @param compiler 
+     */
+    apply(compiler: webpack.Compiler) {
+        compiler.plugin('compile', compilation => {
+            timedLog('Compiling JS >', chalk.yellow(getTypeScriptTarget()), chalk.cyan(this.settings.jsEntry));
+        });
+    }
+}
 
 /**
  * Contains methods for compiling a TypeScript project.
@@ -101,7 +137,8 @@ export class TypeScriptBuildTool {
      */
     getWebpackPlugins() {
         let plugins = [];
-        plugins.push(new webpack.NoEmitOnErrorsPlugin());
+        plugins.push(new webpack.NoEmitOnErrorsPlugin()); // Near-useless in current state...
+        plugins.push(new TypeScriptBuildPlugin(this.settings, this.flags));
 
         // TODO: DIY this plugin as a separated build task!
         plugins.push(new ForkTsCheckerWebpackPlugin({
@@ -219,6 +256,7 @@ export class TypeScriptBuildTool {
             if (error) {
                 timedLog(chalk.red('FATAL ERROR'), 'during JS build:');
                 console.error(error);
+                hub.buildDone();
                 return;
             }
 
@@ -237,7 +275,6 @@ export class TypeScriptBuildTool {
 
             let t = prettyMilliseconds(o.time);
             timedLog('Finished JS build after', chalk.green(t));
-
             hub.buildDone();
         });
     }

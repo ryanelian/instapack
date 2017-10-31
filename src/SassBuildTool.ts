@@ -121,6 +121,7 @@ export class SassBuildTool {
      * Executes build method with a formatted error and stopwatch wrapper. 
      */
     async buildWithStopwatch() {
+        timedLog('Compiling CSS', chalk.cyan(this.settings.cssEntry));        
         let start = process.hrtime();
         try {
             await this.build();

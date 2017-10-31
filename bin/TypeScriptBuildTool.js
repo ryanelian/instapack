@@ -10,6 +10,17 @@ const EventHub_1 = require("./EventHub");
 const CompilerUtilities_1 = require("./CompilerUtilities");
 const TypeScriptConfigurationReader_1 = require("./TypeScriptConfigurationReader");
 const PrettyUnits_1 = require("./PrettyUnits");
+class TypeScriptBuildPlugin {
+    constructor(settings, flags) {
+        this.settings = settings;
+        this.flags = flags;
+    }
+    apply(compiler) {
+        compiler.plugin('compile', compilation => {
+            CompilerUtilities_1.timedLog('Compiling JS >', chalk_1.default.yellow(TypeScriptConfigurationReader_1.getTypeScriptTarget()), chalk_1.default.cyan(this.settings.jsEntry));
+        });
+    }
+}
 class TypeScriptBuildTool {
     constructor(settings, flags) {
         this.settings = settings;
@@ -61,6 +72,7 @@ class TypeScriptBuildTool {
     getWebpackPlugins() {
         let plugins = [];
         plugins.push(new webpack.NoEmitOnErrorsPlugin());
+        plugins.push(new TypeScriptBuildPlugin(this.settings, this.flags));
         plugins.push(new ForkTsCheckerWebpackPlugin({
             checkSyntacticErrors: true,
             async: this.flags.watch,
@@ -155,6 +167,7 @@ class TypeScriptBuildTool {
             if (error) {
                 CompilerUtilities_1.timedLog(chalk_1.default.red('FATAL ERROR'), 'during JS build:');
                 console.error(error);
+                EventHub_1.default.buildDone();
                 return;
             }
             let o = stats.toJson(this.webpackStatsJsonMinimal);

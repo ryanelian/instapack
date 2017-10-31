@@ -4,7 +4,6 @@ import { fork } from 'child_process';
 
 import hub from './EventHub';
 import { TypeScriptBuildTool } from './TypeScriptBuildTool';
-import { getTypeScriptTarget } from './TypeScriptConfigurationReader';
 import { SassBuildTool } from './SassBuildTool';
 import { ConcatBuildTool } from './ConcatBuildTool';
 import { Settings, SettingsCore } from './Settings';
@@ -188,8 +187,6 @@ export class Compiler {
      */
     async buildJS() {
         await fse.remove(this.settings.outputJsSourceMap);
-        timedLog('Compiling JS >', chalk.yellow(getTypeScriptTarget()), chalk.cyan(this.settings.jsEntry));
-
         let tool = new TypeScriptBuildTool(this.settings, this.flags);
         tool.build();
     }
@@ -199,8 +196,6 @@ export class Compiler {
      */
     async buildCSS() {
         await fse.remove(this.settings.outputCssSourceMap);
-        timedLog('Compiling CSS', chalk.cyan(this.settings.cssEntry));
-
         let tool = new SassBuildTool(this.settings, this.flags);
         await tool.buildWithStopwatch();
 

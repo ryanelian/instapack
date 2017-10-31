@@ -13,7 +13,6 @@ const chalk_1 = require("chalk");
 const child_process_1 = require("child_process");
 const EventHub_1 = require("./EventHub");
 const TypeScriptBuildTool_1 = require("./TypeScriptBuildTool");
-const TypeScriptConfigurationReader_1 = require("./TypeScriptConfigurationReader");
 const SassBuildTool_1 = require("./SassBuildTool");
 const ConcatBuildTool_1 = require("./ConcatBuildTool");
 const Settings_1 = require("./Settings");
@@ -126,7 +125,6 @@ class Compiler {
     buildJS() {
         return __awaiter(this, void 0, void 0, function* () {
             yield fse.remove(this.settings.outputJsSourceMap);
-            CompilerUtilities_1.timedLog('Compiling JS >', chalk_1.default.yellow(TypeScriptConfigurationReader_1.getTypeScriptTarget()), chalk_1.default.cyan(this.settings.jsEntry));
             let tool = new TypeScriptBuildTool_1.TypeScriptBuildTool(this.settings, this.flags);
             tool.build();
         });
@@ -134,7 +132,6 @@ class Compiler {
     buildCSS() {
         return __awaiter(this, void 0, void 0, function* () {
             yield fse.remove(this.settings.outputCssSourceMap);
-            CompilerUtilities_1.timedLog('Compiling CSS', chalk_1.default.cyan(this.settings.cssEntry));
             let tool = new SassBuildTool_1.SassBuildTool(this.settings, this.flags);
             yield tool.buildWithStopwatch();
             if (this.flags.watch) {

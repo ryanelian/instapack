@@ -87,6 +87,7 @@ class SassBuildTool {
     }
     buildWithStopwatch() {
         return __awaiter(this, void 0, void 0, function* () {
+            CompilerUtilities_1.timedLog('Compiling CSS', chalk_1.default.cyan(this.settings.cssEntry));
             let start = process.hrtime();
             try {
                 yield this.build();

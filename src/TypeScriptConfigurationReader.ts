@@ -29,7 +29,7 @@ export function parseTsConfig() {
 let _options: TypeScript.CompilerOptions;
 
 /**
- * Attempts to lazy-load user's tsconfig.json Compiler Options and force-set sane defaults.
+ * Attempts to lazy-load user's tsconfig.json Compiler Options.
  */
 export function getLazyCompilerOptions() {
     if (_options) {
@@ -37,9 +37,6 @@ export function getLazyCompilerOptions() {
     }
 
     _options = parseTsConfig().options;
-    _options.moduleResolution = TypeScript.ModuleResolutionKind.NodeJs;
-    _options.noEmit = false;
-
     return _options
 }
 

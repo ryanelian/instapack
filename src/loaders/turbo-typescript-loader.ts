@@ -1,19 +1,32 @@
 import { loader } from 'webpack';
 import * as TypeScript from 'typescript';
-import { getLazyCompilerOptions } from '../TypeScriptConfigurationReader';
+import { getOptions } from 'loader-utils';
+
+interface TurboTypeScriptLoaderOptions {
+    compilerOptions: TypeScript.CompilerOptions;
+}
 
 module.exports = function (this: loader.LoaderContext, source: string) {
-    let options = getLazyCompilerOptions();
-    options.sourceMap = this.sourceMap;
-    options.inlineSources = this.sourceMap;
+    let options = getOptions(this) as TurboTypeScriptLoaderOptions;
 
     let result = TypeScript.transpileModule(source, {
-        compilerOptions: options,
+        compilerOptions: options.compilerOptions,
         fileName: this.resourcePath
     });
 
-    let sm: sourceMap.RawSourceMap = JSON.parse(result.sourceMapText);
-    sm.sources = [this.resourcePath];
+    if (result.diagnostics.length) {
+        let error = Error(result.diagnostics[0].messageText.toString());
+        this.callback(error);
+        return;
+    }
 
-    this.callback(null, result.outputText, JSON.stringify(sm));
+    if (this.sourceMap) {
+        // console.log(this.resourcePath);
+        let sm: sourceMap.RawSourceMap = JSON.parse(result.sourceMapText);
+        sm.sources = [this.resourcePath];
+
+        this.callback(null, result.outputText, JSON.stringify(sm));
+    } else {
+        this.callback(null, result.outputText);
+    }
 }

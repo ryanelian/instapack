@@ -7,7 +7,7 @@ import * as UglifyWebpackPlugin from 'uglifyjs-webpack-plugin';
 
 import { timedLog, CompilerFlags } from './CompilerUtilities';
 import { Settings } from './Settings';
-import { createUglifyESOptions } from './TypeScriptConfigurationReader';
+import { getLazyCompilerOptions, createUglifyESOptions } from './TypeScriptConfigurationReader';
 import { prettyBytes, prettyMilliseconds } from './PrettyUnits';
 
 /**
@@ -36,56 +36,36 @@ export class TypeScriptBuildTool {
     }
 
     /**
-     * Returns a pre-configured loader array with optional cache and parallel capability.
-     * @param cached 
+     * Gets a loader option capable of performing multi-threaded build!
      */
-    getParallelLoaders(cached: boolean) {
-        let loaders = [];
-
-        if (this.flags.parallel) {
-            if (cached) {
-                loaders.push({
-                    loader: 'cache-loader',
-                    options: {
-                        cacheDirectory: this.settings.cacheFolder
-                    }
-                });
+    get threadLoader() {
+        return {
+            loader: 'thread-loader',
+            options: {
+                workers: os.cpus().length - 1
             }
-
-            loaders.push({
-                loader: 'thread-loader',
-                options: {
-                    workers: os.cpus().length - 1
-                }
-            });
-        }
-
-        return loaders;
+        };
     }
 
     /**
-     * Returns a configured TypeScript rules for webpack.
+     * Gets a configured TypeScript rules for webpack.
      */
-    getTypeScriptWebpackRules() {
-        let loaders = this.getParallelLoaders(true);
+    get typescriptWebpackRules() {
+        let loaders = [];
+        if (this.flags.parallel) {
+            loaders.push(this.threadLoader);
+        }
+
+        let options = getLazyCompilerOptions();
+        options.sourceMap = this.flags.sourceMap;
+        options.inlineSources = this.flags.sourceMap;
 
         loaders.push({
-            loader: 'ts-loader',
+            loader: 'turbo-typescript-loader',
             options: {
-                compilerOptions: {
-                    noEmit: false,
-                    sourceMap: this.flags.sourceMap,
-                    moduleResolution: "node"
-                },
-                onlyCompileBundledFiles: true,
-                transpileOnly: this.flags.parallel,
-                happyPackMode: this.flags.parallel
+                compilerOptions: options
             }
         });
-
-        // loaders.push({
-        //     loader: 'turbo-typescript-loader'
-        // });
 
         return {
             test: /\.tsx?$/,
@@ -94,10 +74,13 @@ export class TypeScriptBuildTool {
     }
 
     /**
-     * Returns a configured HTML template rules for webpack.
+     * Gets a configured HTML template rules for webpack.
      */
-    getTemplatesWebpackRules() {
-        let loaders = this.getParallelLoaders(false);
+    get templatesWebpackRules() {
+        let loaders = [];
+        if (this.flags.parallel) {
+            loaders.push(this.threadLoader);
+        }
 
         loaders.push({
             loader: 'template-loader',
@@ -119,14 +102,13 @@ export class TypeScriptBuildTool {
         let plugins = [];
         plugins.push(new webpack.NoEmitOnErrorsPlugin());
 
-        if (this.flags.parallel) {
-            plugins.push(new ForkTsCheckerWebpackPlugin({
-                checkSyntacticErrors: true,
-                async: false,
-                silent: true,
-                watch: this.settings.inputJsFolder
-            }));
-        }
+        // TODO: DIY this plugin as a separated build task!
+        plugins.push(new ForkTsCheckerWebpackPlugin({
+            checkSyntacticErrors: true,
+            async: this.flags.watch,
+            silent: !this.flags.watch,
+            watch: this.settings.inputJsFolder
+        }));
 
         if (this.flags.production) {
             plugins.push(new webpack.DefinePlugin({
@@ -167,7 +149,7 @@ export class TypeScriptBuildTool {
                 ]
             },
             module: {
-                rules: [this.getTypeScriptWebpackRules(), this.getTemplatesWebpackRules()]
+                rules: [this.typescriptWebpackRules, this.templatesWebpackRules]
             },
             plugins: this.getWebpackPlugins()
         };

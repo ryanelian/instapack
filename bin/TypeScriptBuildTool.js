@@ -14,39 +14,26 @@ class TypeScriptBuildTool {
         this.settings = settings;
         this.flags = flags;
     }
-    getParallelLoaders(cached) {
+    get threadLoader() {
+        return {
+            loader: 'thread-loader',
+            options: {
+                workers: os.cpus().length - 1
+            }
+        };
+    }
+    get typescriptWebpackRules() {
         let loaders = [];
         if (this.flags.parallel) {
-            if (cached) {
-                loaders.push({
-                    loader: 'cache-loader',
-                    options: {
-                        cacheDirectory: this.settings.cacheFolder
-                    }
-                });
-            }
-            loaders.push({
-                loader: 'thread-loader',
-                options: {
-                    workers: os.cpus().length - 1
-                }
-            });
+            loaders.push(this.threadLoader);
         }
-        return loaders;
-    }
-    getTypeScriptWebpackRules() {
-        let loaders = this.getParallelLoaders(true);
+        let options = TypeScriptConfigurationReader_1.getLazyCompilerOptions();
+        options.sourceMap = this.flags.sourceMap;
+        options.inlineSources = this.flags.sourceMap;
         loaders.push({
-            loader: 'ts-loader',
+            loader: 'turbo-typescript-loader',
             options: {
-                compilerOptions: {
-                    noEmit: false,
-                    sourceMap: this.flags.sourceMap,
-                    moduleResolution: "node"
-                },
-                onlyCompileBundledFiles: true,
-                transpileOnly: this.flags.parallel,
-                happyPackMode: this.flags.parallel
+                compilerOptions: options
             }
         });
         return {
@@ -54,8 +41,11 @@ class TypeScriptBuildTool {
             use: loaders
         };
     }
-    getTemplatesWebpackRules() {
-        let loaders = this.getParallelLoaders(false);
+    get templatesWebpackRules() {
+        let loaders = [];
+        if (this.flags.parallel) {
+            loaders.push(this.threadLoader);
+        }
         loaders.push({
             loader: 'template-loader',
             options: {
@@ -70,14 +60,12 @@ class TypeScriptBuildTool {
     getWebpackPlugins() {
         let plugins = [];
         plugins.push(new webpack.NoEmitOnErrorsPlugin());
-        if (this.flags.parallel) {
-            plugins.push(new ForkTsCheckerWebpackPlugin({
-                checkSyntacticErrors: true,
-                async: false,
-                silent: true,
-                watch: this.settings.inputJsFolder
-            }));
-        }
+        plugins.push(new ForkTsCheckerWebpackPlugin({
+            checkSyntacticErrors: true,
+            async: this.flags.watch,
+            silent: !this.flags.watch,
+            watch: this.settings.inputJsFolder
+        }));
         if (this.flags.production) {
             plugins.push(new webpack.DefinePlugin({
                 'process.env': {
@@ -112,7 +100,7 @@ class TypeScriptBuildTool {
                 ]
             },
             module: {
-                rules: [this.getTypeScriptWebpackRules(), this.getTemplatesWebpackRules()]
+                rules: [this.typescriptWebpackRules, this.templatesWebpackRules]
             },
             plugins: this.getWebpackPlugins()
         };

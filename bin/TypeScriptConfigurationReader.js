@@ -30,8 +30,6 @@ function getLazyCompilerOptions() {
         return _options;
     }
     _options = parseTsConfig().options;
-    _options.moduleResolution = TypeScript.ModuleResolutionKind.NodeJs;
-    _options.noEmit = false;
     return _options;
 }
 exports.getLazyCompilerOptions = getLazyCompilerOptions;

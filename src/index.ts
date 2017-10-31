@@ -77,31 +77,6 @@ export = class instapack {
         let cleanCSS = fse.emptyDir(this.settings.outputCssFolder);
         let cleanJS = fse.emptyDir(this.settings.outputJsFolder);
 
-        let cleanCache = await fse.pathExists(this.settings.cacheFolder);
-        if (cleanCache) {
-            try {
-                let yesterday = new Date().getTime() - 24 * 60 * 60 * 1000;
-                let oldCacheCount = 0;
-
-                let files = await fse.readdir(this.settings.cacheFolder);
-                for (let file of files) {
-                    let filePath = path.join(this.settings.cacheFolder, file);
-                    let stat = await fse.stat(filePath);
-
-                    if (stat.ctimeMs < yesterday) {
-                        await fse.remove(filePath);
-                        oldCacheCount++;
-                    }
-                }
-
-                if (oldCacheCount) {
-                    console.log('Clean cache successful: ' + oldCacheCount + ' files');
-                }
-            } catch (error) {
-                console.error(error);
-            }
-        }
-
         try {
             await cleanJS;
             console.log('Clean successful: ' + this.settings.outputJsFolder);

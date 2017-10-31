@@ -5,6 +5,7 @@ import * as webpack from 'webpack';
 import * as ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import * as UglifyWebpackPlugin from 'uglifyjs-webpack-plugin';
 
+import hub from './EventHub';
 import { timedLog, CompilerFlags } from './CompilerUtilities';
 import { Settings } from './Settings';
 import { getLazyCompilerOptions, createUglifyESOptions } from './TypeScriptConfigurationReader';
@@ -237,9 +238,7 @@ export class TypeScriptBuildTool {
             let t = prettyMilliseconds(o.time);
             timedLog('Finished JS build after', chalk.green(t));
 
-            if (!this.flags.watch) {
-                process.exit(0);
-            }
+            hub.buildDone();
         });
     }
 }

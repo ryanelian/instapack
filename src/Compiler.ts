@@ -2,6 +2,7 @@ import * as fse from 'fs-extra';
 import chalk from 'chalk';
 import { fork } from 'child_process';
 
+import hub from './EventHub';
 import { TypeScriptBuildTool } from './TypeScriptBuildTool';
 import { getTypeScriptTarget } from './TypeScriptConfigurationReader';
 import { SassBuildTool } from './SassBuildTool';
@@ -205,9 +206,8 @@ export class Compiler {
 
         if (this.flags.watch) {
             tool.watch();
-        } else {
-            process.exit(0);
         }
+        hub.buildDone();
     }
 
     /**
@@ -222,13 +222,19 @@ export class Compiler {
 
         let tool = new ConcatBuildTool(this.settings, this.flags);
         await tool.buildWithStopwatch();
-        process.exit(0);
+        hub.buildDone();
     }
 }
 
-process.on('message', (command: BuildCommand) => {
-    // console.log(command);
-    if (command.build) {
-        Compiler.fromCommand(command).build(command.build);
-    }
-});
+if (process.send) { // Child Process
+    process.on('message', (command: BuildCommand) => {
+        // console.log(command);
+        if (command.build) {
+            if (!command.flags.watch) {
+                hub.exitOnBuildDone();
+            }
+
+            Compiler.fromCommand(command).build(command.build);
+        }
+    });
+}

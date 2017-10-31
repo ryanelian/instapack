@@ -6,6 +6,7 @@ const chalk_1 = require("chalk");
 const webpack = require("webpack");
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 const UglifyWebpackPlugin = require("uglifyjs-webpack-plugin");
+const EventHub_1 = require("./EventHub");
 const CompilerUtilities_1 = require("./CompilerUtilities");
 const TypeScriptConfigurationReader_1 = require("./TypeScriptConfigurationReader");
 const PrettyUnits_1 = require("./PrettyUnits");
@@ -168,9 +169,7 @@ class TypeScriptBuildTool {
             }
             let t = PrettyUnits_1.prettyMilliseconds(o.time);
             CompilerUtilities_1.timedLog('Finished JS build after', chalk_1.default.green(t));
-            if (!this.flags.watch) {
-                process.exit(0);
-            }
+            EventHub_1.default.buildDone();
         });
     }
 }

@@ -11,6 +11,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const fse = require("fs-extra");
 const chalk_1 = require("chalk");
 const child_process_1 = require("child_process");
+const EventHub_1 = require("./EventHub");
 const TypeScriptBuildTool_1 = require("./TypeScriptBuildTool");
 const TypeScriptConfigurationReader_1 = require("./TypeScriptConfigurationReader");
 const SassBuildTool_1 = require("./SassBuildTool");
@@ -139,9 +140,7 @@ class Compiler {
             if (this.flags.watch) {
                 tool.watch();
             }
-            else {
-                process.exit(0);
-            }
+            EventHub_1.default.buildDone();
         });
     }
     buildConcat() {
@@ -152,13 +151,18 @@ class Compiler {
             CompilerUtilities_1.timedLog('Resolving', chalk_1.default.cyan(this.settings.concatCount.toString()), 'concat target(s)...');
             let tool = new ConcatBuildTool_1.ConcatBuildTool(this.settings, this.flags);
             yield tool.buildWithStopwatch();
-            process.exit(0);
+            EventHub_1.default.buildDone();
         });
     }
 }
 exports.Compiler = Compiler;
-process.on('message', (command) => {
-    if (command.build) {
-        Compiler.fromCommand(command).build(command.build);
-    }
-});
+if (process.send) {
+    process.on('message', (command) => {
+        if (command.build) {
+            if (!command.flags.watch) {
+                EventHub_1.default.exitOnBuildDone();
+            }
+            Compiler.fromCommand(command).build(command.build);
+        }
+    });
+}

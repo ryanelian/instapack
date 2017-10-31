@@ -69,7 +69,7 @@ If using [the latest Visual Studio Code](https://code.visualstudio.com/), it sho
 
 - Unify team build system across multiple projects, for any frameworks. :fist:
 
-- Blur the boundary between design time and programming time using blazing fast `watch` + `dev` compilation mode. :zap:
+- Blur the boundary between design time and coding time using lightning fast `watch` + `dev` compilation mode. :zap:
 
 ## But... Why?
 

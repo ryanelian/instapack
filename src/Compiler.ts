@@ -225,7 +225,7 @@ if (process.send) { // Child Process
     process.on('message', (command: BuildCommand) => {
         // console.log(command);
         if (command.build) {
-            if (!command.flags.watch) {
+            if (!command.flags.watch || command.build === 'concat') {
                 hub.exitOnBuildDone();
             }
 

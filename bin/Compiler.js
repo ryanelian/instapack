@@ -156,7 +156,7 @@ exports.Compiler = Compiler;
 if (process.send) {
     process.on('message', (command) => {
         if (command.build) {
-            if (!command.flags.watch) {
+            if (!command.flags.watch || command.build === 'concat') {
                 EventHub_1.default.exitOnBuildDone();
             }
             Compiler.fromCommand(command).build(command.build);

@@ -7,6 +7,7 @@ export class EventHub extends Events {
 
     exitOnBuildDone() {
         this.on('build-done', () => {
+            // console.log('SUICIDE');
             process.exit(0);
         });
     }

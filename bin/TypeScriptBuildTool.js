@@ -102,7 +102,7 @@ class TypeScriptBuildTool {
             },
             externals: this.settings.externals,
             resolve: {
-                extensions: ['.js', '.ts', '.tsx', '.htm', '.html'],
+                extensions: ['.ts', '.tsx', '.js', '.html', '.htm', '.json'],
                 alias: this.settings.alias
             },
             resolveLoader: {

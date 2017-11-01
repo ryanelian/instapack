@@ -85,10 +85,10 @@ CLI.command({
 
         echo('build', subCommand);
         app.build(subCommand, {
-            production: !argv.dev,
-            watch: argv.watch,
-            sourceMap: !argv.uncharted,
-            parallel: argv.parallel
+            production: !Boolean(argv.dev),
+            watch: Boolean(argv.watch),
+            sourceMap: !Boolean(argv.uncharted),
+            parallel: Boolean(argv.parallel)
         });
     }
 });

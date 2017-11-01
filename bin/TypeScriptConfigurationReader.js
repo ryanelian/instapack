@@ -1,35 +1,27 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const path = require("path");
-const chalk_1 = require("chalk");
 const TypeScript = require("typescript");
-function parseTsConfig() {
+function parseUserTsConfig() {
     let basePath = process.cwd();
     let tsconfigPath = path.join(basePath, 'tsconfig.json');
-    try {
-        let tsconfigJson = TypeScript.readConfigFile(tsconfigPath, TypeScript.sys.readFile);
-        if (tsconfigJson.error) {
-            throw Error(tsconfigJson.error.messageText.toString());
-        }
-        let tsconfig = TypeScript.parseJsonConfigFileContent(tsconfigJson.config, TypeScript.sys, basePath);
-        if (tsconfig.errors.length) {
-            throw Error(tsconfig.errors[0].messageText.toString());
-        }
-        return tsconfig;
+    let tsconfigJson = TypeScript.readConfigFile(tsconfigPath, TypeScript.sys.readFile);
+    if (tsconfigJson.error) {
+        throw Error(tsconfigJson.error.messageText.toString());
     }
-    catch (error) {
-        console.error(chalk_1.default.red('ERROR'), 'Failed to read', chalk_1.default.cyan('tsconfig.json'));
-        console.error(error);
-        throw error;
+    let tsconfig = TypeScript.parseJsonConfigFileContent(tsconfigJson.config, TypeScript.sys, basePath);
+    if (tsconfig.errors.length) {
+        throw Error(tsconfig.errors[0].messageText.toString());
     }
+    return tsconfig;
 }
-exports.parseTsConfig = parseTsConfig;
+exports.parseUserTsConfig = parseUserTsConfig;
 let _options;
 function getLazyCompilerOptions() {
     if (_options) {
         return _options;
     }
-    _options = parseTsConfig().options;
+    _options = parseUserTsConfig().options;
     return _options;
 }
 exports.getLazyCompilerOptions = getLazyCompilerOptions;

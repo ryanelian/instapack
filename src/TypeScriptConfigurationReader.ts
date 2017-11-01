@@ -1,29 +1,24 @@
 import * as path from 'path';
-import chalk from 'chalk';
 import * as TypeScript from 'typescript';
 
 /**
  * Read the latest TypeScript compiler unit config.
  */
-export function parseTsConfig() {
+export function parseUserTsConfig() {
     let basePath = process.cwd();
     let tsconfigPath = path.join(basePath, 'tsconfig.json');
 
-    try {
-        let tsconfigJson = TypeScript.readConfigFile(tsconfigPath, TypeScript.sys.readFile);
-        if (tsconfigJson.error) {
-            throw Error(tsconfigJson.error.messageText.toString());
-        }
-        let tsconfig = TypeScript.parseJsonConfigFileContent(tsconfigJson.config, TypeScript.sys, basePath);
-        if (tsconfig.errors.length) {
-            throw Error(tsconfig.errors[0].messageText.toString());
-        }
-        return tsconfig;
-    } catch (error) {
-        console.error(chalk.red('ERROR'), 'Failed to read', chalk.cyan('tsconfig.json'));
-        console.error(error);
-        throw error;
+    let tsconfigJson = TypeScript.readConfigFile(tsconfigPath, TypeScript.sys.readFile);
+    if (tsconfigJson.error) {
+        throw Error(tsconfigJson.error.messageText.toString());
     }
+    // console.log(tsconfigJson);
+    let tsconfig = TypeScript.parseJsonConfigFileContent(tsconfigJson.config, TypeScript.sys, basePath);
+    if (tsconfig.errors.length) {
+        throw Error(tsconfig.errors[0].messageText.toString());
+    }
+    // console.log(tsconfig);
+    return tsconfig;
 }
 
 let _options: TypeScript.CompilerOptions;
@@ -36,7 +31,7 @@ export function getLazyCompilerOptions() {
         return _options;
     }
 
-    _options = parseTsConfig().options;
+    _options = parseUserTsConfig().options;
     return _options
 }
 

@@ -33,6 +33,7 @@
     "postcss": "6.0.13",
     "postcss-discard-comments": "4.0.0-rc.2",
     "resolve": "1.5.0",
+    "source-map": "0.6.1",
     "thread-loader": "1.1.2",
     "typescript": "2.6.1",
     "uglify-es": "3.1.6",
@@ -50,6 +51,7 @@
     "@types/node": "^8.0.46",
     "@types/node-sass": "^3.10.32",
     "@types/resolve": "^0.0.4",
+    "@types/source-map": "^0.5.2",
     "@types/webpack": "^3.0.13",
     "@types/yargs": "^8.0.2"
   }

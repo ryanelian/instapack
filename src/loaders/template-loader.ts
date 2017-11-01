@@ -2,6 +2,7 @@ import { loader } from 'webpack';
 import { getOptions } from 'loader-utils';
 import { minify } from 'html-minifier';
 import { compile } from 'vue-template-compiler';
+import { SourceMapGenerator } from 'source-map';
 
 let minifierOptions = {
     caseSensitive: false,
@@ -47,10 +48,10 @@ function functionArrayWrap(ar: string[]) {
     return '[' + result + ']';
 }
 
-module.exports = function (this: loader.LoaderContext, template: string) {
+module.exports = function (this: loader.LoaderContext, html: string) {
     let options = getOptions(this) as TemplateLoaderOptions;
 
-    template = minify(template, minifierOptions).trim();
+    let template = minify(html, minifierOptions).trim();
     let error = '';
 
     switch (options.mode) {
@@ -79,6 +80,29 @@ module.exports = function (this: loader.LoaderContext, template: string) {
 
     if (error) {
         this.callback(Error(error));
+        return;
+    }
+
+    if (this.sourceMap) {
+        let gen = new SourceMapGenerator({
+            file: this.resourcePath
+        });
+
+        gen.addMapping({
+            source: this.resourcePath,
+            generated: {
+                column: 1,
+                line: 1
+            },
+            original: {
+                column: 1,
+                line: 1
+            }
+        });
+
+        gen.setSourceContent(this.resourcePath, html);
+
+        this.callback(null, template, gen.toString());
     } else {
         this.callback(null, template);
     }

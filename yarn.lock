@@ -59,7 +59,7 @@
   dependencies:
     "@types/node" "*"
 
-"@types/source-map@*":
+"@types/source-map@*", "@types/source-map@^0.5.2":
   version "0.5.2"
   resolved "https://registry.yarnpkg.com/@types/source-map/-/source-map-0.5.2.tgz#973459e744cc7445c85b97f770275b479b138e08"
 
@@ -2520,15 +2520,15 @@ source-map@0.5.x, source-map@^0.5.3, source-map@^0.5.6, source-map@~0.5.1, sourc
   version "0.5.7"
   resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.5.7.tgz#8a039d2d1021d22d1ea14c80d8ea468ba2ef3fcc"
 
+source-map@0.6.1, source-map@^0.6.1, source-map@~0.6.1:
+  version "0.6.1"
+  resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.6.1.tgz#74722af32e9614e9c287a8d0bbde48b5e2f1a263"
+
 source-map@^0.4.2:
   version "0.4.4"
   resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.4.4.tgz#eba4f5da9c0dc999de68032d8b4f76173652036b"
   dependencies:
     amdefine ">=0.0.4"
-
-source-map@^0.6.1, source-map@~0.6.1:
-  version "0.6.1"
-  resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.6.1.tgz#74722af32e9614e9c287a8d0bbde48b5e2f1a263"
 
 spdx-correct@~1.0.0:
   version "1.0.2"

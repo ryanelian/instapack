@@ -85,7 +85,7 @@ module.exports = function (this: loader.LoaderContext, html: string) {
 
     if (this.sourceMap) {
         let gen = new SourceMapGenerator({
-            file: this.resourcePath
+            file: this.resourcePath + '.js'
         });
 
         gen.addMapping({

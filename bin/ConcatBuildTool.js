@@ -13,6 +13,7 @@ const path = require("path");
 const chalk_1 = require("chalk");
 const resolve = require("resolve");
 const UglifyES = require("uglify-es");
+const EventHub_1 = require("./EventHub");
 const TypeScriptConfigurationReader_1 = require("./TypeScriptConfigurationReader");
 const CompilerUtilities_1 = require("./CompilerUtilities");
 const PrettyUnits_1 = require("./PrettyUnits");
@@ -123,6 +124,7 @@ class ConcatBuildTool {
             finally {
                 let time = PrettyUnits_1.prettyHrTime(process.hrtime(start));
                 CompilerUtilities_1.timedLog('Finished JS concat after', chalk_1.default.green(time));
+                EventHub_1.default.buildDone();
             }
         });
     }

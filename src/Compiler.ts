@@ -138,24 +138,26 @@ export class Compiler {
      * Runs the selected build task.
      * @param taskName 
      */
-    build(taskName) {
+    build(taskName: string) {
         if (process.send === undefined) {
             // parent
             this.chat();
             this.startBackgroundTask(taskName);
         } else {
+            let task: Promise<void>;
+
             // child
             switch (taskName) {
                 case 'js': {
-                    this.buildJS();
+                    task = this.buildJS();
                     break;
                 }
                 case 'css': {
-                    this.buildCSS();
+                    task = this.buildCSS();
                     break;
                 }
                 case 'concat': {
-                    this.buildConcat();
+                    task = this.buildConcat();
                     break;
                 }
                 default: {
@@ -164,6 +166,11 @@ export class Compiler {
             }
 
             // console.log(taskName);
+            task.catch(error => {
+                timedLog(chalk.red('FATAL ERROR'), 'during', taskName.toUpperCase(), 'build:');
+                console.error(error);
+                hub.buildDone();
+            });
         }
     }
 
@@ -202,7 +209,6 @@ export class Compiler {
         if (this.flags.watch) {
             tool.watch();
         }
-        hub.buildDone();
     }
 
     /**
@@ -217,7 +223,6 @@ export class Compiler {
 
         let tool = new ConcatBuildTool(this.settings, this.flags);
         await tool.buildWithStopwatch();
-        hub.buildDone();
     }
 }
 

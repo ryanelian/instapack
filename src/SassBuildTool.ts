@@ -7,6 +7,7 @@ import * as postcss from 'postcss';
 import * as autoprefixer from 'autoprefixer';
 import * as discardComments from 'postcss-discard-comments';
 
+import hub from './EventHub';
 import { Settings } from './Settings';
 import { CompilerFlags, convertAbsoluteToSourceMapPath, logAndWriteUtf8FileAsync, timedLog } from './CompilerUtilities';
 import { prettyHrTime } from './PrettyUnits';
@@ -121,7 +122,7 @@ export class SassBuildTool {
      * Executes build method with a formatted error and stopwatch wrapper. 
      */
     async buildWithStopwatch() {
-        timedLog('Compiling CSS', chalk.cyan(this.settings.cssEntry));        
+        timedLog('Compiling CSS', chalk.cyan(this.settings.cssEntry));
         let start = process.hrtime();
         try {
             await this.build();
@@ -132,6 +133,7 @@ export class SassBuildTool {
         finally {
             let time = prettyHrTime(process.hrtime(start));
             timedLog('Finished CSS build after', chalk.green(time));
+            hub.buildDone();
         }
     }
 

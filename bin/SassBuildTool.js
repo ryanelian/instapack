@@ -16,6 +16,7 @@ const sass = require("node-sass");
 const postcss = require("postcss");
 const autoprefixer = require("autoprefixer");
 const discardComments = require("postcss-discard-comments");
+const EventHub_1 = require("./EventHub");
 const CompilerUtilities_1 = require("./CompilerUtilities");
 const PrettyUnits_1 = require("./PrettyUnits");
 const PrettyObject_1 = require("./PrettyObject");
@@ -98,6 +99,7 @@ class SassBuildTool {
             finally {
                 let time = PrettyUnits_1.prettyHrTime(process.hrtime(start));
                 CompilerUtilities_1.timedLog('Finished CSS build after', chalk_1.default.green(time));
+                EventHub_1.default.buildDone();
             }
         });
     }

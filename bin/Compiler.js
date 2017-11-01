@@ -94,23 +94,29 @@ class Compiler {
             this.startBackgroundTask(taskName);
         }
         else {
+            let task;
             switch (taskName) {
                 case 'js': {
-                    this.buildJS();
+                    task = this.buildJS();
                     break;
                 }
                 case 'css': {
-                    this.buildCSS();
+                    task = this.buildCSS();
                     break;
                 }
                 case 'concat': {
-                    this.buildConcat();
+                    task = this.buildConcat();
                     break;
                 }
                 default: {
                     throw Error('Task `' + taskName + '` does not exists!');
                 }
             }
+            task.catch(error => {
+                CompilerUtilities_1.timedLog(chalk_1.default.red('FATAL ERROR'), 'during', taskName.toUpperCase(), 'build:');
+                console.error(error);
+                EventHub_1.default.buildDone();
+            });
         }
     }
     get needPackageRestore() {
@@ -137,7 +143,6 @@ class Compiler {
             if (this.flags.watch) {
                 tool.watch();
             }
-            EventHub_1.default.buildDone();
         });
     }
     buildConcat() {
@@ -148,7 +153,6 @@ class Compiler {
             CompilerUtilities_1.timedLog('Resolving', chalk_1.default.cyan(this.settings.concatCount.toString()), 'concat target(s)...');
             let tool = new ConcatBuildTool_1.ConcatBuildTool(this.settings, this.flags);
             yield tool.buildWithStopwatch();
-            EventHub_1.default.buildDone();
         });
     }
 }

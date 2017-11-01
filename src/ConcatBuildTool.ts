@@ -4,6 +4,7 @@ import chalk from 'chalk';
 import * as resolve from 'resolve';
 import * as UglifyES from 'uglify-es';
 
+import hub from './EventHub';
 import { createUglifyESOptions } from './TypeScriptConfigurationReader';
 import { Settings } from './Settings';
 import { CompilerFlags, convertAbsoluteToSourceMapPath, logAndWriteUtf8FileAsync, timedLog } from './CompilerUtilities';
@@ -176,6 +177,7 @@ export class ConcatBuildTool {
         finally {
             let time = prettyHrTime(process.hrtime(start));
             timedLog('Finished JS concat after', chalk.green(time));
+            hub.buildDone();
         }
     }
 }

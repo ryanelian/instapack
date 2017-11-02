@@ -13,6 +13,7 @@ const chalk_1 = require("chalk");
 const child_process_1 = require("child_process");
 const EventHub_1 = require("./EventHub");
 const TypeScriptBuildTool_1 = require("./TypeScriptBuildTool");
+const TypeScriptCheckerTool_1 = require("./TypeScriptCheckerTool");
 const SassBuildTool_1 = require("./SassBuildTool");
 const ConcatBuildTool_1 = require("./ConcatBuildTool");
 const Settings_1 = require("./Settings");
@@ -61,6 +62,9 @@ class Compiler {
                 settings: this.settings.core
             });
         }
+        if (taskName === 'js') {
+            this.startBackgroundTask('typescript-checker');
+        }
     }
     validateBackgroundTask(taskName) {
         switch (taskName) {
@@ -82,6 +86,9 @@ class Compiler {
             }
             case 'concat': {
                 return (this.settings.concatCount > 0);
+            }
+            case 'typescript-checker': {
+                return true;
             }
             default: {
                 throw Error('Task `' + taskName + '` does not exists!');
@@ -106,6 +113,10 @@ class Compiler {
                 }
                 case 'concat': {
                     task = this.buildConcat();
+                    break;
+                }
+                case 'typescript-checker': {
+                    task = this.checkTypeScript();
                     break;
                 }
                 default: {
@@ -153,6 +164,12 @@ class Compiler {
             CompilerUtilities_1.timedLog('Resolving', chalk_1.default.cyan(this.settings.concatCount.toString()), 'concat target(s)...');
             let tool = new ConcatBuildTool_1.ConcatBuildTool(this.settings, this.flags);
             yield tool.buildWithStopwatch();
+        });
+    }
+    checkTypeScript() {
+        return __awaiter(this, void 0, void 0, function* () {
+            let tool = new TypeScriptCheckerTool_1.TypeScriptCheckerTool(this.settings, this.flags);
+            tool.run();
         });
     }
 }

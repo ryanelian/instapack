@@ -197,6 +197,12 @@ export class Settings {
         return path.join(this.inputCssFolder, '**', '*.scss');
     }
 
+    get tsGlobs(): string[]{
+        let ts = path.join(this.inputJsFolder, '**', '*.ts');
+        let tsx = path.join(this.inputJsFolder, '**', '*.tsx');
+        return [ts, tsx];
+    }
+
     /**
      * Gets the full path to the root output folder.
      */

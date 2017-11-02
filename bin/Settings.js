@@ -68,6 +68,11 @@ class Settings {
     get scssGlob() {
         return path.join(this.inputCssFolder, '**', '*.scss');
     }
+    get tsGlobs() {
+        let ts = path.join(this.inputJsFolder, '**', '*.ts');
+        let tsx = path.join(this.inputJsFolder, '**', '*.tsx');
+        return [ts, tsx];
+    }
     get outputFolder() {
         return path.join(this.root, this.output);
     }

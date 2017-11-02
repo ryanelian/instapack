@@ -4,6 +4,7 @@ import { fork } from 'child_process';
 
 import hub from './EventHub';
 import { TypeScriptBuildTool } from './TypeScriptBuildTool';
+import { TypeScriptCheckerTool } from './TypeScriptCheckerTool';
 import { SassBuildTool } from './SassBuildTool';
 import { ConcatBuildTool } from './ConcatBuildTool';
 import { Settings, SettingsCore } from './Settings';
@@ -101,6 +102,10 @@ export class Compiler {
                 settings: this.settings.core
             } as BuildCommand);
         }
+
+        if (taskName === 'js') {
+            this.startBackgroundTask('typescript-checker');
+        }
     }
 
     /**
@@ -127,6 +132,9 @@ export class Compiler {
             }
             case 'concat': {
                 return (this.settings.concatCount > 0);
+            }
+            case 'typescript-checker': {
+                return true;
             }
             default: {
                 throw Error('Task `' + taskName + '` does not exists!');
@@ -158,6 +166,10 @@ export class Compiler {
                 }
                 case 'concat': {
                     task = this.buildConcat();
+                    break;
+                }
+                case 'typescript-checker': {
+                    task = this.checkTypeScript();
                     break;
                 }
                 default: {
@@ -223,6 +235,11 @@ export class Compiler {
 
         let tool = new ConcatBuildTool(this.settings, this.flags);
         await tool.buildWithStopwatch();
+    }
+
+    async checkTypeScript() {
+        let tool = new TypeScriptCheckerTool(this.settings, this.flags);
+        tool.run();
     }
 }
 

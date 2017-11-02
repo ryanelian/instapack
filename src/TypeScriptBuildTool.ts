@@ -2,7 +2,6 @@ import * as path from 'path';
 import * as os from 'os';
 import chalk from 'chalk';
 import * as webpack from 'webpack';
-import * as ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import * as UglifyWebpackPlugin from 'uglifyjs-webpack-plugin';
 
 import hub from './EventHub';
@@ -139,14 +138,6 @@ export class TypeScriptBuildTool {
         let plugins = [];
         plugins.push(new webpack.NoEmitOnErrorsPlugin()); // Near-useless in current state...
         plugins.push(new TypeScriptBuildWebpackPlugin(this.settings, this.flags));
-
-        // TODO: DIY this plugin as a separated build task!
-        plugins.push(new ForkTsCheckerWebpackPlugin({
-            checkSyntacticErrors: true,
-            async: this.flags.watch,
-            silent: !this.flags.watch,
-            watch: this.settings.inputJsFolder
-        }));
 
         if (this.flags.production) {
             plugins.push(new webpack.DefinePlugin({

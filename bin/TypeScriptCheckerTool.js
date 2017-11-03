@@ -105,20 +105,25 @@ class TypeScriptCheckerTool {
     }
     watch() {
         let debounced;
+        let ready = false;
         chokidar.watch(this.settings.tsGlobs)
             .on('add', (file) => {
             file = this.slash(file);
             if (file.endsWith('.d.ts')) {
                 this.includeFiles.add(file);
             }
-            if (!this.sources[file]) {
-                console.log(chalk_1.default.blue('Type-Checker') + chalk_1.default.grey(' tracking new file: ' + file));
-                this.addOrUpdateSourceFileCache(file);
-                clearTimeout(debounced);
-                debounced = setTimeout(() => {
-                    this.typeCheck();
-                }, 300);
+            if (this.sources[file]) {
+                return;
             }
+            this.addOrUpdateSourceFileCache(file);
+            if (!ready) {
+                return;
+            }
+            console.log(chalk_1.default.blue('Type-Checker') + chalk_1.default.grey(' tracking new file: ' + file));
+            clearTimeout(debounced);
+            debounced = setTimeout(() => {
+                this.typeCheck();
+            }, 300);
         })
             .on('change', (file) => {
             file = this.slash(file);
@@ -144,6 +149,13 @@ class TypeScriptCheckerTool {
                     this.typeCheck();
                 }, 300);
             }
+        })
+            .on('ready', () => {
+            ready = true;
+        })
+            .on('error', error => {
+            console.error(chalk_1.default.red('ERROR') + ' in type-checker during watch:');
+            console.error(error);
         });
     }
 }

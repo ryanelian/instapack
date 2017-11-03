@@ -224,6 +224,7 @@ export class TypeScriptCheckerTool {
      */
     watch() {
         let debounced: NodeJS.Timer;
+        let ready = false;
 
         chokidar.watch(this.settings.tsGlobs)
             .on('add', (file: string) => {
@@ -233,15 +234,24 @@ export class TypeScriptCheckerTool {
                     this.includeFiles.add(file);
                 }
 
-                if (!this.sources[file]) {
-                    console.log(chalk.blue('Type-Checker') + chalk.grey(' tracking new file: ' + file));
-                    this.addOrUpdateSourceFileCache(file);
-
-                    clearTimeout(debounced);
-                    debounced = setTimeout(() => {
-                        this.typeCheck();
-                    }, 300);
+                if (this.sources[file]) {
+                    // Discovered source which already exists: only happens during initial add event (ready === false)
+                    return;
                 }
+
+                this.addOrUpdateSourceFileCache(file);
+
+                if (!ready) {
+                    // Discovered new sources during initial add event: stuffs which are not imported!
+                    // No need to re-check now...
+                    return;
+                }
+
+                console.log(chalk.blue('Type-Checker') + chalk.grey(' tracking new file: ' + file));
+                clearTimeout(debounced);
+                debounced = setTimeout(() => {
+                    this.typeCheck();
+                }, 300);
             })
             .on('change', (file: string) => {
                 file = this.slash(file);
@@ -272,6 +282,13 @@ export class TypeScriptCheckerTool {
                         this.typeCheck();
                     }, 300);
                 }
+            })
+            .on('ready', () => {
+                ready = true;
+            })
+            .on('error', error => {
+                console.error(chalk.red('ERROR') + ' in type-checker during watch:');
+                console.error(error);
             });
 
         // console.log(Object.keys(this.files));

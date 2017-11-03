@@ -4,6 +4,7 @@ const TypeScript = require("typescript");
 const chalk_1 = require("chalk");
 const chokidar = require("chokidar");
 const path = require("path");
+const crypto_1 = require("crypto");
 const EventHub_1 = require("./EventHub");
 const CompilerUtilities_1 = require("./CompilerUtilities");
 const PrettyUnits_1 = require("./PrettyUnits");
@@ -23,19 +24,17 @@ class TypeScriptCheckerTool {
         let tsc = TypeScript.createProgram(tsconfig.fileNames, tsconfig.options);
         let fileNames = tsc.getSourceFiles().map(Q => Q.fileName);
         for (let fileName of fileNames) {
-            this.files[fileName] = {
-                version: 0
-            };
+            this.addOrUpdateFile(fileName);
         }
         let host = {
             getScriptFileNames: () => this.fileNames,
-            getScriptVersion: (fileName) => this.files[fileName] && this.files[fileName].version.toString(),
+            getScriptVersion: (fileName) => this.files[fileName] && this.files[fileName].version,
             getScriptSnapshot: (fileName) => {
-                if (!TypeScript.sys.fileExists(fileName)) {
+                let file = this.files[fileName];
+                if (!file) {
                     return undefined;
                 }
-                let fileContent = TypeScript.sys.readFile(fileName, 'utf8');
-                return TypeScript.ScriptSnapshot.fromString(fileContent);
+                return TypeScript.ScriptSnapshot.fromString(file.content);
             },
             getCurrentDirectory: () => process.cwd(),
             getCompilationSettings: () => tsconfig.options,
@@ -95,38 +94,48 @@ class TypeScriptCheckerTool {
     slash(fileName) {
         return fileName.replace(/\\/g, '/');
     }
+    addOrUpdateFile(fileName) {
+        let hash = crypto_1.createHash('sha256');
+        let content = TypeScript.sys.readFile(fileName, 'utf8');
+        hash.update(content);
+        let version = hash.digest('hex');
+        this.files[fileName] = {
+            content: content,
+            version: version
+        };
+    }
     watch() {
-        let delayed;
+        let debounced;
         chokidar.watch(this.settings.tsGlobs)
-            .on('add', path => {
-            path = this.slash(path);
-            if (!this.files[path]) {
-                this.files[path] = {
-                    version: 0
-                };
-                CompilerUtilities_1.timedLog('Tracking new file in Type-Checker: ' + path);
-                clearTimeout(delayed);
-                delayed = setTimeout(() => {
+            .on('add', fileName => {
+            fileName = this.slash(fileName);
+            if (!this.files[fileName]) {
+                console.log(chalk_1.default.blue('Type-Checker') + chalk_1.default.grey(' tracking new file: ' + fileName));
+                this.addOrUpdateFile(fileName);
+                clearTimeout(debounced);
+                debounced = setTimeout(() => {
                     this.checkAll();
                 }, 300);
             }
         })
-            .on('change', path => {
-            path = this.slash(path);
-            if (this.files[path]) {
-                this.files[path].version++;
-                clearTimeout(delayed);
-                delayed = setTimeout(() => {
+            .on('change', fileName => {
+            fileName = this.slash(fileName);
+            if (this.files[fileName]) {
+                console.log(chalk_1.default.blue('Type-Checker') + chalk_1.default.grey(' updating file: ' + fileName));
+                this.addOrUpdateFile(fileName);
+                clearTimeout(debounced);
+                debounced = setTimeout(() => {
                     this.checkAll();
                 }, 300);
             }
         })
-            .on('unlink', path => {
-            path = this.slash(path);
-            if (this.files[path]) {
-                delete this.files[path];
-                clearTimeout(delayed);
-                delayed = setTimeout(() => {
+            .on('unlink', fileName => {
+            fileName = this.slash(fileName);
+            if (this.files[fileName]) {
+                console.log(chalk_1.default.blue('Type-Checker') + chalk_1.default.grey(' removing file: ' + fileName));
+                delete this.files[fileName];
+                clearTimeout(debounced);
+                debounced = setTimeout(() => {
                     this.checkAll();
                 }, 300);
             }

@@ -7,7 +7,7 @@ import hub from './EventHub';
 import { Settings } from './Settings';
 import { timedLog, CompilerFlags, convertAbsoluteToSourceMapPath } from './CompilerUtilities';
 import { prettyHrTime } from './PrettyUnits';
-import { getLazyCompilerOptions } from './TypeScriptConfigurationReader';
+import { parseUserTsConfig } from './TypeScriptConfigurationReader';
 
 /**
  * Key-value pair of file name to cached raw file content. Used for caching TypeScript Compiler Host readFile method.
@@ -56,6 +56,11 @@ export class TypeScriptCheckerTool {
     private readonly fileVersions: FileVersions = {};
 
     /**
+     * Gets the entry points to the TypeScript Program.
+     */
+    private readonly includeFiles: Set<string>;
+
+    /**
      * Gets the shared TypeScript compiler options.
      */
     private readonly compilerOptions: TypeScript.CompilerOptions;
@@ -76,9 +81,15 @@ export class TypeScriptCheckerTool {
      */
     constructor(settings: Settings) {
         this.settings = settings;
-        this.compilerOptions = getLazyCompilerOptions();
+        let tsconfig = parseUserTsConfig();
 
-        this.host = TypeScript.createCompilerHost(this.compilerOptions);
+        let definitions = tsconfig.fileNames.filter(Q => Q.endsWith('.d.ts'));
+        this.includeFiles = new Set<string>(definitions);
+        this.includeFiles.add(this.slash(this.settings.jsEntry));
+
+        this.compilerOptions = tsconfig.options;
+
+        this.host = TypeScript.createCompilerHost(tsconfig.options);
         this.host.readFile = (fileName) => {
             // Apparently this is being used by TypeScript to read package.json in node_modules...
             // Probably to find .d.ts files?
@@ -146,7 +157,7 @@ export class TypeScriptCheckerTool {
      * Performs full static check (semantic and syntactic diagnostics) against the TypeScript project using the project entry file.
      */
     typeCheck() {
-        let tsc = TypeScript.createProgram([this.settings.jsEntry], this.compilerOptions, this.host);
+        let tsc = TypeScript.createProgram(Array.from(this.includeFiles), this.compilerOptions, this.host);
 
         timedLog('Type-checking using TypeScript', chalk.yellow(TypeScript.version));
         let start = process.hrtime();
@@ -170,7 +181,7 @@ export class TypeScriptCheckerTool {
                 console.log(chalk.green('Types OK') + chalk.grey(': Successfully checked TypeScript project without errors.'));
             } else {
                 let errorsOut = '\n' + errors.join('\n\n') + '\n';
-                console.log(errorsOut);
+                console.error(errorsOut);
             }
         } finally {
             let time = prettyHrTime(process.hrtime(start));
@@ -218,6 +229,10 @@ export class TypeScriptCheckerTool {
             .on('add', (file: string) => {
                 file = this.slash(file);
 
+                if (file.endsWith('.d.ts')) {
+                    this.includeFiles.add(file);
+                }
+
                 if (!this.sources[file]) {
                     console.log(chalk.blue('Type-Checker') + chalk.grey(' tracking new file: ' + file));
                     this.addOrUpdateSourceFileCache(file);
@@ -244,6 +259,10 @@ export class TypeScriptCheckerTool {
             .on('unlink', (file: string) => {
                 file = this.slash(file);
 
+                if (file.endsWith('.d.ts')) {
+                    this.includeFiles.delete(file);
+                }
+
                 if (this.sources[file]) {
                     console.log(chalk.blue('Type-Checker') + chalk.grey(' removing file: ' + file));
                     delete this.sources[file];
@@ -258,5 +277,6 @@ export class TypeScriptCheckerTool {
         // console.log(Object.keys(this.files));
         // console.log(Object.keys(this.sources));
         // console.log(this.fileVersions);
+        // console.log(this.includeFiles);
     }
 }

@@ -14,8 +14,12 @@ class TypeScriptCheckerTool {
         this.sources = {};
         this.fileVersions = {};
         this.settings = settings;
-        this.compilerOptions = TypeScriptConfigurationReader_1.getLazyCompilerOptions();
-        this.host = TypeScript.createCompilerHost(this.compilerOptions);
+        let tsconfig = TypeScriptConfigurationReader_1.parseUserTsConfig();
+        let definitions = tsconfig.fileNames.filter(Q => Q.endsWith('.d.ts'));
+        this.includeFiles = new Set(definitions);
+        this.includeFiles.add(this.slash(this.settings.jsEntry));
+        this.compilerOptions = tsconfig.options;
+        this.host = TypeScript.createCompilerHost(tsconfig.options);
         this.host.readFile = (fileName) => {
             if (this.files[fileName]) {
                 return this.files[fileName];
@@ -54,7 +58,7 @@ class TypeScriptCheckerTool {
         return hash.digest('hex');
     }
     typeCheck() {
-        let tsc = TypeScript.createProgram([this.settings.jsEntry], this.compilerOptions, this.host);
+        let tsc = TypeScript.createProgram(Array.from(this.includeFiles), this.compilerOptions, this.host);
         CompilerUtilities_1.timedLog('Type-checking using TypeScript', chalk_1.default.yellow(TypeScript.version));
         let start = process.hrtime();
         try {
@@ -75,7 +79,7 @@ class TypeScriptCheckerTool {
             }
             else {
                 let errorsOut = '\n' + errors.join('\n\n') + '\n';
-                console.log(errorsOut);
+                console.error(errorsOut);
             }
         }
         finally {
@@ -104,6 +108,9 @@ class TypeScriptCheckerTool {
         chokidar.watch(this.settings.tsGlobs)
             .on('add', (file) => {
             file = this.slash(file);
+            if (file.endsWith('.d.ts')) {
+                this.includeFiles.add(file);
+            }
             if (!this.sources[file]) {
                 console.log(chalk_1.default.blue('Type-Checker') + chalk_1.default.grey(' tracking new file: ' + file));
                 this.addOrUpdateSourceFileCache(file);
@@ -126,6 +133,9 @@ class TypeScriptCheckerTool {
         })
             .on('unlink', (file) => {
             file = this.slash(file);
+            if (file.endsWith('.d.ts')) {
+                this.includeFiles.delete(file);
+            }
             if (this.sources[file]) {
                 console.log(chalk_1.default.blue('Type-Checker') + chalk_1.default.grey(' removing file: ' + file));
                 delete this.sources[file];

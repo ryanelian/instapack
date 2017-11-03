@@ -61,9 +61,9 @@ class Compiler {
                 flags: this.flags,
                 settings: this.settings.core
             });
-        }
-        if (taskName === 'js') {
-            this.startBackgroundTask('typescript-checker');
+            if (taskName === 'js') {
+                this.startBackgroundTask('type-checker');
+            }
         }
     }
     validateBackgroundTask(taskName) {
@@ -87,7 +87,7 @@ class Compiler {
             case 'concat': {
                 return (this.settings.concatCount > 0);
             }
-            case 'typescript-checker': {
+            case 'type-checker': {
                 return true;
             }
             default: {
@@ -115,7 +115,7 @@ class Compiler {
                     task = this.buildConcat();
                     break;
                 }
-                case 'typescript-checker': {
+                case 'type-checker': {
                     task = this.checkTypeScript();
                     break;
                 }

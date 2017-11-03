@@ -49,7 +49,7 @@ class TypeScriptCheckerTool {
         return true;
     }
     getFileContentHash(content) {
-        let hash = crypto_1.createHash('sha256');
+        let hash = crypto_1.createHash('sha512');
         hash.update(content);
         return hash.digest('hex');
     }

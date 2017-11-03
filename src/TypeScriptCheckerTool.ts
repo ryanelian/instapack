@@ -137,7 +137,7 @@ export class TypeScriptCheckerTool {
      * @param content 
      */
     private getFileContentHash(content: string) {
-        let hash = createHash('sha256');
+        let hash = createHash('sha512');
         hash.update(content);
         return hash.digest('hex');
     }

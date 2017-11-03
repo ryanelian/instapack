@@ -3,86 +3,79 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const TypeScript = require("typescript");
 const chalk_1 = require("chalk");
 const chokidar = require("chokidar");
-const path = require("path");
 const crypto_1 = require("crypto");
 const EventHub_1 = require("./EventHub");
 const CompilerUtilities_1 = require("./CompilerUtilities");
 const PrettyUnits_1 = require("./PrettyUnits");
 const TypeScriptConfigurationReader_1 = require("./TypeScriptConfigurationReader");
 class TypeScriptCheckerTool {
-    constructor(settings, flags) {
+    constructor(settings) {
         this.files = {};
+        this.sources = {};
+        this.fileVersions = {};
         this.settings = settings;
-        this.flags = flags;
-        this.service = this.createLanguageService();
-    }
-    get fileNames() {
-        return Object.keys(this.files);
-    }
-    createLanguageService() {
-        let tsconfig = TypeScriptConfigurationReader_1.parseUserTsConfig();
-        let tsc = TypeScript.createProgram(tsconfig.fileNames, tsconfig.options);
-        let fileNames = tsc.getSourceFiles().map(Q => Q.fileName);
-        for (let fileName of fileNames) {
-            this.addOrUpdateFile(fileName);
-        }
-        let host = {
-            getScriptFileNames: () => this.fileNames,
-            getScriptVersion: (fileName) => this.files[fileName] && this.files[fileName].version,
-            getScriptSnapshot: (fileName) => {
-                let file = this.files[fileName];
-                if (!file) {
-                    return undefined;
-                }
-                return TypeScript.ScriptSnapshot.fromString(file.content);
-            },
-            getCurrentDirectory: () => process.cwd(),
-            getCompilationSettings: () => tsconfig.options,
-            getDefaultLibFileName: (options) => TypeScript.getDefaultLibFilePath(options),
-            fileExists: TypeScript.sys.fileExists,
-            readFile: TypeScript.sys.readFile,
-            readDirectory: TypeScript.sys.readDirectory,
-        };
-        return TypeScript.createLanguageService(host, TypeScript.createDocumentRegistry());
-    }
-    atFile(file) {
-        let s = path.normalize(file.fileName);
-        s = CompilerUtilities_1.convertAbsoluteToSourceMapPath(this.settings.root, s);
-        return chalk_1.default.red('@' + s);
-    }
-    outputDiagnostics(diagnostics) {
-        let errors = diagnostics.map(diagnostic => {
-            let error = '\n' + chalk_1.default.red('Type Error') + ' ';
-            if (diagnostic.file) {
-                let { line, character } = diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start);
-                error += this.atFile(diagnostic.file) + ' ' + chalk_1.default.yellow(`(${line + 1},${character + 1})`) + ': ';
+        this.compilerOptions = TypeScriptConfigurationReader_1.getLazyCompilerOptions();
+        this.host = TypeScript.createCompilerHost(this.compilerOptions);
+        this.host.readFile = (fileName) => {
+            if (this.files[fileName]) {
+                return this.files[fileName];
             }
-            error += TypeScript.flattenDiagnosticMessageText(diagnostic.messageText, "\n");
-            return error;
-        });
-        for (let error of errors) {
-            console.error(error);
-        }
+            let fileContent = TypeScript.sys.readFile(fileName, 'utf8');
+            this.files[fileName] = fileContent;
+            this.fileVersions[fileName] = this.getFileContentHash(fileContent);
+            return fileContent;
+        };
+        this.readSourceFile = this.host.getSourceFile;
+        this.host.getSourceFile = (fileName, languageVersion, onError, shouldCreateNewSourceFile) => {
+            if (this.sources[fileName]) {
+                return this.sources[fileName];
+            }
+            this.addOrUpdateSourceFileCache(fileName);
+            return this.sources[fileName];
+        };
     }
-    checkAll() {
+    addOrUpdateSourceFileCache(fileName) {
+        let source = this.readSourceFile(fileName, this.compilerOptions.target, error => {
+            console.error(chalk_1.default.red('Error') + ' when reading SourceFile: ' + fileName);
+            console.error(error);
+        });
+        let version = this.getFileContentHash(source.text);
+        let lastVersion = this.fileVersions[fileName];
+        if (version === lastVersion) {
+            return false;
+        }
+        this.sources[fileName] = source;
+        this.fileVersions[fileName] = version;
+        return true;
+    }
+    getFileContentHash(content) {
+        let hash = crypto_1.createHash('sha256');
+        hash.update(content);
+        return hash.digest('hex');
+    }
+    typeCheck() {
+        let tsc = TypeScript.createProgram([this.settings.jsEntry], this.compilerOptions, this.host);
         CompilerUtilities_1.timedLog('Type-checking using TypeScript', chalk_1.default.yellow(TypeScript.version));
         let start = process.hrtime();
         try {
-            let errorCount = 0;
-            for (let fileName of this.fileNames) {
-                if (fileName.endsWith('.d.ts')) {
+            let errors = [];
+            for (let source of tsc.getSourceFiles()) {
+                if (source.fileName.endsWith('.d.ts')) {
                     continue;
                 }
-                let diagnostics = this.service.getSemanticDiagnostics(fileName)
-                    .concat(this.service.getSyntacticDiagnostics(fileName));
-                this.outputDiagnostics(diagnostics);
-                errorCount += diagnostics.length;
+                let diagnostics = tsc.getSemanticDiagnostics(source)
+                    .concat(tsc.getSyntacticDiagnostics(source));
+                let newErrors = this.renderDiagnostics(diagnostics);
+                for (let error of newErrors) {
+                    errors.push(error);
+                }
             }
-            if (!errorCount) {
-                console.log(chalk_1.default.green('Types OK') + chalk_1.default.grey(': All TypeScript files are successfully checked without errors.'));
+            if (!errors.length) {
+                console.log(chalk_1.default.green('Types OK') + chalk_1.default.grey(': Successfully checked TypeScript project without errors.'));
             }
             else {
-                console.log();
+                let errorsOut = '\n' + errors.join('\n\n') + '\n';
+                console.log(errorsOut);
             }
         }
         finally {
@@ -91,61 +84,57 @@ class TypeScriptCheckerTool {
             EventHub_1.default.buildDone();
         }
     }
+    renderDiagnostics(diagnostics) {
+        let errors = diagnostics.map(diagnostic => {
+            let error = chalk_1.default.red('TS' + diagnostic.code) + ' ';
+            if (diagnostic.file) {
+                let { line, character } = diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start);
+                error += chalk_1.default.red(diagnostic.file.fileName) + ' ' + chalk_1.default.yellow(`(${line + 1},${character + 1})`) + ':\n';
+            }
+            error += TypeScript.flattenDiagnosticMessageText(diagnostic.messageText, "\n");
+            return error;
+        });
+        return errors;
+    }
     slash(fileName) {
         return fileName.replace(/\\/g, '/');
-    }
-    addOrUpdateFile(fileName) {
-        let hash = crypto_1.createHash('sha256');
-        let content = TypeScript.sys.readFile(fileName, 'utf8');
-        hash.update(content);
-        let version = hash.digest('hex');
-        this.files[fileName] = {
-            content: content,
-            version: version
-        };
     }
     watch() {
         let debounced;
         chokidar.watch(this.settings.tsGlobs)
-            .on('add', fileName => {
-            fileName = this.slash(fileName);
-            if (!this.files[fileName]) {
-                console.log(chalk_1.default.blue('Type-Checker') + chalk_1.default.grey(' tracking new file: ' + fileName));
-                this.addOrUpdateFile(fileName);
+            .on('add', (file) => {
+            file = this.slash(file);
+            if (!this.sources[file]) {
+                console.log(chalk_1.default.blue('Type-Checker') + chalk_1.default.grey(' tracking new file: ' + file));
+                this.addOrUpdateSourceFileCache(file);
                 clearTimeout(debounced);
                 debounced = setTimeout(() => {
-                    this.checkAll();
+                    this.typeCheck();
                 }, 300);
             }
         })
-            .on('change', fileName => {
-            fileName = this.slash(fileName);
-            if (this.files[fileName]) {
-                console.log(chalk_1.default.blue('Type-Checker') + chalk_1.default.grey(' updating file: ' + fileName));
-                this.addOrUpdateFile(fileName);
+            .on('change', (file) => {
+            file = this.slash(file);
+            let changed = this.addOrUpdateSourceFileCache(file);
+            if (changed) {
+                console.log(chalk_1.default.blue('Type-Checker') + chalk_1.default.grey(' updating file: ' + file));
                 clearTimeout(debounced);
                 debounced = setTimeout(() => {
-                    this.checkAll();
+                    this.typeCheck();
                 }, 300);
             }
         })
-            .on('unlink', fileName => {
-            fileName = this.slash(fileName);
-            if (this.files[fileName]) {
-                console.log(chalk_1.default.blue('Type-Checker') + chalk_1.default.grey(' removing file: ' + fileName));
-                delete this.files[fileName];
+            .on('unlink', (file) => {
+            file = this.slash(file);
+            if (this.sources[file]) {
+                console.log(chalk_1.default.blue('Type-Checker') + chalk_1.default.grey(' removing file: ' + file));
+                delete this.sources[file];
                 clearTimeout(debounced);
                 debounced = setTimeout(() => {
-                    this.checkAll();
+                    this.typeCheck();
                 }, 300);
             }
         });
-    }
-    run() {
-        this.checkAll();
-        if (this.flags.watch) {
-            this.watch();
-        }
     }
 }
 exports.TypeScriptCheckerTool = TypeScriptCheckerTool;

@@ -202,7 +202,7 @@ export class Compiler {
     }
 
     /**
-     * Compiles the JavaScript project using Compiler settings and build flags. 
+     * Compiles the JavaScript project.
      */
     async buildJS() {
         await fse.remove(this.settings.outputJsSourceMap);
@@ -211,7 +211,7 @@ export class Compiler {
     }
 
     /**
-     * Compiles the CSS project using Compiler settings and build flags. 
+     * Compiles the CSS project.
      */
     async buildCSS() {
         await fse.remove(this.settings.outputCssSourceMap);
@@ -224,7 +224,7 @@ export class Compiler {
     }
 
     /**
-     * Concat JavaScript files using Compiler settings and build flags. 
+     * Concat JavaScript files.
      */
     async buildConcat() {
         if (this.flags.watch) {
@@ -237,9 +237,16 @@ export class Compiler {
         await tool.buildWithStopwatch();
     }
 
+    /**
+     * Static-check the TypeScript project.
+     */
     async checkTypeScript() {
-        let tool = new TypeScriptCheckerTool(this.settings, this.flags);
-        tool.run();
+        let tool = new TypeScriptCheckerTool(this.settings);
+        tool.typeCheck();
+
+        if (this.flags.watch) {
+            tool.watch();
+        }
     }
 }
 

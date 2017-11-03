@@ -191,12 +191,15 @@ export class Settings {
     }
 
     /**
-     * Gets the glob pattern for watching Sass source code file changes. 
+     * Gets the glob pattern for watching Sass project source code changes. 
      */
     get scssGlob(): string {
         return path.join(this.inputCssFolder, '**', '*.scss');
     }
 
+    /**
+     * Gets the glob patterns for watching TypeScript project source code changes.
+     */
     get tsGlobs(): string[]{
         let ts = path.join(this.inputJsFolder, '**', '*.ts');
         let tsx = path.join(this.inputJsFolder, '**', '*.tsx');

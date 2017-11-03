@@ -168,8 +168,11 @@ class Compiler {
     }
     checkTypeScript() {
         return __awaiter(this, void 0, void 0, function* () {
-            let tool = new TypeScriptCheckerTool_1.TypeScriptCheckerTool(this.settings, this.flags);
-            tool.run();
+            let tool = new TypeScriptCheckerTool_1.TypeScriptCheckerTool(this.settings);
+            tool.typeCheck();
+            if (this.flags.watch) {
+                tool.watch();
+            }
         });
     }
 }

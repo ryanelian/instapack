@@ -53,7 +53,7 @@ export class TypeScriptCheckerTool {
     /**
      * Gets the file versions store.
      */
-    private readonly fileVersions: FileVersions = {};
+    private readonly versions: FileVersions = {};
 
     /**
      * Gets the entry points to the TypeScript Program.
@@ -99,10 +99,12 @@ export class TypeScriptCheckerTool {
                 return this.files[fileName];
             }
 
+            // package.json in node_modules should never change. Cache the contents once and re-use.
             // console.log('READ ' + fileName);
+
             let fileContent = TypeScript.sys.readFile(fileName, 'utf8');
             this.files[fileName] = fileContent;
-            this.fileVersions[fileName] = this.getFileContentHash(fileContent);
+            this.versions[fileName] = this.getFileContentHash(fileContent);
             return fileContent;
         }
 
@@ -113,7 +115,10 @@ export class TypeScriptCheckerTool {
                 return this.sources[fileName];
             }
 
+            // Cache Miss: should only happen during the initial check.
+            // Subsequent queries should be cached prior checking by the watch function. 
             // console.log('SOURCE ' + fileName);
+
             this.addOrUpdateSourceFileCache(fileName);
             return this.sources[fileName];
         }
@@ -132,14 +137,14 @@ export class TypeScriptCheckerTool {
         });
 
         let version = this.getFileContentHash(source.text);
-        let lastVersion = this.fileVersions[fileName];
+        let lastVersion = this.versions[fileName];
 
         if (version === lastVersion) {
             return false;
         }
 
         this.sources[fileName] = source;
-        this.fileVersions[fileName] = version;
+        this.versions[fileName] = version;
         return true;
     }
 
@@ -235,7 +240,7 @@ export class TypeScriptCheckerTool {
                 }
 
                 if (this.sources[file]) {
-                    // Discovered source which already exists: only happens during initial add event (ready === false)
+                    // Discovered source which already exists: should only happen during initial add event (ready === false)
                     return;
                 }
 

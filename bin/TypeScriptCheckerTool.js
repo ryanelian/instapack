@@ -12,7 +12,7 @@ class TypeScriptCheckerTool {
     constructor(settings) {
         this.files = {};
         this.sources = {};
-        this.fileVersions = {};
+        this.versions = {};
         this.settings = settings;
         let tsconfig = TypeScriptConfigurationReader_1.parseUserTsConfig();
         let definitions = tsconfig.fileNames.filter(Q => Q.endsWith('.d.ts'));
@@ -26,7 +26,7 @@ class TypeScriptCheckerTool {
             }
             let fileContent = TypeScript.sys.readFile(fileName, 'utf8');
             this.files[fileName] = fileContent;
-            this.fileVersions[fileName] = this.getFileContentHash(fileContent);
+            this.versions[fileName] = this.getFileContentHash(fileContent);
             return fileContent;
         };
         this.readSourceFile = this.host.getSourceFile;
@@ -44,12 +44,12 @@ class TypeScriptCheckerTool {
             console.error(error);
         });
         let version = this.getFileContentHash(source.text);
-        let lastVersion = this.fileVersions[fileName];
+        let lastVersion = this.versions[fileName];
         if (version === lastVersion) {
             return false;
         }
         this.sources[fileName] = source;
-        this.fileVersions[fileName] = version;
+        this.versions[fileName] = version;
         return true;
     }
     getFileContentHash(content) {

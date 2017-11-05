@@ -104,8 +104,14 @@ class TypeScriptCheckerTool {
         return fileName.replace(/\\/g, '/');
     }
     watch() {
-        let debounced;
         let ready = false;
+        let debounced;
+        let debounce = () => {
+            clearTimeout(debounced);
+            debounced = setTimeout(() => {
+                this.typeCheck();
+            }, 300);
+        };
         chokidar.watch(this.settings.tsGlobs)
             .on('add', (file) => {
             file = this.slash(file);
@@ -119,21 +125,15 @@ class TypeScriptCheckerTool {
             if (!ready) {
                 return;
             }
-            console.log(chalk_1.default.blue('Type-Checker') + chalk_1.default.grey(' tracking new file: ' + file));
-            clearTimeout(debounced);
-            debounced = setTimeout(() => {
-                this.typeCheck();
-            }, 300);
+            console.log(chalk_1.default.blue('TypeScript') + chalk_1.default.grey(' tracking new file: ' + file));
+            debounce();
         })
             .on('change', (file) => {
             file = this.slash(file);
             let changed = this.addOrUpdateSourceFileCache(file);
             if (changed) {
-                console.log(chalk_1.default.blue('Type-Checker') + chalk_1.default.grey(' updating file: ' + file));
-                clearTimeout(debounced);
-                debounced = setTimeout(() => {
-                    this.typeCheck();
-                }, 300);
+                console.log(chalk_1.default.blue('TypeScript') + chalk_1.default.grey(' updating file: ' + file));
+                debounce();
             }
         })
             .on('unlink', (file) => {
@@ -142,20 +142,13 @@ class TypeScriptCheckerTool {
                 this.includeFiles.delete(file);
             }
             if (this.sources[file]) {
-                console.log(chalk_1.default.blue('Type-Checker') + chalk_1.default.grey(' removing file: ' + file));
+                console.log(chalk_1.default.blue('TypeScript') + chalk_1.default.grey(' removing file: ' + file));
                 delete this.sources[file];
-                clearTimeout(debounced);
-                debounced = setTimeout(() => {
-                    this.typeCheck();
-                }, 300);
+                debounce();
             }
         })
             .on('ready', () => {
             ready = true;
-        })
-            .on('error', error => {
-            console.error(chalk_1.default.red('ERROR') + ' in type-checker during watch:');
-            console.error(error);
         });
     }
 }

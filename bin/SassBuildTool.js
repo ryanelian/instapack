@@ -104,8 +104,31 @@ class SassBuildTool {
         });
     }
     watch() {
-        chokidar.watch(this.settings.scssGlob).on('change', path => {
-            this.buildWithStopwatch();
+        let ready = false;
+        let debounced;
+        let debounce = () => {
+            clearTimeout(debounced);
+            debounced = setTimeout(() => {
+                this.buildWithStopwatch();
+            }, 300);
+        };
+        chokidar.watch(this.settings.scssGlob)
+            .on('add', file => {
+            if (ready) {
+                console.log(chalk_1.default.magenta('Sass') + chalk_1.default.grey(' tracking new file: ' + file));
+                debounce();
+            }
+        })
+            .on('change', file => {
+            console.log(chalk_1.default.magenta('Sass') + chalk_1.default.grey(' updating file: ' + file));
+            debounce();
+        })
+            .on('unlink', file => {
+            console.log(chalk_1.default.magenta('Sass') + chalk_1.default.grey(' removing file: ' + file));
+            debounce();
+        })
+            .on('ready', () => {
+            ready = true;
         });
     }
 }

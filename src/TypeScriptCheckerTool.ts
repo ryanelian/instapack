@@ -228,8 +228,15 @@ export class TypeScriptCheckerTool {
      * On file creation / change / deletion, the project will be type-checked automatically.
      */
     watch() {
-        let debounced: NodeJS.Timer;
         let ready = false;
+
+        let debounced: NodeJS.Timer;
+        let debounce = () => {
+            clearTimeout(debounced);
+            debounced = setTimeout(() => {
+                this.typeCheck();
+            }, 300);
+        };
 
         chokidar.watch(this.settings.tsGlobs)
             .on('add', (file: string) => {
@@ -252,23 +259,16 @@ export class TypeScriptCheckerTool {
                     return;
                 }
 
-                console.log(chalk.blue('Type-Checker') + chalk.grey(' tracking new file: ' + file));
-                clearTimeout(debounced);
-                debounced = setTimeout(() => {
-                    this.typeCheck();
-                }, 300);
+                console.log(chalk.blue('TypeScript') + chalk.grey(' tracking new file: ' + file));
+                debounce();
             })
             .on('change', (file: string) => {
                 file = this.slash(file);
 
                 let changed = this.addOrUpdateSourceFileCache(file);
                 if (changed) {
-                    console.log(chalk.blue('Type-Checker') + chalk.grey(' updating file: ' + file));
-
-                    clearTimeout(debounced);
-                    debounced = setTimeout(() => {
-                        this.typeCheck();
-                    }, 300);
+                    console.log(chalk.blue('TypeScript') + chalk.grey(' updating file: ' + file));
+                    debounce();
                 }
             })
             .on('unlink', (file: string) => {
@@ -279,21 +279,13 @@ export class TypeScriptCheckerTool {
                 }
 
                 if (this.sources[file]) {
-                    console.log(chalk.blue('Type-Checker') + chalk.grey(' removing file: ' + file));
+                    console.log(chalk.blue('TypeScript') + chalk.grey(' removing file: ' + file));
                     delete this.sources[file];
-
-                    clearTimeout(debounced);
-                    debounced = setTimeout(() => {
-                        this.typeCheck();
-                    }, 300);
+                    debounce();
                 }
             })
             .on('ready', () => {
                 ready = true;
-            })
-            .on('error', error => {
-                console.error(chalk.red('ERROR') + ' in type-checker during watch:');
-                console.error(error);
             });
 
         // console.log(Object.keys(this.files));

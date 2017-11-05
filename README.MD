@@ -184,7 +184,9 @@ instapack puts configuration inside `package.json` to reduce project files clutt
 
   - This was needed because the default Vue.js package main file points to runtime-only build, which does not include the HTML template compiler... To avoid using this, read the template configuration below.
 
-- `externals` allows rewriting module `import` calls from all files, including dependencies, to globally exposed objects via `window` object. Read more: https://webpack.js.org/configuration/externals/. For example:
+- `externals` allows rewriting module `import` calls from all files, including dependencies, to globally exposed objects via `window` object. Read more: https://webpack.js.org/configuration/externals/
+
+For example:
 
 ```json
 {
@@ -208,7 +210,7 @@ into this...
 const jQuery = window["$"];
 ```
 
-so you can use this! :tada:
+so [CDN](https://en.wikipedia.org/wiki/Content_delivery_network) can be used! :tada:
 
 ```html
 <script src="https://unpkg.com/jquery@3.2.1/dist/jquery.js"></script>

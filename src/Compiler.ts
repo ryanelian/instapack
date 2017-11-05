@@ -227,11 +227,12 @@ export class Compiler {
      * Concat JavaScript files.
      */
     async buildConcat() {
+        let w = '';
         if (this.flags.watch) {
-            timedLog("Concat task will be run once and", chalk.red("NOT watched!"));
+            w = chalk.grey('(runs once / not watching)');
         }
 
-        timedLog('Resolving', chalk.cyan(this.settings.concatCount.toString()), 'concat target(s)...');
+        timedLog('Resolving', chalk.cyan(this.settings.concatCount.toString()), 'concat target(s)...', w);
 
         let tool = new ConcatBuildTool(this.settings, this.flags);
         await tool.buildWithStopwatch();

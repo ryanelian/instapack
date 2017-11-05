@@ -158,10 +158,11 @@ class Compiler {
     }
     buildConcat() {
         return __awaiter(this, void 0, void 0, function* () {
+            let w = '';
             if (this.flags.watch) {
-                CompilerUtilities_1.timedLog("Concat task will be run once and", chalk_1.default.red("NOT watched!"));
+                w = chalk_1.default.grey('(runs once / not watching)');
             }
-            CompilerUtilities_1.timedLog('Resolving', chalk_1.default.cyan(this.settings.concatCount.toString()), 'concat target(s)...');
+            CompilerUtilities_1.timedLog('Resolving', chalk_1.default.cyan(this.settings.concatCount.toString()), 'concat target(s)...', w);
             let tool = new ConcatBuildTool_1.ConcatBuildTool(this.settings, this.flags);
             yield tool.buildWithStopwatch();
         });

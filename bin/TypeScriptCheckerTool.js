@@ -144,6 +144,7 @@ class TypeScriptCheckerTool {
             if (this.sources[file]) {
                 console.log(chalk_1.default.blue('TypeScript') + chalk_1.default.grey(' removing file: ' + file));
                 delete this.sources[file];
+                delete this.versions[file];
                 debounce();
             }
         })

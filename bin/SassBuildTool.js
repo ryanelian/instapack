@@ -104,7 +104,6 @@ class SassBuildTool {
         });
     }
     watch() {
-        let ready = false;
         let debounced;
         let debounce = () => {
             clearTimeout(debounced);
@@ -112,12 +111,12 @@ class SassBuildTool {
                 this.buildWithStopwatch();
             }, 300);
         };
-        chokidar.watch(this.settings.scssGlob)
+        chokidar.watch(this.settings.scssGlob, {
+            ignoreInitial: true
+        })
             .on('add', file => {
-            if (ready) {
-                console.log(chalk_1.default.magenta('Sass') + chalk_1.default.grey(' tracking new file: ' + file));
-                debounce();
-            }
+            console.log(chalk_1.default.magenta('Sass') + chalk_1.default.grey(' tracking new file: ' + file));
+            debounce();
         })
             .on('change', file => {
             console.log(chalk_1.default.magenta('Sass') + chalk_1.default.grey(' updating file: ' + file));
@@ -126,9 +125,6 @@ class SassBuildTool {
             .on('unlink', file => {
             console.log(chalk_1.default.magenta('Sass') + chalk_1.default.grey(' removing file: ' + file));
             debounce();
-        })
-            .on('ready', () => {
-            ready = true;
         });
     }
 }

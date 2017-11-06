@@ -141,8 +141,6 @@ export class SassBuildTool {
      * Executes build when any *.scss files on the CSS project folder is modified.
      */
     watch() {
-        let ready = false;
-
         let debounced: NodeJS.Timer;
         let debounce = () => {
             clearTimeout(debounced);
@@ -151,12 +149,12 @@ export class SassBuildTool {
             }, 300);
         };
 
-        chokidar.watch(this.settings.scssGlob)
+        chokidar.watch(this.settings.scssGlob, {
+            ignoreInitial: true
+        })
             .on('add', file => {
-                if (ready) {
-                    console.log(chalk.magenta('Sass') + chalk.grey(' tracking new file: ' + file));
-                    debounce();
-                }
+                console.log(chalk.magenta('Sass') + chalk.grey(' tracking new file: ' + file));
+                debounce();
             })
             .on('change', file => {
                 console.log(chalk.magenta('Sass') + chalk.grey(' updating file: ' + file));
@@ -165,9 +163,6 @@ export class SassBuildTool {
             .on('unlink', file => {
                 console.log(chalk.magenta('Sass') + chalk.grey(' removing file: ' + file));
                 debounce();
-            })
-            .on('ready', () => {
-                ready = true;
             });
     }
 }

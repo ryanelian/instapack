@@ -104,7 +104,6 @@ class TypeScriptCheckerTool {
         return fileName.replace(/\\/g, '/');
     }
     watch() {
-        let ready = false;
         let debounced;
         let debounce = () => {
             clearTimeout(debounced);
@@ -112,19 +111,15 @@ class TypeScriptCheckerTool {
                 this.typeCheck();
             }, 300);
         };
-        chokidar.watch(this.settings.tsGlobs)
+        chokidar.watch(this.settings.tsGlobs, {
+            ignoreInitial: true
+        })
             .on('add', (file) => {
             file = this.slash(file);
             if (file.endsWith('.d.ts')) {
                 this.includeFiles.add(file);
             }
-            if (this.sources[file]) {
-                return;
-            }
             this.addOrUpdateSourceFileCache(file);
-            if (!ready) {
-                return;
-            }
             console.log(chalk_1.default.blue('TypeScript') + chalk_1.default.grey(' tracking new file: ' + file));
             debounce();
         })
@@ -138,18 +133,15 @@ class TypeScriptCheckerTool {
         })
             .on('unlink', (file) => {
             file = this.slash(file);
-            if (file.endsWith('.d.ts')) {
+            if (file.endsWith('.d.ts') && this.includeFiles.has(file)) {
                 this.includeFiles.delete(file);
             }
+            console.log(chalk_1.default.blue('TypeScript') + chalk_1.default.grey(' removing file: ' + file));
             if (this.sources[file]) {
-                console.log(chalk_1.default.blue('TypeScript') + chalk_1.default.grey(' removing file: ' + file));
                 delete this.sources[file];
                 delete this.versions[file];
                 debounce();
             }
-        })
-            .on('ready', () => {
-            ready = true;
         });
     }
 }

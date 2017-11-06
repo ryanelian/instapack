@@ -24,7 +24,7 @@ interface SourceCache {
 }
 
 /**
- * Key-value pair of file name to SHA-256 hash of its content. Used for detecting whether a file has been changed.
+ * Key-value pair of file name to a unique hash of its content. Used for detecting whether a file has been changed.
  */
 interface FileVersions {
     [fileName: string]: string;
@@ -115,10 +115,12 @@ export class TypeScriptCheckerTool {
                 return this.sources[fileName];
             }
 
-            // Cache Miss: should only happen during the initial check.
-            // Subsequent queries should be cached prior checking by the watch function. 
-            // console.log('SOURCE ' + fileName);
+            // Cache Miss: should only happen during...
+            // 1. first-time check.
+            // 2. importing existing files which were not imported during first-time check.
+            // Subsequent queries should be cached prior checking by the watch function.
 
+            // console.log('SOURCE ' + fileName);
             this.addOrUpdateSourceFileCache(fileName);
             return this.sources[fileName];
         }
@@ -149,7 +151,7 @@ export class TypeScriptCheckerTool {
     }
 
     /**
-     * Versions a text-based file content using SHA-256 algorithm.
+     * Versions a text-based file content using fast SHA-512 algorithm.
      * @param content 
      */
     private getFileContentHash(content: string) {
@@ -228,8 +230,6 @@ export class TypeScriptCheckerTool {
      * On file creation / change / deletion, the project will be type-checked automatically.
      */
     watch() {
-        let ready = false;
-
         let debounced: NodeJS.Timer;
         let debounce = () => {
             clearTimeout(debounced);
@@ -238,7 +238,9 @@ export class TypeScriptCheckerTool {
             }, 300);
         };
 
-        chokidar.watch(this.settings.tsGlobs)
+        chokidar.watch(this.settings.tsGlobs, {
+            ignoreInitial: true
+        })
             .on('add', (file: string) => {
                 file = this.slash(file);
 
@@ -246,19 +248,7 @@ export class TypeScriptCheckerTool {
                     this.includeFiles.add(file);
                 }
 
-                if (this.sources[file]) {
-                    // Discovered source which already exists: should only happen during initial add event (ready === false)
-                    return;
-                }
-
                 this.addOrUpdateSourceFileCache(file);
-
-                if (!ready) {
-                    // Discovered new sources during initial add event: stuffs which are not imported!
-                    // No need to re-check now...
-                    return;
-                }
-
                 console.log(chalk.blue('TypeScript') + chalk.grey(' tracking new file: ' + file));
                 debounce();
             })
@@ -274,19 +264,17 @@ export class TypeScriptCheckerTool {
             .on('unlink', (file: string) => {
                 file = this.slash(file);
 
-                if (file.endsWith('.d.ts')) {
+                if (file.endsWith('.d.ts') && this.includeFiles.has(file)) {
                     this.includeFiles.delete(file);
                 }
 
+                console.log(chalk.blue('TypeScript') + chalk.grey(' removing file: ' + file));
+
                 if (this.sources[file]) {
-                    console.log(chalk.blue('TypeScript') + chalk.grey(' removing file: ' + file));
                     delete this.sources[file];
                     delete this.versions[file];
                     debounce();
                 }
-            })
-            .on('ready', () => {
-                ready = true;
             });
 
         // console.log(Object.keys(this.files));

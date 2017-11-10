@@ -1,6 +1,6 @@
 {
   "name": "instapack",
-  "version": "5.0.0",
+  "version": "5.1.0-beta3",
   "description": "All-in-one web app client project compiler using TypeScript and Sass!",
   "main": "bin/index.js",
   "bin": {
@@ -44,14 +44,14 @@
   "devDependencies": {
     "@types/autoprefixer": "^6.7.3",
     "@types/chokidar": "^1.7.3",
-    "@types/fs-extra": "^4.0.2",
+    "@types/fs-extra": "^4.0.4",
     "@types/html-minifier": "^1.1.30",
     "@types/loader-utils": "^1.1.0",
-    "@types/node": "^8.0.49",
+    "@types/node": "^8.0.50",
     "@types/node-sass": "^3.10.32",
     "@types/resolve": "^0.0.4",
     "@types/source-map": "^0.5.2",
-    "@types/webpack": "^3.8.0",
+    "@types/webpack": "^3.8.1",
     "@types/yargs": "^8.0.2"
   }
 }

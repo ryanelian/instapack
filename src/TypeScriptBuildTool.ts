@@ -97,7 +97,7 @@ export class TypeScriptBuildTool {
         options.inlineSources = this.flags.sourceMap;
 
         loaders.push({
-            loader: 'turbo-typescript-loader',
+            loader: 'core-typescript-loader',
             options: {
                 compilerOptions: options
             }

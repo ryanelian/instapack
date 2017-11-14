@@ -19,7 +19,7 @@
     "bootstrap-sass": "^3.3.7",
     "bootstrap.native": "^2.0.19",
     "linqts": "^1.10.0",
-    "moment": "^2.19.1",
+    "moment": "^2.19.2",
     "tslib": "^1.8.0"
   }
 }

@@ -2,12 +2,12 @@ import { loader } from 'webpack';
 import * as TypeScript from 'typescript';
 import { getOptions } from 'loader-utils';
 
-interface TurboTypeScriptLoaderOptions {
+interface CoreTypeScriptLoaderOptions {
     compilerOptions: TypeScript.CompilerOptions;
 }
 
 module.exports = function (this: loader.LoaderContext, source: string) {
-    let options = getOptions(this) as TurboTypeScriptLoaderOptions;
+    let options = getOptions(this) as CoreTypeScriptLoaderOptions;
 
     let result = TypeScript.transpileModule(source, {
         compilerOptions: options.compilerOptions,

@@ -4,6 +4,7 @@ import { fork } from 'child_process';
 
 import hub from './EventHub';
 import { TypeScriptBuildTool } from './TypeScriptBuildTool';
+import { TypeScriptCheckerTool } from './TypeScriptCheckerTool';
 import { SassBuildTool } from './SassBuildTool';
 import { ConcatBuildTool } from './ConcatBuildTool';
 import { Settings, SettingsCore } from './Settings';
@@ -100,6 +101,10 @@ export class Compiler {
                 flags: this.flags,
                 settings: this.settings.core
             } as BuildCommand);
+
+            if (taskName === 'js') {
+                this.startBackgroundTask('type-checker');
+            }
         }
     }
 
@@ -127,6 +132,9 @@ export class Compiler {
             }
             case 'concat': {
                 return (this.settings.concatCount > 0);
+            }
+            case 'type-checker': {
+                return true;
             }
             default: {
                 throw Error('Task `' + taskName + '` does not exists!');
@@ -160,6 +168,10 @@ export class Compiler {
                     task = this.buildConcat();
                     break;
                 }
+                case 'type-checker': {
+                    task = this.checkTypeScript();
+                    break;
+                }
                 default: {
                     throw Error('Task `' + taskName + '` does not exists!');
                 }
@@ -190,7 +202,7 @@ export class Compiler {
     }
 
     /**
-     * Compiles the JavaScript project using Compiler settings and build flags. 
+     * Compiles the JavaScript project.
      */
     async buildJS() {
         await fse.remove(this.settings.outputJsSourceMap);
@@ -199,7 +211,7 @@ export class Compiler {
     }
 
     /**
-     * Compiles the CSS project using Compiler settings and build flags. 
+     * Compiles the CSS project.
      */
     async buildCSS() {
         await fse.remove(this.settings.outputCssSourceMap);
@@ -212,17 +224,30 @@ export class Compiler {
     }
 
     /**
-     * Concat JavaScript files using Compiler settings and build flags. 
+     * Concat JavaScript files.
      */
     async buildConcat() {
+        let w = '';
         if (this.flags.watch) {
-            timedLog("Concat task will be run once and", chalk.red("NOT watched!"));
+            w = chalk.grey('(runs once / not watching)');
         }
 
-        timedLog('Resolving', chalk.cyan(this.settings.concatCount.toString()), 'concat target(s)...');
+        timedLog('Resolving', chalk.cyan(this.settings.concatCount.toString()), 'concat target(s)...', w);
 
         let tool = new ConcatBuildTool(this.settings, this.flags);
         await tool.buildWithStopwatch();
+    }
+
+    /**
+     * Static-check the TypeScript project.
+     */
+    async checkTypeScript() {
+        let tool = new TypeScriptCheckerTool(this.settings);
+        tool.typeCheck();
+
+        if (this.flags.watch) {
+            tool.watch();
+        }
     }
 }
 

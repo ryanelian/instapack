@@ -13,6 +13,7 @@ const chalk_1 = require("chalk");
 const child_process_1 = require("child_process");
 const EventHub_1 = require("./EventHub");
 const TypeScriptBuildTool_1 = require("./TypeScriptBuildTool");
+const TypeScriptCheckerTool_1 = require("./TypeScriptCheckerTool");
 const SassBuildTool_1 = require("./SassBuildTool");
 const ConcatBuildTool_1 = require("./ConcatBuildTool");
 const Settings_1 = require("./Settings");
@@ -60,6 +61,9 @@ class Compiler {
                 flags: this.flags,
                 settings: this.settings.core
             });
+            if (taskName === 'js') {
+                this.startBackgroundTask('type-checker');
+            }
         }
     }
     validateBackgroundTask(taskName) {
@@ -82,6 +86,9 @@ class Compiler {
             }
             case 'concat': {
                 return (this.settings.concatCount > 0);
+            }
+            case 'type-checker': {
+                return true;
             }
             default: {
                 throw Error('Task `' + taskName + '` does not exists!');
@@ -106,6 +113,10 @@ class Compiler {
                 }
                 case 'concat': {
                     task = this.buildConcat();
+                    break;
+                }
+                case 'type-checker': {
+                    task = this.checkTypeScript();
                     break;
                 }
                 default: {
@@ -147,12 +158,22 @@ class Compiler {
     }
     buildConcat() {
         return __awaiter(this, void 0, void 0, function* () {
+            let w = '';
             if (this.flags.watch) {
-                CompilerUtilities_1.timedLog("Concat task will be run once and", chalk_1.default.red("NOT watched!"));
+                w = chalk_1.default.grey('(runs once / not watching)');
             }
-            CompilerUtilities_1.timedLog('Resolving', chalk_1.default.cyan(this.settings.concatCount.toString()), 'concat target(s)...');
+            CompilerUtilities_1.timedLog('Resolving', chalk_1.default.cyan(this.settings.concatCount.toString()), 'concat target(s)...', w);
             let tool = new ConcatBuildTool_1.ConcatBuildTool(this.settings, this.flags);
             yield tool.buildWithStopwatch();
+        });
+    }
+    checkTypeScript() {
+        return __awaiter(this, void 0, void 0, function* () {
+            let tool = new TypeScriptCheckerTool_1.TypeScriptCheckerTool(this.settings);
+            tool.typeCheck();
+            if (this.flags.watch) {
+                tool.watch();
+            }
         });
     }
 }

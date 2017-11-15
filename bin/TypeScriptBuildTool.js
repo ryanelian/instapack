@@ -4,7 +4,6 @@ const path = require("path");
 const os = require("os");
 const chalk_1 = require("chalk");
 const webpack = require("webpack");
-const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 const UglifyWebpackPlugin = require("uglifyjs-webpack-plugin");
 const EventHub_1 = require("./EventHub");
 const CompilerUtilities_1 = require("./CompilerUtilities");
@@ -43,7 +42,7 @@ class TypeScriptBuildTool {
         options.sourceMap = this.flags.sourceMap;
         options.inlineSources = this.flags.sourceMap;
         loaders.push({
-            loader: 'turbo-typescript-loader',
+            loader: 'core-typescript-loader',
             options: {
                 compilerOptions: options
             }
@@ -73,12 +72,6 @@ class TypeScriptBuildTool {
         let plugins = [];
         plugins.push(new webpack.NoEmitOnErrorsPlugin());
         plugins.push(new TypeScriptBuildWebpackPlugin(this.settings, this.flags));
-        plugins.push(new ForkTsCheckerWebpackPlugin({
-            checkSyntacticErrors: true,
-            async: this.flags.watch,
-            silent: !this.flags.watch,
-            watch: this.settings.inputJsFolder
-        }));
         if (this.flags.production) {
             plugins.push(new webpack.DefinePlugin({
                 'process.env': {

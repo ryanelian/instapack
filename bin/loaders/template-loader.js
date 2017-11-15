@@ -76,11 +76,11 @@ module.exports = function (html) {
         gen.addMapping({
             source: this.resourcePath,
             generated: {
-                column: 1,
+                column: 0,
                 line: 1
             },
             original: {
-                column: 1,
+                column: 0,
                 line: 1
             }
         });

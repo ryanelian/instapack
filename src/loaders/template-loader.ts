@@ -91,11 +91,11 @@ module.exports = function (this: loader.LoaderContext, html: string) {
         gen.addMapping({
             source: this.resourcePath,
             generated: {
-                column: 1,
+                column: 0,
                 line: 1
             },
             original: {
-                column: 1,
+                column: 0,
                 line: 1
             }
         });

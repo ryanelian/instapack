@@ -7,9 +7,9 @@
     "concat": {}
   },
   "dependencies": {
-    "@types/react": "^16.0.22",
+    "@types/react": "^16.0.25",
     "@types/react-dom": "^16.0.3",
-    "@types/react-redux": "^5.0.12",
+    "@types/react-redux": "^5.0.13",
     "@types/requirejs": "^2.1.31",
     "axios": "^0.17.1",
     "es6-promise": "^4.1.1",
@@ -22,7 +22,7 @@
     "react-redux": "^5.0.6",
     "redux": "^3.7.2",
     "semantic-ui-css": "^2.2.12",
-    "semantic-ui-react": "^0.76.0",
+    "semantic-ui-react": "^0.77.0",
     "tslib": "^1.8.0"
   }
 }

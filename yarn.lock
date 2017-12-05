@@ -8,10 +8,11 @@
   dependencies:
     postcss "^5.2.15"
 
-"@types/chokidar@^1.7.3":
-  version "1.7.3"
-  resolved "https://registry.yarnpkg.com/@types/chokidar/-/chokidar-1.7.3.tgz#ca87a53aa596c01eb93237ab4055edf71dcb9ca6"
+"@types/chokidar@^1.7.4":
+  version "1.7.4"
+  resolved "https://registry.yarnpkg.com/@types/chokidar/-/chokidar-1.7.4.tgz#04276d076a509a046f21c0933b705ce4b502f8d9"
   dependencies:
+    "@types/events" "*"
     "@types/node" "*"
 
 "@types/clean-css@*":
@@ -49,11 +50,9 @@
   dependencies:
     "@types/node" "*"
 
-"@types/node@*", "@types/node@^8.0.54":
-  version "8.0.54"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-8.0.54.tgz#3fd9357db4af388b79e03845340259440edffde6"
-  dependencies:
-    "@types/events" "*"
+"@types/node@*", "@types/node@^8.0.55":
+  version "8.0.55"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-8.0.55.tgz#015966c0af809216b8a46cc527b5c211994d36f0"
 
 "@types/relateurl@*":
   version "0.2.28"

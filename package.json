@@ -38,7 +38,7 @@
     "uglify-es": "3.2.1",
     "uglifyjs-webpack-plugin": "1.1.1",
     "vue-template-compiler": "2.5.9",
-    "webpack": "3.9.0",
+    "webpack": "3.10.0",
     "yargs": "10.0.3"
   },
   "devDependencies": {
@@ -47,7 +47,7 @@
     "@types/fs-extra": "^4.0.5",
     "@types/html-minifier": "^1.1.30",
     "@types/loader-utils": "^1.1.0",
-    "@types/node": "^8.0.53",
+    "@types/node": "^8.0.54",
     "@types/node-sass": "^3.10.32",
     "@types/resolve": "^0.0.4",
     "@types/source-map": "^0.5.2",

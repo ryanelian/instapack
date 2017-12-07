@@ -52,6 +52,6 @@
     "@types/resolve": "^0.0.4",
     "@types/source-map": "^0.5.2",
     "@types/webpack": "^3.8.1",
-    "@types/yargs": "^8.0.2"
+    "@types/yargs": "^10.0.0"
   }
 }

@@ -25,7 +25,7 @@
     "autoprefixer": "7.2.2",
     "chalk": "2.3.0",
     "chokidar": "1.7.0",
-    "fs-extra": "4.0.3",
+    "fs-extra": "5.0.0",
     "html-minifier": "3.5.7",
     "loader-utils": "1.1.0",
     "node-sass": "4.7.2",

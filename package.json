@@ -37,7 +37,7 @@
     "typescript": "2.6.2",
     "uglify-es": "3.2.2",
     "uglifyjs-webpack-plugin": "1.1.2",
-    "vue-template-compiler": "2.5.9",
+    "vue-template-compiler": "2.5.10",
     "webpack": "3.10.0",
     "yargs": "10.0.3"
   },

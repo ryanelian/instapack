@@ -36,7 +36,7 @@
     "thread-loader": "1.1.2",
     "typescript": "2.6.2",
     "uglify-es": "3.3.2",
-    "uglifyjs-webpack-plugin": "1.1.4",
+    "uglifyjs-webpack-plugin": "1.1.5",
     "vue-template-compiler": "2.5.13",
     "webpack": "3.10.0",
     "yargs": "10.0.3"

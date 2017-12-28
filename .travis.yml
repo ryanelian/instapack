@@ -21,7 +21,7 @@ cache:
 #after_script: greenkeeper-lockfile-upload
 script:
 - npm run build
-- npm link
+- npm link --silent
 - instapack --version
 - mkdir demo
 - cd demo

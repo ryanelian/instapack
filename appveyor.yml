@@ -20,9 +20,10 @@ install:
     yarn
 
 build_script:
-    - npm run build
+- ps: >-
+    npm run build
     
-    - npm link
+    npm link --silent
 
 test_script:
 - ps: >-

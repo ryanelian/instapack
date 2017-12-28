@@ -20,10 +20,9 @@ install:
     yarn
 
 build_script:
-- ps: >-
-    npm run build
+    - npm run build
     
-    npm link
+    - npm link
 
 test_script:
 - ps: >-

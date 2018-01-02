@@ -45,7 +45,7 @@
     "@types/autoprefixer": "^6.7.3",
     "@types/chokidar": "^1.7.4",
     "@types/fs-extra": "^5.0.0",
-    "@types/html-minifier": "^1.1.30",
+    "@types/html-minifier": "^3.5.0",
     "@types/loader-utils": "^1.1.0",
     "@types/node": "^8.5.2",
     "@types/node-sass": "^3.10.32",

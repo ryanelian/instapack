@@ -6,6 +6,7 @@ import * as sass from 'node-sass';
 import * as postcss from 'postcss';
 import * as autoprefixer from 'autoprefixer';
 import * as discardComments from 'postcss-discard-comments';
+import { RawSourceMap } from 'source-map';
 
 import hub from './EventHub';
 import { Settings } from './Settings';
@@ -58,7 +59,7 @@ export class SassBuildTool {
      * Normalize `sources` paths of a Sass-compiled source map.
      * @param sm 
      */
-    fixSourceMap(sm: sourceMap.RawSourceMap) {
+    fixSourceMap(sm: RawSourceMap) {
         sm.sourceRoot = 'instapack://';
 
         let cssProjectFolder = this.settings.inputCssFolder;
@@ -111,7 +112,7 @@ export class SassBuildTool {
 
         let t1 = logAndWriteUtf8FileAsync(cssOutput, cssResult.css);
         if (cssResult.map) {
-            let sm: sourceMap.RawSourceMap = cssResult.map.toJSON();
+            let sm: RawSourceMap = cssResult.map.toJSON();
             this.fixSourceMap(sm);
             await logAndWriteUtf8FileAsync(cssOutput + '.map', JSON.stringify(sm));
         }

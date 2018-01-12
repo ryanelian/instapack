@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/ryanelian/instapack#readme",
   "dependencies": {
-    "autoprefixer": "7.2.4",
+    "autoprefixer": "7.2.5",
     "chalk": "2.3.0",
     "chokidar": "1.7.0",
     "fs-extra": "5.0.0",

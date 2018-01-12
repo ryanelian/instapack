@@ -39,7 +39,7 @@
     "uglifyjs-webpack-plugin": "1.1.6",
     "vue-template-compiler": "2.5.13",
     "webpack": "3.10.0",
-    "yargs": "10.0.3"
+    "yargs": "10.1.1"
   },
   "devDependencies": {
     "@types/autoprefixer": "^6.7.3",
@@ -47,7 +47,7 @@
     "@types/fs-extra": "^5.0.0",
     "@types/html-minifier": "^3.5.0",
     "@types/loader-utils": "^1.1.1",
-    "@types/node": "^8.5.7",
+    "@types/node": "8",
     "@types/node-sass": "^3.10.32",
     "@types/resolve": "^0.0.5",
     "@types/webpack": "^3.8.2",

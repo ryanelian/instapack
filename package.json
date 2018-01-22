@@ -24,7 +24,7 @@
   "dependencies": {
     "autoprefixer": "7.2.5",
     "chalk": "2.3.0",
-    "chokidar": "1.7.0",
+    "chokidar": "2.0.0",
     "fs-extra": "5.0.0",
     "html-minifier": "3.5.8",
     "loader-utils": "1.1.0",

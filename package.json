@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/ryanelian/instapack#readme",
   "dependencies": {
-    "autoprefixer": "7.2.4",
+    "autoprefixer": "7.2.5",
     "chalk": "2.3.0",
     "chokidar": "1.7.0",
     "fs-extra": "5.0.0",
@@ -32,10 +32,10 @@
     "postcss": "6.0.16",
     "postcss-discard-comments": "4.0.0-rc.2",
     "resolve": "1.5.0",
-    "source-map": "0.6.1",
+    "source-map": "0.7.0",
     "thread-loader": "1.1.2",
     "typescript": "2.6.2",
-    "uglify-es": "3.3.5",
+    "uglify-es": "3.3.8",
     "uglifyjs-webpack-plugin": "1.1.6",
     "vue-template-compiler": "2.5.13",
     "webpack": "3.10.0",
@@ -45,12 +45,12 @@
     "@types/autoprefixer": "^6.7.3",
     "@types/chokidar": "^1.7.4",
     "@types/fs-extra": "^5.0.0",
-    "@types/html-minifier": "^3.5.0",
+    "@types/html-minifier": "^3.5.1",
     "@types/loader-utils": "^1.1.1",
     "@types/node": "8",
     "@types/node-sass": "^3.10.32",
-    "@types/resolve": "^0.0.5",
-    "@types/webpack": "^3.8.2",
+    "@types/resolve": "^0.0.6",
+    "@types/webpack": "^3.8.3",
     "@types/yargs": "^10.0.1"
   }
 }

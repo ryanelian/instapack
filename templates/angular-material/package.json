@@ -7,19 +7,19 @@
     "concat": {}
   },
   "dependencies": {
-    "@types/angular": "^1.6.39",
+    "@types/angular": "^1.6.41",
     "@types/angular-material": "^1.1.57",
     "@types/requirejs": "^2.1.31",
-    "@uirouter/angularjs": "^1.0.11",
-    "angular": "^1.6.7",
-    "angular-animate": "^1.6.7",
-    "angular-aria": "^1.6.7",
-    "angular-material": "^1.1.5",
-    "angular-messages": "^1.6.7",
-    "angular-sanitize": "^1.6.7",
+    "@uirouter/angularjs": "^1.0.13",
+    "angular": "^1.6.8",
+    "angular-animate": "^1.6.8",
+    "angular-aria": "^1.6.8",
+    "angular-material": "^1.1.6",
+    "angular-messages": "^1.6.8",
+    "angular-sanitize": "^1.6.8",
     "font-awesome": "^4.7.0",
     "linqts": "^1.10.0",
-    "moment": "^2.19.2",
-    "tslib": "^1.8.0"
+    "moment": "^2.20.1",
+    "tslib": "^1.9.0"
   }
 }

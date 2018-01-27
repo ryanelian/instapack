@@ -35,7 +35,7 @@
     "source-map": "0.7.0",
     "thread-loader": "1.1.2",
     "typescript": "2.6.2",
-    "uglify-es": "3.3.8",
+    "uglify-es": "3.3.9",
     "uglifyjs-webpack-plugin": "1.1.6",
     "vue-template-compiler": "2.5.13",
     "webpack": "3.10.0",

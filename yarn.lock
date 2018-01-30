@@ -51,8 +51,8 @@
     "@types/node" "*"
 
 "@types/node@*":
-  version "9.3.0"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-9.3.0.tgz#3a129cda7c4e5df2409702626892cb4b96546dd5"
+  version "9.4.0"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-9.4.0.tgz#b85a0bcf1e1cc84eb4901b7e96966aedc6f078d1"
 
 "@types/node@8":
   version "8.5.9"
@@ -78,9 +78,9 @@
   dependencies:
     source-map "^0.6.1"
 
-"@types/webpack@*", "@types/webpack@^3.8.3":
-  version "3.8.3"
-  resolved "https://registry.yarnpkg.com/@types/webpack/-/webpack-3.8.3.tgz#92501a9c7e41a560aa9b354345768b7348d80764"
+"@types/webpack@*", "@types/webpack@^3.8.4":
+  version "3.8.4"
+  resolved "https://registry.yarnpkg.com/@types/webpack/-/webpack-3.8.4.tgz#82069b43851ac7fdb94f96245758903c2a989107"
   dependencies:
     "@types/node" "*"
     "@types/tapable" "*"
@@ -773,8 +773,8 @@ diffie-hellman@^5.0.0:
     randombytes "^2.0.0"
 
 domain-browser@^1.1.1:
-  version "1.1.7"
-  resolved "https://registry.yarnpkg.com/domain-browser/-/domain-browser-1.1.7.tgz#867aa4b093faa05f1de08c06f4d7b21fdf8698bc"
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/domain-browser/-/domain-browser-1.2.0.tgz#3d31f50191a6749dd1375a7f522e823d42e54eda"
 
 duplexify@^3.4.2, duplexify@^3.5.3:
   version "3.5.3"
@@ -1520,8 +1520,8 @@ isstream@~0.1.2:
   resolved "https://registry.yarnpkg.com/isstream/-/isstream-0.1.2.tgz#47e63f7af55afa6f92e1500e690eb8b8529c099a"
 
 js-base64@^2.1.8, js-base64@^2.1.9:
-  version "2.4.2"
-  resolved "https://registry.yarnpkg.com/js-base64/-/js-base64-2.4.2.tgz#1896da010ef8862f385d8887648e9b6dc4a7a2e9"
+  version "2.4.3"
+  resolved "https://registry.yarnpkg.com/js-base64/-/js-base64-2.4.3.tgz#2e545ec2b0f2957f41356510205214e98fad6582"
 
 jsbn@~0.1.0:
   version "0.1.1"
@@ -2865,16 +2865,16 @@ typescript@^2.7.0-rc:
   version "2.7.0-rc"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.7.0-rc.tgz#bf86a065a3a0be1e072c3fb7d64e8976f33b8365"
 
-uglify-es@3.3.8, uglify-es@^3.3.4:
-  version "3.3.8"
-  resolved "https://registry.yarnpkg.com/uglify-es/-/uglify-es-3.3.8.tgz#f2c68e6cff0d0f9dc9577e4da207151c2e753b7e"
+uglify-es@3.3.9, uglify-es@^3.3.4:
+  version "3.3.9"
+  resolved "https://registry.yarnpkg.com/uglify-es/-/uglify-es-3.3.9.tgz#0c1c4f0700bed8dbc124cdb304d2592ca203e677"
   dependencies:
     commander "~2.13.0"
     source-map "~0.6.1"
 
 uglify-js@3.3.x:
-  version "3.3.8"
-  resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-3.3.8.tgz#51e9a5db73afb53ac98603d08224edcd0be45fd8"
+  version "3.3.9"
+  resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-3.3.9.tgz#33869666c8ab7f7658ce3d22f0f1ced40097d33a"
   dependencies:
     commander "~2.13.0"
     source-map "~0.6.1"
@@ -2892,9 +2892,9 @@ uglify-to-browserify@~1.0.0:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/uglify-to-browserify/-/uglify-to-browserify-1.0.2.tgz#6e0924d6bda6b5afe349e39a6d632850a0f882b7"
 
-uglifyjs-webpack-plugin@1.1.6:
-  version "1.1.6"
-  resolved "https://registry.yarnpkg.com/uglifyjs-webpack-plugin/-/uglifyjs-webpack-plugin-1.1.6.tgz#f4ba8449edcf17835c18ba6ae99b9d610857fb19"
+uglifyjs-webpack-plugin@1.1.8:
+  version "1.1.8"
+  resolved "https://registry.yarnpkg.com/uglifyjs-webpack-plugin/-/uglifyjs-webpack-plugin-1.1.8.tgz#1302fb9471a7daf3d0a5174da6d65f0f415e75ad"
   dependencies:
     cacache "^10.0.1"
     find-cache-dir "^1.0.0"

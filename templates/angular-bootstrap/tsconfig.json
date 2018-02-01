@@ -4,6 +4,8 @@
     "noImplicitThis": true,
     "alwaysStrict": true,
     "strictNullChecks": false,
+    "strictFunctionTypes": false,
+    "strictPropertyInitialization": true,
     "skipLibCheck": true,
     
     "noUnusedLocals": false,
@@ -12,7 +14,6 @@
     "noFallthroughCasesInSwitch": true,
     
     "experimentalDecorators": true,
-    "strictFunctionTypes": false,
     "allowSyntheticDefaultImports": true,
 
     "noEmit": true,

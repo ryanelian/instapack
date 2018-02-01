@@ -7,7 +7,7 @@
     "concat": {}
   },
   "dependencies": {
-    "@types/react": "^16.0.35",
+    "@types/react": "^16.0.36",
     "@types/react-dom": "^16.0.3",
     "@types/react-redux": "^5.0.14",
     "@types/requirejs": "^2.1.31",
@@ -21,7 +21,7 @@
     "react-dom": "^16.2.0",
     "react-redux": "^5.0.6",
     "redux": "^3.7.2",
-    "semantic-ui-css": "^2.2.12",
+    "semantic-ui-css": "^2.2.14",
     "semantic-ui-react": "^0.77.2",
     "tslib": "^1.9.0"
   }

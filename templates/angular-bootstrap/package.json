@@ -7,7 +7,7 @@
     "concat": {}
   },
   "dependencies": {
-    "@types/angular": "^1.6.41",
+    "@types/angular": "^1.6.42",
     "@types/bootbox": "^4.4.36",
     "@types/requirejs": "^2.1.31",
     "angular": "^1.6.8",

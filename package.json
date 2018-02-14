@@ -51,7 +51,7 @@
     "@types/node-sass": "^3.10.32",
     "@types/resolve": "^0.0.6",
     "@types/webpack": "^3.8.4",
-    "@types/yargs": "^10.0.1"
+    "@types/yargs": "^11.0.0"
   },
   "resolutions": {
     "**/@types/node": "8"

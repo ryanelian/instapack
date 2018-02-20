@@ -22,7 +22,7 @@
     "moduleResolution": "node",
     "importHelpers": true,
     "jsx": "react",
-    "jsxFactory": "h",
+    "jsxFactory": "createElement",
 
     "lib": [
       "dom",

@@ -7,31 +7,23 @@
     "concat": {
       "vendor": [
         "es6-promise/dist/es6-promise.auto",
-        "jquery",
-        "foundation-sites/dist/js/foundation"
+        "bootstrap.native/dist/polyfill",
+        "bootstrap.native/dist/bootstrap-native-v4"
       ]
-    },
-    "externals": {
-      "jquery": "$",
-      "foundation-sites": "$"
     }
   },
   "dependencies": {
-    "@types/jquery": "^3.3.0",
     "@types/requirejs": "^2.1.31",
-    "axios": "^0.17.1",
+    "axios": "^0.18.0",
+    "bootstrap": "^4.0.0",
+    "bootstrap.native": "^2.0.21",
     "es6-promise": "^4.2.4",
     "font-awesome": "^4.7.0",
-    "foundation-sites": "^6.4.4-rc1",
-    "inferno": "^3.10.1",
-    "inferno-component": "^3.10.1",
-    "inferno-create-element": "^3.10.1",
-    "inferno-redux": "^3.10.1",
-    "jquery": "^3.3.1",
+    "inferno": "^4.0.4",
+    "inferno-create-element": "^4.0.4",
     "linqts": "^1.10.0",
     "moment": "^2.20.1",
     "noty": "^3.2.0-beta",
-    "redux": "^3.7.2",
     "tslib": "^1.9.0"
   }
 }

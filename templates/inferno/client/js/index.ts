@@ -1,4 +1,1 @@
-﻿import 'foundation-sites';
-import './inferno-project';
-
-$(document).foundation();
+﻿import './inferno-project';

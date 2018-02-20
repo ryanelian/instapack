@@ -11,6 +11,9 @@
         "jquery-validation-unobtrusive",
         "bootstrap-sass"
       ]
+    },
+    "externals": {
+      "jquery": "$"
     }
   },
   "dependencies": {

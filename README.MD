@@ -262,7 +262,7 @@ export class MyComponent extends Vue {
 }
 ```
 
-> [A global TypeScript definition file for `*.vue.html` module](https://github.com/ryanelian/instapack/blob/master/templates/vue/client/js/template.d.ts) is required in order to import a template using ES Module syntax. That file will be created for you when using the `vue` new project template!
+> [A global TypeScript definition file for `*.vue.html` module](https://github.com/ryanelian/instapack/blob/master/templates/vue/client/js/template.d.ts) is required for importing a template using ES Module syntax. That file will be created for you when using the `vue` new project template!
 
 ## Release Cadence
 

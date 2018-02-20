@@ -111,7 +111,7 @@ Scaffolds a new instapack project into your existing app folder where the comman
 
 - `inferno` when you want to develop a web app with Inferno and Bootstrap 4.
 
-- `angularjs` when you want to develop a legacy web app with AngularJS (1.X), jQuery, and Bootstrap 3. (Includes [jquery-validation-unobtrusive](https://github.com/aspnet/jquery-validation-unobtrusive) for ASP.NET MVC client-side validation.)
+- `angularjs` when you need to develop a legacy web app with AngularJS (1.X), jQuery, and Bootstrap 3. (Includes [jquery-validation-unobtrusive](https://github.com/aspnet/jquery-validation-unobtrusive) for ASP.NET MVC client-side validation.)
 
 If no template parameter is provided, `vue` will be chosen.
 
@@ -159,6 +159,7 @@ instapack puts configuration inside `package.json` to reduce project files clutt
   },
   "dependencies": {
     "@types/requirejs": "^2.1.31",
+    "aspnet-validation": "^0.0.4",
     "axios": "^0.18.0",
     "bootstrap": "4.0.0",
     "bootstrap.native": "^2.0.21",
@@ -168,6 +169,7 @@ instapack puts configuration inside `package.json` to reduce project files clutt
     "moment": "^2.20.1",
     "noty": "^3.2.0-beta",
     "tslib": "^1.9.0",
+    "vee-validate": "^2.0.4",
     "vue": "^2.5.13",
     "vue-class-component": "^6.2.0"
   }

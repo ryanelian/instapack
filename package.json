@@ -54,6 +54,7 @@
     "@types/yargs": "^11.0.0"
   },
   "resolutions": {
-    "**/@types/node": "8"
+    "**/@types/node": "8",
+    "**/source-map": "0.7.1"
   }
 }

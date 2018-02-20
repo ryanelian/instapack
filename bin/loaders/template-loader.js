@@ -85,7 +85,8 @@ module.exports = function (html) {
             }
         });
         gen.setSourceContent(this.resourcePath, html);
-        this.callback(null, template, gen.toString());
+        let sm = gen.toJSON();
+        this.callback(null, template, sm);
     }
     else {
         this.callback(null, template);

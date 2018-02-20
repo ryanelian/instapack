@@ -16,7 +16,7 @@ module.exports = function (source) {
     if (this.sourceMap) {
         let sm = JSON.parse(result.sourceMapText);
         sm.sources = [this.resourcePath];
-        this.callback(null, result.outputText, JSON.stringify(sm));
+        this.callback(null, result.outputText, sm);
     }
     else {
         this.callback(null, result.outputText);

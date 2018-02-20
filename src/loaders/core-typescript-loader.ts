@@ -26,7 +26,7 @@ module.exports = function (this: loader.LoaderContext, source: string) {
         let sm: RawSourceMap = JSON.parse(result.sourceMapText);
         sm.sources = [this.resourcePath];
 
-        this.callback(null, result.outputText, JSON.stringify(sm));
+        this.callback(null, result.outputText, sm);
     } else {
         this.callback(null, result.outputText);
     }

@@ -242,16 +242,12 @@ so [CDN](https://en.wikipedia.org/wiki/Content_delivery_network) can be used! :t
 }
 ```
 
-- `template` allows changing the compilation mode of the imported HTML templates to enable **Ahead-of-Time Template Compilation** for certain frameworks, for improved performance.
-
-  - Default value `string` exports templates as string modules. This is handy when working with HTML-based templates for AngularJS, Vue.js, and Mustache / Handlebars using CommonJS module import syntax: `require('./MyTemplate.html') as string`
-
-  - `vue` exports templates as modules containing `render` and `staticRenderFns` properties to be passed into a Vue.js component options.
+- instapack allows Ahead-of-Time compilation of HTML templates using Vue.js render syntax for greater app performance. To do this, prefix imported HTML module with `!vue-aot!` explicit loader rule.
 
 ```ts
 import Vue from 'vue';
 import Component from 'vue-class-component';
-import { render, staticRenderFns } from './MyComponent.html';
+import { render, staticRenderFns } from '!vue-aot!./MyComponent.html';
 
 @Component({
     render, staticRenderFns
@@ -260,7 +256,7 @@ export class MyComponent extends Vue {
 }
 ```
 
-> You will need to create [a global TypeScript definition file for `*.html` modules](https://github.com/ryanelian/instapack/blob/master/templates/vue%2B/client/js/template.d.ts) in order to import a template using ES Module syntax!
+> [A global TypeScript definition file for `!vue-aot!*.html` module](https://github.com/ryanelian/instapack/blob/master/templates/vue/client/js/template.d.ts) is required in order to import a template using ES Module syntax. That file will be created for you when using the `vue` new project template!
 
 ## Release Cadence
 

@@ -1,7 +1,5 @@
 import { loader } from 'webpack';
-import { getOptions } from 'loader-utils';
 import { minify } from 'html-minifier';
-import { compile } from 'vue-template-compiler';
 import { SourceMapGenerator } from 'source-map';
 
 let minifierOptions = {
@@ -35,10 +33,6 @@ let minifierOptions = {
     useShortDoctype: false
 };
 
-export interface TemplateLoaderOptions {
-    mode: string
-}
-
 function functionWrap(s: string) {
     return 'function(){' + s + '}';
 }
@@ -49,39 +43,10 @@ function functionArrayWrap(ar: string[]) {
 }
 
 module.exports = function (this: loader.LoaderContext, html: string) {
-    let options = getOptions(this) as TemplateLoaderOptions;
-
     let template = minify(html, minifierOptions).trim();
-    let error = '';
-
-    switch (options.mode) {
-        case 'vue': {
-            let vueResult = compile(template);
-            // console.log('vue template: ' + file + '\n' + vueResult);
-            let error = vueResult.errors[0];
-            if (!error) {
-                template = '{render:' + functionWrap(vueResult.render)
-                    + ',staticRenderFns:' + functionArrayWrap(vueResult.staticRenderFns)
-                    + '}';
-            }
-            break;
-        }
-        case 'string': {
-            template = JSON.stringify(template);
-            break;
-        }
-        default: {
-            error = 'Unknown template-loader mode: ' + options.mode;
-        }
-    }
-
+    template = JSON.stringify(template);
     template = 'module.exports = ' + template;
     // console.log("Templatify > " + file + "\n" + template);
-
-    if (error) {
-        this.callback(Error(error));
-        return;
-    }
 
     if (this.sourceMap) {
         let gen = new SourceMapGenerator({

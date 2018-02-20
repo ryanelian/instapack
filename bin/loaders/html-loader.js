@@ -1,8 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const loader_utils_1 = require("loader-utils");
 const html_minifier_1 = require("html-minifier");
-const vue_template_compiler_1 = require("vue-template-compiler");
 const source_map_1 = require("source-map");
 let minifierOptions = {
     caseSensitive: false,
@@ -42,33 +40,9 @@ function functionArrayWrap(ar) {
     return '[' + result + ']';
 }
 module.exports = function (html) {
-    let options = loader_utils_1.getOptions(this);
     let template = html_minifier_1.minify(html, minifierOptions).trim();
-    let error = '';
-    switch (options.mode) {
-        case 'vue': {
-            let vueResult = vue_template_compiler_1.compile(template);
-            let error = vueResult.errors[0];
-            if (!error) {
-                template = '{render:' + functionWrap(vueResult.render)
-                    + ',staticRenderFns:' + functionArrayWrap(vueResult.staticRenderFns)
-                    + '}';
-            }
-            break;
-        }
-        case 'string': {
-            template = JSON.stringify(template);
-            break;
-        }
-        default: {
-            error = 'Unknown template-loader mode: ' + options.mode;
-        }
-    }
+    template = JSON.stringify(template);
     template = 'module.exports = ' + template;
-    if (error) {
-        this.callback(Error(error));
-        return;
-    }
     if (this.sourceMap) {
         let gen = new source_map_1.SourceMapGenerator({
             file: this.resourcePath + '.js'

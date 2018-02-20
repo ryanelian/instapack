@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@types/requirejs": "^2.1.31",
+    "aspnet-validation": "^0.0.4",
     "axios": "^0.18.0",
     "bootstrap": "4.0.0",
     "bootstrap.native": "^2.0.21",
@@ -26,6 +27,7 @@
     "moment": "^2.20.1",
     "noty": "^3.2.0-beta",
     "tslib": "^1.9.0",
+    "vee-validate": "^2.0.4",
     "vue": "^2.5.13",
     "vue-class-component": "^6.2.0"
   }

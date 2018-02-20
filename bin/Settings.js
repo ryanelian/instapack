@@ -13,7 +13,6 @@ class Settings {
         this.concat = settings.concat || {};
         this.alias = settings.alias || {};
         this.externals = settings.externals || {};
-        this.template = settings.template || 'string';
         this.jsOut = settings.jsOut || 'ipack.js';
         if (this.jsOut.endsWith('.js') === false) {
             this.jsOut += '.js';
@@ -31,8 +30,7 @@ class Settings {
             externals: this.externals,
             input: this.input,
             jsOut: this.jsOut,
-            output: this.output,
-            template: this.template
+            output: this.output
         };
     }
     get cacheFolder() {

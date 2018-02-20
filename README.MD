@@ -105,13 +105,13 @@ Scaffolds a new instapack project into your existing app folder where the comman
 
 - `empty` when you need a minimal clean slate. Use this template to author new templates!
 
-- `vue` when you want to develop a web app with Vue.js and Bootstrap 4.
+- `vue` when you want to develop a web app with Vue.js and Bootstrap 4. (Includes [aspnet-validation](https://www.npmjs.com/package/aspnet-validation) for ASP.NET MVC client-side validation.)
 
 - `react` when you want to develop a web app with React and Semantic UI.
 
 - `inferno` when you want to develop a web app with Inferno and Bootstrap 4.
 
-- `angularjs` when you want to develop a web app with AngularJS (1.X) and Bootstrap 3.
+- `angularjs` when you want to develop a legacy web app with AngularJS (1.X), jQuery, and Bootstrap 3. (Includes [jquery-validation-unobtrusive](https://github.com/aspnet/jquery-validation-unobtrusive) for ASP.NET MVC client-side validation.)
 
 If no template parameter is provided, `vue` will be chosen.
 
@@ -127,7 +127,7 @@ In addition, build flags are available:
 
 - `-u` or `--uncharted` disables source maps. (Slightly improves build speed)
 
-- `-p` or `--parallel` enables experimental parallel build across all CPU threads! :trident:
+- `-p` or `--parallel` enables *experimental* parallel build across all CPU threads! :trident:
 
 > You can combine multiple build flags, for example: `ipack -dw` = `dev` + `watch` mode for **massive productivity gainz!** :muscle:
 
@@ -146,24 +146,30 @@ instapack puts configuration inside `package.json` to reduce project files clutt
   "private": true,
   "instapack": {
     "output": "wwwroot",
-    "concat": {},
+    "concat": {
+      "vendor": [
+        "es6-promise/dist/es6-promise.auto",
+        "bootstrap.native/dist/polyfill",
+        "bootstrap.native/dist/bootstrap-native-v4"
+      ]
+    },
     "alias": {
       "vue": "vue/dist/vue.common"
     }
   },
   "dependencies": {
     "@types/requirejs": "^2.1.31",
-    "axios": "^0.17.0",
-    "bootstrap": "4.0.0-beta.2",
-    "bootstrap.native": "^2.0.17",
-    "es6-promise": "^4.1.1",
+    "axios": "^0.18.0",
+    "bootstrap": "4.0.0",
+    "bootstrap.native": "^2.0.21",
+    "es6-promise": "^4.2.4",
     "font-awesome": "^4.7.0",
     "linqts": "^1.10.0",
-    "moment": "^2.19.1",
-    "noty": "^3.1.3",
-    "tslib": "^1.8.0",
-    "vue": "^2.5.2",
-    "vue-class-component": "^6.0.0"
+    "moment": "^2.20.1",
+    "noty": "^3.2.0-beta",
+    "tslib": "^1.9.0",
+    "vue": "^2.5.13",
+    "vue-class-component": "^6.2.0"
   }
 }
 ```
@@ -290,7 +296,7 @@ Add the packages required for your project using yarn / npm then start hacking. 
 
 Also, pull requests are welcomed if you have a great starting templates and books for those projects. We'd love to expand our collections!
 
-### I'm upgrading from instapack 4. Are there breaking changes?
+### What are the breaking changes when upgrading from instapack 4?
 
 - Our supported Node.js runtime is now the latest version 8 LTS.
 
@@ -320,6 +326,12 @@ Also, pull requests are welcomed if you have a great starting templates and book
   }
 }
 ```
+
+### What are the breaking changes when upgrading from instapack 5?
+
+HTML template compilation mode in `package.json` (`string` vs `vue`) has been removed in favor of special extension `.vue.html`. This change allows a project to have both stringified HTML and pre-compiled Vue.js HTML. This change also simplifies instapack to make it more beginner-friendly by reducing the number of options / flags and templates (removed `vue+`).
+
+In light of [the final version of AngularJS 1.7 LTS](https://blog.angular.io/stable-angularjs-and-long-term-support-7e077635ee9c), it is recommended for newer projects to use Vue.js / React / Inferno instead. To reflect this suggestion, `angular-material` template has been removed and `angular-bootstrap` template has been renamed to `angularjs`. jQuery has been re-added into `angularjs` template to improve compatibility with legacy browser, especially with Bootstrap 3.
 
 ### I thought files should not be bundled because of HTTP/2?
 

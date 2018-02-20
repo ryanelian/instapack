@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@types/requirejs": "^2.1.31",
+    "aspnet-validation": "^0.0.4",
     "axios": "^0.18.0",
     "bootstrap": "4.0.0",
     "bootstrap.native": "^2.0.21",

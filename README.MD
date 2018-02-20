@@ -107,15 +107,11 @@ Scaffolds a new instapack project into your existing app folder where the comman
 
 - `vue` when you want to develop a web app with Vue.js and Bootstrap 4.
 
-- `vue+` when you want to develop a web app with Vue.js and Bootstrap 4, plus :fire: plugins (includes ASP.NET Core MVC validation) and pre-compiled template setup!
-
 - `react` when you want to develop a web app with React and Semantic UI.
 
-- `inferno` when you want to develop a web app with Inferno and Zurb Foundation.
+- `inferno` when you want to develop a web app with Inferno and Bootstrap 4.
 
-- `angular-bootstrap` when you want to develop a web app with AngularJS (1.X) and Bootstrap 3 (includes ASP.NET Core MVC validation).
-
-- `angular-material` when you want to develop a web app with AngularJS (1.X) and Material Design (includes Angular UI Router).
+- `angularjs` when you want to develop a web app with AngularJS (1.X) and Bootstrap 3.
 
 If no template parameter is provided, `vue` will be chosen.
 

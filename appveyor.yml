@@ -3,13 +3,11 @@ image: Visual Studio 2017
 environment:
   NODEJS_VERSION: 8
   matrix:
-  - TEMPLATE: angular-bootstrap
-  - TEMPLATE: angular-material
+  - TEMPLATE: angularjs
   - TEMPLATE: empty
   - TEMPLATE: inferno
   - TEMPLATE: react
   - TEMPLATE: vue
-  - TEMPLATE: vue+
 cache:
     - node_modules
     - '%LOCALAPPDATA%\Yarn'

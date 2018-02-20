@@ -111,7 +111,7 @@ Scaffolds a new instapack project into your existing app folder where the comman
 
 - `inferno` when you want to develop a web app with Inferno and Bootstrap 4.
 
-- `angularjs` when you need to develop a legacy web app with AngularJS (1.X), jQuery, and Bootstrap 3. (Includes [jquery-validation-unobtrusive](https://github.com/aspnet/jquery-validation-unobtrusive) for ASP.NET MVC client-side validation.)
+- `angularjs` when you need to develop a legacy web app with AngularJS 1.7, jQuery, and Bootstrap 3. (Includes [jquery-validation-unobtrusive](https://github.com/aspnet/jquery-validation-unobtrusive) for ASP.NET MVC client-side validation.)
 
 If no template parameter is provided, `vue` will be chosen.
 
@@ -169,7 +169,6 @@ instapack puts configuration inside `package.json` to reduce project files clutt
     "moment": "^2.20.1",
     "noty": "^3.2.0-beta",
     "tslib": "^1.9.0",
-    "vee-validate": "^2.0.4",
     "vue": "^2.5.13",
     "vue-class-component": "^6.2.0"
   }
@@ -250,7 +249,19 @@ so [CDN](https://en.wikipedia.org/wiki/Content_delivery_network) can be used! :t
 }
 ```
 
-- Normally, HTML files will be minified and then stringified to allow working libraries / frameworks such as AngularJS or Mustache / Handlebars. In pursuit of improved app performance, instapack allows Ahead-of-Time (AoT) compilation of HTML templates using Vue.js render syntax. HTML files with special file extension `.vue.html` will be compiled into an object to be passed into Vue Component as parameters:
+- Use CommonJS syntax to easily import an HTML template as a simple string (type-hinted). This technique allows working with libraries or frameworks relying on HTML-based templates such as AngularJS, mustache.js, Handlebars.js, Ember.js, and Vue.js. The input file will be minified and then stringified.
+
+```ts
+let template = require('./mytemplate.html') as string;
+```
+
+- Use CommonJS syntax to import a static JSON file content as a JavaScript module object. This import can be type-hinted for convenience.
+
+```ts
+let something = require('./something.json') as Something;
+```
+
+- In pursuit of greater app performance, instapack allows Ahead-of-Time (AoT) compilation of HTML templates using Vue.js render syntax. HTML files with special file extension `.vue.html` will be compiled into an object to be passed into Vue Component decorator as parameters:
 
 ```ts
 import Vue from 'vue';
@@ -331,9 +342,13 @@ Also, pull requests are welcomed if you have a great starting templates and book
 
 ### What are the breaking changes when upgrading from instapack 5?
 
-HTML template compilation mode in `package.json` (`string` vs `vue`) has been removed in favor of special extension `.vue.html`. This change allows a project to have both stringified HTML and pre-compiled Vue.js HTML. This change also simplifies instapack to make it more beginner-friendly by reducing the number of options / flags and templates (removed `vue+`).
+HTML template compilation mode in `package.json` (`string` vs `vue`) has been removed in favor of special extension `.vue.html`. This change:
 
-In light of [the final version of AngularJS 1.7 LTS](https://blog.angular.io/stable-angularjs-and-long-term-support-7e077635ee9c), it is recommended for newer projects to use Vue.js / React / Inferno instead. To reflect this suggestion, `angular-material` template has been removed and `angular-bootstrap` template has been renamed to `angularjs`. jQuery has been re-added into `angularjs` template to improve compatibility with legacy browser, especially with Bootstrap 3.
+- Allows a project to have both stringified HTML and pre-compiled Vue.js HTML.
+
+- Simplifies instapack to make it more beginner-friendly by reducing the number of obscure options and templates.
+
+In light of [the final version of AngularJS 1.7 LTS](https://blog.angular.io/stable-angularjs-and-long-term-support-7e077635ee9c), it is recommended for newer projects to use Vue.js / React / Inferno instead. Therefore, `angular-material` template has been removed and `angular-bootstrap` template has been renamed to `angularjs`. jQuery has been re-added into `angularjs` template to improve compatibility with legacy browser, especially with Bootstrap 3.
 
 ### I thought files should not be bundled because of HTTP/2?
 

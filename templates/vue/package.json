@@ -4,14 +4,20 @@
   "private": true,
   "instapack": {
     "output": "wwwroot",
-    "concat": {},
+    "concat": {
+      "vendor": [
+        "es6-promise/dist/es6-promise.auto",
+        "bootstrap.native/dist/polyfill",
+        "bootstrap.native/dist/bootstrap-native-v4"
+      ]
+    },
     "alias": {
       "vue": "vue/dist/vue.common"
     }
   },
   "dependencies": {
     "@types/requirejs": "^2.1.31",
-    "axios": "^0.17.1",
+    "axios": "^0.18.0",
     "bootstrap": "4.0.0",
     "bootstrap.native": "^2.0.21",
     "es6-promise": "^4.2.4",
@@ -21,6 +27,6 @@
     "noty": "^3.2.0-beta",
     "tslib": "^1.9.0",
     "vue": "^2.5.13",
-    "vue-class-component": "^6.1.2"
+    "vue-class-component": "^6.2.0"
   }
 }

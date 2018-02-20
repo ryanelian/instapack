@@ -7,11 +7,10 @@
     "concat": {}
   },
   "dependencies": {
-    "@types/react": "^16.0.36",
-    "@types/react-dom": "^16.0.3",
-    "@types/react-redux": "^5.0.14",
+    "@types/react": "^16.0.38",
+    "@types/react-dom": "^16.0.4",
     "@types/requirejs": "^2.1.31",
-    "axios": "^0.17.1",
+    "axios": "^0.18.0",
     "es6-promise": "^4.2.4",
     "font-awesome": "^4.7.0",
     "linqts": "^1.10.0",
@@ -19,10 +18,8 @@
     "noty": "^3.2.0-beta",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
-    "react-redux": "^5.0.6",
-    "redux": "^3.7.2",
-    "semantic-ui-css": "^2.2.14",
-    "semantic-ui-react": "^0.77.2",
+    "semantic-ui-css": "^2.3.0",
+    "semantic-ui-react": "^0.78.2",
     "tslib": "^1.9.0"
   }
 }

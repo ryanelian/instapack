@@ -19,6 +19,7 @@
   "dependencies": {
     "@types/angular": "^1.6.43",
     "@types/bootbox": "^4.4.36",
+    "@types/jquery": "^3.3.0",
     "@types/requirejs": "^2.1.31",
     "angular": "^1.6.9",
     "angular-animate": "^1.6.9",

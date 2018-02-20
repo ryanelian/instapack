@@ -1,5 +1,6 @@
 import { loader } from 'webpack';
 import { minify } from 'html-minifier';
+import { compile } from 'vue-template-compiler';
 import { SourceMapGenerator } from 'source-map';
 
 let minifierOptions = {
@@ -44,9 +45,28 @@ function functionArrayWrap(ar: string[]) {
 
 module.exports = function (this: loader.LoaderContext, html: string) {
     let template = minify(html, minifierOptions).trim();
-    template = JSON.stringify(template);
+    let error = '';
+
+    let fileName = this.resourcePath.toLowerCase();
+    if (fileName.endsWith('.vue.html')) {
+        let vueResult = compile(template);
+        let error = vueResult.errors[0];
+        if (!error) {
+            template = '{render:' + functionWrap(vueResult.render)
+                + ',staticRenderFns:' + functionArrayWrap(vueResult.staticRenderFns)
+                + '}';
+        }
+    } else {
+        template = JSON.stringify(template);
+    }
+
     template = 'module.exports = ' + template;
-    // console.log("Templatify > " + file + "\n" + template);
+    // console.log("Template compiled: " + fileName + "\n" + template);
+
+    if (error) {
+        this.callback(Error(error));
+        return;
+    }
 
     if (this.sourceMap) {
         let gen = new SourceMapGenerator({

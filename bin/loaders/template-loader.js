@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const html_minifier_1 = require("html-minifier");
+const vue_template_compiler_1 = require("vue-template-compiler");
 const source_map_1 = require("source-map");
 let minifierOptions = {
     caseSensitive: false,
@@ -41,8 +42,25 @@ function functionArrayWrap(ar) {
 }
 module.exports = function (html) {
     let template = html_minifier_1.minify(html, minifierOptions).trim();
-    template = JSON.stringify(template);
+    let error = '';
+    let fileName = this.resourcePath.toLowerCase();
+    if (fileName.endsWith('.vue.html')) {
+        let vueResult = vue_template_compiler_1.compile(template);
+        let error = vueResult.errors[0];
+        if (!error) {
+            template = '{render:' + functionWrap(vueResult.render)
+                + ',staticRenderFns:' + functionArrayWrap(vueResult.staticRenderFns)
+                + '}';
+        }
+    }
+    else {
+        template = JSON.stringify(template);
+    }
     template = 'module.exports = ' + template;
+    if (error) {
+        this.callback(Error(error));
+        return;
+    }
     if (this.sourceMap) {
         let gen = new source_map_1.SourceMapGenerator({
             file: this.resourcePath + '.js'

@@ -242,12 +242,12 @@ so [CDN](https://en.wikipedia.org/wiki/Content_delivery_network) can be used! :t
 }
 ```
 
-- instapack allows Ahead-of-Time compilation of HTML templates using Vue.js render syntax for greater app performance. To do this, prefix imported HTML module with `!vue-aot!` explicit loader rule.
+- Normally, HTML files will be minified and then stringified to allow working libraries / frameworks such as AngularJS or Mustache / Handlebars. In pursuit of improved app performance, instapack allows Ahead-of-Time (AoT) compilation of HTML templates using Vue.js render syntax. HTML files with special file extension `.vue.html` will be compiled into an object to be passed into Vue Component as parameters:
 
 ```ts
 import Vue from 'vue';
 import Component from 'vue-class-component';
-import { render, staticRenderFns } from '!vue-aot!./MyComponent.html';
+import { render, staticRenderFns } from './MyComponent.vue.html';
 
 @Component({
     render, staticRenderFns
@@ -256,7 +256,7 @@ export class MyComponent extends Vue {
 }
 ```
 
-> [A global TypeScript definition file for `!vue-aot!*.html` module](https://github.com/ryanelian/instapack/blob/master/templates/vue/client/js/template.d.ts) is required in order to import a template using ES Module syntax. That file will be created for you when using the `vue` new project template!
+> [A global TypeScript definition file for `*.vue.html` module](https://github.com/ryanelian/instapack/blob/master/templates/vue/client/js/template.d.ts) is required in order to import a template using ES Module syntax. That file will be created for you when using the `vue` new project template!
 
 ## Release Cadence
 

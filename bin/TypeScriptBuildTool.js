@@ -58,7 +58,7 @@ class TypeScriptBuildTool {
             loaders.push(this.threadLoader);
         }
         loaders.push({
-            loader: 'html-loader'
+            loader: 'template-loader'
         });
         return {
             test: /\.html?$/,

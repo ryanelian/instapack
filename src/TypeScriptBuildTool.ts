@@ -119,7 +119,7 @@ export class TypeScriptBuildTool {
         }
 
         loaders.push({
-            loader: 'html-loader'
+            loader: 'template-loader'
         });
 
         return {

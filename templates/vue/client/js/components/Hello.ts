@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
-import { render, staticRenderFns } from '!vue-aot!./Hello.html';
+import { render, staticRenderFns } from './Hello.vue.html';
 
 @Component({
     render, staticRenderFns,

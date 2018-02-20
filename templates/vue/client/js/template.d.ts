@@ -6,7 +6,7 @@ declare global {
         staticRenderFns: (() => VNode)[];
     }
 
-    module '!vue-aot!*.html' {
+    module '*.vue.html' {
         let _: VueCompiledTemplate;
         export = _;
     }

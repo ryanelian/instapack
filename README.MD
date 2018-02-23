@@ -251,9 +251,9 @@ so [CDN](https://en.wikipedia.org/wiki/Content_delivery_network) can be used! :t
 
 - Use [ES Harmony module syntax](https://www.typescriptlang.org/docs/handbook/modules.html) to import and export other `.ts` / `.tsx` files in the project or JavaScript modules from `node_modules` installed via `npm` or `yarn`. This technique allows the ease of development using intellisense for modules with type definitions:
 
-  - The module has `"typings": "something.d.ts"` in its `package.json`. For example, `linqts`.
+  - The module has `"typings": "something.d.ts"` in its `package.json`. For example: `vue`, `linq`
 
-  - The module has [@types](https://microsoft.github.io/TypeSearch/) installed. For example, `react` and `@types/react`.
+  - The module has [@types](https://microsoft.github.io/TypeSearch/) installed. For example, `react` and `@types/react`
 
 ```ts
 import List from 'linq';
@@ -370,13 +370,21 @@ HTML template compilation mode in `package.json` (`string` vs `vue`) has been re
 
 - Simplifies instapack to make it more beginner-friendly by reducing the number of obscure options and templates.
 
-In light of [the final version of AngularJS 1.7 LTS](https://blog.angular.io/stable-angularjs-and-long-term-support-7e077635ee9c), it is recommended for newer projects to use Vue.js / React / Inferno instead. Therefore, `angular-material` template has been removed and `angular-bootstrap` template has been renamed to `angularjs`. jQuery has been re-added into `angularjs` template to improve compatibility with legacy browser, especially with Bootstrap 3.
+In light of [the final version of AngularJS 1.7 LTS](https://blog.angular.io/stable-angularjs-and-long-term-support-7e077635ee9c), it is recommended for newer projects to use Vue.js / React / Inferno instead.
+
+- Therefore, `angular-material` template has been removed and `angular-bootstrap` template has been renamed to `angularjs`.
+
+- jQuery has been re-added into `angularjs` template to improve compatibility with legacy browser, especially with Bootstrap 3.
 
 > [Why release `uglify-es` at all then if every new `uglify-js` feature renders it unusable?](https://github.com/mishoo/UglifyJS2/pull/2897)
 
-Unfortunately, the enterprise world is not ready for scripts running natively in ES2015 and beyond...
+Unfortunately, the enterprise world is not ready for JavaScript running natively in ES2015 and beyond...
 
-UglifyES has been reverted back in favor of the hopefully-more-stable UglifyJS 3. This affects build output: only ES3 and ES5 build outputs (`target` field set in `tsconfig.json`) are currently supported. If you try to import an ES2015+ module from `node_modules`, the build will fail! This downgrade guards your projects against ninja incompatibility (AFAIK UglifyES does not transpile down like Babel).
+UglifyES has been dropped in favor of the hopefully-more-stable UglifyJS 3. This change imposes a stricter build requirement:
+
+- Only ES5 build target (`target` field set in `tsconfig.json`) is supported. **Setting ES2015+ as build target will error your build!**
+
+- **If you try to import a non-TypeScript-compiled ES2015+ module, the build will fail!** This downgrade guards your projects against ninja incompatibilities.
 
 ### I thought files should not be bundled because of HTTP/2?
 

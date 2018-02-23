@@ -374,7 +374,9 @@ In light of [the final version of AngularJS 1.7 LTS](https://blog.angular.io/sta
 
 > [Why release `uglify-es` at all then if every new `uglify-js` feature renders it unusable?](https://github.com/mishoo/UglifyJS2/pull/2897)
 
-UglifyES has been reverted back in favor of the hopefully-more-stable UglifyJS 3. This affects build output: only ES3 and ES5 build outputs (`target` field set in `tsconfig.json`) are currently supported. Unfortunately, the enterprise world is not ready for scripts running natively in ES6 and beyond...
+Unfortunately, the enterprise world is not ready for scripts running natively in ES2015 and beyond...
+
+UglifyES has been reverted back in favor of the hopefully-more-stable UglifyJS 3. This affects build output: only ES3 and ES5 build outputs (`target` field set in `tsconfig.json`) are currently supported. If you try to import an ES2015+ module from `node_modules`, the build will fail! This downgrade guards your projects against ninja incompatibility (AFAIK UglifyES does not transpile down like Babel).
 
 ### I thought files should not be bundled because of HTTP/2?
 

@@ -7,21 +7,7 @@ const EventHub_1 = require("./EventHub");
 const CompilerUtilities_1 = require("./CompilerUtilities");
 const TypeScriptConfigurationReader_1 = require("./TypeScriptConfigurationReader");
 const PrettyUnits_1 = require("./PrettyUnits");
-class TypeScriptBuildWebpackPlugin {
-    constructor(settings, flags) {
-        this.settings = settings;
-        this.flags = flags;
-    }
-    apply(compiler) {
-        let tsTarget = TypeScriptConfigurationReader_1.getTypeScriptTarget();
-        if (tsTarget !== 'ES5' && tsTarget !== 'ES3') {
-            console.warn(chalk_1.default.red('DANGER') + ' UglifyJS 3 minifier only supports ES3 and ES5 build target! ' + chalk_1.default.grey('(tsconfig.json)'));
-        }
-        compiler.plugin('compile', compilation => {
-            CompilerUtilities_1.timedLog('Compiling JS >', chalk_1.default.yellow(tsTarget), chalk_1.default.cyan(this.settings.jsEntry));
-        });
-    }
-}
+const TypeScriptBuildWebpackPlugin_1 = require("./TypeScriptBuildWebpackPlugin");
 class TypeScriptBuildTool {
     constructor(settings, flags) {
         this.settings = settings;
@@ -52,16 +38,12 @@ class TypeScriptBuildTool {
     getWebpackPlugins() {
         let plugins = [];
         plugins.push(new webpack.NoEmitOnErrorsPlugin());
-        plugins.push(new TypeScriptBuildWebpackPlugin(this.settings, this.flags));
+        plugins.push(new TypeScriptBuildWebpackPlugin_1.TypeScriptBuildWebpackPlugin(this.settings, this.flags));
         if (this.flags.production) {
             plugins.push(new webpack.DefinePlugin({
                 'process.env': {
                     'NODE_ENV': JSON.stringify('production')
                 }
-            }));
-            plugins.push(new webpack.optimize.UglifyJsPlugin({
-                sourceMap: this.flags.sourceMap,
-                comments: false
             }));
         }
         return plugins;

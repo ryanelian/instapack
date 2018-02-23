@@ -37,6 +37,7 @@
     "uglify-js": "3.3.12",
     "vue-template-compiler": "2.5.13",
     "webpack": "3.11.0",
+    "webpack-sources": "1.1.0",
     "yargs": "11.0.0"
   },
   "devDependencies": {
@@ -49,6 +50,7 @@
     "@types/node-sass": "^3.10.32",
     "@types/resolve": "^0.0.6",
     "@types/webpack": "^3.8.8",
+    "@types/webpack-sources": "^0.1.4",
     "@types/yargs": "^11.0.0"
   },
   "resolutions": {

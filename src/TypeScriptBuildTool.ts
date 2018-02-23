@@ -5,48 +5,9 @@ import * as webpack from 'webpack';
 import hub from './EventHub';
 import { timedLog, CompilerFlags } from './CompilerUtilities';
 import { Settings } from './Settings';
-import { getLazyCompilerOptions, getTypeScriptTarget } from './TypeScriptConfigurationReader';
+import { getLazyCompilerOptions } from './TypeScriptConfigurationReader';
 import { prettyBytes, prettyMilliseconds } from './PrettyUnits';
-
-/**
- * Custom webpack plugin for managing TypeScript build lifecycle. 
- */
-class TypeScriptBuildWebpackPlugin {
-
-    /**
-     * Gets the project settings.
-     */
-    private readonly settings: Settings;
-
-    /**
-     * Gets the compiler build flags.
-     */
-    private readonly flags: CompilerFlags;
-
-    /**
-     * Constructs a new instance of TypeScriptBuildPlugin using the specified settings and build flags. 
-     * @param settings 
-     * @param flags 
-     */
-    constructor(settings: Settings, flags: CompilerFlags) {
-        this.settings = settings
-        this.flags = flags;
-    }
-
-    /**
-     * Apply function prototype for registering a webpack plugin.
-     * @param compiler 
-     */
-    apply(compiler: webpack.Compiler) {
-        let tsTarget = getTypeScriptTarget();
-        if (tsTarget !== 'ES5' && tsTarget !== 'ES3') {
-            console.warn(chalk.red('DANGER') + ' UglifyJS 3 minifier only supports ES3 and ES5 build target! ' + chalk.grey('(tsconfig.json)'));
-        }
-        compiler.plugin('compile', compilation => {
-            timedLog('Compiling JS >', chalk.yellow(tsTarget), chalk.cyan(this.settings.jsEntry));
-        });
-    }
-}
+import { TypeScriptBuildWebpackPlugin } from './TypeScriptBuildWebpackPlugin'
 
 /**
  * Contains methods for compiling a TypeScript project.
@@ -117,10 +78,6 @@ export class TypeScriptBuildTool {
                 'process.env': {
                     'NODE_ENV': JSON.stringify('production')
                 }
-            }));
-            plugins.push(new webpack.optimize.UglifyJsPlugin({
-                sourceMap: this.flags.sourceMap,
-                comments: false
             }));
         }
 

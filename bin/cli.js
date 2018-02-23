@@ -60,9 +60,6 @@ CLI.command({
         }).option('u', {
             alias: 'uncharted',
             describe: 'Disables source maps.'
-        }).option('p', {
-            alias: 'parallel',
-            describe: 'Enables parallel build across all CPU threads!'
         });
     },
     handler: argv => {
@@ -71,8 +68,7 @@ CLI.command({
         app.build(subCommand, {
             production: !Boolean(argv.dev),
             watch: Boolean(argv.watch),
-            sourceMap: !Boolean(argv.uncharted),
-            parallel: Boolean(argv.parallel)
+            sourceMap: !Boolean(argv.uncharted)
         });
     }
 });

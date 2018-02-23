@@ -68,10 +68,6 @@ export class Compiler {
             timedLog(chalk.red("Do not forget to minify"), "before pushing to repository or production server!");
         }
 
-        if (this.flags.parallel) {
-            timedLog(chalk.yellow('Parallel'), 'Mode: Build will be scaled across all CPU threads!');
-        }
-
         if (this.flags.watch) {
             timedLog(chalk.yellow("Watch"), "Mode: Source codes will be automatically compiled on changes.");
         }

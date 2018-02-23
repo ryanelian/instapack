@@ -37,9 +37,6 @@ class Compiler {
             CompilerUtilities_1.timedLog(chalk_1.default.yellow("Development"), "Mode: Outputs will", chalk_1.default.red("NOT be minified!"), "(Fast build)");
             CompilerUtilities_1.timedLog(chalk_1.default.red("Do not forget to minify"), "before pushing to repository or production server!");
         }
-        if (this.flags.parallel) {
-            CompilerUtilities_1.timedLog(chalk_1.default.yellow('Parallel'), 'Mode: Build will be scaled across all CPU threads!');
-        }
         if (this.flags.watch) {
             CompilerUtilities_1.timedLog(chalk_1.default.yellow("Watch"), "Mode: Source codes will be automatically compiled on changes.");
         }

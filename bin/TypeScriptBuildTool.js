@@ -1,10 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const path = require("path");
-const os = require("os");
 const chalk_1 = require("chalk");
 const webpack = require("webpack");
-const UglifyWebpackPlugin = require("uglifyjs-webpack-plugin");
 const EventHub_1 = require("./EventHub");
 const CompilerUtilities_1 = require("./CompilerUtilities");
 const TypeScriptConfigurationReader_1 = require("./TypeScriptConfigurationReader");
@@ -15,8 +13,12 @@ class TypeScriptBuildWebpackPlugin {
         this.flags = flags;
     }
     apply(compiler) {
+        let tsTarget = TypeScriptConfigurationReader_1.getTypeScriptTarget();
+        if (tsTarget !== 'ES5' && tsTarget !== 'ES3') {
+            console.warn(chalk_1.default.red('DANGER') + ' UglifyJS 3 minifier only supports ES3 and ES5 build target! ' + chalk_1.default.grey('(tsconfig.json)'));
+        }
         compiler.plugin('compile', compilation => {
-            CompilerUtilities_1.timedLog('Compiling JS >', chalk_1.default.yellow(TypeScriptConfigurationReader_1.getTypeScriptTarget()), chalk_1.default.cyan(this.settings.jsEntry));
+            CompilerUtilities_1.timedLog('Compiling JS >', chalk_1.default.yellow(tsTarget), chalk_1.default.cyan(this.settings.jsEntry));
         });
     }
 }
@@ -25,44 +27,26 @@ class TypeScriptBuildTool {
         this.settings = settings;
         this.flags = flags;
     }
-    get threadLoader() {
-        return {
-            loader: 'thread-loader',
-            options: {
-                workers: os.cpus().length - 1
-            }
-        };
-    }
     get typescriptWebpackRules() {
-        let loaders = [];
-        if (this.flags.parallel) {
-            loaders.push(this.threadLoader);
-        }
         let options = TypeScriptConfigurationReader_1.getLazyCompilerOptions();
         options.sourceMap = this.flags.sourceMap;
         options.inlineSources = this.flags.sourceMap;
-        loaders.push({
-            loader: 'core-typescript-loader',
-            options: {
-                compilerOptions: options
-            }
-        });
         return {
             test: /\.tsx?$/,
-            use: loaders
+            use: [{
+                    loader: 'core-typescript-loader',
+                    options: {
+                        compilerOptions: options
+                    }
+                }]
         };
     }
     get templatesWebpackRules() {
-        let loaders = [];
-        if (this.flags.parallel) {
-            loaders.push(this.threadLoader);
-        }
-        loaders.push({
-            loader: 'template-loader'
-        });
         return {
             test: /\.html?$/,
-            use: loaders
+            use: [{
+                    loader: 'template-loader'
+                }]
         };
     }
     getWebpackPlugins() {
@@ -75,10 +59,9 @@ class TypeScriptBuildTool {
                     'NODE_ENV': JSON.stringify('production')
                 }
             }));
-            plugins.push(new UglifyWebpackPlugin({
+            plugins.push(new webpack.optimize.UglifyJsPlugin({
                 sourceMap: this.flags.sourceMap,
-                parallel: this.flags.parallel,
-                uglifyOptions: TypeScriptConfigurationReader_1.createUglifyESOptions()
+                comments: false
             }));
         }
         return plugins;

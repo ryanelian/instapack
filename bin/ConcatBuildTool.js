@@ -12,9 +12,8 @@ const fse = require("fs-extra");
 const path = require("path");
 const chalk_1 = require("chalk");
 const resolve = require("resolve");
-const UglifyES = require("uglify-es");
+let Uglify = require('uglify-js');
 const EventHub_1 = require("./EventHub");
-const TypeScriptConfigurationReader_1 = require("./TypeScriptConfigurationReader");
 const CompilerUtilities_1 = require("./CompilerUtilities");
 const PrettyUnits_1 = require("./PrettyUnits");
 class ConcatBuildTool {
@@ -51,7 +50,7 @@ class ConcatBuildTool {
         });
     }
     concatFilesAsync(target, files) {
-        let options = TypeScriptConfigurationReader_1.createUglifyESOptions();
+        let options = {};
         if (!this.flags.production) {
             options['compress'] = false;
             options['mangle'] = false;
@@ -68,7 +67,7 @@ class ConcatBuildTool {
             };
         }
         return new Promise((ok, error) => {
-            let result = UglifyES.minify(files, options);
+            let result = Uglify.minify(files, options);
             if (result.error) {
                 error(result.error);
             }

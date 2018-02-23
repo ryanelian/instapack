@@ -1,13 +1,11 @@
 import * as path from 'path';
-import * as os from 'os';
 import chalk from 'chalk';
 import * as webpack from 'webpack';
-import * as UglifyWebpackPlugin from 'uglifyjs-webpack-plugin';
 
 import hub from './EventHub';
 import { timedLog, CompilerFlags } from './CompilerUtilities';
 import { Settings } from './Settings';
-import { getLazyCompilerOptions, createUglifyESOptions, getTypeScriptTarget } from './TypeScriptConfigurationReader';
+import { getLazyCompilerOptions, getTypeScriptTarget } from './TypeScriptConfigurationReader';
 import { prettyBytes, prettyMilliseconds } from './PrettyUnits';
 
 /**
@@ -40,8 +38,12 @@ class TypeScriptBuildWebpackPlugin {
      * @param compiler 
      */
     apply(compiler: webpack.Compiler) {
+        let tsTarget = getTypeScriptTarget();
+        if (tsTarget !== 'ES5' && tsTarget !== 'ES3') {
+            console.warn(chalk.red('DANGER') + ' UglifyJS 3 minifier only supports ES3 and ES5 build target! ' + chalk.grey('(tsconfig.json)'));
+        }
         compiler.plugin('compile', compilation => {
-            timedLog('Compiling JS >', chalk.yellow(getTypeScriptTarget()), chalk.cyan(this.settings.jsEntry));
+            timedLog('Compiling JS >', chalk.yellow(tsTarget), chalk.cyan(this.settings.jsEntry));
         });
     }
 }
@@ -72,40 +74,21 @@ export class TypeScriptBuildTool {
     }
 
     /**
-     * Gets a loader option capable of performing multi-threaded build!
-     */
-    get threadLoader() {
-        return {
-            loader: 'thread-loader',
-            options: {
-                workers: os.cpus().length - 1
-            }
-        };
-    }
-
-    /**
      * Gets a configured TypeScript rules for webpack.
      */
     get typescriptWebpackRules() {
-        let loaders = [];
-        if (this.flags.parallel) {
-            loaders.push(this.threadLoader);
-        }
-
         let options = getLazyCompilerOptions();
         options.sourceMap = this.flags.sourceMap;
         options.inlineSources = this.flags.sourceMap;
 
-        loaders.push({
-            loader: 'core-typescript-loader',
-            options: {
-                compilerOptions: options
-            }
-        });
-
         return {
             test: /\.tsx?$/,
-            use: loaders
+            use: [{
+                loader: 'core-typescript-loader',
+                options: {
+                    compilerOptions: options
+                }
+            }]
         };
     }
 
@@ -113,18 +96,11 @@ export class TypeScriptBuildTool {
      * Gets a configured HTML template rules for webpack.
      */
     get templatesWebpackRules() {
-        let loaders = [];
-        if (this.flags.parallel) {
-            loaders.push(this.threadLoader);
-        }
-
-        loaders.push({
-            loader: 'template-loader'
-        });
-
         return {
             test: /\.html?$/,
-            use: loaders
+            use: [{
+                loader: 'template-loader'
+            }]
         };
     }
 
@@ -142,10 +118,9 @@ export class TypeScriptBuildTool {
                     'NODE_ENV': JSON.stringify('production')
                 }
             }));
-            plugins.push(new UglifyWebpackPlugin({
+            plugins.push(new webpack.optimize.UglifyJsPlugin({
                 sourceMap: this.flags.sourceMap,
-                parallel: this.flags.parallel,
-                uglifyOptions: createUglifyESOptions()
+                comments: false
             }));
         }
 

@@ -23,7 +23,7 @@ module.exports = function (this: loader.LoaderContext, source: string) {
 
     if (this.sourceMap) {
         // console.log(this.resourcePath);
-        let sm: RawSourceMap = JSON.parse(result.sourceMapText);
+        let sm = JSON.parse(result.sourceMapText) as RawSourceMap;
         sm.sources = [this.resourcePath];
         // HACK: https://github.com/webpack/webpack-sources/issues/34
         this.callback(null, result.outputText, sm as any);

@@ -2,10 +2,9 @@ import * as fse from 'fs-extra';
 import * as path from 'path';
 import chalk from 'chalk';
 import * as resolve from 'resolve';
-import * as UglifyES from 'uglify-es';
+let Uglify = require('uglify-js');
 
 import hub from './EventHub';
-import { createUglifyESOptions } from './TypeScriptConfigurationReader';
 import { Settings } from './Settings';
 import { CompilerFlags, convertAbsoluteToSourceMapPath, logAndWriteUtf8FileAsync, timedLog } from './CompilerUtilities';
 import { prettyHrTime } from './PrettyUnits';
@@ -87,7 +86,7 @@ export class ConcatBuildTool {
      * @param files 
      */
     concatFilesAsync(target: string, files: ConcatFiles) {
-        let options = createUglifyESOptions();
+        let options = {};
         if (!this.flags.production) {
             options['compress'] = false;
             options['mangle'] = false;
@@ -105,7 +104,7 @@ export class ConcatBuildTool {
         }
 
         return new Promise<any>((ok, error) => {
-            let result = UglifyES.minify(files, options);
+            let result = Uglify.minify(files, options);
             if (result.error) {
                 error(result.error)
             } else {

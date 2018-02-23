@@ -127,8 +127,6 @@ In addition, build flags are available:
 
 - `-u` or `--uncharted` disables source maps. (Slightly improves build speed)
 
-- `-p` or `--parallel` enables *experimental* parallel build across all CPU threads! :trident:
-
 > You can combine multiple build flags, for example: `ipack -dw` = `dev` + `watch` mode for **massive productivity gainz!** :muscle:
 
 ### clean
@@ -221,7 +219,7 @@ so [CDN](https://en.wikipedia.org/wiki/Content_delivery_network) can be used! :t
 
 - `concat` allows packing browser libraries to be consumed directly from `<script src="...">` rather than as a module.
 
-  - The file names will be resolved node-style (but **NOT** their contents), which allows concatenating packages downloaded from `npm` to be bundled, minified, and then placed into the output JS folder. 
+  - The file names will be resolved node-style (**but NOT their contents**), which allows concatenating packages downloaded from `npm` to be bundled, minified, and then placed into the output JS folder. 
 
   - Use concatenation for libraries that cannot be imported / do not need to be imported (for example, jQuery plugins). This hybrid approach allows greater compatibility with older libraries, while enjoying the rich development experience using TypeScript.
 
@@ -258,7 +256,7 @@ so [CDN](https://en.wikipedia.org/wiki/Content_delivery_network) can be used! :t
   - The module has [@types](https://microsoft.github.io/TypeSearch/) installed. For example, `react` and `@types/react`.
 
 ```ts
-import { List } from 'linqts';
+import List from 'linq';
 ```
 
 - You may also use CommonJS module syntax to import JavaScript modules from `node_modules` installed via `npm`, but **you will NOT get intellisense** (module will be imported as `any` data type).
@@ -373,6 +371,10 @@ HTML template compilation mode in `package.json` (`string` vs `vue`) has been re
 - Simplifies instapack to make it more beginner-friendly by reducing the number of obscure options and templates.
 
 In light of [the final version of AngularJS 1.7 LTS](https://blog.angular.io/stable-angularjs-and-long-term-support-7e077635ee9c), it is recommended for newer projects to use Vue.js / React / Inferno instead. Therefore, `angular-material` template has been removed and `angular-bootstrap` template has been renamed to `angularjs`. jQuery has been re-added into `angularjs` template to improve compatibility with legacy browser, especially with Bootstrap 3.
+
+> [Why release `uglify-es` at all then if every new `uglify-js` feature renders it unusable?](https://github.com/mishoo/UglifyJS2/pull/2897)
+
+UglifyES has been reverted back in favor of the hopefully-more-stable UglifyJS 3. This affects build output: only ES3 and ES5 build outputs (`target` field set in `tsconfig.json`) are currently supported. Unfortunately, the enterprise world is not ready for scripts running natively in ES6 and beyond...
 
 ### I thought files should not be bundled because of HTTP/2?
 

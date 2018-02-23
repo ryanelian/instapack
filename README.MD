@@ -249,6 +249,30 @@ so [CDN](https://en.wikipedia.org/wiki/Content_delivery_network) can be used! :t
 }
 ```
 
+## Module Systems
+
+- Use [ES Harmony module syntax](https://www.typescriptlang.org/docs/handbook/modules.html) to import and export other `.ts` / `.tsx` files in the project or JavaScript modules from `node_modules` installed via `npm` or `yarn`. This technique allows the ease of development using intellisense for modules with type definitions:
+
+  - The module has `"typings": "something.d.ts"` in its `package.json`. For example, `vue`.
+
+  - The module has [@types](https://microsoft.github.io/TypeSearch/) installed. For example, `react` and `@types/react`.
+
+```ts
+import Vue from 'vue';
+```
+
+- You may also use CommonJS module syntax to import JavaScript modules from `node_modules` installed via `npm`, but **you will NOT get intellisense** (module will be imported as `any` data type).
+
+```js
+let $ = require('jquery');
+```
+
+- Use CommonJS module syntax to import non-TypeScript modules (files with `.js` extension). This technique is **NOT recommended** but allows interoperability between the TypeScript project and older codes written in plain JavaScript:
+
+```js
+require('./something');
+```
+
 - Use CommonJS syntax to easily import an HTML template as a simple string (type-hinted). This technique allows working with libraries or frameworks relying on HTML-based templates such as AngularJS, mustache.js, Handlebars.js, Ember.js, and Vue.js. The input file will be minified and then stringified.
 
 ```ts

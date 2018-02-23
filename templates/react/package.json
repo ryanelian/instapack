@@ -13,7 +13,7 @@
     "axios": "^0.18.0",
     "es6-promise": "^4.2.4",
     "font-awesome": "^4.7.0",
-    "linqts": "^1.10.0",
+    "linq": "^3.0.9",
     "moment": "^2.20.1",
     "noty": "^3.2.0-beta",
     "react": "^16.2.0",

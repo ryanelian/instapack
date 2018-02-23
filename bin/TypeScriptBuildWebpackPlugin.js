@@ -32,8 +32,8 @@ class TypeScriptBuildWebpackPlugin {
     }
     apply(compiler) {
         let tsTarget = TypeScriptConfigurationReader_1.getTypeScriptTarget();
-        if (tsTarget !== 'ES5' && tsTarget !== 'ES3') {
-            console.warn(chalk_1.default.red('DANGER') + ' UglifyJS 3 minifier only supports ES3 and ES5 build target! ' + chalk_1.default.grey('(tsconfig.json)'));
+        if (tsTarget !== 'ES5') {
+            console.warn(chalk_1.default.red('DANGER') + ' TypeScript compile target is not ' + chalk_1.default.yellow('ES5') + '! ' + chalk_1.default.grey('(tsconfig.json)'));
         }
         compiler.plugin('compile', compilation => {
             CompilerUtilities_1.timedLog('Compiling JS >', chalk_1.default.yellow(tsTarget), chalk_1.default.cyan(this.settings.jsEntry));

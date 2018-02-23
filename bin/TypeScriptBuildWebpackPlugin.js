@@ -21,7 +21,6 @@ class TypeScriptBuildWebpackPlugin {
             input.options = {
                 sourceMap: {
                     content: input.map,
-                    url: fileName + '.map'
                 }
             };
         }

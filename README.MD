@@ -380,7 +380,7 @@ In light of [the final version of AngularJS 1.7 LTS](https://blog.angular.io/sta
 
 Unfortunately, the enterprise world is not ready for JavaScript running natively in ES2015 and beyond...
 
-UglifyES has been dropped in favor of the hopefully-more-stable UglifyJS 3. This change imposes a stricter build requirement:
+UglifyES has been dropped in favor of the hopefully-more-stable UglifyJS 3. This change imposes stricter build requirements:
 
 - Only ES5 build target (`target` field set in `tsconfig.json`) is supported. **Setting ES2015+ as build target will error your build!**
 

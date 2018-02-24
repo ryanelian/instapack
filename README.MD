@@ -382,9 +382,9 @@ Unfortunately, the enterprise world is not ready for JavaScript running natively
 
 UglifyES has been dropped in favor of the hopefully-more-stable UglifyJS 3. This change imposes stricter build requirements:
 
-- Only ES5 build target (`target` field set in `tsconfig.json`) is supported. **Setting ES2015+ as build target will error your build!**
+- Only `es5` build `target` (set in `tsconfig.json`) is currently supported. **Setting ES2015+ as build target will cause error during build!**
 
-- **If you try to import a non-TypeScript-compiled ES2015+ module, the build will fail!** This downgrade guards your projects against ninja incompatibilities.
+- **Attempting to import a non-TypeScript ES2015+ module will fail the build!** This downgrade guards the project against ninja browser incompatibilities.
 
 ### I thought files should not be bundled because of HTTP/2?
 

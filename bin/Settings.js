@@ -1,10 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const path = require("path");
+const upath = require("upath");
 const os = require("os");
-class SettingsCore {
-}
-exports.SettingsCore = SettingsCore;
 class Settings {
     constructor(root, settings) {
         this.root = root || process.cwd();
@@ -34,60 +31,60 @@ class Settings {
         };
     }
     get cacheFolder() {
-        return path.join(os.tmpdir(), 'instapack', 'cache');
+        return upath.join(os.tmpdir(), 'instapack', 'cache');
     }
     get concatCount() {
         return Object.keys(this.concat).length;
     }
     get packageJson() {
-        return path.join(this.root, 'package.json');
+        return upath.join(this.root, 'package.json');
     }
     get npmFolder() {
-        return path.join(this.root, 'node_modules');
+        return upath.join(this.root, 'node_modules');
     }
     get bowerFolder() {
-        return path.join(this.root, 'bower_components');
+        return upath.join(this.root, 'bower_components');
     }
     get inputFolder() {
-        return path.join(this.root, this.input);
+        return upath.join(this.root, this.input);
     }
     get inputJsFolder() {
-        return path.join(this.inputFolder, 'js');
+        return upath.join(this.inputFolder, 'js');
     }
     get inputCssFolder() {
-        return path.join(this.inputFolder, 'css');
+        return upath.join(this.inputFolder, 'css');
     }
     get jsEntry() {
-        return path.join(this.inputJsFolder, 'index.ts');
+        return upath.join(this.inputJsFolder, 'index.ts');
     }
     get cssEntry() {
-        return path.join(this.inputCssFolder, 'index.scss');
+        return upath.join(this.inputCssFolder, 'index.scss');
     }
     get scssGlob() {
-        return path.join(this.inputCssFolder, '**', '*.scss');
+        return upath.join(this.inputCssFolder, '**', '*.scss');
     }
     get tsGlobs() {
-        let ts = path.join(this.inputJsFolder, '**', '*.ts');
-        let tsx = path.join(this.inputJsFolder, '**', '*.tsx');
+        let ts = upath.join(this.inputJsFolder, '**', '*.ts');
+        let tsx = upath.join(this.inputJsFolder, '**', '*.tsx');
         return [ts, tsx];
     }
     get outputFolder() {
-        return path.join(this.root, this.output);
+        return upath.join(this.root, this.output);
     }
     get outputJsFolder() {
-        return path.join(this.outputFolder, 'js');
+        return upath.join(this.outputFolder, 'js');
     }
     get outputJsFile() {
-        return path.join(this.outputJsFolder, this.jsOut);
+        return upath.join(this.outputJsFolder, this.jsOut);
     }
     get outputJsSourceMap() {
         return this.outputJsFile + '.map';
     }
     get outputCssFolder() {
-        return path.join(this.outputFolder, 'css');
+        return upath.join(this.outputFolder, 'css');
     }
     get outputCssFile() {
-        return path.join(this.outputCssFolder, this.cssOut);
+        return upath.join(this.outputCssFolder, this.cssOut);
     }
     get outputCssSourceMap() {
         return this.outputCssFile + '.map';
@@ -96,7 +93,7 @@ class Settings {
         let root = process.cwd();
         let parse;
         try {
-            let json = path.join(root, 'package.json');
+            let json = upath.join(root, 'package.json');
             parse = require(json).instapack;
         }
         catch (ex) {

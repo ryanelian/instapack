@@ -1,32 +1,34 @@
 import * as TypeScript from 'typescript';
 import chalk from 'chalk';
+import * as fse from 'fs-extra';
+import * as upath from 'upath';
 import * as chokidar from 'chokidar';
 import { createHash } from 'crypto';
 
 import hub from './EventHub';
 import { Settings } from './Settings';
-import { timedLog, CompilerFlags, convertAbsoluteToSourceMapPath } from './CompilerUtilities';
+import { timedLog } from './CompilerUtilities';
 import { prettyHrTime } from './PrettyUnits';
 import { parseUserTsConfig } from './TypeScriptConfigurationReader';
 
 /**
  * Key-value pair of file name to cached raw file content. Used for caching TypeScript Compiler Host readFile method.
  */
-interface FileContentCache {
+interface IFileContentCache {
     [fileName: string]: string;
 }
 
 /**
  * Key-value pair of file name to TypeScript SourceFile. Used for caching TypeScript Compiler Host getSourceFile method.
  */
-interface SourceCache {
+interface ISourceCache {
     [fileName: string]: TypeScript.SourceFile;
 }
 
 /**
  * Key-value pair of file name to a unique hash of its content. Used for detecting whether a file has been changed.
  */
-interface FileVersions {
+interface IFileVersions {
     [fileName: string]: string;
 }
 
@@ -43,17 +45,17 @@ export class TypeScriptCheckerTool {
     /**
      * Gets the raw files cache.
      */
-    private readonly files: FileContentCache = {};
+    private readonly files: IFileContentCache = {};
 
     /**
      * Gets the source files cache.
      */
-    private readonly sources: SourceCache = {};
+    private readonly sources: ISourceCache = {};
 
     /**
      * Gets the file versions store.
      */
-    private readonly versions: FileVersions = {};
+    private readonly versions: IFileVersions = {};
 
     /**
      * Gets the entry points to the TypeScript Program.
@@ -85,7 +87,7 @@ export class TypeScriptCheckerTool {
 
         let definitions = tsconfig.fileNames.filter(Q => Q.endsWith('.d.ts'));
         this.includeFiles = new Set<string>(definitions);
-        this.includeFiles.add(this.slash(this.settings.jsEntry));
+        this.includeFiles.add(this.settings.jsEntry);
 
         this.compilerOptions = tsconfig.options;
 
@@ -164,6 +166,13 @@ export class TypeScriptCheckerTool {
      * Performs full static check (semantic and syntactic diagnostics) against the TypeScript project using the project entry file.
      */
     typeCheck() {
+        for (let file of this.includeFiles) {
+            if (!fse.pathExistsSync(file)) {
+                console.error(chalk.red('FATAL ERROR') + ' during type-check, included file not found: ' + chalk.grey(file));
+                return;
+            }
+        }
+
         let tsc = TypeScript.createProgram(Array.from(this.includeFiles), this.compilerOptions, this.host);
 
         timedLog('Type-checking using TypeScript', chalk.yellow(TypeScript.version));
@@ -218,14 +227,6 @@ export class TypeScriptCheckerTool {
     }
 
     /**
-     * Converts Windows file path (from chokidar event handler parameter) to TypeScript fileName equivalent path.
-     * @param fileName 
-     */
-    private slash(fileName: string) {
-        return fileName.replace(/\\/g, '/');
-    }
-
-    /**
      * Tracks all TypeScript files (*.ts and *.tsx) in the project folder recursively.
      * On file creation / change / deletion, the project will be type-checked automatically.
      */
@@ -242,7 +243,7 @@ export class TypeScriptCheckerTool {
             ignoreInitial: true
         })
             .on('add', (file: string) => {
-                file = this.slash(file);
+                file = upath.toUnix(file);
 
                 if (file.endsWith('.d.ts')) {
                     this.includeFiles.add(file);
@@ -253,7 +254,7 @@ export class TypeScriptCheckerTool {
                 debounce();
             })
             .on('change', (file: string) => {
-                file = this.slash(file);
+                file = upath.toUnix(file);
 
                 let changed = this.addOrUpdateSourceFileCache(file);
                 if (changed) {
@@ -262,7 +263,7 @@ export class TypeScriptCheckerTool {
                 }
             })
             .on('unlink', (file: string) => {
-                file = this.slash(file);
+                file = upath.toUnix(file);
 
                 if (file.endsWith('.d.ts') && this.includeFiles.has(file)) {
                     this.includeFiles.delete(file);

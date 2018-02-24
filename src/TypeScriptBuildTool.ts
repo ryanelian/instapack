@@ -3,7 +3,7 @@ import chalk from 'chalk';
 import * as webpack from 'webpack';
 
 import hub from './EventHub';
-import { timedLog, CompilerFlags } from './CompilerUtilities';
+import { timedLog, ICompilerFlags } from './CompilerUtilities';
 import { Settings } from './Settings';
 import { getLazyCompilerOptions } from './TypeScriptConfigurationReader';
 import { prettyBytes, prettyMilliseconds } from './PrettyUnits';
@@ -22,14 +22,14 @@ export class TypeScriptBuildTool {
     /**
      * Gets the compiler build flags.
      */
-    private readonly flags: CompilerFlags;
+    private readonly flags: ICompilerFlags;
 
     /**
      * Constructs a new instance of TypeScriptBuildTool using the specified settings and build flags. 
      * @param settings 
      * @param flags 
      */
-    constructor(settings: Settings, flags: CompilerFlags) {
+    constructor(settings: Settings, flags: ICompilerFlags) {
         this.settings = settings
         this.flags = flags;
     }
@@ -88,11 +88,12 @@ export class TypeScriptBuildTool {
      * Gets a webpack configuration from blended instapack configuration and build flags.
      */
     get webpackConfiguration() {
+        // for some very odd reasons, webpack requires Windows path format (on Windows) as parameters...
         let config: webpack.Configuration = {
-            entry: this.settings.jsEntry,
+            entry: path.normalize(this.settings.jsEntry),
             output: {
                 filename: this.settings.jsOut,
-                path: this.settings.outputJsFolder
+                path: path.normalize(this.settings.outputJsFolder)
             },
             externals: this.settings.externals,
             resolve: {

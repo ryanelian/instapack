@@ -2,6 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const TypeScript = require("typescript");
 const chalk_1 = require("chalk");
+const fse = require("fs-extra");
+const upath = require("upath");
 const chokidar = require("chokidar");
 const crypto_1 = require("crypto");
 const EventHub_1 = require("./EventHub");
@@ -17,7 +19,7 @@ class TypeScriptCheckerTool {
         let tsconfig = TypeScriptConfigurationReader_1.parseUserTsConfig();
         let definitions = tsconfig.fileNames.filter(Q => Q.endsWith('.d.ts'));
         this.includeFiles = new Set(definitions);
-        this.includeFiles.add(this.slash(this.settings.jsEntry));
+        this.includeFiles.add(this.settings.jsEntry);
         this.compilerOptions = tsconfig.options;
         this.host = TypeScript.createCompilerHost(tsconfig.options);
         this.host.readFile = (fileName) => {
@@ -58,6 +60,12 @@ class TypeScriptCheckerTool {
         return hash.digest('hex');
     }
     typeCheck() {
+        for (let file of this.includeFiles) {
+            if (!fse.pathExistsSync(file)) {
+                console.error(chalk_1.default.red('FATAL ERROR') + ' during type-check, included file not found: ' + chalk_1.default.grey(file));
+                return;
+            }
+        }
         let tsc = TypeScript.createProgram(Array.from(this.includeFiles), this.compilerOptions, this.host);
         CompilerUtilities_1.timedLog('Type-checking using TypeScript', chalk_1.default.yellow(TypeScript.version));
         let start = process.hrtime();
@@ -100,9 +108,6 @@ class TypeScriptCheckerTool {
         });
         return errors;
     }
-    slash(fileName) {
-        return fileName.replace(/\\/g, '/');
-    }
     watch() {
         let debounced;
         let debounce = () => {
@@ -115,7 +120,7 @@ class TypeScriptCheckerTool {
             ignoreInitial: true
         })
             .on('add', (file) => {
-            file = this.slash(file);
+            file = upath.toUnix(file);
             if (file.endsWith('.d.ts')) {
                 this.includeFiles.add(file);
             }
@@ -124,7 +129,7 @@ class TypeScriptCheckerTool {
             debounce();
         })
             .on('change', (file) => {
-            file = this.slash(file);
+            file = upath.toUnix(file);
             let changed = this.addOrUpdateSourceFileCache(file);
             if (changed) {
                 console.log(chalk_1.default.blue('TypeScript') + chalk_1.default.grey(' updating file: ' + file));
@@ -132,7 +137,7 @@ class TypeScriptCheckerTool {
             }
         })
             .on('unlink', (file) => {
-            file = this.slash(file);
+            file = upath.toUnix(file);
             if (file.endsWith('.d.ts') && this.includeFiles.has(file)) {
                 this.includeFiles.delete(file);
             }

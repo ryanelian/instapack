@@ -1,5 +1,5 @@
 import * as fse from 'fs-extra';
-import * as path from 'path';
+import * as upath from 'upath';
 import chalk from 'chalk';
 import * as chokidar from 'chokidar';
 import * as sass from 'node-sass';
@@ -10,7 +10,7 @@ import { RawSourceMap } from 'source-map';
 
 import hub from './EventHub';
 import { Settings } from './Settings';
-import { CompilerFlags, convertAbsoluteToSourceMapPath, logAndWriteUtf8FileAsync, timedLog } from './CompilerUtilities';
+import { ICompilerFlags, logAndWriteUtf8FileAsync, timedLog } from './CompilerUtilities';
 import { prettyHrTime } from './PrettyUnits';
 import { prettyError } from './PrettyObject';
 
@@ -27,14 +27,14 @@ export class SassBuildTool {
     /**
      * Gets the compiler build flags.
      */
-    private readonly flags: CompilerFlags;
+    private readonly flags: ICompilerFlags;
 
     /**
      * Constructs a new instance of SassBuildTool using the specified settings and build flags. 
      * @param settings 
      * @param flags 
      */
-    constructor(settings: Settings, flags: CompilerFlags) {
+    constructor(settings: Settings, flags: ICompilerFlags) {
         this.settings = settings
         this.flags = flags;
     }
@@ -64,8 +64,8 @@ export class SassBuildTool {
 
         let cssProjectFolder = this.settings.inputCssFolder;
         sm.sources = sm.sources.map(s => {
-            let absolute = path.join(cssProjectFolder, s);
-            return '/' + convertAbsoluteToSourceMapPath(this.settings.root, absolute);
+            let absolute = upath.join(cssProjectFolder, s);
+            return '/' + upath.relative(this.settings.root, absolute);
         });
     }
 
@@ -155,14 +155,17 @@ export class SassBuildTool {
             ignoreInitial: true
         })
             .on('add', file => {
+                file = upath.toUnix(file);
                 console.log(chalk.magenta('Sass') + chalk.grey(' tracking new file: ' + file));
                 debounce();
             })
             .on('change', file => {
+                file = upath.toUnix(file);
                 console.log(chalk.magenta('Sass') + chalk.grey(' updating file: ' + file));
                 debounce();
             })
             .on('unlink', file => {
+                file = upath.toUnix(file);
                 console.log(chalk.magenta('Sass') + chalk.grey(' removing file: ' + file));
                 debounce();
             });

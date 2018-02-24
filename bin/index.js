@@ -11,16 +11,16 @@ const Compiler_1 = require("./Compiler");
 const Settings_1 = require("./Settings");
 const Scaffold_1 = require("./Scaffold");
 const fse = require("fs-extra");
-const path = require("path");
+const upath = require("upath");
 module.exports = class instapack {
     get availableTasks() {
         return ['all', 'js', 'css', 'concat'];
     }
     get availableTemplates() {
-        let templatesFolder = path.join(__dirname, '..', 'templates');
+        let templatesFolder = upath.join(__dirname, '..', 'templates');
         let ar = fse.readdirSync(templatesFolder);
         let templates = ar.filter(Q => {
-            let test = path.join(templatesFolder, Q);
+            let test = upath.join(templatesFolder, Q);
             return fse.lstatSync(test).isDirectory();
         });
         return templates;

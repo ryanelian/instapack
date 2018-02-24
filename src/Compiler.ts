@@ -7,17 +7,17 @@ import { TypeScriptBuildTool } from './TypeScriptBuildTool';
 import { TypeScriptCheckerTool } from './TypeScriptCheckerTool';
 import { SassBuildTool } from './SassBuildTool';
 import { ConcatBuildTool } from './ConcatBuildTool';
-import { Settings, SettingsCore } from './Settings';
-import { timedLog, CompilerFlags } from './CompilerUtilities';
+import { Settings, ISettingsCore } from './Settings';
+import { timedLog, ICompilerFlags } from './CompilerUtilities';
 
 /**
  * Represents POJO serializable build metadata for child Compiler process.
  */
-interface BuildCommand {
+interface IBuildCommand {
     build: string;
     root: string;
-    settings: SettingsCore;
-    flags: CompilerFlags;
+    settings: ISettingsCore;
+    flags: ICompilerFlags;
 }
 
 /**
@@ -33,14 +33,14 @@ export class Compiler {
     /**
      * Gets the compiler build flags.
      */
-    private readonly flags: CompilerFlags;
+    private readonly flags: ICompilerFlags;
 
     /**
      * Constructs a new instance of Compiler using the specified settings and build flags. 
      * @param settings 
      * @param flags 
      */
-    constructor(settings: Settings, flags: CompilerFlags) {
+    constructor(settings: Settings, flags: ICompilerFlags) {
         this.settings = settings;
         this.flags = flags;
     }
@@ -49,7 +49,7 @@ export class Compiler {
      * Constructs Compiler instance from child process build command.
      * @param command 
      */
-    static fromCommand(command: BuildCommand) {
+    static fromCommand(command: IBuildCommand) {
         let settings = new Settings(command.root, command.settings);
         let compiler = new Compiler(settings, command.flags);
         return compiler;
@@ -96,7 +96,7 @@ export class Compiler {
                 root: this.settings.root,
                 flags: this.flags,
                 settings: this.settings.core
-            } as BuildCommand);
+            } as IBuildCommand);
 
             if (taskName === 'js') {
                 this.startBackgroundTask('type-checker');
@@ -186,8 +186,8 @@ export class Compiler {
      * Returns true when package.json exists in project root folder but node_modules folder is missing.
      */
     get needPackageRestore() {
-        let hasNodeModules = fse.existsSync(this.settings.npmFolder);
-        let hasPackageJson = fse.existsSync(this.settings.packageJson);
+        let hasNodeModules = fse.pathExistsSync(this.settings.npmFolder);
+        let hasPackageJson = fse.pathExistsSync(this.settings.packageJson);
 
         let restore = hasPackageJson && !hasNodeModules;
         if (restore) {
@@ -248,7 +248,7 @@ export class Compiler {
 }
 
 if (process.send) { // Child Process
-    process.on('message', (command: BuildCommand) => {
+    process.on('message', (command: IBuildCommand) => {
         // console.log(command);
         if (command.build) {
             if (!command.flags.watch || command.build === 'concat') {

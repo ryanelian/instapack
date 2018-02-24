@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const fse = require("fs-extra");
-const path = require("path");
+const upath = require("upath");
 const chalk_1 = require("chalk");
 const chokidar = require("chokidar");
 const sass = require("node-sass");
@@ -41,8 +41,8 @@ class SassBuildTool {
         sm.sourceRoot = 'instapack://';
         let cssProjectFolder = this.settings.inputCssFolder;
         sm.sources = sm.sources.map(s => {
-            let absolute = path.join(cssProjectFolder, s);
-            return '/' + CompilerUtilities_1.convertAbsoluteToSourceMapPath(this.settings.root, absolute);
+            let absolute = upath.join(cssProjectFolder, s);
+            return '/' + upath.relative(this.settings.root, absolute);
         });
     }
     build() {
@@ -115,14 +115,17 @@ class SassBuildTool {
             ignoreInitial: true
         })
             .on('add', file => {
+            file = upath.toUnix(file);
             console.log(chalk_1.default.magenta('Sass') + chalk_1.default.grey(' tracking new file: ' + file));
             debounce();
         })
             .on('change', file => {
+            file = upath.toUnix(file);
             console.log(chalk_1.default.magenta('Sass') + chalk_1.default.grey(' updating file: ' + file));
             debounce();
         })
             .on('unlink', file => {
+            file = upath.toUnix(file);
             console.log(chalk_1.default.magenta('Sass') + chalk_1.default.grey(' removing file: ' + file));
             debounce();
         });

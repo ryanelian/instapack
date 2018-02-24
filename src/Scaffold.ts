@@ -1,5 +1,5 @@
 import * as fse from 'fs-extra';
-import * as path from 'path';
+import * as upath from 'upath';
 import * as cp from 'child_process';
 import chalk from 'chalk';
 
@@ -43,7 +43,7 @@ export class Scaffold {
      * @param name 
      */
     async usingTemplate(name) {
-        let templateFolder = path.join(__dirname, '../templates', name);
+        let templateFolder = upath.join(__dirname, '../templates', name);
         let thisFolder = process.cwd();
 
         let exist = await fse.pathExists(templateFolder);

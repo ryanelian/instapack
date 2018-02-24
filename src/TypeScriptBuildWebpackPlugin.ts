@@ -5,7 +5,7 @@ import { RawSourceMap } from 'source-map';
 let Uglify = require('uglify-js');
 
 import { Settings } from './Settings';
-import { timedLog, CompilerFlags } from './CompilerUtilities';
+import { timedLog, ICompilerFlags } from './CompilerUtilities';
 import { getTypeScriptTarget } from './TypeScriptConfigurationReader';
 
 interface IMinificationInput {
@@ -28,14 +28,14 @@ export class TypeScriptBuildWebpackPlugin {
     /**
      * Gets the compiler build flags.
      */
-    private readonly flags: CompilerFlags;
+    private readonly flags: ICompilerFlags;
 
     /**
      * Constructs a new instance of TypeScriptBuildPlugin using the specified settings and build flags. 
      * @param settings 
      * @param flags 
      */
-    constructor(settings: Settings, flags: CompilerFlags) {
+    constructor(settings: Settings, flags: ICompilerFlags) {
         this.settings = settings
         this.flags = flags;
     }

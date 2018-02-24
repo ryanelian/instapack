@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const fse = require("fs-extra");
-const path = require("path");
+const upath = require("upath");
 const cp = require("child_process");
 const chalk_1 = require("chalk");
 class Scaffold {
@@ -33,7 +33,7 @@ class Scaffold {
     }
     usingTemplate(name) {
         return __awaiter(this, void 0, void 0, function* () {
-            let templateFolder = path.join(__dirname, '../templates', name);
+            let templateFolder = upath.join(__dirname, '../templates', name);
             let thisFolder = process.cwd();
             let exist = yield fse.pathExists(templateFolder);
             if (!exist) {

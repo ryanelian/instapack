@@ -3,12 +3,12 @@ import * as TypeScript from 'typescript';
 import { getOptions } from 'loader-utils';
 import { RawSourceMap } from 'source-map';
 
-interface CoreTypeScriptLoaderOptions {
+interface ICoreTypeScriptLoaderOptions {
     compilerOptions: TypeScript.CompilerOptions;
 }
 
 module.exports = function (this: loader.LoaderContext, source: string) {
-    let options = getOptions(this) as CoreTypeScriptLoaderOptions;
+    let options = getOptions(this) as ICoreTypeScriptLoaderOptions;
 
     let result = TypeScript.transpileModule(source, {
         compilerOptions: options.compilerOptions,

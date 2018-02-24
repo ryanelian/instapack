@@ -1,6 +1,6 @@
 {
   "name": "instapack",
-  "version": "6.0.0",
+  "version": "6.0.0-beta3",
   "description": "All-in-one web app client project compiler using TypeScript and Sass!",
   "main": "bin/index.js",
   "bin": {
@@ -24,7 +24,7 @@
   "dependencies": {
     "autoprefixer": "8.0.0",
     "chalk": "2.3.1",
-    "chokidar": "1.7.0",
+    "chokidar": "2.0.2",
     "fs-extra": "5.0.0",
     "html-minifier": "3.5.9",
     "loader-utils": "1.1.0",
@@ -35,6 +35,7 @@
     "source-map": "0.7.1",
     "typescript": "2.7.2",
     "uglify-js": "3.3.12",
+    "upath": "1.0.2",
     "vue-template-compiler": "2.5.13",
     "webpack": "3.11.0",
     "webpack-sources": "1.1.0",

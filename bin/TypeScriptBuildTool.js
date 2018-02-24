@@ -50,10 +50,10 @@ class TypeScriptBuildTool {
     }
     get webpackConfiguration() {
         let config = {
-            entry: this.settings.jsEntry,
+            entry: path.normalize(this.settings.jsEntry),
             output: {
                 filename: this.settings.jsOut,
-                path: this.settings.outputJsFolder
+                path: path.normalize(this.settings.outputJsFolder)
             },
             externals: this.settings.externals,
             resolve: {

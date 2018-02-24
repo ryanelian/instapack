@@ -128,8 +128,8 @@ class Compiler {
         }
     }
     get needPackageRestore() {
-        let hasNodeModules = fse.existsSync(this.settings.npmFolder);
-        let hasPackageJson = fse.existsSync(this.settings.packageJson);
+        let hasNodeModules = fse.pathExistsSync(this.settings.npmFolder);
+        let hasPackageJson = fse.pathExistsSync(this.settings.packageJson);
         let restore = hasPackageJson && !hasNodeModules;
         if (restore) {
             CompilerUtilities_1.timedLog(chalk_1.default.cyan('node_modules'), 'folder not found. Performing automatic package restore...');

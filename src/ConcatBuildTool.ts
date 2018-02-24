@@ -1,18 +1,18 @@
 import * as fse from 'fs-extra';
-import * as path from 'path';
+import * as upath from 'upath';
 import chalk from 'chalk';
 import * as resolve from 'resolve';
 let Uglify = require('uglify-js');
 
 import hub from './EventHub';
 import { Settings } from './Settings';
-import { CompilerFlags, convertAbsoluteToSourceMapPath, logAndWriteUtf8FileAsync, timedLog } from './CompilerUtilities';
+import { ICompilerFlags, logAndWriteUtf8FileAsync, timedLog } from './CompilerUtilities';
 import { prettyHrTime } from './PrettyUnits';
 
 /**
  * A simple key-value pair for UglifyES code input.
  */
-interface ConcatFiles {
+interface IConcatFiles {
     [name: string]: string
 }
 
@@ -29,14 +29,14 @@ export class ConcatBuildTool {
     /**
      * Gets the compiler build flags.
      */
-    private readonly flags: CompilerFlags;
+    private readonly flags: ICompilerFlags;
 
     /**
      * Constructs a new instance of ConcatBuildTool using the specified settings and build flags. 
      * @param settings 
      * @param flags 
      */
-    constructor(settings: Settings, flags: CompilerFlags) {
+    constructor(settings: Settings, flags: ICompilerFlags) {
         this.settings = settings
         this.flags = flags;
     }
@@ -69,10 +69,10 @@ export class ConcatBuildTool {
         let p2 = resolutions.map(Q => fse.readFile(Q, 'utf8'));
         let contents = await Promise.all(p2);
 
-        let files: ConcatFiles = {};
+        let files: IConcatFiles = {};
 
         for (let i = 0; i < resolutions.length; i++) {
-            let key = '/' + convertAbsoluteToSourceMapPath(this.settings.root, resolutions[i]);
+            let key = '/' + upath.relative(this.settings.root, resolutions[i]);
             // console.log(resolutions[i] + ' ' + key);
             files[key] = contents[i];
         }
@@ -85,7 +85,7 @@ export class ConcatBuildTool {
      * @param target 
      * @param files 
      */
-    concatFilesAsync(target: string, files: ConcatFiles) {
+    concatFilesAsync(target: string, files: IConcatFiles) {
         let options = {};
         if (!this.flags.production) {
             options['compress'] = false;
@@ -122,7 +122,7 @@ export class ConcatBuildTool {
         let files = await this.resolveThenReadFiles(modules);
         let result = await this.concatFilesAsync(target, files);
 
-        let outPath = path.join(this.settings.outputJsFolder, target);
+        let outPath = upath.join(this.settings.outputJsFolder, target);
         let p1 = logAndWriteUtf8FileAsync(outPath, result.code);
         if (result.map) {
             await logAndWriteUtf8FileAsync(outPath + '.map', result.map);
@@ -153,7 +153,7 @@ export class ConcatBuildTool {
                 o += '.js';
             }
 
-            fse.removeSync(path.join(this.settings.outputJsFolder, o + '.map'));
+            fse.removeSync(upath.join(this.settings.outputJsFolder, o + '.map'));
             let task = this.concatTarget(o, modules).catch(error => {
                 timedLog(chalk.red('ERROR'), 'when concatenating', chalk.blue(o));
                 console.error(error);

@@ -163,10 +163,11 @@ instapack puts configuration inside `package.json` to reduce project files clutt
     "bootstrap.native": "^2.0.21",
     "es6-promise": "^4.2.4",
     "font-awesome": "^4.7.0",
-    "linqts": "^1.10.0",
+    "linq": "^3.0.9",
     "moment": "^2.20.1",
     "noty": "^3.2.0-beta",
     "tslib": "^1.9.0",
+    "vex-js": "^4.0.1",
     "vue": "^2.5.13",
     "vue-class-component": "^6.2.0"
   }

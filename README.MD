@@ -127,7 +127,7 @@ In addition, build flags are available:
 
 - `-u` or `--uncharted` disables source maps. (Slightly improves build speed)
 
-- `-a` or `--analyze` generates `analysis.html` next to the JS build output, containing module size details.
+- `-a` or `--analyze` generates module size report `analysis.html` next to the JS build output.
 
 > You can combine multiple build flags, for example: `ipack -dw` = `dev` + `watch` mode for **massive productivity gainz!** :muscle:
 
@@ -226,9 +226,7 @@ so [CDN](https://en.wikipedia.org/wiki/Content_delivery_network) can be used! :t
 
   - Use concatenation for libraries that cannot be imported / do not need to be imported (for example, jQuery plugins). This hybrid approach allows greater compatibility with older libraries, while enjoying the rich development experience using TypeScript.
 
-  - You can also use concat to improve compile time by placing vendored modules out of the app code bundle!
-
-  - For consuming the libraries within the TypeScript app code, load them before `bundle.js` then use the `externals` module configuration ([declare a global TypeScript module definition](https://www.typescriptlang.org/docs/handbook/declaration-files/templates/global-modifying-module-d-ts.html) if not a npm module).
+  - For consuming the libraries within the TypeScript app code, load them before `bundle.js` then use the `externals` module configuration. (You may use CommonJS syntax to import the module; read more below...)
   
   - Alternatively, reference the library objects directly from the `window` object (e.g. `window['$']`).
 
@@ -389,7 +387,7 @@ Unfortunately, the enterprise world is not ready for JavaScript running natively
 
 The [no-longer-maintained](https://github.com/mishoo/UglifyJS2/pull/2897) UglifyES has been dropped in exchange for the hopefully-more-stable UglifyJS 3. This change imposes stricter build requirements:
 
-- Only `es5` build `target` (set in `tsconfig.json`) is currently supported. **Setting ES2015+ as build target will cause error during build!**
+- Only `es5` build `target` (set in `tsconfig.json`) is currently supported. **Setting ES2015+ as build target WILL cause build error!**
 
 - **Attempting to import a non-TypeScript ES2015+ module will fail the build!** This downgrade guards the project against ninja browser incompatibilities.
 

@@ -57,5 +57,10 @@
   },
   "resolutions": {
     "**/@types/node": "8"
+  },
+  "greenkeeper": {
+    "ignore": [
+      "@types/node"
+    ]
   }
 }

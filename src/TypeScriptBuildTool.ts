@@ -1,13 +1,14 @@
 import * as path from 'path';
 import chalk from 'chalk';
 import * as webpack from 'webpack';
+import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 
 import hub from './EventHub';
 import { timedLog, ICompilerFlags } from './CompilerUtilities';
 import { Settings } from './Settings';
 import { getLazyCompilerOptions } from './TypeScriptConfigurationReader';
 import { prettyBytes, prettyMilliseconds } from './PrettyUnits';
-import { TypeScriptBuildWebpackPlugin } from './TypeScriptBuildWebpackPlugin'
+import { TypeScriptBuildWebpackPlugin } from './TypeScriptBuildWebpackPlugin';
 
 /**
  * Contains methods for compiling a TypeScript project.
@@ -80,6 +81,14 @@ export class TypeScriptBuildTool {
             filename: this.settings.jsOutVendorFileName,
             minChunks: module => module.context && module.context.includes('node_modules')
         }));
+
+        if (this.flags.analyze) {
+            plugins.push(new BundleAnalyzerPlugin({
+                analyzerMode: 'static',
+                reportFilename: 'analysis.html',
+                logLevel: 'warn'
+            }));
+        }
 
         if (this.flags.production) {
             plugins.push(new webpack.DefinePlugin({
@@ -205,6 +214,14 @@ export class TypeScriptBuildTool {
 
             let t = prettyMilliseconds(o.time);
             timedLog('Finished JS build after', chalk.green(t));
+            if (this.flags.analyze && !this.flags.watch) {
+                timedLog('Generating the module size analysis report for JS output, please wait...');
+                setTimeout(() => {
+                    process.exit(0);
+                }, 5 * 1000);
+                return;
+            }
+
             hub.buildDone();
         });
     }

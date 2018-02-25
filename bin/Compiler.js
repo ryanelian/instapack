@@ -40,6 +40,10 @@ class Compiler {
         if (this.flags.watch) {
             CompilerUtilities_1.timedLog(chalk_1.default.yellow("Watch"), "Mode: Source codes will be automatically compiled on changes.");
         }
+        if (this.flags.analyze) {
+            let analysisPath = this.settings.outputJsFolder + '/analysis.html';
+            CompilerUtilities_1.timedLog(chalk_1.default.yellow('Analyze'), 'Mode:', chalk_1.default.cyan(analysisPath));
+        }
         CompilerUtilities_1.timedLog('Source Maps:', chalk_1.default.yellow(this.flags.sourceMap ? 'Enabled' : 'Disabled'));
     }
     startBackgroundTask(taskName) {

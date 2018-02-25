@@ -10,7 +10,8 @@ import { prettyBytes } from './PrettyUnits';
 export interface ICompilerFlags {
     production: boolean,
     watch: boolean,
-    sourceMap: boolean
+    sourceMap: boolean,
+    analyze: boolean
 }
 
 /**

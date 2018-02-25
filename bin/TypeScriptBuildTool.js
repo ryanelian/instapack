@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const path = require("path");
 const chalk_1 = require("chalk");
 const webpack = require("webpack");
+const webpack_bundle_analyzer_1 = require("webpack-bundle-analyzer");
 const EventHub_1 = require("./EventHub");
 const CompilerUtilities_1 = require("./CompilerUtilities");
 const TypeScriptConfigurationReader_1 = require("./TypeScriptConfigurationReader");
@@ -44,6 +45,13 @@ class TypeScriptBuildTool {
             filename: this.settings.jsOutVendorFileName,
             minChunks: module => module.context && module.context.includes('node_modules')
         }));
+        if (this.flags.analyze) {
+            plugins.push(new webpack_bundle_analyzer_1.BundleAnalyzerPlugin({
+                analyzerMode: 'static',
+                reportFilename: 'analysis.html',
+                logLevel: 'warn'
+            }));
+        }
         if (this.flags.production) {
             plugins.push(new webpack.DefinePlugin({
                 'process.env': {
@@ -142,6 +150,13 @@ class TypeScriptBuildTool {
             }
             let t = PrettyUnits_1.prettyMilliseconds(o.time);
             CompilerUtilities_1.timedLog('Finished JS build after', chalk_1.default.green(t));
+            if (this.flags.analyze && !this.flags.watch) {
+                CompilerUtilities_1.timedLog('Generating the module size analysis report for JS output, please wait...');
+                setTimeout(() => {
+                    process.exit(0);
+                }, 5 * 1000);
+                return;
+            }
             EventHub_1.default.buildDone();
         });
     }

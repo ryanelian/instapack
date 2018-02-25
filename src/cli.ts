@@ -75,6 +75,9 @@ CLI.command({
             }).option('u', {
                 alias: 'uncharted',
                 describe: 'Disables source maps.'
+            }).option('a', {
+                alias: 'analyze',
+                describe: 'Generates a module size analysis report for JS output.'
             });
     },
     handler: argv => {
@@ -84,7 +87,8 @@ CLI.command({
         app.build(subCommand, {
             production: !Boolean(argv.dev),
             watch: Boolean(argv.watch),
-            sourceMap: !Boolean(argv.uncharted)
+            sourceMap: !Boolean(argv.uncharted),
+            analyze: Boolean(argv.analyze)
         });
     }
 });

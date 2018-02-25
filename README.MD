@@ -127,6 +127,8 @@ In addition, build flags are available:
 
 - `-u` or `--uncharted` disables source maps. (Slightly improves build speed)
 
+- `-a` or `--analyze` generates `analysis.html` next to the JS build output, containing module size details.
+
 > You can combine multiple build flags, for example: `ipack -dw` = `dev` + `watch` mode for **massive productivity gainz!** :muscle:
 
 ### clean

@@ -371,15 +371,15 @@ Modules imported from `node_modules` will now be extracted automatically to `[js
 
 - This change greatly improves development build speed, because instapack does not need to re-bundle library modules repeatedly!
 
-HTML template compilation mode in `package.json` (`string` vs `vue`) has been removed in favor of special extension `.vue.html`. This change:
+HTML template compilation mode in `package.json` (`string` vs `vue`) has been removed in favor of special extension `.vue.html` to:
 
-- Allows a project to have both stringified HTML and pre-compiled Vue.js HTML.
+- Allow a project to have both stringified HTML and pre-compiled Vue.js HTML.
 
-- Simplifies instapack to make it more beginner-friendly by reducing the number of obscure options and templates.
+- Simplify instapack, to make it more beginner-friendly by reducing the number of obscure options and templates...
 
 In light of [the final version of AngularJS 1.7 LTS](https://blog.angular.io/stable-angularjs-and-long-term-support-7e077635ee9c), it is recommended for newer projects to use Vue.js / React / Inferno instead.
 
-- Therefore, `angular-material` template has been removed and `angular-bootstrap` template has been renamed to `angularjs`.
+- Therefore, `angular-material` template has been removed and `angular-bootstrap` template has been renamed to `angularjs`
 
 - jQuery has been re-added into `angularjs` template to improve compatibility with legacy browsers, especially with Bootstrap 3.
 

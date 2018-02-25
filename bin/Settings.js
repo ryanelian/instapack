@@ -30,6 +30,12 @@ class Settings {
             output: this.output
         };
     }
+    get jsOutSplitFileName() {
+        return upath.removeExt(this.jsOut, '.js') + '_[name].js';
+    }
+    get jsOutVendorFileName() {
+        return upath.removeExt(this.jsOut, '.js') + '_modules.js';
+    }
     get cacheFolder() {
         return upath.join(os.tmpdir(), 'instapack', 'cache');
     }

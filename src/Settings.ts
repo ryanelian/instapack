@@ -114,6 +114,22 @@ export class Settings {
     }
 
     /**
+     * Gets the JS output split chunk file name.
+     * For example, ipack_linq.js or ipack_0.js
+     */
+    get jsOutSplitFileName(): string {
+        return upath.removeExt(this.jsOut, '.js') + '_[name].js';
+    }
+
+     /**
+     * Gets the JS output split chunk file name.
+     * For example, ipack_linq.js or ipack_0.js
+     */
+    get jsOutVendorFileName(): string {
+        return upath.removeExt(this.jsOut, '.js') + '_modules.js';
+    }
+
+    /**
      * Cache folder path for cache-loader in user's local temp folder.
      */
     get cacheFolder(): string {

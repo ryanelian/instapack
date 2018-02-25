@@ -39,6 +39,11 @@ class TypeScriptBuildTool {
         let plugins = [];
         plugins.push(new webpack.NoEmitOnErrorsPlugin());
         plugins.push(new TypeScriptBuildWebpackPlugin_1.TypeScriptBuildWebpackPlugin(this.settings, this.flags));
+        plugins.push(new webpack.optimize.CommonsChunkPlugin({
+            name: 'common_modules',
+            filename: this.settings.jsOutVendorFileName,
+            minChunks: module => module.context && module.context.includes('node_modules')
+        }));
         if (this.flags.production) {
             plugins.push(new webpack.DefinePlugin({
                 'process.env': {

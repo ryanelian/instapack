@@ -73,7 +73,7 @@ If using [the latest Visual Studio Code](https://code.visualstudio.com/), it sho
 
 ## But... Why?
 
-Recently every f-ing framework on this planet :earth_asia: has their own CLI, but only few are able to support TypeScript out of the box. So most people gave up on TypeScript right off the bat... :broken_heart:
+Recently every hecking framework on this planet :earth_asia: has their own CLI, but only few are able to support TypeScript out of the box. So most people gave up on TypeScript right off the bat... :broken_heart:
 
 instapack is an initiative to develop a command line tool for compiling most apps developed using mainstream JavaScript frameworks, with a :lemon: twist: **It can easily build an app written in TypeScript with minimal or no further configurations!**
 
@@ -332,7 +332,7 @@ Add the packages required for your project using yarn / npm then start hacking. 
 
 Also, pull requests are welcomed if you have a great starting templates and books for those projects. We'd love to expand our collections!
 
-### What are the breaking changes when upgrading from instapack 4?
+### What are the breaking changes when upgrading from instapack 4 to 5?
 
 - Our supported Node.js runtime is now the latest version 8 LTS.
 
@@ -363,7 +363,13 @@ Also, pull requests are welcomed if you have a great starting templates and book
 }
 ```
 
-### What are the breaking changes when upgrading from instapack 5?
+### What are the breaking changes when upgrading from instapack 5 to 6?
+
+Modules imported from `node_modules` will now be extracted automatically to `[jsOut]_modules.js`, for example: `ipack_modules.js`.
+
+- **This file must be included using `<script>` tag BEFORE the main app file `ipack.js`.**
+
+- This change greatly improves development build speed, because instapack does not need to re-bundle library modules repeatedly!
 
 HTML template compilation mode in `package.json` (`string` vs `vue`) has been removed in favor of special extension `.vue.html`. This change:
 

@@ -73,6 +73,14 @@ export class TypeScriptBuildTool {
         plugins.push(new webpack.NoEmitOnErrorsPlugin()); // Near-useless in current state...
         plugins.push(new TypeScriptBuildWebpackPlugin(this.settings, this.flags));
 
+        // https://webpack.js.org/plugins/commons-chunk-plugin/
+        // grab everything imported from node_modules, put into a separate file: ipack_modules.js
+        plugins.push(new webpack.optimize.CommonsChunkPlugin({
+            name: 'common_modules',
+            filename: this.settings.jsOutVendorFileName,
+            minChunks: module => module.context && module.context.includes('node_modules')
+        }));
+
         if (this.flags.production) {
             plugins.push(new webpack.DefinePlugin({
                 'process.env': {
@@ -93,6 +101,7 @@ export class TypeScriptBuildTool {
             entry: path.normalize(this.settings.jsEntry),
             output: {
                 filename: this.settings.jsOut,
+                // chunkFilename: this.settings.jsOutSplitFileName, // https://webpack.js.org/guides/code-splitting/
                 path: path.normalize(this.settings.outputJsFolder)
             },
             externals: this.settings.externals,

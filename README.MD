@@ -377,11 +377,9 @@ In light of [the final version of AngularJS 1.7 LTS](https://blog.angular.io/sta
 
 - jQuery has been re-added into `angularjs` template to improve compatibility with legacy browser, especially with Bootstrap 3.
 
-> [Why release `uglify-es` at all then if every new `uglify-js` feature renders it unusable?](https://github.com/mishoo/UglifyJS2/pull/2897)
-
 Unfortunately, the enterprise world is not ready for JavaScript running natively in ES2015 and beyond...
 
-UglifyES has been dropped in favor of the hopefully-more-stable UglifyJS 3. This change imposes stricter build requirements:
+The [no-longer-maintained](https://github.com/mishoo/UglifyJS2/pull/2897) UglifyES has been dropped in favor of the hopefully-more-stable UglifyJS 3. This change imposes stricter build requirements:
 
 - Only `es5` build `target` (set in `tsconfig.json`) is currently supported. **Setting ES2015+ as build target will cause error during build!**
 

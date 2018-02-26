@@ -87,13 +87,19 @@ Out of the box, these files will be used as the entry points:
 
 - `client/js/index.ts`, compiled to `wwwroot/js/ipack.js`
 
+  - Simply include this file in your HTML using `<script>` at the bottom / before </body> so the browser can render the page while loading the script.
+
+  - Anything you import from `node_modules` will be split to `ipack_modules.js`, please include this file in your HTML just before `ipack.js`
+
 - `client/css/index.scss`, compiled to `wwwroot/css/ipack.css`
+
+  - Also include this file in your HTML using `<link>` on the top / before `</head>` so the browser can style and render the page as it loads.
 
   - The Sass language compiler service has been configured to enable `@import` from `node_modules`!
 
   - Spiced with :hot_pepper: [PostCSS AutoPrefixer](https://github.com/postcss/autoprefixer) for applying CSS vendor-prefixes automatically!
 
-- Concatenate files listed in `package.json`. Read more below.
+- Concatenate files listed in `package.json`. Usually the output file will be included in the HTML before `ipack.js`. Read more below.
 
 ## Commands
 

@@ -1,6 +1,7 @@
 # Developing Single-Page Application with AngularJS
 
 > This guide was written for instapack 4, is outdated, and discontinued. However, the content should still be mostly correct!
+
 > You should try the newer [Developing Single-Page Application with Vue.js](https://github.com/ryanelian/instapack/blob/master/books/dev-spa-vue.md) guide!
 
 ## Getting Started

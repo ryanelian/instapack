@@ -133,7 +133,7 @@ In addition, build flags are available:
 
 - `-u` or `--uncharted` disables source maps. (Slightly improves build speed)
 
-- `-a` or `--analyze` generates module size report `analysis.html` next to the JS build output.
+- `-a` or `--analyze` generates module size report `analysis.html` next to the JS build output. For sanity, this flag will be ignored when using `-d` or `-w` flags.
 
 > You can combine multiple build flags, for example: `ipack -dw` = `dev` + `watch` mode for **massive productivity gainz!** :muscle:
 
@@ -371,11 +371,7 @@ Also, pull requests are welcomed if you have a great starting templates and book
 
 ### What are the breaking changes when upgrading from instapack 5 to 6?
 
-Modules imported from `node_modules` will now be extracted automatically to `[jsOut]_modules.js`:
-
-- For example: `ipack_modules.js`; **this file must be included using `<script>` tag BEFORE the main app file `ipack.js`**
-
-- This change greatly improves development build speed, because instapack does not need to re-bundle library modules repeatedly!
+Modules imported from `node_modules` will now be extracted automatically to `[jsOut]_modules.js`, for example: `ipack_modules.js`: **this file must be included using `<script>` tag BEFORE the main app file `ipack.js`**
 
 HTML template compilation mode in `package.json` (`string` vs `vue`) has been removed in favor of special extension `.vue.html` to:
 

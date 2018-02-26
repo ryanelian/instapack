@@ -121,10 +121,10 @@ export class Settings {
         return upath.removeExt(this.jsOut, '.js') + '_[name].js';
     }
 
-     /**
-     * Gets the JS output split chunk file name.
-     * For example, ipack_linq.js or ipack_0.js
-     */
+    /**
+    * Gets the JS output common / vendored modules chunk file name.
+    * For example, ipack_modules.js
+    */
     get jsOutVendorFileName(): string {
         return upath.removeExt(this.jsOut, '.js') + '_modules.js';
     }
@@ -162,6 +162,13 @@ export class Settings {
      */
     get bowerFolder(): string {
         return upath.join(this.root, 'bower_components');
+    }
+
+    /**
+     * Gets the full path to project DLL manifest JSON file.
+     */
+    get dllManifestJsonPath(): string {
+        return upath.join(this.npmFolder, 'dll-manifest.json');
     }
 
     /**

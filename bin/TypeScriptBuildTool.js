@@ -150,7 +150,7 @@ class TypeScriptBuildTool {
             }
             let t = PrettyUnits_1.prettyMilliseconds(o.time);
             CompilerUtilities_1.timedLog('Finished JS build after', chalk_1.default.green(t));
-            if (this.flags.analyze && !this.flags.watch) {
+            if (this.flags.analyze) {
                 CompilerUtilities_1.timedLog('Generating the module size analysis report for JS output, please wait...');
                 setTimeout(() => {
                     process.exit(0);

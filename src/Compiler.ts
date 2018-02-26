@@ -72,6 +72,10 @@ export class Compiler {
             timedLog(chalk.yellow("Watch"), "Mode: Source codes will be automatically compiled on changes.");
         }
 
+        if (!this.flags.production || this.flags.watch) {
+            this.flags.analyze = false;
+        }
+
         if (this.flags.analyze) {
             let analysisPath = this.settings.outputJsFolder + '/analysis.html';
             timedLog(chalk.yellow('Analyze'), 'Mode:', chalk.cyan(analysisPath));

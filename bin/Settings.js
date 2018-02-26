@@ -51,6 +51,9 @@ class Settings {
     get bowerFolder() {
         return upath.join(this.root, 'bower_components');
     }
+    get dllManifestJsonPath() {
+        return upath.join(this.npmFolder, 'dll-manifest.json');
+    }
     get inputFolder() {
         return upath.join(this.root, this.input);
     }

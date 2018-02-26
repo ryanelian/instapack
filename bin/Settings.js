@@ -31,10 +31,10 @@ class Settings {
         };
     }
     get jsOutSplitFileName() {
-        return upath.removeExt(this.jsOut, '.js') + '_[name].js';
+        return upath.removeExt(this.jsOut, '.js') + '.[name].js';
     }
     get jsOutVendorFileName() {
-        return upath.removeExt(this.jsOut, '.js') + '_modules.js';
+        return upath.removeExt(this.jsOut, '.js') + '.dll.js';
     }
     get cacheFolder() {
         return upath.join(os.tmpdir(), 'instapack', 'cache');

@@ -115,18 +115,18 @@ export class Settings {
 
     /**
      * Gets the JS output split chunk file name.
-     * For example, ipack_linq.js or ipack_0.js
+     * For example, ipack.linq.js or ipack.0.js
      */
     get jsOutSplitFileName(): string {
-        return upath.removeExt(this.jsOut, '.js') + '_[name].js';
+        return upath.removeExt(this.jsOut, '.js') + '.[name].js';
     }
 
     /**
     * Gets the JS output common / vendored modules chunk file name.
-    * For example, ipack_modules.js
+    * For example, ipack.dll.js
     */
     get jsOutVendorFileName(): string {
-        return upath.removeExt(this.jsOut, '.js') + '_modules.js';
+        return upath.removeExt(this.jsOut, '.js') + '.dll.js';
     }
 
     /**

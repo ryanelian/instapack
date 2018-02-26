@@ -75,9 +75,9 @@ export class TypeScriptBuildTool {
         plugins.push(new TypeScriptBuildWebpackPlugin(this.settings, this.flags));
 
         // https://webpack.js.org/plugins/commons-chunk-plugin/
-        // grab everything imported from node_modules, put into a separate file: ipack_modules.js
+        // grab everything imported from node_modules, put into a separate file: ipack.dll.js
         plugins.push(new webpack.optimize.CommonsChunkPlugin({
-            name: 'common_modules',
+            name: 'DLL',
             filename: this.settings.jsOutVendorFileName,
             minChunks: module => module.context && module.context.includes('node_modules')
         }));

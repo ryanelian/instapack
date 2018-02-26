@@ -41,7 +41,7 @@ class TypeScriptBuildTool {
         plugins.push(new webpack.NoEmitOnErrorsPlugin());
         plugins.push(new TypeScriptBuildWebpackPlugin_1.TypeScriptBuildWebpackPlugin(this.settings, this.flags));
         plugins.push(new webpack.optimize.CommonsChunkPlugin({
-            name: 'common_modules',
+            name: 'DLL',
             filename: this.settings.jsOutVendorFileName,
             minChunks: module => module.context && module.context.includes('node_modules')
         }));

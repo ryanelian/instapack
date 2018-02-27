@@ -32,7 +32,7 @@
     "postcss": "6.0.19",
     "postcss-discard-comments": "4.0.0-rc.2",
     "resolve": "1.5.0",
-    "source-map": "0.7.1",
+    "source-map": "0.7.2",
     "thread-loader": "1.1.2",
     "typescript": "2.7.2",
     "uglify-es": "3.3.10",

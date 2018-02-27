@@ -1,6 +1,6 @@
 # instapack
 
-> All-in-one web app client project compiler using TypeScript and Sass! :package: :rocket:
+> All-in-one web application client project compiler using TypeScript and Sass! :package: :rocket:
 
 [![npm](https://img.shields.io/npm/v/instapack.svg)](https://www.npmjs.com/package/instapack) [![Build Status](https://travis-ci.org/ryanelian/instapack.svg?branch=master)](https://travis-ci.org/ryanelian/instapack) [![Build status](https://ci.appveyor.com/api/projects/status/y6v2hde0mhh9o5an/branch/master?svg=true)](https://ci.appveyor.com/project/RyanElian/instapack/branch/master) [![Greenkeeper badge](https://badges.greenkeeper.io/ryanelian/instapack.svg)](https://greenkeeper.io/)
 
@@ -116,6 +116,27 @@ Scaffolds a new instapack project into your existing app folder where the comman
 - `react` when you want to develop a web app with React and Semantic UI.
 
 - `inferno` when you want to develop a web app with Inferno and Bootstrap 4.
+
+- `vue-mobile` when you want to develop a _Progressive Web Application_ using Vue.js and Onsen UI!
+
+  - This template is a little bit different from the rest, if you intend to develop a mobile app using Cordova. Usage instruction:
+
+```powershell
+cordova create MyProject
+cd MyProject
+ipack new vue-mobile
+.\cordova-platform-add.ps1  # About this script, read CAUTION below...
+ipack -dw                   # Then change www/index.html <script> and <link> tags.
+                            # Also, comment / modify the <meta http-equiv="Content-Security-Policy"> tag.
+phonegap serve              # Fantastic due to Browsersync playing nice with instapack watch!
+                            # Otherwise: cordova run browser
+
+# Later on...
+cordova build android
+cordova build ios
+```
+
+> **CAUTION:** `cordova platform add` and `cordova plugin add` (or remove) will destroy your `node_modules`. Delete `package-lock.json` and `yarn.lock` then re-run `npm` or `yarn` after invoking those commands.
 
 - `angularjs` when you need to develop a legacy web app with AngularJS 1.7, jQuery, and Bootstrap 3. (Includes [jquery-validation-unobtrusive](https://github.com/aspnet/jquery-validation-unobtrusive) for ASP.NET MVC client-side validation.)
 

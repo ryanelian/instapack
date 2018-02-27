@@ -1,0 +1,26 @@
+{
+    "name": "vue-mobile",
+    "displayName": "VueMobile",
+    "version": "1.0.0",
+    "description": "Cordova 8 app written using Vue.js + Onsen UI!",
+    "author": "Ryan Elian",
+    "private": true,
+    "instapack": {
+        "output": "www"
+    },
+    "dependencies": {
+        "@types/pouchdb-browser": "^6.1.2",
+        "@types/requirejs": "^2.1.31",
+        "axios": "^0.18.0",
+        "es6-promise": "^4.2.4",
+        "font-awesome": "^4.7.0",
+        "linq": "^3.0.9",
+        "moment": "^2.20.1",
+        "onsenui": "^2.9.2",
+        "pouchdb-browser": "^6.4.3",
+        "tslib": "^1.9.0",
+        "vue": "^2.5.13",
+        "vue-class-component": "^6.2.0",
+        "vue-onsenui": "^2.5.1"
+    }
+}

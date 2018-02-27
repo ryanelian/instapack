@@ -1,6 +1,6 @@
 {
   "name": "instapack",
-  "version": "6.0.0-beta5",
+  "version": "6.0.0-rc1",
   "description": "All-in-one web app client project compiler using TypeScript and Sass!",
   "main": "bin/index.js",
   "bin": {
@@ -32,7 +32,7 @@
     "postcss": "6.0.19",
     "postcss-discard-comments": "4.0.0-rc.2",
     "resolve": "1.5.0",
-    "source-map": "0.7.1",
+    "source-map": "0.7.2",
     "typescript": "2.7.2",
     "uglify-js": "3.3.12",
     "upath": "1.0.4",
@@ -44,13 +44,13 @@
   },
   "devDependencies": {
     "@types/autoprefixer": "^6.7.3",
-    "@types/chokidar": "^1.7.4",
-    "@types/fs-extra": "^5.0.0",
+    "@types/chokidar": "^1.7.5",
+    "@types/fs-extra": "^5.0.1",
     "@types/html-minifier": "^3.5.1",
     "@types/loader-utils": "^1.1.2",
     "@types/node": "8",
     "@types/node-sass": "^3.10.32",
-    "@types/resolve": "^0.0.6",
+    "@types/resolve": "^0.0.7",
     "@types/webpack": "^3.8.8",
     "@types/webpack-sources": "^0.1.4",
     "@types/yargs": "^11.0.0"

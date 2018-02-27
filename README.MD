@@ -136,7 +136,7 @@ cordova build android
 cordova build ios
 ```
 
-> **CAUTION:** `cordova platform add` and `cordova plugin add` (or remove) will destroy your `node_modules`. Delete `package-lock.json` and `yarn.lock` then re-run `npm` or `yarn` after invoking those commands.
+> **CAUTION:** `cordova platform add` and `cordova plugin add` (or remove) will destroy your `node_modules`. Re-run `yarn` after invoking those commands!!!
 
 - `angularjs` when you need to develop a legacy web app with AngularJS 1.7, jQuery, and Bootstrap 3. (Includes [jquery-validation-unobtrusive](https://github.com/aspnet/jquery-validation-unobtrusive) for ASP.NET MVC client-side validation.)
 

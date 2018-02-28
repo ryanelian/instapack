@@ -21,8 +21,8 @@
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
     "semantic-ui-css": "^2.3.0",
-    "semantic-ui-react": "^0.78.2",
+    "semantic-ui-react": "^0.78.3",
     "tslib": "^1.9.0",
-    "vex-js": "^4.0.1"
+    "vex-js": "^4.1.0"
   }
 }

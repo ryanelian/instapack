@@ -21,12 +21,12 @@
     "bootstrap": "^4.0.0",
     "bootstrap.native": "^2.0.21",
     "es6-promise": "^4.2.4",
-    "inferno": "^4.0.4",
-    "inferno-create-element": "^4.0.4",
+    "inferno": "^4.0.6",
+    "inferno-create-element": "^4.0.6",
     "linq": "^3.0.9",
     "moment": "^2.20.1",
     "noty": "^3.2.0-beta",
     "tslib": "^1.9.0",
-    "vex-js": "^4.0.1"
+    "vex-js": "^4.1.0"
   }
 }

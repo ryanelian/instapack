@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import * as path from 'path';
+import * as upath from 'upath';
 import * as fse from 'fs-extra';
 
 import { prettyBytes } from './PrettyUnits';
@@ -7,11 +7,11 @@ import { prettyBytes } from './PrettyUnits';
 /**
  * Defines build flags to be used by Compiler class.
  */
-export interface CompilerFlags {
+export interface ICompilerFlags {
     production: boolean,
     watch: boolean,
     sourceMap: boolean,
-    parallel: boolean
+    analyze: boolean
 }
 
 /**
@@ -54,18 +54,9 @@ export function timedLog(...tokens: any[]) {
  */
 export function logAndWriteUtf8FileAsync(filePath: string, content: string) {
     let bundle = Buffer.from(content, 'utf8');
-    let name = path.basename(filePath)
+    let name = upath.basename(filePath);
     let size = prettyBytes(bundle.byteLength);
 
     timedLog(chalk.blue(name), chalk.magenta(size));
     return fse.outputFile(filePath, bundle);
-}
-
-/**
- * Accepts absolute path and returns a source-map friendly path relative to that object.
- * This will probably break for stuffs outside the root project folder, but whatever...
- * @param s 
- */
-export function convertAbsoluteToSourceMapPath(root: string, s: string) {
-    return path.relative(root, s).replace(/\\/g, '/');
 }

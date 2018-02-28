@@ -1,30 +1,30 @@
-import * as path from 'path';
+import * as upath from 'upath';
 import * as chalk from 'chalk';
 import * as os from 'os';
 
 /**
  * Dictionary<string, List<string>>
  */
-export interface ConcatLookup {
+export interface IConcatLookup {
     [key: string]: string[]
 }
 
 /**
  * Dictionary<string, string>
  */
-export interface ModuleOverrides {
+export interface IModuleOverrides {
     [key: string]: string
 }
 
 /**
  * Values required to construct an instapack Settings object.
  */
-export class SettingsCore {
+export interface ISettingsCore {
     input: string;
     output: string;
-    concat: ConcatLookup;
-    alias: ModuleOverrides;
-    externals: ModuleOverrides
+    concat: IConcatLookup;
+    alias: IModuleOverrides;
+    externals: IModuleOverrides
     template: string;
     jsOut: string;
     cssOut: string;
@@ -52,17 +52,17 @@ export class Settings {
     /**
      * Gets the unresolved concat map.
      */
-    readonly concat: ConcatLookup;
+    readonly concat: IConcatLookup;
 
     /**
      * Replaces dependency imports to another dependency. For example: {'vue': 'vue/dist/vue.common'}
      */
-    readonly alias: ModuleOverrides;
+    readonly alias: IModuleOverrides;
 
     /**
      * Rewrites dependency imports to a window object. For example: {'jquery': '$'}
      */
-    readonly externals: ModuleOverrides;
+    readonly externals: IModuleOverrides;
 
     /**
      * Gets the JS output file name.
@@ -79,7 +79,7 @@ export class Settings {
      * @param root 
      * @param settings 
      */
-    constructor(root: string, settings: SettingsCore) {
+    constructor(root: string, settings: ISettingsCore) {
         this.root = root || process.cwd();
         this.input = settings.input || 'client';
         this.output = settings.output || 'wwwroot';
@@ -110,14 +110,30 @@ export class Settings {
             input: this.input,
             jsOut: this.jsOut,
             output: this.output
-        } as SettingsCore;
+        } as ISettingsCore;
+    }
+
+    /**
+     * Gets the JS output split chunk file name.
+     * For example, ipack.linq.js or ipack.0.js
+     */
+    get jsOutSplitFileName(): string {
+        return upath.removeExt(this.jsOut, '.js') + '.[name].js';
+    }
+
+    /**
+    * Gets the JS output common / vendored modules chunk file name.
+    * For example, ipack.dll.js
+    */
+    get jsOutVendorFileName(): string {
+        return upath.removeExt(this.jsOut, '.js') + '.dll.js';
     }
 
     /**
      * Cache folder path for cache-loader in user's local temp folder.
      */
     get cacheFolder(): string {
-        return path.join(os.tmpdir(), 'instapack', 'cache');
+        return upath.join(os.tmpdir(), 'instapack', 'cache');
     }
 
     /**
@@ -131,71 +147,78 @@ export class Settings {
      * Gets the full path to package.json file.
      */
     get packageJson(): string {
-        return path.join(this.root, 'package.json');
+        return upath.join(this.root, 'package.json');
     }
 
     /**
      * Gets the full path to node_modules folder.
      */
     get npmFolder(): string {
-        return path.join(this.root, 'node_modules');
+        return upath.join(this.root, 'node_modules');
     }
 
     /**
      * Gets the full path to bower_components folder.
      */
     get bowerFolder(): string {
-        return path.join(this.root, 'bower_components');
+        return upath.join(this.root, 'bower_components');
+    }
+
+    /**
+     * Gets the full path to project DLL manifest JSON file.
+     */
+    get dllManifestJsonPath(): string {
+        return upath.join(this.npmFolder, 'dll-manifest.json');
     }
 
     /**
      * Gets the full path to the root client project folder.
      */
     get inputFolder(): string {
-        return path.join(this.root, this.input);
+        return upath.join(this.root, this.input);
     }
 
     /**
      * Gets the full path to the root JS project folder.
      */
     get inputJsFolder(): string {
-        return path.join(this.inputFolder, 'js');
+        return upath.join(this.inputFolder, 'js');
     }
 
     /**
      * Gets the full path to the root CSS project folder.
      */
     get inputCssFolder(): string {
-        return path.join(this.inputFolder, 'css');
+        return upath.join(this.inputFolder, 'css');
     }
 
     /**
      * Gets the full path to the TypeScript project entry point.
      */
     get jsEntry(): string {
-        return path.join(this.inputJsFolder, 'index.ts');
+        return upath.join(this.inputJsFolder, 'index.ts');
     }
 
     /**
      * Gets the full path to the Sass project entry point.
      */
     get cssEntry(): string {
-        return path.join(this.inputCssFolder, 'index.scss');
+        return upath.join(this.inputCssFolder, 'index.scss');
     }
 
     /**
      * Gets the glob pattern for watching Sass project source code changes. 
      */
     get scssGlob(): string {
-        return path.join(this.inputCssFolder, '**', '*.scss');
+        return upath.join(this.inputCssFolder, '**', '*.scss');
     }
 
     /**
      * Gets the glob patterns for watching TypeScript project source code changes.
      */
-    get tsGlobs(): string[]{
-        let ts = path.join(this.inputJsFolder, '**', '*.ts');
-        let tsx = path.join(this.inputJsFolder, '**', '*.tsx');
+    get tsGlobs(): string[] {
+        let ts = upath.join(this.inputJsFolder, '**', '*.ts');
+        let tsx = upath.join(this.inputJsFolder, '**', '*.tsx');
         return [ts, tsx];
     }
 
@@ -203,21 +226,21 @@ export class Settings {
      * Gets the full path to the root output folder.
      */
     get outputFolder(): string {
-        return path.join(this.root, this.output);
+        return upath.join(this.root, this.output);
     }
 
     /**
      * Gets the full path to the JavaScript compilation and concat output folder.
      */
     get outputJsFolder(): string {
-        return path.join(this.outputFolder, 'js');
+        return upath.join(this.outputFolder, 'js');
     }
 
     /**
      * Gets the full path to the JS compilation output file.
      */
     get outputJsFile(): string {
-        return path.join(this.outputJsFolder, this.jsOut);
+        return upath.join(this.outputJsFolder, this.jsOut);
     }
 
     /**
@@ -231,14 +254,14 @@ export class Settings {
      * Gets the full path to the CSS compilation and concat output folder.
      */
     get outputCssFolder(): string {
-        return path.join(this.outputFolder, 'css');
+        return upath.join(this.outputFolder, 'css');
     }
 
     /**
      * Gets the full path to the CSS compilation output file.
      */
     get outputCssFile(): string {
-        return path.join(this.outputCssFolder, this.cssOut);
+        return upath.join(this.outputCssFolder, this.cssOut);
     }
 
     /**
@@ -256,7 +279,7 @@ export class Settings {
         let parse: any;
 
         try {
-            let json = path.join(root, 'package.json');
+            let json = upath.join(root, 'package.json');
             // console.log('Loading settings ' + chalk.cyan(json));
             parse = require(json).instapack;
         } catch (ex) {

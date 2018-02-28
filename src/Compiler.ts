@@ -7,17 +7,17 @@ import { TypeScriptBuildTool } from './TypeScriptBuildTool';
 import { TypeScriptCheckerTool } from './TypeScriptCheckerTool';
 import { SassBuildTool } from './SassBuildTool';
 import { ConcatBuildTool } from './ConcatBuildTool';
-import { Settings, SettingsCore } from './Settings';
-import { timedLog, CompilerFlags } from './CompilerUtilities';
+import { Settings, ISettingsCore } from './Settings';
+import { timedLog, ICompilerFlags } from './CompilerUtilities';
 
 /**
  * Represents POJO serializable build metadata for child Compiler process.
  */
-interface BuildCommand {
+interface IBuildCommand {
     build: string;
     root: string;
-    settings: SettingsCore;
-    flags: CompilerFlags;
+    settings: ISettingsCore;
+    flags: ICompilerFlags;
 }
 
 /**
@@ -33,14 +33,14 @@ export class Compiler {
     /**
      * Gets the compiler build flags.
      */
-    private readonly flags: CompilerFlags;
+    private readonly flags: ICompilerFlags;
 
     /**
      * Constructs a new instance of Compiler using the specified settings and build flags. 
      * @param settings 
      * @param flags 
      */
-    constructor(settings: Settings, flags: CompilerFlags) {
+    constructor(settings: Settings, flags: ICompilerFlags) {
         this.settings = settings;
         this.flags = flags;
     }
@@ -49,7 +49,7 @@ export class Compiler {
      * Constructs Compiler instance from child process build command.
      * @param command 
      */
-    static fromCommand(command: BuildCommand) {
+    static fromCommand(command: IBuildCommand) {
         let settings = new Settings(command.root, command.settings);
         let compiler = new Compiler(settings, command.flags);
         return compiler;
@@ -68,12 +68,17 @@ export class Compiler {
             timedLog(chalk.red("Do not forget to minify"), "before pushing to repository or production server!");
         }
 
-        if (this.flags.parallel) {
-            timedLog(chalk.yellow('Parallel'), 'Mode: Build will be scaled across all CPU threads!');
-        }
-
         if (this.flags.watch) {
             timedLog(chalk.yellow("Watch"), "Mode: Source codes will be automatically compiled on changes.");
+        }
+
+        if (!this.flags.production || this.flags.watch) {
+            this.flags.analyze = false;
+        }
+
+        if (this.flags.analyze) {
+            let analysisPath = this.settings.outputJsFolder + '/analysis.html';
+            timedLog(chalk.yellow('Analyze'), 'Mode:', chalk.cyan(analysisPath));
         }
 
         timedLog('Source Maps:', chalk.yellow(this.flags.sourceMap ? 'Enabled' : 'Disabled'));
@@ -100,7 +105,7 @@ export class Compiler {
                 root: this.settings.root,
                 flags: this.flags,
                 settings: this.settings.core
-            } as BuildCommand);
+            } as IBuildCommand);
 
             if (taskName === 'js') {
                 this.startBackgroundTask('type-checker');
@@ -190,8 +195,8 @@ export class Compiler {
      * Returns true when package.json exists in project root folder but node_modules folder is missing.
      */
     get needPackageRestore() {
-        let hasNodeModules = fse.existsSync(this.settings.npmFolder);
-        let hasPackageJson = fse.existsSync(this.settings.packageJson);
+        let hasNodeModules = fse.pathExistsSync(this.settings.npmFolder);
+        let hasPackageJson = fse.pathExistsSync(this.settings.packageJson);
 
         let restore = hasPackageJson && !hasNodeModules;
         if (restore) {
@@ -252,7 +257,7 @@ export class Compiler {
 }
 
 if (process.send) { // Child Process
-    process.on('message', (command: BuildCommand) => {
+    process.on('message', (command: IBuildCommand) => {
         // console.log(command);
         if (command.build) {
             if (!command.flags.watch || command.build === 'concat') {

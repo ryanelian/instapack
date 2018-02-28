@@ -37,11 +37,15 @@ class Compiler {
             CompilerUtilities_1.timedLog(chalk_1.default.yellow("Development"), "Mode: Outputs will", chalk_1.default.red("NOT be minified!"), "(Fast build)");
             CompilerUtilities_1.timedLog(chalk_1.default.red("Do not forget to minify"), "before pushing to repository or production server!");
         }
-        if (this.flags.parallel) {
-            CompilerUtilities_1.timedLog(chalk_1.default.yellow('Parallel'), 'Mode: Build will be scaled across all CPU threads!');
-        }
         if (this.flags.watch) {
             CompilerUtilities_1.timedLog(chalk_1.default.yellow("Watch"), "Mode: Source codes will be automatically compiled on changes.");
+        }
+        if (!this.flags.production || this.flags.watch) {
+            this.flags.analyze = false;
+        }
+        if (this.flags.analyze) {
+            let analysisPath = this.settings.outputJsFolder + '/analysis.html';
+            CompilerUtilities_1.timedLog(chalk_1.default.yellow('Analyze'), 'Mode:', chalk_1.default.cyan(analysisPath));
         }
         CompilerUtilities_1.timedLog('Source Maps:', chalk_1.default.yellow(this.flags.sourceMap ? 'Enabled' : 'Disabled'));
     }
@@ -131,8 +135,8 @@ class Compiler {
         }
     }
     get needPackageRestore() {
-        let hasNodeModules = fse.existsSync(this.settings.npmFolder);
-        let hasPackageJson = fse.existsSync(this.settings.packageJson);
+        let hasNodeModules = fse.pathExistsSync(this.settings.npmFolder);
+        let hasPackageJson = fse.pathExistsSync(this.settings.packageJson);
         let restore = hasPackageJson && !hasNodeModules;
         if (restore) {
             CompilerUtilities_1.timedLog(chalk_1.default.cyan('node_modules'), 'folder not found. Performing automatic package restore...');

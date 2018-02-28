@@ -1,6 +1,6 @@
 # instapack + ASP.NET Core MVC
 
-> This guide has been merged to the newer [Developing Single-Page Application with Vue.js](https://github.com/ryanelian/instapack/blob/master/books/dev-spa-vue.md) guide but is kept here for archival.
+> This guide has been merged to the newer [Developing Single-Page Application with Vue.js](https://github.com/ryanelian/instapack/blob/master/books/dev-spa-vue.md) guide and is outdated, but is kept here for archival.
 
 For this tutorial, we will not be using Visual Studio 2017, but use the command line tool provided by .NET Core SDK to setup, build, and run the project.
 

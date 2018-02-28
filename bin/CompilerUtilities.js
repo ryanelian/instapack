@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const chalk_1 = require("chalk");
-const path = require("path");
+const upath = require("upath");
 const fse = require("fs-extra");
 const PrettyUnits_1 = require("./PrettyUnits");
 function padZeroToDoubleDigits(x) {
@@ -26,13 +26,9 @@ function timedLog(...tokens) {
 exports.timedLog = timedLog;
 function logAndWriteUtf8FileAsync(filePath, content) {
     let bundle = Buffer.from(content, 'utf8');
-    let name = path.basename(filePath);
+    let name = upath.basename(filePath);
     let size = PrettyUnits_1.prettyBytes(bundle.byteLength);
     timedLog(chalk_1.default.blue(name), chalk_1.default.magenta(size));
     return fse.outputFile(filePath, bundle);
 }
 exports.logAndWriteUtf8FileAsync = logAndWriteUtf8FileAsync;
-function convertAbsoluteToSourceMapPath(root, s) {
-    return path.relative(root, s).replace(/\\/g, '/');
-}
-exports.convertAbsoluteToSourceMapPath = convertAbsoluteToSourceMapPath;

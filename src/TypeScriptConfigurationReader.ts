@@ -1,4 +1,4 @@
-import * as path from 'path';
+import * as upath from 'upath';
 import * as TypeScript from 'typescript';
 
 /**
@@ -6,7 +6,7 @@ import * as TypeScript from 'typescript';
  */
 export function parseUserTsConfig() {
     let basePath = process.cwd();
-    let tsconfigPath = path.join(basePath, 'tsconfig.json');
+    let tsconfigPath = upath.join(basePath, 'tsconfig.json');
 
     let tsconfigJson = TypeScript.readConfigFile(tsconfigPath, TypeScript.sys.readFile);
     if (tsconfigJson.error) {

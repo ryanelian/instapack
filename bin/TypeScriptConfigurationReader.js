@@ -1,10 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const path = require("path");
+const upath = require("upath");
 const TypeScript = require("typescript");
 function parseUserTsConfig() {
     let basePath = process.cwd();
-    let tsconfigPath = path.join(basePath, 'tsconfig.json');
+    let tsconfigPath = upath.join(basePath, 'tsconfig.json');
     let tsconfigJson = TypeScript.readConfigFile(tsconfigPath, TypeScript.sys.readFile);
     if (tsconfigJson.error) {
         throw Error(tsconfigJson.error.messageText.toString());

@@ -13,17 +13,20 @@
     }
   },
   "dependencies": {
+    "@fortawesome/fontawesome": "^1.1.4",
+    "@fortawesome/fontawesome-free-regular": "^5.0.7",
+    "@fortawesome/fontawesome-free-solid": "^5.0.7",
     "@types/requirejs": "^2.1.31",
     "axios": "^0.18.0",
     "bootstrap": "^4.0.0",
     "bootstrap.native": "^2.0.21",
     "es6-promise": "^4.2.4",
-    "font-awesome": "^4.7.0",
-    "inferno": "^4.0.4",
-    "inferno-create-element": "^4.0.4",
-    "linqts": "^1.10.0",
+    "inferno": "^4.0.6",
+    "inferno-create-element": "^4.0.6",
+    "linq": "^3.0.9",
     "moment": "^2.20.1",
     "noty": "^3.2.0-beta",
-    "tslib": "^1.9.0"
+    "tslib": "^1.9.0",
+    "vex-js": "^4.1.0"
   }
 }

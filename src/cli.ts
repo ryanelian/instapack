@@ -75,9 +75,9 @@ CLI.command({
             }).option('u', {
                 alias: 'uncharted',
                 describe: 'Disables source maps.'
-            }).option('p', {
-                alias: 'parallel',
-                describe: 'Enables parallel build across all CPU threads!'
+            }).option('a', {
+                alias: 'analyze',
+                describe: 'Generates a module size analysis report for JS output.'
             });
     },
     handler: argv => {
@@ -88,7 +88,7 @@ CLI.command({
             production: !Boolean(argv.dev),
             watch: Boolean(argv.watch),
             sourceMap: !Boolean(argv.uncharted),
-            parallel: Boolean(argv.parallel)
+            analyze: Boolean(argv.analyze)
         });
     }
 });

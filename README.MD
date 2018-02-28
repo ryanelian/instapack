@@ -1,6 +1,6 @@
 # instapack
 
-> All-in-one web app client project compiler using TypeScript and Sass! :package: :rocket:
+> All-in-one web application client project compiler using TypeScript and Sass! :package: :rocket:
 
 [![npm](https://img.shields.io/npm/v/instapack.svg)](https://www.npmjs.com/package/instapack) [![Build Status](https://travis-ci.org/ryanelian/instapack.svg?branch=master)](https://travis-ci.org/ryanelian/instapack) [![Build status](https://ci.appveyor.com/api/projects/status/y6v2hde0mhh9o5an/branch/master?svg=true)](https://ci.appveyor.com/project/RyanElian/instapack/branch/master) [![Greenkeeper badge](https://badges.greenkeeper.io/ryanelian/instapack.svg)](https://greenkeeper.io/)
 
@@ -73,7 +73,7 @@ If using [the latest Visual Studio Code](https://code.visualstudio.com/), it sho
 
 ## But... Why?
 
-Recently every f-ing framework on this planet :earth_asia: has their own CLI, but only few are able to support TypeScript out of the box. So most people gave up on TypeScript right off the bat... :broken_heart:
+Recently every hecking framework on this planet :earth_asia: has their own CLI, but only few are able to support TypeScript out of the box. So most people gave up on TypeScript right off the bat... :broken_heart:
 
 instapack is an initiative to develop a command line tool for compiling most apps developed using mainstream JavaScript frameworks, with a :lemon: twist: **It can easily build an app written in TypeScript with minimal or no further configurations!**
 
@@ -87,13 +87,19 @@ Out of the box, these files will be used as the entry points:
 
 - `client/js/index.ts`, compiled to `wwwroot/js/ipack.js`
 
+  - Simply include this file in your HTML using `<script>` at the bottom / before </body> so the browser can render the page while loading the script.
+
+  - Anything imported from `node_modules` will be put into `ipack.dll.js`. Please include this file in your HTML just before `ipack.js`
+
 - `client/css/index.scss`, compiled to `wwwroot/css/ipack.css`
+
+  - Also include this file in your HTML using `<link>` on the top / before `</head>` so the browser can style and render the page as it loads.
 
   - The Sass language compiler service has been configured to enable `@import` from `node_modules`!
 
   - Spiced with :hot_pepper: [PostCSS AutoPrefixer](https://github.com/postcss/autoprefixer) for applying CSS vendor-prefixes automatically!
 
-- Concatenate files listed in `package.json`. Read more below.
+- Concatenate files listed in `package.json`. Usually the output file will be included in the HTML before `ipack.js`. Read more below.
 
 ## Commands
 
@@ -111,6 +117,27 @@ Scaffolds a new instapack project into your existing app folder where the comman
 
 - `inferno` when you want to develop a web app with Inferno and Bootstrap 4.
 
+- `vue-mobile` when you want to develop a _Progressive Web Application_ using Vue.js and Onsen UI!
+
+  - This template is a little bit different from the rest, if you intend to develop a mobile app using Cordova. Usage instruction:
+
+```powershell
+cordova create MyProject
+cd MyProject
+ipack new vue-mobile
+.\cordova-platform-add.ps1  # About this script, read CAUTION below...
+ipack -dw                   # Then change www/index.html <script> and <link> tags.
+                            # Also, comment / modify the <meta http-equiv="Content-Security-Policy"> tag.
+phonegap serve              # Fantastic due to Browsersync playing nice with instapack watch!
+                            # Otherwise: cordova run browser
+
+# Later on...
+cordova build android
+cordova build ios
+```
+
+> **CAUTION:** `cordova platform add` and `cordova plugin add` (or remove) will destroy your `node_modules`. Re-run `yarn` after invoking those commands!!!
+
 - `angularjs` when you need to develop a legacy web app with AngularJS 1.7, jQuery, and Bootstrap 3. (Includes [jquery-validation-unobtrusive](https://github.com/aspnet/jquery-validation-unobtrusive) for ASP.NET MVC client-side validation.)
 
 If no template parameter is provided, `vue` will be chosen.
@@ -127,7 +154,7 @@ In addition, build flags are available:
 
 - `-u` or `--uncharted` disables source maps. (Slightly improves build speed)
 
-- `-p` or `--parallel` enables *experimental* parallel build across all CPU threads! :trident:
+- `-a` or `--analyze` generates module size report `analysis.html` next to the JS build output. For sanity, this flag will be ignored when using `-d` or `-w` flags.
 
 > You can combine multiple build flags, for example: `ipack -dw` = `dev` + `watch` mode for **massive productivity gainz!** :muscle:
 
@@ -165,10 +192,11 @@ instapack puts configuration inside `package.json` to reduce project files clutt
     "bootstrap.native": "^2.0.21",
     "es6-promise": "^4.2.4",
     "font-awesome": "^4.7.0",
-    "linqts": "^1.10.0",
+    "linq": "^3.0.9",
     "moment": "^2.20.1",
     "noty": "^3.2.0-beta",
     "tslib": "^1.9.0",
+    "vex-js": "^4.0.1",
     "vue": "^2.5.13",
     "vue-class-component": "^6.2.0"
   }
@@ -221,13 +249,11 @@ so [CDN](https://en.wikipedia.org/wiki/Content_delivery_network) can be used! :t
 
 - `concat` allows packing browser libraries to be consumed directly from `<script src="...">` rather than as a module.
 
-  - The file names will be resolved node-style (but **NOT** their contents), which allows concatenating packages downloaded from `npm` to be bundled, minified, and then placed into the output JS folder. 
+  - The file names will be resolved node-style (**but NOT their contents**), which allows concatenating packages downloaded from `npm` to be bundled, minified, and then placed into the output JS folder. 
 
   - Use concatenation for libraries that cannot be imported / do not need to be imported (for example, jQuery plugins). This hybrid approach allows greater compatibility with older libraries, while enjoying the rich development experience using TypeScript.
 
-  - You can also use concat to improve compile time by placing vendored modules out of the app code bundle!
-
-  - For consuming the libraries within the TypeScript app code, load them before `bundle.js` then use the `externals` module configuration ([declare a global TypeScript module definition](https://www.typescriptlang.org/docs/handbook/declaration-files/templates/global-modifying-module-d-ts.html) if not a npm module).
+  - For consuming the libraries within the TypeScript app code, load them before `bundle.js` then use the `externals` module configuration. (You may use CommonJS syntax to import the module; read more below...)
   
   - Alternatively, reference the library objects directly from the `window` object (e.g. `window['$']`).
 
@@ -253,12 +279,12 @@ so [CDN](https://en.wikipedia.org/wiki/Content_delivery_network) can be used! :t
 
 - Use [ES Harmony module syntax](https://www.typescriptlang.org/docs/handbook/modules.html) to import and export other `.ts` / `.tsx` files in the project or JavaScript modules from `node_modules` installed via `npm` or `yarn`. This technique allows the ease of development using intellisense for modules with type definitions:
 
-  - The module has `"typings": "something.d.ts"` in its `package.json`. For example, `linqts`.
+  - The module has `"typings": "something.d.ts"` in its `package.json`. For example: `vue`, `linq`
 
-  - The module has [@types](https://microsoft.github.io/TypeSearch/) installed. For example, `react` and `@types/react`.
+  - The module has [@types](https://microsoft.github.io/TypeSearch/) installed. For example, `react` and `@types/react`
 
 ```ts
-import { List } from 'linqts';
+import List from 'linq';
 ```
 
 - You may also use CommonJS module syntax to import JavaScript modules from `node_modules` installed via `npm`, but **you will NOT get intellisense** (module will be imported as `any` data type).
@@ -333,7 +359,7 @@ Add the packages required for your project using yarn / npm then start hacking. 
 
 Also, pull requests are welcomed if you have a great starting templates and books for those projects. We'd love to expand our collections!
 
-### What are the breaking changes when upgrading from instapack 4?
+### What are the breaking changes when upgrading from instapack 4 to 5?
 
 - Our supported Node.js runtime is now the latest version 8 LTS.
 
@@ -364,15 +390,33 @@ Also, pull requests are welcomed if you have a great starting templates and book
 }
 ```
 
-### What are the breaking changes when upgrading from instapack 5?
+### What are the breaking changes when upgrading from instapack 5 to 6?
 
-HTML template compilation mode in `package.json` (`string` vs `vue`) has been removed in favor of special extension `.vue.html`. This change:
+Modules imported from `node_modules` will now be split automatically to `[jsOut].dll.js`, for example: `ipack.dll.js`
 
-- Allows a project to have both stringified HTML and pre-compiled Vue.js HTML.
+- **This file must be included using `<script>` tag BEFORE the main app file `ipack.js`**
 
-- Simplifies instapack to make it more beginner-friendly by reducing the number of obscure options and templates.
+- Build speed should be improved, hopefully. ([Trying to keep entry chunk size small...](https://webpack.js.org/guides/build-performance/))
 
-In light of [the final version of AngularJS 1.7 LTS](https://blog.angular.io/stable-angularjs-and-long-term-support-7e077635ee9c), it is recommended for newer projects to use Vue.js / React / Inferno instead. Therefore, `angular-material` template has been removed and `angular-bootstrap` template has been renamed to `angularjs`. jQuery has been re-added into `angularjs` template to improve compatibility with legacy browser, especially with Bootstrap 3.
+HTML template compilation mode in `package.json` (`string` vs `vue`) has been removed in favor of special extension `.vue.html` to:
+
+- Allow a project to have both stringified HTML and pre-compiled Vue.js HTML.
+
+- Simplify instapack, to make it more beginner-friendly by reducing the number of obscure options and templates...
+
+In light of [the final version of AngularJS 1.7 LTS](https://blog.angular.io/stable-angularjs-and-long-term-support-7e077635ee9c), it is recommended for newer projects to use Vue.js / React / Inferno instead.
+
+- Therefore, `angular-material` template has been removed and `angular-bootstrap` template has been renamed to `angularjs`
+
+- jQuery has been re-added into `angularjs` template to improve compatibility with legacy browsers, especially with Bootstrap 3.
+
+Unfortunately, the enterprise world is not ready for JavaScript running natively in ES2015 and beyond...
+
+The [no-longer-maintained](https://github.com/mishoo/UglifyJS2/pull/2897) UglifyES has been dropped in exchange for the hopefully-more-stable UglifyJS 3. This change imposes stricter build requirements:
+
+- Only `es5` build `target` (set in `tsconfig.json`) is currently supported. **Setting ES2015+ as build target WILL cause build error!**
+
+- **Attempting to import a non-TypeScript ES2015+ module will fail the build!** This downgrade guards the project against ninja browser incompatibilities.
 
 ### I thought files should not be bundled because of HTTP/2?
 

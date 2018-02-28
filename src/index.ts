@@ -1,10 +1,10 @@
 import { Compiler } from './Compiler';
-import { CompilerFlags } from './CompilerUtilities';
+import { ICompilerFlags } from './CompilerUtilities';
 import { Settings } from './Settings';
 import { Scaffold } from './Scaffold';
 
 import * as fse from 'fs-extra';
-import * as path from 'path';
+import * as upath from 'upath';
 
 /**
  * Exposes methods for developing a web app client project.
@@ -21,11 +21,11 @@ export = class instapack {
      * Gets a list of string which contains templates available for the scaffold method.
      */
     get availableTemplates() {
-        let templatesFolder = path.join(__dirname, '..', 'templates');
+        let templatesFolder = upath.join(__dirname, '..', 'templates');
 
         let ar = fse.readdirSync(templatesFolder);
         let templates = ar.filter(Q => {
-            let test = path.join(templatesFolder, Q);
+            let test = upath.join(templatesFolder, Q);
             return fse.lstatSync(test).isDirectory();
         });
 
@@ -51,7 +51,7 @@ export = class instapack {
      * @param taskName 
      * @param flags 
      */
-    build(taskName: string, flags: CompilerFlags) {
+    build(taskName: string, flags: ICompilerFlags) {
         let compiler = new Compiler(this.settings, flags);
         let scaffold = new Scaffold();
 

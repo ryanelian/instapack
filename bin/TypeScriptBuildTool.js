@@ -1,94 +1,72 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const path = require("path");
-const os = require("os");
 const chalk_1 = require("chalk");
 const webpack = require("webpack");
-const UglifyWebpackPlugin = require("uglifyjs-webpack-plugin");
+const webpack_bundle_analyzer_1 = require("webpack-bundle-analyzer");
 const EventHub_1 = require("./EventHub");
 const CompilerUtilities_1 = require("./CompilerUtilities");
 const TypeScriptConfigurationReader_1 = require("./TypeScriptConfigurationReader");
 const PrettyUnits_1 = require("./PrettyUnits");
-class TypeScriptBuildWebpackPlugin {
-    constructor(settings, flags) {
-        this.settings = settings;
-        this.flags = flags;
-    }
-    apply(compiler) {
-        compiler.plugin('compile', compilation => {
-            CompilerUtilities_1.timedLog('Compiling JS >', chalk_1.default.yellow(TypeScriptConfigurationReader_1.getTypeScriptTarget()), chalk_1.default.cyan(this.settings.jsEntry));
-        });
-    }
-}
+const TypeScriptBuildWebpackPlugin_1 = require("./TypeScriptBuildWebpackPlugin");
 class TypeScriptBuildTool {
     constructor(settings, flags) {
         this.settings = settings;
         this.flags = flags;
     }
-    get threadLoader() {
-        return {
-            loader: 'thread-loader',
-            options: {
-                workers: os.cpus().length - 1
-            }
-        };
-    }
     get typescriptWebpackRules() {
-        let loaders = [];
-        if (this.flags.parallel) {
-            loaders.push(this.threadLoader);
-        }
         let options = TypeScriptConfigurationReader_1.getLazyCompilerOptions();
         options.sourceMap = this.flags.sourceMap;
         options.inlineSources = this.flags.sourceMap;
-        loaders.push({
-            loader: 'core-typescript-loader',
-            options: {
-                compilerOptions: options
-            }
-        });
         return {
             test: /\.tsx?$/,
-            use: loaders
+            use: [{
+                    loader: 'core-typescript-loader',
+                    options: {
+                        compilerOptions: options
+                    }
+                }]
         };
     }
     get templatesWebpackRules() {
-        let loaders = [];
-        if (this.flags.parallel) {
-            loaders.push(this.threadLoader);
-        }
-        loaders.push({
-            loader: 'template-loader'
-        });
         return {
             test: /\.html?$/,
-            use: loaders
+            use: [{
+                    loader: 'template-loader'
+                }]
         };
     }
     getWebpackPlugins() {
         let plugins = [];
         plugins.push(new webpack.NoEmitOnErrorsPlugin());
-        plugins.push(new TypeScriptBuildWebpackPlugin(this.settings, this.flags));
+        plugins.push(new TypeScriptBuildWebpackPlugin_1.TypeScriptBuildWebpackPlugin(this.settings, this.flags));
+        plugins.push(new webpack.optimize.CommonsChunkPlugin({
+            name: 'DLL',
+            filename: this.settings.jsOutVendorFileName,
+            minChunks: module => module.context && module.context.includes('node_modules')
+        }));
+        if (this.flags.analyze) {
+            plugins.push(new webpack_bundle_analyzer_1.BundleAnalyzerPlugin({
+                analyzerMode: 'static',
+                reportFilename: 'analysis.html',
+                logLevel: 'warn'
+            }));
+        }
         if (this.flags.production) {
             plugins.push(new webpack.DefinePlugin({
                 'process.env': {
                     'NODE_ENV': JSON.stringify('production')
                 }
             }));
-            plugins.push(new UglifyWebpackPlugin({
-                sourceMap: this.flags.sourceMap,
-                parallel: this.flags.parallel,
-                uglifyOptions: TypeScriptConfigurationReader_1.createUglifyESOptions()
-            }));
         }
         return plugins;
     }
     get webpackConfiguration() {
         let config = {
-            entry: this.settings.jsEntry,
+            entry: path.normalize(this.settings.jsEntry),
             output: {
                 filename: this.settings.jsOut,
-                path: this.settings.outputJsFolder
+                path: path.normalize(this.settings.outputJsFolder)
             },
             externals: this.settings.externals,
             resolve: {
@@ -172,6 +150,13 @@ class TypeScriptBuildTool {
             }
             let t = PrettyUnits_1.prettyMilliseconds(o.time);
             CompilerUtilities_1.timedLog('Finished JS build after', chalk_1.default.green(t));
+            if (this.flags.analyze) {
+                CompilerUtilities_1.timedLog('Generating the module size analysis report for JS output, please wait...');
+                setTimeout(() => {
+                    process.exit(0);
+                }, 5 * 1000);
+                return;
+            }
             EventHub_1.default.buildDone();
         });
     }

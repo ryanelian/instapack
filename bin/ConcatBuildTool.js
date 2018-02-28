@@ -9,12 +9,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const fse = require("fs-extra");
-const path = require("path");
+const upath = require("upath");
 const chalk_1 = require("chalk");
 const resolve = require("resolve");
-const UglifyES = require("uglify-es");
+let Uglify = require('uglify-js');
 const EventHub_1 = require("./EventHub");
-const TypeScriptConfigurationReader_1 = require("./TypeScriptConfigurationReader");
 const CompilerUtilities_1 = require("./CompilerUtilities");
 const PrettyUnits_1 = require("./PrettyUnits");
 class ConcatBuildTool {
@@ -44,14 +43,14 @@ class ConcatBuildTool {
             let contents = yield Promise.all(p2);
             let files = {};
             for (let i = 0; i < resolutions.length; i++) {
-                let key = '/' + CompilerUtilities_1.convertAbsoluteToSourceMapPath(this.settings.root, resolutions[i]);
+                let key = '/' + upath.relative(this.settings.root, resolutions[i]);
                 files[key] = contents[i];
             }
             return files;
         });
     }
     concatFilesAsync(target, files) {
-        let options = TypeScriptConfigurationReader_1.createUglifyESOptions();
+        let options = {};
         if (!this.flags.production) {
             options['compress'] = false;
             options['mangle'] = false;
@@ -68,7 +67,7 @@ class ConcatBuildTool {
             };
         }
         return new Promise((ok, error) => {
-            let result = UglifyES.minify(files, options);
+            let result = Uglify.minify(files, options);
             if (result.error) {
                 error(result.error);
             }
@@ -81,7 +80,7 @@ class ConcatBuildTool {
         return __awaiter(this, void 0, void 0, function* () {
             let files = yield this.resolveThenReadFiles(modules);
             let result = yield this.concatFilesAsync(target, files);
-            let outPath = path.join(this.settings.outputJsFolder, target);
+            let outPath = upath.join(this.settings.outputJsFolder, target);
             let p1 = CompilerUtilities_1.logAndWriteUtf8FileAsync(outPath, result.code);
             if (result.map) {
                 yield CompilerUtilities_1.logAndWriteUtf8FileAsync(outPath + '.map', result.map);
@@ -106,7 +105,7 @@ class ConcatBuildTool {
             if (o.endsWith('.js') === false) {
                 o += '.js';
             }
-            fse.removeSync(path.join(this.settings.outputJsFolder, o + '.map'));
+            fse.removeSync(upath.join(this.settings.outputJsFolder, o + '.map'));
             let task = this.concatTarget(o, modules).catch(error => {
                 CompilerUtilities_1.timedLog(chalk_1.default.red('ERROR'), 'when concatenating', chalk_1.default.blue(o));
                 console.error(error);

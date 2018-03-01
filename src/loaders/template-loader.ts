@@ -87,7 +87,7 @@ module.exports = function (this: loader.LoaderContext, html: string) {
 
         gen.setSourceContent(this.resourcePath, html);
         let sm = gen.toJSON();
-        // HACK: https://github.com/webpack/webpack-sources/issues/34
+        // HACK78
         this.callback(null, template, sm as any);
     } else {
         this.callback(null, template);

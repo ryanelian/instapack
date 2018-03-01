@@ -113,7 +113,7 @@ export class SassBuildTool {
         let t1 = logAndWriteUtf8FileAsync(cssOutput, cssResult.css);
         if (cssResult.map) {
             let sm = cssResult.map.toJSON();
-            // HACK: SourceMap version 0.7.1 changes RawSourceMap typing...
+            // HACK78
             this.fixSourceMap(sm as any);
             await logAndWriteUtf8FileAsync(cssOutput + '.map', JSON.stringify(sm));
         }

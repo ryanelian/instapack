@@ -53,7 +53,7 @@ export class TypeScriptBuildWebpackPlugin {
         if (this.flags.sourceMap) {
             let o = asset.sourceAndMap();
             input.code = input.payload[fileName] = o.source;
-            input.map = o.map as any;
+            input.map = o.map as any; // HACK78
             input.options = {
                 sourceMap: {
                     content: input.map,
@@ -98,6 +98,7 @@ export class TypeScriptBuildWebpackPlugin {
                         } else {
                             let output;
                             if (this.flags.sourceMap) {
+                                // HACK78
                                 output = new SourceMapSource(minified.code, file, JSON.parse(minified.map), input.code, input.map as any);
                             } else {
                                 output = new RawSource(minified.code);

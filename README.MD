@@ -185,18 +185,20 @@ instapack puts configuration inside `package.json` to reduce project files clutt
     }
   },
   "dependencies": {
+    "@fortawesome/fontawesome": "^1.1.4",
+    "@fortawesome/fontawesome-free-regular": "^5.0.7",
+    "@fortawesome/fontawesome-free-solid": "^5.0.7",
     "@types/requirejs": "^2.1.31",
     "aspnet-validation": "^0.0.4",
     "axios": "^0.18.0",
     "bootstrap": "4.0.0",
     "bootstrap.native": "^2.0.21",
     "es6-promise": "^4.2.4",
-    "font-awesome": "^4.7.0",
     "linq": "^3.0.9",
     "moment": "^2.20.1",
     "noty": "^3.2.0-beta",
     "tslib": "^1.9.0",
-    "vex-js": "^4.0.1",
+    "vex-js": "^4.1.0",
     "vue": "^2.5.13",
     "vue-class-component": "^6.2.0"
   }

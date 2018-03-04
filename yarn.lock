@@ -1530,9 +1530,9 @@ hosted-git-info@^2.1.4:
   version "2.5.0"
   resolved "https://registry.yarnpkg.com/hosted-git-info/-/hosted-git-info-2.5.0.tgz#6d60e34b3abbc8313062c3b798ef8d901a07af3c"
 
-html-minifier@3.5.9:
-  version "3.5.9"
-  resolved "https://registry.yarnpkg.com/html-minifier/-/html-minifier-3.5.9.tgz#74424014b872598d4bb0e20ac420926ec61024b6"
+html-minifier@3.5.10:
+  version "3.5.10"
+  resolved "https://registry.yarnpkg.com/html-minifier/-/html-minifier-3.5.10.tgz#8522c772c388db81aa5c26f62033302d906ea1c7"
   dependencies:
     camel-case "3.0.x"
     clean-css "4.1.x"

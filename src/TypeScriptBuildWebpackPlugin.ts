@@ -4,10 +4,21 @@ import { Source, SourceMapSource, RawSource } from 'webpack-sources';
 import { RawSourceMap } from 'source-map';
 let Uglify = require('uglify-js');
 
-import { Settings } from './Settings';
-import { timedLog, ICompilerFlags } from './CompilerUtilities';
-import { getTypeScriptTarget } from './TypeScriptConfigurationReader';
+import { timedLog } from './CompilerUtilities';
 
+/**
+ * Options required for TypeScriptBuildWebpackPlugin to function, collected from Settings and ICompilerFlags.
+ */
+interface ITypeScriptBuildWebpackPluginOptions {
+    jsEntry: string;
+    target: string;
+    production: boolean;
+    sourceMap: boolean;
+}
+
+/**
+ * Values required for operating UglifyJS 3 and webpack-sources, collected into an object.
+ */
 interface IMinificationInput {
     code?: string;
     map?: RawSourceMap;
@@ -21,23 +32,16 @@ interface IMinificationInput {
 export class TypeScriptBuildWebpackPlugin {
 
     /**
-     * Gets the project settings.
+     * Gets the options required for TypeScriptBuildWebpackPlugin to function.
      */
-    private readonly settings: Settings;
+    private readonly options: ITypeScriptBuildWebpackPluginOptions;
 
     /**
-     * Gets the compiler build flags.
+     * Constructs a new instance of TypeScriptBuildWebpackPlugin using its options. 
+     * @param options 
      */
-    private readonly flags: ICompilerFlags;
-
-    /**
-     * Constructs a new instance of TypeScriptBuildPlugin using the specified settings and build flags. 
-     * @param settings 
-     * @param flags 
-     */
-    constructor(settings: Settings, flags: ICompilerFlags) {
-        this.settings = settings
-        this.flags = flags;
+    constructor(options: ITypeScriptBuildWebpackPluginOptions) {
+        this.options = options;
     }
 
     /**
@@ -50,7 +54,7 @@ export class TypeScriptBuildWebpackPlugin {
             payload: {}
         };
 
-        if (this.flags.sourceMap) {
+        if (this.options.sourceMap) {
             let o = asset.sourceAndMap();
             input.code = input.payload[fileName] = o.source;
             input.map = o.map as any; // HACK78
@@ -72,16 +76,15 @@ export class TypeScriptBuildWebpackPlugin {
      * @param compiler 
      */
     apply(compiler: Compiler) {
-        let tsTarget = getTypeScriptTarget();
-        if (tsTarget !== 'ES5') {
+        if (this.options.target !== 'ES5') {
             console.warn(chalk.red('DANGER') + ' TypeScript compile target is not ' + chalk.yellow('ES5') + '! ' + chalk.grey('(tsconfig.json)'));
         }
 
         compiler.plugin('compile', compilation => {
-            timedLog('Compiling JS >', chalk.yellow(tsTarget), chalk.cyan(this.settings.jsEntry));
+            timedLog('Compiling JS >', chalk.yellow(this.options.target), chalk.cyan(this.options.jsEntry));
         });
 
-        if (!this.flags.production) {
+        if (!this.options.production) {
             return;
         }
 
@@ -97,7 +100,7 @@ export class TypeScriptBuildWebpackPlugin {
                             compilation.errors.push(minified.error);
                         } else {
                             let output;
-                            if (this.flags.sourceMap) {
+                            if (this.options.sourceMap) {
                                 // HACK78
                                 output = new SourceMapSource(minified.code, file, JSON.parse(minified.map), input.code, input.map as any);
                             } else {

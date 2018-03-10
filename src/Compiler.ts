@@ -1,6 +1,8 @@
 import * as fse from 'fs-extra';
 import chalk from 'chalk';
-import { fork } from 'child_process';
+import * as chokidar from 'chokidar';
+import * as upath from 'upath';
+import { fork, ChildProcess } from 'child_process';
 
 import hub from './EventHub';
 import { TypeScriptBuildTool } from './TypeScriptBuildTool';
@@ -26,14 +28,24 @@ interface IBuildCommand {
 export class Compiler {
 
     /**
-     * Gets the project settings.
+     * Gets or sets the project settings.
      */
-    private readonly settings: Settings;
+    private settings: Settings;
 
     /**
      * Gets the compiler build flags.
      */
     private readonly flags: ICompilerFlags;
+
+    /**
+     * Stores the initial instapack build command from user.
+     */
+    private _userBuildTaskParameter: string;
+
+    /**
+     * Store all build child processes spawned.
+     */
+    private buildTasks: ChildProcess[] = [];
 
     /**
      * Constructs a new instance of Compiler using the specified settings and build flags. 
@@ -107,6 +119,8 @@ export class Compiler {
                 settings: this.settings.core
             } as IBuildCommand);
 
+            this.buildTasks.push(child);
+
             if (taskName === 'js') {
                 this.startBackgroundTask('type-checker');
             }
@@ -148,13 +162,52 @@ export class Compiler {
     }
 
     /**
+     * Kill all build tasks, and then destroy them.
+     */
+    killAllBuilds() {
+        for (let task of this.buildTasks) {
+            task.kill();
+        }
+        this.buildTasks = [];
+    }
+
+    /**
+     * Restart invoked build task(s) when package.json and tsconfig.json are edited!
+     */
+    restartBuildsOnConfigurationChanges() {
+        chokidar.watch([this.settings.packageJson, this.settings.tsConfigJson], {
+            ignoreInitial: true
+        })
+            .on('change', (file: string) => {
+                file = upath.toUnix(file);
+
+                timedLog(chalk.cyan(file), 'was edited. Restarting builds...');
+                this.killAllBuilds();
+                this.settings = Settings.tryReadFromPackageJson(this.settings.root);
+                this.build(this._userBuildTaskParameter);
+            })
+            .on('unlink', (file: string) => {
+                file = upath.toUnix(file);
+
+                timedLog(chalk.cyan(file), 'was deleted.', chalk.red('BAD IDEA!')); // "wtf are you doing?"
+            });
+    }
+
+    /**
      * Runs the selected build task.
      * @param taskName 
      */
     build(taskName: string) {
         if (process.send === undefined) {
             // parent
-            this.chat();
+            if (!this._userBuildTaskParameter) {
+                this._userBuildTaskParameter = taskName;
+                this.chat();
+                if (this.flags.watch) {
+                    this.restartBuildsOnConfigurationChanges();
+                }
+            }
+
             this.startBackgroundTask(taskName);
         } else {
             let task: Promise<void>;
@@ -232,12 +285,7 @@ export class Compiler {
      * Concat JavaScript files.
      */
     async buildConcat() {
-        let w = '';
-        if (this.flags.watch) {
-            w = chalk.grey('(runs once / not watching)');
-        }
-
-        timedLog('Resolving', chalk.cyan(this.settings.concatCount.toString()), 'concat target(s)...', w);
+        timedLog('Resolving', chalk.cyan(this.settings.concatCount.toString()), 'concat target(s)...');
 
         let tool = new ConcatBuildTool(this.settings, this.flags);
         await tool.buildWithStopwatch();

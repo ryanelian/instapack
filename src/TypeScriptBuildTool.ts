@@ -1,12 +1,12 @@
 import * as path from 'path';
 import chalk from 'chalk';
 import * as webpack from 'webpack';
+import * as TypeScript from 'typescript';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 
 import hub from './EventHub';
 import { timedLog, ICompilerFlags } from './CompilerUtilities';
 import { Settings } from './Settings';
-import { getLazyCompilerOptions } from './TypeScriptConfigurationReader';
 import { prettyBytes, prettyMilliseconds } from './PrettyUnits';
 import { TypeScriptBuildWebpackPlugin } from './TypeScriptBuildWebpackPlugin';
 
@@ -26,6 +26,11 @@ export class TypeScriptBuildTool {
     private readonly flags: ICompilerFlags;
 
     /**
+     * Gets the TypeScript compiler options. (Read once and cache.)
+     */
+    private readonly tsconfigOptions: TypeScript.CompilerOptions;
+
+    /**
      * Constructs a new instance of TypeScriptBuildTool using the specified settings and build flags. 
      * @param settings 
      * @param flags 
@@ -33,13 +38,25 @@ export class TypeScriptBuildTool {
     constructor(settings: Settings, flags: ICompilerFlags) {
         this.settings = settings
         this.flags = flags;
+        this.tsconfigOptions = this.settings.readTsConfig().options;
+    }
+
+    /**
+     * Returns TypeScript Compiler Options target as its enum name string representative.
+     */
+    get buildTarget() {
+        let t = this.tsconfigOptions.target;
+        if (!t) {
+            t = TypeScript.ScriptTarget.ES3;
+        }
+        return TypeScript.ScriptTarget[t];
     }
 
     /**
      * Gets a configured TypeScript rules for webpack.
      */
     get typescriptWebpackRules() {
-        let options = getLazyCompilerOptions();
+        let options = this.tsconfigOptions;
         options.sourceMap = this.flags.sourceMap;
         options.inlineSources = this.flags.sourceMap;
 
@@ -72,7 +89,12 @@ export class TypeScriptBuildTool {
     getWebpackPlugins() {
         let plugins = [];
         plugins.push(new webpack.NoEmitOnErrorsPlugin()); // Near-useless in current state...
-        plugins.push(new TypeScriptBuildWebpackPlugin(this.settings, this.flags));
+        plugins.push(new TypeScriptBuildWebpackPlugin({
+            jsEntry: this.settings.jsEntry,
+            target: this.buildTarget,
+            production: this.flags.production,
+            sourceMap: this.flags.sourceMap
+        }));
 
         // https://webpack.js.org/plugins/commons-chunk-plugin/
         // grab everything imported from node_modules, put into a separate file: ipack.dll.js

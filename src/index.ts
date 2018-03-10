@@ -10,6 +10,17 @@ import * as upath from 'upath';
  * Exposes methods for developing a web app client project.
  */
 export = class instapack {
+    
+    /**
+     * Gets the project folder path. (Known as root in Settings.)
+     */
+    private readonly projectFolder: string;
+
+    /**
+     * Gets the settings used for performing build tasks.
+     */
+    readonly settings: Settings;
+
     /**
      * Gets a list of string which contains tasks available for the build method.
      */
@@ -35,15 +46,11 @@ export = class instapack {
     }
 
     /**
-     * Settings used for performing build tasks.
-     */
-    settings: Settings;
-
-    /**
      * Constructs instapack class instance using settings read from project.json. 
      */
-    constructor() {
-        this.settings = Settings.tryReadFromPackageJson();
+    constructor(projectFolder: string) {
+        this.projectFolder = projectFolder;
+        this.settings = Settings.tryReadFromPackageJson(projectFolder);
     }
 
     /**
@@ -67,7 +74,7 @@ export = class instapack {
      */
     async scaffold(template: string) {
         let scaffold = new Scaffold();
-        await scaffold.usingTemplate(template);
+        await scaffold.usingTemplate(template, this.projectFolder);
     }
 
     /**

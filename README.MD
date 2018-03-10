@@ -33,7 +33,8 @@ ipack
 ```js
 const instapack = require('instapack');
 
-let ipack = new instapack();
+let projectFolder = process.cwd();
+let ipack = new instapack(projectFolder);
 ipack.build('all');
 ```
 

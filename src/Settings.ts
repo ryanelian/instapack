@@ -1,6 +1,8 @@
 import * as upath from 'upath';
+import * as fse from 'fs-extra';
 import * as chalk from 'chalk';
 import * as os from 'os';
+import * as TypeScript from 'typescript';
 
 /**
  * Dictionary<string, List<string>>
@@ -114,14 +116,6 @@ export class Settings {
     }
 
     /**
-     * Gets the JS output split chunk file name.
-     * For example, ipack.linq.js or ipack.0.js
-     */
-    get jsOutSplitFileName(): string {
-        return upath.removeExt(this.jsOut, '.js') + '.[name].js';
-    }
-
-    /**
     * Gets the JS output common / vendored modules chunk file name.
     * For example, ipack.dll.js
     */
@@ -148,6 +142,30 @@ export class Settings {
      */
     get packageJson(): string {
         return upath.join(this.root, 'package.json');
+    }
+
+    /**
+     * Gets the full path to tsconfig.json file.
+     */
+    get tsConfigJson(): string {
+        return upath.join(this.root, 'tsconfig.json');
+    }
+
+    /**
+     * Reads the content of tsconfig.json.
+     */
+    readTsConfig(): TypeScript.ParsedCommandLine {
+        let tsconfigJson = TypeScript.readConfigFile(this.tsConfigJson, TypeScript.sys.readFile);
+        if (tsconfigJson.error) {
+            throw Error(tsconfigJson.error.messageText.toString());
+        }
+        // console.log(tsconfigJson);
+        let tsconfig = TypeScript.parseJsonConfigFileContent(tsconfigJson.config, TypeScript.sys, this.root);
+        if (tsconfig.errors.length) {
+            throw Error(tsconfig.errors[0].messageText.toString());
+        }
+        // console.log(tsconfig);
+        return tsconfig;
     }
 
     /**
@@ -274,14 +292,13 @@ export class Settings {
     /**
      * Attempts to read the settings from package.json in the same folder where the command line is invoked at.
      */
-    static tryReadFromPackageJson(): Settings {
-        let root = process.cwd();
+    static tryReadFromPackageJson(root: string): Settings {
         let parse: any;
 
         try {
             let json = upath.join(root, 'package.json');
             // console.log('Loading settings ' + chalk.cyan(json));
-            parse = require(json).instapack;
+            parse = fse.readJsonSync(json).instapack;
         } catch (ex) {
             // console.log('Failed to load settings. Using default settings.');
         }

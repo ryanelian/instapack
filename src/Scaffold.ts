@@ -42,9 +42,8 @@ export class Scaffold {
      * Initialize project using an officially shipped template.
      * @param name 
      */
-    async usingTemplate(name) {
+    async usingTemplate(name: string, toFolder: string) {
         let templateFolder = upath.join(__dirname, '../templates', name);
-        let thisFolder = process.cwd();
 
         let exist = await fse.pathExists(templateFolder);
         if (!exist) {
@@ -54,7 +53,7 @@ export class Scaffold {
 
         console.log('Initializing new project using template: ' + chalk.cyan(name));
         console.log('Scaffolding project into your web app...');
-        await fse.copy(templateFolder, thisFolder);
+        await fse.copy(templateFolder, toFolder);
         console.log(chalk.green('Scaffold completed.') + ' Restoring packages for you...');
 
         this.restorePackages();

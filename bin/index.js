@@ -25,8 +25,9 @@ module.exports = class instapack {
         });
         return templates;
     }
-    constructor() {
-        this.settings = Settings_1.Settings.tryReadFromPackageJson();
+    constructor(projectFolder) {
+        this.projectFolder = projectFolder;
+        this.settings = Settings_1.Settings.tryReadFromPackageJson(projectFolder);
     }
     build(taskName, flags) {
         let compiler = new Compiler_1.Compiler(this.settings, flags);
@@ -39,7 +40,7 @@ module.exports = class instapack {
     scaffold(template) {
         return __awaiter(this, void 0, void 0, function* () {
             let scaffold = new Scaffold_1.Scaffold();
-            yield scaffold.usingTemplate(template);
+            yield scaffold.usingTemplate(template, this.projectFolder);
         });
     }
     clean() {

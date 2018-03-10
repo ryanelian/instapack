@@ -39,7 +39,8 @@ let updater = https.get('https://raw.githubusercontent.com/ryanelian/instapack/m
 
 }).on('error', () => { });
 
-let app = new instapack();
+let projectFolder = process.cwd();
+let app = new instapack(projectFolder);
 CLI.version(packageInfo.version);
 
 /**

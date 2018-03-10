@@ -9,7 +9,6 @@ import hub from './EventHub';
 import { Settings } from './Settings';
 import { timedLog } from './CompilerUtilities';
 import { prettyHrTime } from './PrettyUnits';
-import { parseUserTsConfig } from './TypeScriptConfigurationReader';
 
 /**
  * Key-value pair of file name to cached raw file content. Used for caching TypeScript Compiler Host readFile method.
@@ -83,7 +82,7 @@ export class TypeScriptCheckerTool {
      */
     constructor(settings: Settings) {
         this.settings = settings;
-        let tsconfig = parseUserTsConfig();
+        let tsconfig = settings.readTsConfig();
 
         let definitions = tsconfig.fileNames.filter(Q => Q.endsWith('.d.ts'));
         this.includeFiles = new Set<string>(definitions);

@@ -1,7 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const upath = require("upath");
+const fse = require("fs-extra");
 const os = require("os");
+const TypeScript = require("typescript");
 class Settings {
     constructor(root, settings) {
         this.root = root || process.cwd();
@@ -30,9 +32,6 @@ class Settings {
             output: this.output
         };
     }
-    get jsOutSplitFileName() {
-        return upath.removeExt(this.jsOut, '.js') + '.[name].js';
-    }
     get jsOutVendorFileName() {
         return upath.removeExt(this.jsOut, '.js') + '.dll.js';
     }
@@ -44,6 +43,20 @@ class Settings {
     }
     get packageJson() {
         return upath.join(this.root, 'package.json');
+    }
+    get tsConfigJson() {
+        return upath.join(this.root, 'tsconfig.json');
+    }
+    readTsConfig() {
+        let tsconfigJson = TypeScript.readConfigFile(this.tsConfigJson, TypeScript.sys.readFile);
+        if (tsconfigJson.error) {
+            throw Error(tsconfigJson.error.messageText.toString());
+        }
+        let tsconfig = TypeScript.parseJsonConfigFileContent(tsconfigJson.config, TypeScript.sys, this.root);
+        if (tsconfig.errors.length) {
+            throw Error(tsconfig.errors[0].messageText.toString());
+        }
+        return tsconfig;
     }
     get npmFolder() {
         return upath.join(this.root, 'node_modules');
@@ -98,12 +111,11 @@ class Settings {
     get outputCssSourceMap() {
         return this.outputCssFile + '.map';
     }
-    static tryReadFromPackageJson() {
-        let root = process.cwd();
+    static tryReadFromPackageJson(root) {
         let parse;
         try {
             let json = upath.join(root, 'package.json');
-            parse = require(json).instapack;
+            parse = fse.readJsonSync(json).instapack;
         }
         catch (ex) {
         }

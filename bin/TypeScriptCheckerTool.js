@@ -9,14 +9,13 @@ const crypto_1 = require("crypto");
 const EventHub_1 = require("./EventHub");
 const CompilerUtilities_1 = require("./CompilerUtilities");
 const PrettyUnits_1 = require("./PrettyUnits");
-const TypeScriptConfigurationReader_1 = require("./TypeScriptConfigurationReader");
 class TypeScriptCheckerTool {
     constructor(settings) {
         this.files = {};
         this.sources = {};
         this.versions = {};
         this.settings = settings;
-        let tsconfig = TypeScriptConfigurationReader_1.parseUserTsConfig();
+        let tsconfig = settings.readTsConfig();
         let definitions = tsconfig.fileNames.filter(Q => Q.endsWith('.d.ts'));
         this.includeFiles = new Set(definitions);
         this.includeFiles.add(this.settings.jsEntry);

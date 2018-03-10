@@ -10,6 +10,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const fse = require("fs-extra");
 const chalk_1 = require("chalk");
+const chokidar = require("chokidar");
+const upath = require("upath");
 const child_process_1 = require("child_process");
 const EventHub_1 = require("./EventHub");
 const TypeScriptBuildTool_1 = require("./TypeScriptBuildTool");
@@ -20,6 +22,7 @@ const Settings_1 = require("./Settings");
 const CompilerUtilities_1 = require("./CompilerUtilities");
 class Compiler {
     constructor(settings, flags) {
+        this.buildTasks = [];
         this.settings = settings;
         this.flags = flags;
     }
@@ -65,6 +68,7 @@ class Compiler {
                 flags: this.flags,
                 settings: this.settings.core
             });
+            this.buildTasks.push(child);
             if (taskName === 'js') {
                 this.startBackgroundTask('type-checker');
             }
@@ -99,9 +103,37 @@ class Compiler {
             }
         }
     }
+    killAllBuilds() {
+        for (let task of this.buildTasks) {
+            task.kill();
+        }
+        this.buildTasks = [];
+    }
+    restartBuildsOnConfigurationChanges() {
+        chokidar.watch([this.settings.packageJson, this.settings.tsConfigJson], {
+            ignoreInitial: true
+        })
+            .on('change', (file) => {
+            file = upath.toUnix(file);
+            CompilerUtilities_1.timedLog(chalk_1.default.cyan(file), 'was edited. Restarting builds...');
+            this.killAllBuilds();
+            this.settings = Settings_1.Settings.tryReadFromPackageJson(this.settings.root);
+            this.build(this._userBuildTaskParameter);
+        })
+            .on('unlink', (file) => {
+            file = upath.toUnix(file);
+            CompilerUtilities_1.timedLog(chalk_1.default.cyan(file), 'was deleted.', chalk_1.default.red('BAD IDEA!'));
+        });
+    }
     build(taskName) {
         if (process.send === undefined) {
-            this.chat();
+            if (!this._userBuildTaskParameter) {
+                this._userBuildTaskParameter = taskName;
+                this.chat();
+                if (this.flags.watch) {
+                    this.restartBuildsOnConfigurationChanges();
+                }
+            }
             this.startBackgroundTask(taskName);
         }
         else {
@@ -162,11 +194,7 @@ class Compiler {
     }
     buildConcat() {
         return __awaiter(this, void 0, void 0, function* () {
-            let w = '';
-            if (this.flags.watch) {
-                w = chalk_1.default.grey('(runs once / not watching)');
-            }
-            CompilerUtilities_1.timedLog('Resolving', chalk_1.default.cyan(this.settings.concatCount.toString()), 'concat target(s)...', w);
+            CompilerUtilities_1.timedLog('Resolving', chalk_1.default.cyan(this.settings.concatCount.toString()), 'concat target(s)...');
             let tool = new ConcatBuildTool_1.ConcatBuildTool(this.settings, this.flags);
             yield tool.buildWithStopwatch();
         });

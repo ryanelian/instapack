@@ -31,10 +31,9 @@ class Scaffold {
         }
         console.log();
     }
-    usingTemplate(name) {
+    usingTemplate(name, toFolder) {
         return __awaiter(this, void 0, void 0, function* () {
             let templateFolder = upath.join(__dirname, '../templates', name);
-            let thisFolder = process.cwd();
             let exist = yield fse.pathExists(templateFolder);
             if (!exist) {
                 console.error(chalk_1.default.red('ERROR') + ' Unable to find new project template for: ' + chalk_1.default.cyan(name));
@@ -42,7 +41,7 @@ class Scaffold {
             }
             console.log('Initializing new project using template: ' + chalk_1.default.cyan(name));
             console.log('Scaffolding project into your web app...');
-            yield fse.copy(templateFolder, thisFolder);
+            yield fse.copy(templateFolder, toFolder);
             console.log(chalk_1.default.green('Scaffold completed.') + ' Restoring packages for you...');
             this.restorePackages();
             console.log(chalk_1.default.green('Package restored successfully!'));

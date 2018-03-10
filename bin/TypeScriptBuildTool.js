@@ -3,19 +3,27 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const path = require("path");
 const chalk_1 = require("chalk");
 const webpack = require("webpack");
+const TypeScript = require("typescript");
 const webpack_bundle_analyzer_1 = require("webpack-bundle-analyzer");
 const EventHub_1 = require("./EventHub");
 const CompilerUtilities_1 = require("./CompilerUtilities");
-const TypeScriptConfigurationReader_1 = require("./TypeScriptConfigurationReader");
 const PrettyUnits_1 = require("./PrettyUnits");
 const TypeScriptBuildWebpackPlugin_1 = require("./TypeScriptBuildWebpackPlugin");
 class TypeScriptBuildTool {
     constructor(settings, flags) {
         this.settings = settings;
         this.flags = flags;
+        this.tsconfigOptions = this.settings.readTsConfig().options;
+    }
+    get buildTarget() {
+        let t = this.tsconfigOptions.target;
+        if (!t) {
+            t = TypeScript.ScriptTarget.ES3;
+        }
+        return TypeScript.ScriptTarget[t];
     }
     get typescriptWebpackRules() {
-        let options = TypeScriptConfigurationReader_1.getLazyCompilerOptions();
+        let options = this.tsconfigOptions;
         options.sourceMap = this.flags.sourceMap;
         options.inlineSources = this.flags.sourceMap;
         return {
@@ -39,7 +47,12 @@ class TypeScriptBuildTool {
     getWebpackPlugins() {
         let plugins = [];
         plugins.push(new webpack.NoEmitOnErrorsPlugin());
-        plugins.push(new TypeScriptBuildWebpackPlugin_1.TypeScriptBuildWebpackPlugin(this.settings, this.flags));
+        plugins.push(new TypeScriptBuildWebpackPlugin_1.TypeScriptBuildWebpackPlugin({
+            jsEntry: this.settings.jsEntry,
+            target: this.buildTarget,
+            production: this.flags.production,
+            sourceMap: this.flags.sourceMap
+        }));
         plugins.push(new webpack.optimize.CommonsChunkPlugin({
             name: 'DLL',
             filename: this.settings.jsOutVendorFileName,

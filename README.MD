@@ -220,9 +220,9 @@ instapack puts configuration inside `package.json` to reduce project files clutt
 
   - [TypeScript `paths` compiler option in `tsconfig.json`](https://www.typescriptlang.org/docs/handbook/module-resolution.html) will be translated into aliases with caveats:
     
-    - Due to technical limitations: only the first path in the string array will be honored.
+    - Due to technical limitations: only the first path in the string array will be honored!
 
-    - Any values patterh `*` will not be honored because it dirties the package namespace.
+    - "All modules" pattern `*` will not be honored because it dirties the package namespace!
     
 > Packages are imported without relative paths, therefore `*` option turns all project modules into package imports... This can cause the project to be less maintainable or confusing!
 

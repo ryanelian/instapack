@@ -216,7 +216,7 @@ instapack puts configuration inside `package.json` to reduce project files clutt
 
 - `alias` allows overriding module `import` calls from all files, including dependencies. Read more: https://webpack.js.org/configuration/resolve/
 
-  - This was needed because the default Vue.js package main file points to runtime-only build, which does not include the HTML template compiler... To avoid using this, read the template configuration below.
+  - This was needed because the default Vue.js package main file points to the runtime-only build, which does not include the HTML template compiler... To avoid using this, use the `.vue.html` template module. (Read below)
 
   - [TypeScript `paths` compiler option in `tsconfig.json`](https://www.typescriptlang.org/docs/handbook/module-resolution.html) will be translated into aliases with caveats:
     
@@ -224,7 +224,7 @@ instapack puts configuration inside `package.json` to reduce project files clutt
 
     - "All modules" pattern `*` will not be honored because it dirties the package namespace!
     
-> Packages are imported without relative paths, therefore `*` option turns all project modules into package imports... This can cause the project to be less maintainable or confusing!
+> Packages are imported without relative paths, therefore `*` option turns all project modules into package imports... This can cause the project to be less maintainable or confusing.
 
 - `externals` allows rewriting module `import` calls from all files, including dependencies, to globally exposed objects via `window` object. Read more: https://webpack.js.org/configuration/externals/
 

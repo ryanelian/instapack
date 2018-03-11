@@ -110,7 +110,7 @@ You may use `instapack` or `ipack` or `ipk` to invoke the command line interface
 
 Scaffolds a new instapack project into your existing app folder where the command line is invoked. The following templates are available:
 
-- `empty` when you need a minimal clean slate. Use this template to author new templates!
+- `empty` when you need a minimal clean slate. (Use this template to author new templates!)
 
 - `vue` when you want to develop a web app with Vue.js and Bootstrap 4. (Includes [aspnet-validation](https://www.npmjs.com/package/aspnet-validation) for ASP.NET MVC client-side validation.)
 
@@ -120,7 +120,7 @@ Scaffolds a new instapack project into your existing app folder where the comman
 
 - `vue-mobile` when you want to develop a _[Progressive Web Application](https://developers.google.com/web/progressive-web-apps/)_ using Vue.js and Onsen UI! (Cordova-compatible, read FAQ below.)
 
-- `angularjs` when you need to develop a legacy web app with AngularJS 1.7, jQuery, and Bootstrap 3. (Includes [jquery-validation-unobtrusive](https://github.com/aspnet/jquery-validation-unobtrusive) for ASP.NET MVC client-side validation.)
+- `angularjs` when you need to develop a legacy web app with AngularJS 1.7 and Bootstrap 3. (Includes [jquery-validation-unobtrusive](https://github.com/aspnet/jquery-validation-unobtrusive) for ASP.NET MVC client-side validation.)
 
 If no template parameter is provided, `vue` will be chosen.
 
@@ -201,7 +201,7 @@ instapack puts configuration inside `package.json` to reduce project files clutt
 
   - [TypeScript `paths` compiler option in `tsconfig.json`](https://www.typescriptlang.org/docs/handbook/module-resolution.html) will be translated into aliases with caveats:
     
-    - Due to technical limitations: only the first path in the string array will be honored!
+    - Due to technical limitations, only the first path in the string array will be honored!
 
     - "All modules" pattern `*` will not be honored because it dirties the packages namespace!
     
@@ -411,7 +411,7 @@ The [no-longer-maintained](https://github.com/mishoo/UglifyJS2/pull/2897) Uglify
 - **Attempting to import a non-TypeScript ES2015+ module will fail the build!** This downgrade guards the project against ninja browser incompatibilities.
 
 
-### How to develop a Cordova mobile app using vue-mobile template?
+### How to develop a Cordova app using vue-mobile template?
 
 ```powershell
 cordova create MyProject

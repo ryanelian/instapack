@@ -203,7 +203,7 @@ instapack puts configuration inside `package.json` to reduce project files clutt
     
     - Due to technical limitations: only the first path in the string array will be honored!
 
-    - "All modules" pattern `*` will not be honored because it dirties the package namespace!
+    - "All modules" pattern `*` will not be honored because it dirties the packages namespace!
     
 > Packages are imported without relative paths, therefore `*` path turns all project modules into package imports. This can cause the project to be less maintainable or confusing...
 
@@ -411,7 +411,7 @@ The [no-longer-maintained](https://github.com/mishoo/UglifyJS2/pull/2897) Uglify
 - **Attempting to import a non-TypeScript ES2015+ module will fail the build!** This downgrade guards the project against ninja browser incompatibilities.
 
 
-### I need to develop a Cordova mobile app using vue-mobile template. Can I?
+### How to develop a Cordova mobile app using vue-mobile template?
 
 ```powershell
 cordova create MyProject

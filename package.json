@@ -36,7 +36,7 @@
     "typescript": "2.7.2",
     "uglify-js": "3.3.14",
     "upath": "1.0.4",
-    "vue-template-compiler": "2.5.14",
+    "vue-template-compiler": "2.5.15",
     "webpack": "3.11.0",
     "webpack-bundle-analyzer": "2.11.1",
     "webpack-sources": "1.1.0",

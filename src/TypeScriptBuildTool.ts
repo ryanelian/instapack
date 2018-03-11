@@ -59,7 +59,7 @@ export class TypeScriptBuildTool {
         for (let key in this.tsconfigOptions.paths) {
             let originalKey = key;
 
-            // not going support this anti-pattern: it mixes package and project file namespaces. Dirty!
+            // not going support this anti-pattern: it mixes package and project file namespaces. Dirty AF!
             if (key === '*') {
                 console.warn(chalk.yellow('WARNING'), chalk.cyan('tsconfig.json'), 'paths:', chalk.yellow(key), 'is not supported!');
                 continue;

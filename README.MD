@@ -224,7 +224,7 @@ instapack puts configuration inside `package.json` to reduce project files clutt
 
     - Any values patterh `*` will not be honored because it dirties the package namespace.
     
-> Packages are imported without `./` so `*` option turns all project modules into package imports... This can cause the project to be less maintainable!
+> Packages are imported without relative paths, therefore `*` option turns all project modules into package imports... This can cause the project to be less maintainable or confusing!
 
 - `externals` allows rewriting module `import` calls from all files, including dependencies, to globally exposed objects via `window` object. Read more: https://webpack.js.org/configuration/externals/
 

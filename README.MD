@@ -419,10 +419,11 @@ cd MyProject
 ipack new vue-mobile
 cordova platform add android ios browser
 yarn
-ipack -dw                   
-# change www/index.html <script> and <link> tags.
-cordova run browser # re-run commmand every time build outputs change
+ipack -dw               # then change www/index.html <script> and <link> tags.
+cordova run browser     # re-run commmand every time build outputs change
 ```
+
+> **CAUTION:** `cordova platform add` and `cordova plugin add` (or remove) will destroy your `node_modules`. Re-run `yarn` / `npm install` after invoking those commands!
 
 Alternatively, you can use `phonegap serve` for development due to Browsersync playing nice with instapack watch. You will need to remove / comment / edit the `<meta http-equiv="Content-Security-Policy">` tag though.
 
@@ -432,8 +433,6 @@ Later on...
 cordova build android
 cordova build ios
 ```
-
-> **CAUTION:** `cordova platform add` and `cordova plugin add` (or remove) will destroy your `node_modules`. Re-run `yarn` / `npm install` after invoking those commands!!!
 
 ### I thought files should not be bundled because of HTTP/2?
 

@@ -38,7 +38,68 @@ export class TypeScriptBuildTool {
     constructor(settings: Settings, flags: ICompilerFlags) {
         this.settings = settings
         this.flags = flags;
+
         this.tsconfigOptions = this.settings.readTsConfig().options;
+        this.mergeTypeScriptPathsToWebpackAlias();
+    }
+
+    /**
+     * Translates tsconfig.json paths into webpack-compatible aliases!
+     */
+    mergeTypeScriptPathsToWebpackAlias() {
+        if (!this.tsconfigOptions.paths) {
+            return;
+        }
+
+        if (!this.tsconfigOptions.baseUrl) {
+            console.warn(chalk.yellow('WARNING'), chalk.cyan('tsconfig.json'), 'paths are defined, but baseUrl is not!');
+            return;
+        }
+
+        for (let key in this.tsconfigOptions.paths) {
+            let originalKey = key;
+
+            // not going support this anti-pattern: it mixes package and project file namespaces. Dirty!
+            if (key === '*') {
+                console.warn(chalk.yellow('WARNING'), chalk.cyan('tsconfig.json'), 'paths:', chalk.yellow(key), 'is not supported!');
+                continue;
+            }
+
+            // technical limitation: 1 alias = 1 path, not multiple paths...
+            let values = this.tsconfigOptions.paths[key];
+            if (values.length > 1) {
+                console.warn(chalk.yellow('WARNING'), chalk.cyan('tsconfig.json'), 'paths:', chalk.yellow(key),
+                    'resolves to more than one path!', chalk.grey('(Only the first will be honored.)'));
+            }
+
+            let value = values[0];
+            if (!value) {
+                console.warn(chalk.yellow('WARNING'), chalk.cyan('tsconfig.json'), 'paths:', chalk.yellow(key), 'is empty!');
+                continue;
+            }
+
+            // webpack alias does wildcard resolution automatically.
+            let wildcard = false;
+            if (key.endsWith('/*')) {
+                wildcard = true;
+                key = key.substr(0, key.length - 2);
+            }
+
+            if (value.endsWith('/*')) {
+                value = value.substr(0, value.length - 2);
+            } else {
+                if (wildcard) {
+                    console.warn(chalk.yellow('WARNING'), chalk.cyan('tsconfig.json'), 'paths:', chalk.yellow(originalKey),
+                        'is a wildcard but its value is not!', chalk.grey('(Resolves to index.ts)'));
+                }
+            }
+
+            // don't let the merge overrides user-defined aliases!
+            if (!this.settings.alias[key]) {
+                this.settings.alias[key] = path.resolve(this.settings.root, this.tsconfigOptions.baseUrl, value);
+                // console.log(key, " ", value);
+            }
+        }
     }
 
     /**
@@ -215,7 +276,7 @@ export class TypeScriptBuildTool {
     build() {
         webpack(this.webpackConfiguration, (error, stats) => {
             if (error) {
-                timedLog(chalk.red('FATAL ERROR'), 'during JS build:');
+                console.error(chalk.red('FATAL ERROR'), 'during JS build:');
                 console.error(error);
                 hub.buildDone();
                 return;

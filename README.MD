@@ -218,6 +218,14 @@ instapack puts configuration inside `package.json` to reduce project files clutt
 
   - This was needed because the default Vue.js package main file points to runtime-only build, which does not include the HTML template compiler... To avoid using this, read the template configuration below.
 
+  - [TypeScript `paths` compiler option in `tsconfig.json`](https://www.typescriptlang.org/docs/handbook/module-resolution.html) will be translated into aliases with caveats:
+    
+    - Due to technical limitations: only the first path in the string array will be honored.
+
+    - Any values patterh `*` will not be honored because it dirties the package namespace.
+    
+> Packages are imported without `./` so `*` option turns all project modules into package imports... This can cause the project to be less maintainable!
+
 - `externals` allows rewriting module `import` calls from all files, including dependencies, to globally exposed objects via `window` object. Read more: https://webpack.js.org/configuration/externals/
 
 For example:

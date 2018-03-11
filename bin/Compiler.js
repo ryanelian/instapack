@@ -160,7 +160,7 @@ class Compiler {
                 }
             }
             task.catch(error => {
-                CompilerUtilities_1.timedLog(chalk_1.default.red('FATAL ERROR'), 'during', taskName.toUpperCase(), 'build:');
+                console.error(chalk_1.default.red('FATAL ERROR'), 'during', taskName.toUpperCase(), 'build:');
                 console.error(error);
                 EventHub_1.default.buildDone();
             });

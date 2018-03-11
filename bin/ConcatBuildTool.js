@@ -94,12 +94,12 @@ class ConcatBuildTool {
         for (let target in targets) {
             let modules = targets[target];
             if (!modules || modules.length === 0) {
-                CompilerUtilities_1.timedLog(chalk_1.default.red('WARNING'), 'concat list for', chalk_1.default.blue(target), 'is empty!');
+                console.warn(chalk_1.default.red('WARNING'), 'concat list for', chalk_1.default.blue(target), 'is empty!');
                 continue;
             }
             if (typeof modules === 'string') {
                 modules = [modules];
-                CompilerUtilities_1.timedLog(chalk_1.default.red('WARNING'), 'concat list for', chalk_1.default.blue(target), 'is a', chalk_1.default.yellow('string'), 'instead of a', chalk_1.default.yellow('string[]'));
+                console.warn(chalk_1.default.red('WARNING'), 'concat list for', chalk_1.default.blue(target), 'is a', chalk_1.default.yellow('string'), 'instead of a', chalk_1.default.yellow('string[]'));
             }
             let o = target;
             if (o.endsWith('.js') === false) {
@@ -107,7 +107,7 @@ class ConcatBuildTool {
             }
             fse.removeSync(upath.join(this.settings.outputJsFolder, o + '.map'));
             let task = this.concatTarget(o, modules).catch(error => {
-                CompilerUtilities_1.timedLog(chalk_1.default.red('ERROR'), 'when concatenating', chalk_1.default.blue(o));
+                console.error(chalk_1.default.red('ERROR'), 'when concatenating', chalk_1.default.blue(o));
                 console.error(error);
             }).then(() => { });
             tasks.push(task);

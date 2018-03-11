@@ -237,7 +237,7 @@ export class Compiler {
 
             // console.log(taskName);
             task.catch(error => {
-                timedLog(chalk.red('FATAL ERROR'), 'during', taskName.toUpperCase(), 'build:');
+                console.error(chalk.red('FATAL ERROR'), 'during', taskName.toUpperCase(), 'build:');
                 console.error(error);
                 hub.buildDone();
             });

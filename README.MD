@@ -118,26 +118,7 @@ Scaffolds a new instapack project into your existing app folder where the comman
 
 - `inferno` when you want to develop a web app with Inferno and Bootstrap 4.
 
-- `vue-mobile` when you want to develop a _Progressive Web Application_ using Vue.js and Onsen UI!
-
-  - This template is a little bit different from the rest, if you intend to develop a mobile app using Cordova. Usage instruction:
-
-```powershell
-cordova create MyProject
-cd MyProject
-ipack new vue-mobile
-.\cordova-platform-add.ps1  # About this script, read CAUTION below...
-ipack -dw                   # Then change www/index.html <script> and <link> tags.
-                            # Also, comment / modify the <meta http-equiv="Content-Security-Policy"> tag.
-phonegap serve              # Fantastic due to Browsersync playing nice with instapack watch!
-                            # Otherwise: cordova run browser
-
-# Later on...
-cordova build android
-cordova build ios
-```
-
-> **CAUTION:** `cordova platform add` and `cordova plugin add` (or remove) will destroy your `node_modules`. Re-run `yarn` after invoking those commands!!!
+- `vue-mobile` when you want to develop a _[Progressive Web Application](https://developers.google.com/web/progressive-web-apps/)_ using Vue.js and Onsen UI! (Cordova-compatible, read FAQ below.)
 
 - `angularjs` when you need to develop a legacy web app with AngularJS 1.7, jQuery, and Bootstrap 3. (Includes [jquery-validation-unobtrusive](https://github.com/aspnet/jquery-validation-unobtrusive) for ASP.NET MVC client-side validation.)
 
@@ -187,8 +168,8 @@ instapack puts configuration inside `package.json` to reduce project files clutt
   },
   "dependencies": {
     "@fortawesome/fontawesome": "^1.1.4",
-    "@fortawesome/fontawesome-free-regular": "^5.0.7",
-    "@fortawesome/fontawesome-free-solid": "^5.0.7",
+    "@fortawesome/fontawesome-free-regular": "^5.0.8",
+    "@fortawesome/fontawesome-free-solid": "^5.0.8",
     "@types/requirejs": "^2.1.31",
     "aspnet-validation": "^0.0.4",
     "axios": "^0.18.0",
@@ -196,11 +177,11 @@ instapack puts configuration inside `package.json` to reduce project files clutt
     "bootstrap.native": "^2.0.21",
     "es6-promise": "^4.2.4",
     "linq": "^3.0.9",
-    "moment": "^2.20.1",
+    "moment": "^2.21.0",
     "noty": "^3.2.0-beta",
     "tslib": "^1.9.0",
     "vex-js": "^4.1.0",
-    "vue": "^2.5.13",
+    "vue": "^2.5.15",
     "vue-class-component": "^6.2.0"
   }
 }
@@ -224,7 +205,7 @@ instapack puts configuration inside `package.json` to reduce project files clutt
 
     - "All modules" pattern `*` will not be honored because it dirties the package namespace!
     
-> Packages are imported without relative paths, therefore `*` option turns all project modules into package imports... This can cause the project to be less maintainable or confusing.
+> Packages are imported without relative paths, therefore `*` path turns all project modules into package imports. This can cause the project to be less maintainable or confusing...
 
 - `externals` allows rewriting module `import` calls from all files, including dependencies, to globally exposed objects via `window` object. Read more: https://webpack.js.org/configuration/externals/
 
@@ -428,6 +409,31 @@ The [no-longer-maintained](https://github.com/mishoo/UglifyJS2/pull/2897) Uglify
 - Only `es5` build `target` (set in `tsconfig.json`) is currently supported. **Setting ES2015+ as build target WILL cause build error!**
 
 - **Attempting to import a non-TypeScript ES2015+ module will fail the build!** This downgrade guards the project against ninja browser incompatibilities.
+
+
+### I need to develop a Cordova mobile app using vue-mobile template. Can I?
+
+```powershell
+cordova create MyProject
+cd MyProject
+ipack new vue-mobile
+cordova platform add android ios browser
+yarn
+ipack -dw                   
+# change www/index.html <script> and <link> tags.
+cordova run browser # re-run commmand every time build outputs change
+```
+
+Alternatively, you can use `phonegap serve` for development due to Browsersync playing nice with instapack watch. You will need to remove / comment / edit the `<meta http-equiv="Content-Security-Policy">` tag though.
+
+Later on...
+
+```
+cordova build android
+cordova build ios
+```
+
+> **CAUTION:** `cordova platform add` and `cordova plugin add` (or remove) will destroy your `node_modules`. Re-run `yarn` / `npm install` after invoking those commands!!!
 
 ### I thought files should not be bundled because of HTTP/2?
 

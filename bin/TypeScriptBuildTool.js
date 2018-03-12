@@ -14,6 +14,48 @@ class TypeScriptBuildTool {
         this.settings = settings;
         this.flags = flags;
         this.tsconfigOptions = this.settings.readTsConfig().options;
+        this.mergeTypeScriptPathsToWebpackAlias();
+    }
+    mergeTypeScriptPathsToWebpackAlias() {
+        if (!this.tsconfigOptions.paths) {
+            return;
+        }
+        if (!this.tsconfigOptions.baseUrl) {
+            console.warn(chalk_1.default.yellow('WARNING'), chalk_1.default.cyan('tsconfig.json'), 'paths are defined, but baseUrl is not!');
+            return;
+        }
+        for (let key in this.tsconfigOptions.paths) {
+            let originalKey = key;
+            if (key === '*') {
+                console.warn(chalk_1.default.yellow('WARNING'), chalk_1.default.cyan('tsconfig.json'), 'paths:', chalk_1.default.yellow(key), 'is not supported!');
+                continue;
+            }
+            let values = this.tsconfigOptions.paths[key];
+            if (values.length > 1) {
+                console.warn(chalk_1.default.yellow('WARNING'), chalk_1.default.cyan('tsconfig.json'), 'paths:', chalk_1.default.yellow(key), 'resolves to more than one path!', chalk_1.default.grey('(Only the first will be honored.)'));
+            }
+            let value = values[0];
+            if (!value) {
+                console.warn(chalk_1.default.yellow('WARNING'), chalk_1.default.cyan('tsconfig.json'), 'paths:', chalk_1.default.yellow(key), 'is empty!');
+                continue;
+            }
+            let wildcard = false;
+            if (key.endsWith('/*')) {
+                wildcard = true;
+                key = key.substr(0, key.length - 2);
+            }
+            if (value.endsWith('/*')) {
+                value = value.substr(0, value.length - 2);
+            }
+            else {
+                if (wildcard) {
+                    console.warn(chalk_1.default.yellow('WARNING'), chalk_1.default.cyan('tsconfig.json'), 'paths:', chalk_1.default.yellow(originalKey), 'is a wildcard but its value is not!', chalk_1.default.grey('(Resolves to index.ts)'));
+                }
+            }
+            if (!this.settings.alias[key]) {
+                this.settings.alias[key] = path.resolve(this.settings.root, this.tsconfigOptions.baseUrl, value);
+            }
+        }
     }
     get buildTarget() {
         let t = this.tsconfigOptions.target;
@@ -146,7 +188,7 @@ class TypeScriptBuildTool {
     build() {
         webpack(this.webpackConfiguration, (error, stats) => {
             if (error) {
-                CompilerUtilities_1.timedLog(chalk_1.default.red('FATAL ERROR'), 'during JS build:');
+                console.error(chalk_1.default.red('FATAL ERROR'), 'during JS build:');
                 console.error(error);
                 EventHub_1.default.buildDone();
                 return;

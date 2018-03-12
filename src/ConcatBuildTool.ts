@@ -140,12 +140,12 @@ export class ConcatBuildTool {
         for (let target in targets) {
             let modules = targets[target];
             if (!modules || modules.length === 0) {
-                timedLog(chalk.red('WARNING'), 'concat list for', chalk.blue(target), 'is empty!');
+                console.warn(chalk.red('WARNING'), 'concat list for', chalk.blue(target), 'is empty!');
                 continue;
             }
             if (typeof modules === 'string') {
                 modules = [modules];
-                timedLog(chalk.red('WARNING'), 'concat list for', chalk.blue(target), 'is a', chalk.yellow('string'), 'instead of a', chalk.yellow('string[]'));
+                console.warn(chalk.red('WARNING'), 'concat list for', chalk.blue(target), 'is a', chalk.yellow('string'), 'instead of a', chalk.yellow('string[]'));
             }
 
             let o = target;
@@ -155,7 +155,7 @@ export class ConcatBuildTool {
 
             fse.removeSync(upath.join(this.settings.outputJsFolder, o + '.map'));
             let task = this.concatTarget(o, modules).catch(error => {
-                timedLog(chalk.red('ERROR'), 'when concatenating', chalk.blue(o));
+                console.error(chalk.red('ERROR'), 'when concatenating', chalk.blue(o));
                 console.error(error);
             }).then(/* finally: Promise will never throw any errors! */() => { });
 

@@ -19,7 +19,7 @@
         "onsenui": "^2.9.2",
         "pouchdb-browser": "^6.4.3",
         "tslib": "^1.9.0",
-        "vue": "^2.5.14",
+        "vue": "^2.5.15",
         "vue-class-component": "^6.2.0",
         "vue-onsenui": "^2.5.1"
     }

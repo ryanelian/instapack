@@ -130,13 +130,13 @@ Performs compilation against selected project type. Available projects: `all`, `
 
 In addition, build flags are available:
 
-- `-w` or `--watch` enables incremental compilation on source code changes.
+- `-w` or `--watch` enables automatic incremental build on source code changes. :robot:
 
-- `-d` or `--dev` disables outputs minification for **fast build!**
+- `-d` or `--dev` disables build outputs optimization and minification for **fast build!**
 
-- `-u` or `--uncharted` disables source maps. (Slightly improves build speed)
+- `-x` or `--xdebug` disables source maps, producing undebuggable outputs. (Slightly improves build speed)
 
-- `-a` or `--analyze` generates module size report `analysis.html` next to the JS build output. For sanity, this flag will be ignored when using `-d` or `-w` flags.
+- `-a` or `--analyze` generates module size report `analysis.html` next to the TypeScript build output. For sanity, this flag will be ignored when using `-d` or `-w` flags.
 
 > You can combine multiple build flags, for example: `ipack -dw` = `dev` + `watch` mode for **massive productivity gainz!** :muscle:
 

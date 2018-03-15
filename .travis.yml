@@ -25,4 +25,4 @@ script:
 - cd demo
 - ipack new $TEMPLATE
 - ipack
-- ipack -ud
+- ipack -xd

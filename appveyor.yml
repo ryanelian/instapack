@@ -35,4 +35,4 @@ test_script:
 
     ipack
 
-    ipack -ud
+    ipack -xd

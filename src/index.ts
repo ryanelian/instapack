@@ -76,15 +76,15 @@ export = class instapack {
      * @param template 
      */
     async scaffold(template: string) {
-        let templateFolder = upath.join(__dirname, '../templates', name);
+        let templateFolder = upath.join(__dirname, '../templates', template);
 
         let exist = await fse.pathExists(templateFolder);
         if (!exist) {
-            console.error(chalk.red('ERROR') + ' Unable to find new project template for: ' + chalk.cyan(name));
+            console.error(chalk.red('ERROR') + ' Unable to find new project template for: ' + chalk.cyan(template));
             return;
         }
 
-        console.log('Initializing new project using template: ' + chalk.cyan(name));
+        console.log('Initializing new project using template: ' + chalk.cyan(template));
         console.log('Scaffolding project into your web app...');
         await fse.copy(templateFolder, this.projectFolder);
         console.log(chalk.green('Scaffold completed.') + 'To build the app, type: ' + chalk.yellow('ipack'));

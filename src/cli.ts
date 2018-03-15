@@ -58,7 +58,7 @@ program.command({
         app.build(subCommand, {
             production: !Boolean(argv.dev),
             watch: Boolean(argv.watch),
-            sourceMap: !Boolean(argv.uncharted),
+            sourceMap: !Boolean(argv.xdebug),
             analyze: Boolean(argv.analyze)
         });
     }

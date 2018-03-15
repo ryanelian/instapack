@@ -82,7 +82,7 @@ export = class instapack {
                     console.error(error);
                 }
             } else {
-                console.log(chalk.blue('INFO'), 'unable to find', chalk.cyan(this.settings.packageJson), 'skipping package restore.');
+                console.warn(chalk.yellow('WARNING'), 'unable to find', chalk.cyan(this.settings.packageJson), chalk.grey('skipping package restore...'));
             }
         }
 

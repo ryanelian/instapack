@@ -2,68 +2,44 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const instapack = require("./index");
-const CLI = require("yargs");
+const program = require("yargs");
 const chalk_1 = require("chalk");
-const https = require("https");
-const autoprefixer = require("autoprefixer");
-const PrettyObject_1 = require("./PrettyObject");
-const packageJSON = require('../package.json');
-let packageInfo = {
-    name: packageJSON.name,
-    version: packageJSON.version,
-    description: packageJSON.description
-};
-let outdated = false;
-let masterVersion = packageInfo.version;
-let updater = https.get('https://raw.githubusercontent.com/ryanelian/instapack/master/package.json', response => {
-    let body = '';
-    response.setEncoding('utf8');
-    response.on('data', data => {
-        body += data;
-    });
-    response.on('end', () => {
-        try {
-            let json = JSON.parse(body);
-            masterVersion = json.version;
-            outdated = masterVersion > packageInfo.version;
-        }
-        catch (error) {
-            outdated = false;
-            masterVersion = 'ERROR';
-        }
-    });
-}).on('error', () => { });
+const Meta_1 = require("./Meta");
 let projectFolder = process.cwd();
 let app = new instapack(projectFolder);
-CLI.version(packageInfo.version);
-function echo(command, subCommand, writeDescription = false) {
+let meta = new Meta_1.Meta();
+program.version(meta.version);
+function echo(command, subCommand) {
     if (!subCommand) {
         subCommand = '';
     }
-    console.log(chalk_1.default.yellow(packageInfo.name) + ' ' + chalk_1.default.green(packageInfo.version) + ' ' + command + ' ' + subCommand);
-    if (writeDescription) {
-        console.log(packageInfo.description);
-    }
+    console.log(chalk_1.default.yellow(meta.name) + ' ' + chalk_1.default.green(meta.version) + ' ' + command + ' ' + subCommand);
     console.log();
 }
-CLI.command({
+program.command({
     command: 'build [project]',
-    describe: 'Builds the web app client project!',
+    describe: 'Builds the web application client project!',
     aliases: ['*'],
     builder: yargs => {
         return yargs.choices('project', app.availableTasks)
             .option('w', {
             alias: 'watch',
-            describe: 'Enables incremental compilation on source code changes.'
+            describe: 'Enables automatic incremental build on source code changes.'
         }).option('d', {
             alias: 'dev',
-            describe: 'Disables outputs minification.'
-        }).option('u', {
-            alias: 'uncharted',
-            describe: 'Disables source maps.'
+            describe: 'Disables build outputs optimization and minification.'
+        }).option('x', {
+            alias: 'xdebug',
+            describe: 'Disables source maps, producing undebuggable outputs.'
         }).option('a', {
             alias: 'analyze',
-            describe: 'Generates a module size analysis report for JS output.'
+            describe: 'Generates module size report for TypeScript build output.'
+        }).option('n', {
+            alias: 'noisy',
+            describe: 'Annoys you on build fails.'
+        }).option('v', {
+            alias: 'verbose',
+            describe: 'Displays trace outputs for debugging instapack.'
         });
     },
     handler: argv => {
@@ -77,7 +53,7 @@ CLI.command({
         });
     }
 });
-CLI.command({
+program.command({
     command: 'clean',
     describe: 'Remove files in output folder.',
     handler: argv => {
@@ -85,7 +61,7 @@ CLI.command({
         app.clean();
     }
 });
-CLI.command({
+program.command({
     command: 'new [template]',
     describe: 'Scaffolds a new web app client project.',
     builder: yargs => {
@@ -97,39 +73,11 @@ CLI.command({
         app.scaffold(subCommand);
     }
 });
-CLI.command({
-    command: 'info',
-    describe: 'Displays instapack dependencies, loaded configurations, and autoprefixer information.',
-    handler: argv => {
-        echo('info', null);
-        let p = new PrettyObject_1.PrettyObject('whiteBright');
-        let pinfo = p.render({
-            dependencies: packageJSON.dependencies,
-            settings: app.settings
-        });
-        console.log(pinfo);
-        console.log();
-        console.log(autoprefixer().info());
-    }
-});
-let parse = CLI.strict().help().argv;
-function updateNag() {
-    updater.abort();
-    if (outdated) {
-        console.log();
-        console.log(chalk_1.default.yellow('instapack') + ' is outdated. New version: ' + chalk_1.default.green(masterVersion));
-        if (parseInt(process.versions.node[0]) < 8) {
-            console.log(chalk_1.default.red('BEFORE UPDATING: ') + chalk_1.default.yellow('install the latest Node.js LTS version 8 ') + 'for better build performance!');
-            console.log('Download URL: ' + chalk_1.default.blue('https://nodejs.org/en/download/'));
-        }
-        console.log('Run ' + chalk_1.default.yellow('npm install -g instapack') + ' or ' + chalk_1.default.yellow('yarn global add instapack') + ' to update!');
-    }
-    outdated = false;
-}
+let parse = program.strict().help().argv;
 process.on('exit', () => {
-    updateNag();
+    meta.updateNag();
 });
 process.on('SIGINT', () => {
-    updateNag();
+    meta.updateNag();
     process.exit(2);
 });

@@ -12,6 +12,7 @@ const Settings_1 = require("./Settings");
 const Scaffold_1 = require("./Scaffold");
 const fse = require("fs-extra");
 const upath = require("upath");
+const chalk_1 = require("chalk");
 module.exports = class instapack {
     get availableTasks() {
         return ['all', 'js', 'css', 'concat'];
@@ -54,6 +55,30 @@ module.exports = class instapack {
                 console.log('Clean successful: ' + this.settings.outputCssFolder);
             }
             catch (error) {
+                console.error(error);
+            }
+        });
+    }
+    setGlobalConfiguration(key, value) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let file = this.settings.globalConfigurationJsonPath;
+            let config;
+            console.log('Using global configuration file:', chalk_1.default.cyan(file));
+            try {
+                config = yield fse.readJson(file);
+            }
+            catch (error) {
+                config = {};
+                console.log('Failed to read file; creating a new one instead.');
+            }
+            config[key] = value;
+            try {
+                yield fse.ensureFile(file);
+                yield fse.writeJson(file, config);
+                console.log('Successfully saved new configuration!');
+            }
+            catch (error) {
+                console.error('Error when saving file:');
                 console.error(error);
             }
         });

@@ -5,12 +5,12 @@ import { Scaffold } from './Scaffold';
 
 import * as fse from 'fs-extra';
 import * as upath from 'upath';
+import chalk from 'chalk';
 
 /**
  * Exposes methods for developing a web app client project.
  */
 export = class instapack {
-    
     /**
      * Gets the project folder path. (Known as root in Settings.)
      */
@@ -90,6 +90,37 @@ export = class instapack {
             await cleanCSS;
             console.log('Clean successful: ' + this.settings.outputCssFolder);
         } catch (error) {
+            console.error(error);
+        }
+    }
+
+    /**
+     * Sets instapack global configuration.
+     * @param key 
+     * @param value 
+     */
+    async setGlobalConfiguration(key: string, value: string) {
+        let file = this.settings.globalConfigurationJsonPath;
+        let config;
+
+        console.log('Using global configuration file:', chalk.cyan(file));
+
+        try {
+            config = await fse.readJson(file);
+        }
+        catch (error) {
+            config = {};
+            console.log('Failed to read file; creating a new one instead.');
+        }
+
+        config[key] = value;
+
+        try {
+            await fse.ensureFile(file);
+            await fse.writeJson(file, config);
+            console.log('Successfully saved new configuration!');
+        } catch (error) {
+            console.error('Error when saving file:');
             console.error(error);
         }
     }

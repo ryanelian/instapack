@@ -124,10 +124,10 @@ export class Settings {
     }
 
     /**
-     * Cache folder path for cache-loader in user's local temp folder.
+     * Global configuration file path in user's home folder.
      */
-    get cacheFolder(): string {
-        return upath.join(os.tmpdir(), 'instapack', 'cache');
+    get globalConfigurationJsonPath(): string {
+        return upath.join(os.homedir(), 'instapack', 'settings.json');
     }
 
     /**

@@ -8,6 +8,7 @@ const Meta_1 = require("./Meta");
 let projectFolder = process.cwd();
 let app = new instapack(projectFolder);
 let meta = new Meta_1.Meta();
+meta.checkForUpdates();
 program.version(meta.version);
 function echo(command, subCommand) {
     if (!subCommand) {
@@ -39,7 +40,7 @@ program.command({
             describe: 'Annoys you on build fails.'
         }).option('v', {
             alias: 'verbose',
-            describe: 'Displays trace outputs for debugging instapack.'
+            describe: 'Trace diagnostic outputs for debugging instapack.'
         });
     },
     handler: argv => {
@@ -54,14 +55,6 @@ program.command({
     }
 });
 program.command({
-    command: 'clean',
-    describe: 'Remove files in output folder.',
-    handler: argv => {
-        echo('clean', null);
-        app.clean();
-    }
-});
-program.command({
     command: 'new [template]',
     describe: 'Scaffolds a new web app client project.',
     builder: yargs => {
@@ -71,6 +64,25 @@ program.command({
         let subCommand = argv.template || 'vue';
         echo('new', subCommand);
         app.scaffold(subCommand);
+    }
+});
+program.command({
+    command: 'clean',
+    describe: 'Remove files in output folder.',
+    handler: argv => {
+        echo('clean', null);
+        app.clean();
+    }
+});
+program.command({
+    command: 'set <configuration> <value>',
+    describe: 'Change instapack global configuration.',
+    builder: yargs => {
+        return yargs.choices('configuration', ['package-manager']);
+    },
+    handler: argv => {
+        echo('set', argv.configuration);
+        app.setGlobalConfiguration(argv.configuration, argv.value);
     }
 });
 let parse = program.strict().help().argv;

@@ -35,8 +35,8 @@ class Settings {
     get jsOutVendorFileName() {
         return upath.removeExt(this.jsOut, '.js') + '.dll.js';
     }
-    get cacheFolder() {
-        return upath.join(os.tmpdir(), 'instapack', 'cache');
+    get globalConfigurationJsonPath() {
+        return upath.join(os.homedir(), 'instapack', 'settings.json');
     }
     get concatCount() {
         return Object.keys(this.concat).length;

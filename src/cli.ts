@@ -8,6 +8,7 @@ import { Meta } from './Meta';
 let projectFolder = process.cwd();
 let app = new instapack(projectFolder);
 let meta = new Meta();
+meta.checkForUpdates();
 program.version(meta.version);
 
 /**
@@ -47,7 +48,7 @@ program.command({
                 describe: 'Annoys you on build fails.'
             }).option('v', {
                 alias: 'verbose',
-                describe: 'Displays trace outputs for debugging instapack.'
+                describe: 'Trace diagnostic outputs for debugging instapack.'
             })
     },
     handler: argv => {
@@ -64,15 +65,6 @@ program.command({
 });
 
 program.command({
-    command: 'clean',
-    describe: 'Remove files in output folder.',
-    handler: argv => {
-        echo('clean', null);
-        app.clean();
-    }
-});
-
-program.command({
     command: 'new [template]',
     describe: 'Scaffolds a new web app client project.',
     builder: yargs => {
@@ -83,6 +75,27 @@ program.command({
 
         echo('new', subCommand);
         app.scaffold(subCommand);
+    }
+});
+
+program.command({
+    command: 'clean',
+    describe: 'Remove files in output folder.',
+    handler: argv => {
+        echo('clean', null);
+        app.clean();
+    }
+});
+
+program.command({
+    command: 'set <configuration> <value>',
+    describe: 'Change instapack global configuration.',
+    builder: yargs => {
+        return yargs.choices('configuration', ['package-manager']);
+    },
+    handler: argv => {
+        echo('set', argv.configuration);
+        app.setGlobalConfiguration(argv.configuration, argv.value);
     }
 });
 

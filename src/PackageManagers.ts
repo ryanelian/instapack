@@ -47,24 +47,21 @@ export class PackageManager {
         });
     }
 
-    async restore() {
-        let settingsManager = new GlobalSettingsManager();
-        let settings = await settingsManager.tryRead();
-
-        if (!settings.packageManager) {
-            settings.packageManager = 'yarn';
+    async restore(packageManager) {
+        if (!packageManager) {
+            packageManager = 'yarn';
         }
 
-        if (settings.packageManager === 'yarn') {
+        if (packageManager === 'yarn') {
             let yarnExists = await this.doesCommandExists('yarn');
             if (!yarnExists) {
-                settings.packageManager = 'npm';
+                packageManager = 'npm';
             }
         }
 
         // console.log(settings.packageManager);
 
-        switch (settings.packageManager) {
+        switch (packageManager) {
             case 'yarn': {
                 this.runWithOutputs('yarn');
                 break;

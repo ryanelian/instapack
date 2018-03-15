@@ -12,31 +12,46 @@ const upath = require("upath");
 const os = require("os");
 const fse = require("fs-extra");
 const chalk_1 = require("chalk");
+class PackageManagerSettingMapper {
+    constructor() {
+        this.key = 'packageManager';
+        this.valueTransformer = (value) => value;
+        this.valueValidator = (value) => {
+            return (value === 'yarn' || value === 'npm');
+        };
+    }
+}
+exports.PackageManagerSettingMapper = PackageManagerSettingMapper;
+class IntegrityCheckSettingMapper {
+    constructor() {
+        this.key = 'integrityCheck';
+        this.valueTransformer = (value) => {
+            return (value.toLowerCase() === 'true');
+        };
+        this.valueValidator = (value) => {
+            return (value === 'true' || value === 'false');
+        };
+    }
+}
+exports.IntegrityCheckSettingMapper = IntegrityCheckSettingMapper;
 class GlobalSettingsManager {
     constructor() {
-        this.keyMapper = {
-            'package-manager': 'packageManager'
+        this.settingMappers = {
+            'package-manager': new PackageManagerSettingMapper(),
+            'integrity-check': new IntegrityCheckSettingMapper()
         };
     }
     get globalConfigurationJsonPath() {
         return upath.join(os.homedir(), 'instapack', 'settings.json');
     }
+    get availableSettings() {
+        return Object.keys(this.settingMappers);
+    }
     validate(key, value) {
-        if (!this.keyMapper[key]) {
+        if (!this.settingMappers[key]) {
             return false;
         }
-        switch (key) {
-            case 'package-manager': {
-                if (value !== 'yarn' && value !== 'npm') {
-                    return false;
-                }
-                break;
-            }
-            default: {
-                break;
-            }
-        }
-        return true;
+        return this.settingMappers[key].valueValidator(value);
     }
     tryRead() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -45,7 +60,8 @@ class GlobalSettingsManager {
             }
             catch (_a) {
                 return {
-                    packageManager: 'yarn'
+                    packageManager: 'yarn',
+                    integrityCheck: true
                 };
             }
         });
@@ -53,10 +69,11 @@ class GlobalSettingsManager {
     set(key, value) {
         return __awaiter(this, void 0, void 0, function* () {
             let file = this.globalConfigurationJsonPath;
-            console.log('Using global configuration file:', chalk_1.default.cyan(file));
+            console.log('Global configuration file:', chalk_1.default.cyan(file));
             let settings = yield this.tryRead();
-            let realKey = this.keyMapper[key];
-            settings[realKey] = value;
+            let realKey = this.settingMappers[key].key;
+            let realValue = this.settingMappers[key].valueTransformer(value);
+            settings[realKey] = realValue;
             try {
                 yield fse.ensureFile(file);
                 yield fse.writeJson(file, settings);

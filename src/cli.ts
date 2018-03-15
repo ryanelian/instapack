@@ -91,7 +91,7 @@ program.command({
     command: 'set <configuration> <value>',
     describe: 'Change instapack global configuration.',
     builder: yargs => {
-        return yargs.choices('configuration', ['package-manager']);
+        return yargs.choices('configuration', app.availableSettings);
     },
     handler: argv => {
         echo('set', argv.configuration);

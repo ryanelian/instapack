@@ -27,17 +27,34 @@ module.exports = class instapack {
         });
         return templates;
     }
+    get availableSettings() {
+        return this.globalSettingsManager.availableSettings;
+    }
     constructor(projectFolder) {
         this.projectFolder = projectFolder;
         this.settings = Settings_1.Settings.tryReadFromPackageJson(projectFolder);
+        this.globalSettingsManager = new GlobalSettingsManager_1.GlobalSettingsManager();
     }
     build(taskName, flags) {
-        let packageManager = new PackageManagers_1.PackageManager();
-        let compiler = new Compiler_1.Compiler(this.settings, flags);
-        packageManager.restore().catch(error => {
-            console.error(chalk_1.default.red('ERROR'), 'when restoring package:');
-            console.error(error);
-        }).then(() => {
+        return __awaiter(this, void 0, void 0, function* () {
+            let packageManager = new PackageManagers_1.PackageManager();
+            let compiler = new Compiler_1.Compiler(this.settings, flags);
+            let settings = yield this.globalSettingsManager.tryRead();
+            if (settings.integrityCheck) {
+                let packageJsonExists = yield fse.pathExists(this.settings.packageJson);
+                if (packageJsonExists) {
+                    try {
+                        yield packageManager.restore(settings.packageManager);
+                    }
+                    catch (error) {
+                        console.error(chalk_1.default.red('ERROR'), 'when restoring package:');
+                        console.error(error);
+                    }
+                }
+                else {
+                    console.log(chalk_1.default.blue('INFO'), 'unable to find', chalk_1.default.cyan(this.settings.packageJson), 'skipping package restore.');
+                }
+            }
             compiler.build(taskName);
         });
     }
@@ -72,13 +89,12 @@ module.exports = class instapack {
     }
     setGlobalConfiguration(key, value) {
         return __awaiter(this, void 0, void 0, function* () {
-            let settingsManager = new GlobalSettingsManager_1.GlobalSettingsManager();
-            let valid = settingsManager.validate(key, value);
+            let valid = this.globalSettingsManager.validate(key, value);
             if (!valid) {
                 console.error(chalk_1.default.red('ERROR'), 'invalid settings.');
                 return;
             }
-            yield settingsManager.set(key, value);
+            yield this.globalSettingsManager.set(key, value);
         });
     }
 };

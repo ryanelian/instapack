@@ -10,7 +10,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const cp = require("child_process");
 const process_1 = require("process");
-const GlobalSettingsManager_1 = require("./GlobalSettingsManager");
 class PackageManager {
     get isWindows() {
         return (process_1.platform === 'win32');
@@ -46,20 +45,18 @@ class PackageManager {
             });
         });
     }
-    restore() {
+    restore(packageManager) {
         return __awaiter(this, void 0, void 0, function* () {
-            let settingsManager = new GlobalSettingsManager_1.GlobalSettingsManager();
-            let settings = yield settingsManager.tryRead();
-            if (!settings.packageManager) {
-                settings.packageManager = 'yarn';
+            if (!packageManager) {
+                packageManager = 'yarn';
             }
-            if (settings.packageManager === 'yarn') {
+            if (packageManager === 'yarn') {
                 let yarnExists = yield this.doesCommandExists('yarn');
                 if (!yarnExists) {
-                    settings.packageManager = 'npm';
+                    packageManager = 'npm';
                 }
             }
-            switch (settings.packageManager) {
+            switch (packageManager) {
                 case 'yarn': {
                     this.runWithOutputs('yarn');
                     break;

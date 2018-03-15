@@ -22,6 +22,9 @@ export = class instapack {
      */
     readonly settings: Settings;
 
+
+    readonly globalSettingsManager: GlobalSettingsManager;
+
     /**
      * Gets a list of string which contains tasks available for the build method.
      */
@@ -46,12 +49,17 @@ export = class instapack {
         return templates;
     }
 
+    get availableSettings() {
+        return this.globalSettingsManager.availableSettings;
+    }
+
     /**
      * Constructs instapack class instance using settings read from project.json. 
      */
     constructor(projectFolder: string) {
         this.projectFolder = projectFolder;
         this.settings = Settings.tryReadFromPackageJson(projectFolder);
+        this.globalSettingsManager = new GlobalSettingsManager();
     }
 
     /**
@@ -59,16 +67,26 @@ export = class instapack {
      * @param taskName 
      * @param flags 
      */
-    build(taskName: string, flags: ICompilerFlags) {
+    async build(taskName: string, flags: ICompilerFlags) {
         let packageManager = new PackageManager();
         let compiler = new Compiler(this.settings, flags);
 
-        packageManager.restore().catch(error => {
-            console.error(chalk.red('ERROR'), 'when restoring package:');
-            console.error(error);
-        }).then(() => {
-            compiler.build(taskName);
-        });
+        let settings = await this.globalSettingsManager.tryRead();
+        if (settings.integrityCheck) {
+            let packageJsonExists = await fse.pathExists(this.settings.packageJson);
+            if (packageJsonExists) {
+                try {
+                    await packageManager.restore(settings.packageManager);
+                } catch (error) {
+                    console.error(chalk.red('ERROR'), 'when restoring package:');
+                    console.error(error);
+                }
+            } else {
+                console.log(chalk.blue('INFO'), 'unable to find', chalk.cyan(this.settings.packageJson), 'skipping package restore.');
+            }
+        }
+
+        compiler.build(taskName);
     }
 
     /**
@@ -113,12 +131,11 @@ export = class instapack {
      * @param value 
      */
     async setGlobalConfiguration(key: string, value: string) {
-        let settingsManager = new GlobalSettingsManager();
-        let valid = settingsManager.validate(key, value);
+        let valid = this.globalSettingsManager.validate(key, value);
         if (!valid) {
             console.error(chalk.red('ERROR'), 'invalid settings.');
             return;
         }
-        await settingsManager.set(key, value);
+        await this.globalSettingsManager.set(key, value);
     }
 }

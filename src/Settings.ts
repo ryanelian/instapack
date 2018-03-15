@@ -1,7 +1,6 @@
 import * as upath from 'upath';
 import * as fse from 'fs-extra';
 import * as chalk from 'chalk';
-import * as os from 'os';
 import * as TypeScript from 'typescript';
 
 /**
@@ -121,13 +120,6 @@ export class Settings {
     */
     get jsOutVendorFileName(): string {
         return upath.removeExt(this.jsOut, '.js') + '.dll.js';
-    }
-
-    /**
-     * Global configuration file path in user's home folder.
-     */
-    get globalConfigurationJsonPath(): string {
-        return upath.join(os.homedir(), 'instapack', 'settings.json');
     }
 
     /**

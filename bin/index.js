@@ -9,10 +9,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 const Compiler_1 = require("./Compiler");
 const Settings_1 = require("./Settings");
-const Scaffold_1 = require("./Scaffold");
 const fse = require("fs-extra");
 const upath = require("upath");
 const chalk_1 = require("chalk");
+const GlobalSettingsManager_1 = require("./GlobalSettingsManager");
+const PackageManagers_1 = require("./PackageManagers");
 module.exports = class instapack {
     get availableTasks() {
         return ['all', 'js', 'css', 'concat'];
@@ -31,17 +32,27 @@ module.exports = class instapack {
         this.settings = Settings_1.Settings.tryReadFromPackageJson(projectFolder);
     }
     build(taskName, flags) {
+        let packageManager = new PackageManagers_1.PackageManager();
         let compiler = new Compiler_1.Compiler(this.settings, flags);
-        let scaffold = new Scaffold_1.Scaffold();
-        if (compiler.needPackageRestore) {
-            scaffold.restorePackages();
-        }
-        compiler.build(taskName);
+        packageManager.restore().catch(error => {
+            console.error(chalk_1.default.red('ERROR'), 'when restoring package:');
+            console.error(error);
+        }).then(() => {
+            compiler.build(taskName);
+        });
     }
     scaffold(template) {
         return __awaiter(this, void 0, void 0, function* () {
-            let scaffold = new Scaffold_1.Scaffold();
-            yield scaffold.usingTemplate(template, this.projectFolder);
+            let templateFolder = upath.join(__dirname, '../templates', name);
+            let exist = yield fse.pathExists(templateFolder);
+            if (!exist) {
+                console.error(chalk_1.default.red('ERROR') + ' Unable to find new project template for: ' + chalk_1.default.cyan(name));
+                return;
+            }
+            console.log('Initializing new project using template: ' + chalk_1.default.cyan(name));
+            console.log('Scaffolding project into your web app...');
+            yield fse.copy(templateFolder, this.projectFolder);
+            console.log(chalk_1.default.green('Scaffold completed.') + 'To build the app, type: ' + chalk_1.default.yellow('ipack'));
         });
     }
     clean() {
@@ -61,26 +72,13 @@ module.exports = class instapack {
     }
     setGlobalConfiguration(key, value) {
         return __awaiter(this, void 0, void 0, function* () {
-            let file = this.settings.globalConfigurationJsonPath;
-            let config;
-            console.log('Using global configuration file:', chalk_1.default.cyan(file));
-            try {
-                config = yield fse.readJson(file);
+            let settingsManager = new GlobalSettingsManager_1.GlobalSettingsManager();
+            let valid = settingsManager.validate(key, value);
+            if (!valid) {
+                console.error(chalk_1.default.red('ERROR'), 'invalid settings.');
+                return;
             }
-            catch (error) {
-                config = {};
-                console.log('Failed to read file; creating a new one instead.');
-            }
-            config[key] = value;
-            try {
-                yield fse.ensureFile(file);
-                yield fse.writeJson(file, config);
-                console.log('Successfully saved new configuration!');
-            }
-            catch (error) {
-                console.error('Error when saving file:');
-                console.error(error);
-            }
+            yield settingsManager.set(key, value);
         });
     }
 };

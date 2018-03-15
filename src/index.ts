@@ -1,11 +1,12 @@
 import { Compiler } from './Compiler';
 import { ICompilerFlags } from './CompilerUtilities';
 import { Settings } from './Settings';
-import { Scaffold } from './Scaffold';
 
 import * as fse from 'fs-extra';
 import * as upath from 'upath';
 import chalk from 'chalk';
+import { GlobalSettingsManager } from './GlobalSettingsManager';
+import { PackageManager } from './PackageManagers';
 
 /**
  * Exposes methods for developing a web app client project.
@@ -59,13 +60,15 @@ export = class instapack {
      * @param flags 
      */
     build(taskName: string, flags: ICompilerFlags) {
+        let packageManager = new PackageManager();
         let compiler = new Compiler(this.settings, flags);
-        let scaffold = new Scaffold();
 
-        if (compiler.needPackageRestore) {
-            scaffold.restorePackages();
-        }
-        compiler.build(taskName);
+        packageManager.restore().catch(error => {
+            console.error(chalk.red('ERROR'), 'when restoring package:');
+            console.error(error);
+        }).then(() => {
+            compiler.build(taskName);
+        });
     }
 
     /**
@@ -73,8 +76,18 @@ export = class instapack {
      * @param template 
      */
     async scaffold(template: string) {
-        let scaffold = new Scaffold();
-        await scaffold.usingTemplate(template, this.projectFolder);
+        let templateFolder = upath.join(__dirname, '../templates', name);
+
+        let exist = await fse.pathExists(templateFolder);
+        if (!exist) {
+            console.error(chalk.red('ERROR') + ' Unable to find new project template for: ' + chalk.cyan(name));
+            return;
+        }
+
+        console.log('Initializing new project using template: ' + chalk.cyan(name));
+        console.log('Scaffolding project into your web app...');
+        await fse.copy(templateFolder, this.projectFolder);
+        console.log(chalk.green('Scaffold completed.') + 'To build the app, type: ' + chalk.yellow('ipack'));
     }
 
     /**
@@ -100,28 +113,12 @@ export = class instapack {
      * @param value 
      */
     async setGlobalConfiguration(key: string, value: string) {
-        let file = this.settings.globalConfigurationJsonPath;
-        let config;
-
-        console.log('Using global configuration file:', chalk.cyan(file));
-
-        try {
-            config = await fse.readJson(file);
+        let settingsManager = new GlobalSettingsManager();
+        let valid = settingsManager.validate(key, value);
+        if (!valid) {
+            console.error(chalk.red('ERROR'), 'invalid settings.');
+            return;
         }
-        catch (error) {
-            config = {};
-            console.log('Failed to read file; creating a new one instead.');
-        }
-
-        config[key] = value;
-
-        try {
-            await fse.ensureFile(file);
-            await fse.writeJson(file, config);
-            console.log('Successfully saved new configuration!');
-        } catch (error) {
-            console.error('Error when saving file:');
-            console.error(error);
-        }
+        await settingsManager.set(key, value);
     }
 }

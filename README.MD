@@ -104,7 +104,7 @@ Out of the box, these files will be used as the entry points:
 
 ## Commands
 
-You may use `instapack` or `ipack` or `ipk` to invoke the command line interface.
+You may use `instapack` or `ipack` to invoke the command line interface.
 
 ### new [template]
 

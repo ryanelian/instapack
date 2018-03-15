@@ -27,7 +27,7 @@ function echo(command: string, subCommand: string) {
 
 program.command({
     command: 'build [project]',
-    describe: 'Builds the web application client project!',
+    describe: 'Builds the web application!',
     aliases: ['*'],
     builder: yargs => {
         return yargs.choices('project', app.availableTasks)
@@ -66,7 +66,7 @@ program.command({
 
 program.command({
     command: 'new [template]',
-    describe: 'Scaffolds a new web app client project.',
+    describe: 'Scaffolds new TypeScript + Sass projects!',
     builder: yargs => {
         return yargs.choices('template', app.availableTemplates);
     },
@@ -88,14 +88,14 @@ program.command({
 });
 
 program.command({
-    command: 'set <configuration> <value>',
-    describe: 'Change instapack global configuration.',
+    command: 'set <key> <value>',
+    describe: 'Change a global setting.',
     builder: yargs => {
-        return yargs.choices('configuration', app.availableSettings);
+        return yargs.choices('key', app.availableSettings);
     },
     handler: argv => {
-        echo('set', argv.configuration);
-        app.setGlobalConfiguration(argv.configuration, argv.value);
+        echo('set', argv.key);
+        app.changeGlobalSetting(argv.key, argv.value);
     }
 });
 

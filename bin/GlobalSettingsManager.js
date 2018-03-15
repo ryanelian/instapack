@@ -41,7 +41,7 @@ class GlobalSettingsManager {
             'integrity-check': new IntegrityCheckSettingMapper()
         };
     }
-    get globalConfigurationJsonPath() {
+    get globalSettingJsonPath() {
         return upath.join(os.homedir(), 'instapack', 'settings.json');
     }
     get availableSettings() {
@@ -56,7 +56,7 @@ class GlobalSettingsManager {
     tryRead() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                return yield fse.readJson(this.globalConfigurationJsonPath);
+                return yield fse.readJson(this.globalSettingJsonPath);
             }
             catch (_a) {
                 return {
@@ -68,8 +68,8 @@ class GlobalSettingsManager {
     }
     set(key, value) {
         return __awaiter(this, void 0, void 0, function* () {
-            let file = this.globalConfigurationJsonPath;
-            console.log('Global configuration file:', chalk_1.default.cyan(file));
+            let file = this.globalSettingJsonPath;
+            console.log('Global settings file:', chalk_1.default.cyan(file));
             let settings = yield this.tryRead();
             let realKey = this.settingMappers[key].key;
             let realValue = this.settingMappers[key].valueTransformer(value);
@@ -77,7 +77,7 @@ class GlobalSettingsManager {
             try {
                 yield fse.ensureFile(file);
                 yield fse.writeJson(file, settings);
-                console.log('Successfully saved new configuration!');
+                console.log('Successfully saved the new setting!');
             }
             catch (error) {
                 console.error('Error when saving file:');

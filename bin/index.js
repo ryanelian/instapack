@@ -87,7 +87,7 @@ module.exports = class instapack {
             }
         });
     }
-    setGlobalConfiguration(key, value) {
+    changeGlobalSetting(key, value) {
         return __awaiter(this, void 0, void 0, function* () {
             let valid = this.globalSettingsManager.validate(key, value);
             if (!valid) {

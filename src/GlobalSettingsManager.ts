@@ -48,9 +48,9 @@ export class IntegrityCheckSettingMapper implements ISettingMapper<boolean> {
 
 export class GlobalSettingsManager {
     /**
-     * Global configuration file path in user's home folder.
+     * Global setting file path in user's home folder.
      */
-    get globalConfigurationJsonPath(): string {
+    get globalSettingJsonPath(): string {
         return upath.join(os.homedir(), 'instapack', 'settings.json');
     }
 
@@ -73,10 +73,10 @@ export class GlobalSettingsManager {
 
     async tryRead(): Promise<IGlobalSettings> {
         try {
-            return await fse.readJson(this.globalConfigurationJsonPath);
+            return await fse.readJson(this.globalSettingJsonPath);
         }
         catch {
-            // console.log('Failed to read global configuration file; creating a new one instead.');
+            // console.log('Failed to read global settings file; creating a new one instead.');
             return {
                 packageManager: 'yarn',
                 integrityCheck: true
@@ -85,8 +85,8 @@ export class GlobalSettingsManager {
     }
 
     async set(key: string, value: string) {
-        let file = this.globalConfigurationJsonPath;
-        console.log('Global configuration file:', chalk.cyan(file));
+        let file = this.globalSettingJsonPath;
+        console.log('Global settings file:', chalk.cyan(file));
 
         let settings = await this.tryRead();
         let realKey = this.settingMappers[key].key;
@@ -96,7 +96,7 @@ export class GlobalSettingsManager {
         try {
             await fse.ensureFile(file);
             await fse.writeJson(file, settings);
-            console.log('Successfully saved new configuration!');
+            console.log('Successfully saved the new setting!');
         } catch (error) {
             console.error('Error when saving file:');
             console.error(error);

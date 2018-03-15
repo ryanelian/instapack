@@ -126,11 +126,11 @@ export = class instapack {
     }
 
     /**
-     * Sets instapack global configuration.
+     * Change an instapack global setting.
      * @param key 
      * @param value 
      */
-    async setGlobalConfiguration(key: string, value: string) {
+    async changeGlobalSetting(key: string, value: string) {
         let valid = this.globalSettingsManager.validate(key, value);
         if (!valid) {
             console.error(chalk.red('ERROR'), 'invalid settings.');

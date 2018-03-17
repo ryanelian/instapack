@@ -96,7 +96,7 @@ export class SassBuildTool {
     /**
      * Implements a smarter Sass @import logic.
      * Performs node-like module resolution logic, which includes looking into package.json (for sass and style fields).
-     * Still supports auto-relative and relative _partials file resolution. 
+     * Still supports auto-relatives and (relative) _partials file resolution. 
      * @param source 
      * @param request 
      */
@@ -118,12 +118,11 @@ export class SassBuildTool {
             }
         }
 
-        let requestFileName = upath.basename(request);      // something
-        let requestDir = upath.dirname(request);            // @ryan/
-
         // 3: E:/VS/MyProject/client/css/@ryan/_something.scss
+        let requestFileName = upath.basename(request);                          // something
         if (!requestFileName.startsWith('_')) {
-            let relativeLookupDir = upath.join(lookupStartPath, requestDir); // E:/VS/MyProject/client/css/@ryan/
+            let requestDir = upath.dirname(request);                            // @ryan/
+            let relativeLookupDir = upath.join(lookupStartPath, requestDir);    // E:/VS/MyProject/client/css/@ryan/
             let partialFileName = '_' + upath.addExt(requestFileName, '.scss');
             let partialPath = upath.resolve(relativeLookupDir, partialFileName);
 
@@ -136,6 +135,9 @@ export class SassBuildTool {
         // 9: E:/VS/MyProject/node_modules/@ryan/something.css
         // 10: E:/VS/MyProject/node_modules/@ryan/something/package.json
         return await this.resolve(lookupStartPath, request);
+
+        // 8 WILL NOT WORK: E:/VS/MyProject/node_modules/@ryan/_something.scss
+        // @import against partial files in node_modules must be explicit to prevent confusion!
     }
 
     /**
@@ -157,7 +159,7 @@ export class SassBuildTool {
 
             importer: (request, source, done) => {
                 this.sassImport(source, request).then(result => {
-                    console.log(source, '+', request, '=', result);
+                    // console.log(source, '+', request, '=', result); console.log();
                     done({
                         file: result
                     });

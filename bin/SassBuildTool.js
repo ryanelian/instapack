@@ -75,8 +75,8 @@ class SassBuildTool {
                 }
             }
             let requestFileName = upath.basename(request);
-            let requestDir = upath.dirname(request);
             if (!requestFileName.startsWith('_')) {
+                let requestDir = upath.dirname(request);
                 let relativeLookupDir = upath.join(lookupStartPath, requestDir);
                 let partialFileName = '_' + upath.addExt(requestFileName, '.scss');
                 let partialPath = upath.resolve(relativeLookupDir, partialFileName);
@@ -101,7 +101,6 @@ class SassBuildTool {
                 sourceMapContents: this.flags.sourceMap,
                 importer: (request, source, done) => {
                     this.sassImport(source, request).then(result => {
-                        console.log(source, '+', request, '=', result);
                         done({
                             file: result
                         });

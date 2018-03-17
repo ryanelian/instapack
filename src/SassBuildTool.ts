@@ -95,36 +95,35 @@ export class SassBuildTool {
 
     /**
      * Implements a smarter Sass @import logic.
-     * In addition to the default behavior and node_modules homing behavior, 
-     * this new method looks into index file in relative folder and package.json for sass and style fields. 
-     * @param lookupStartPath 
+     * Performs node-like module resolution logic, which includes looking into package.json (for sass and style fields).
+     * Still supports auto-relative and relative _partials file resolution. 
+     * @param source 
      * @param request 
      */
-    async sassImport(lookupStartPath: string, request: string) {
+    async sassImport(source: string, request: string) {
         // https://github.com/ryanelian/instapack/issues/99
+        // E:/VS/MyProject/client/css/index.scss @import "@ryan/something"
 
-        // @import "@ryan/something"
-        // E:/VS/MyProject/client/css/index.scss
-
-        let lookupStartDir = upath.dirname(lookupStartPath);    // E:/VS/MyProject/cient/css/
-        let requestFileName = upath.basename(request);          // something
-        let requestDir = upath.dirname(request);                // @ryan/
-        let scss = upath.extname(request) === '.scss';
-
-        let relativeLookupDir = upath.join(lookupStartDir, requestDir); // E:/VS/MyProject/cient/css/@ryan/
+        let lookupStartPath = upath.dirname(source);    // E:/VS/MyProject/client/css/
+        let isRelative = request.startsWith('./') || request.startsWith('../');
 
         // 2: E:/VS/MyProject/client/css/@ryan/something.scss
-        {
-            let relativeScssFileName = upath.addExt(requestFileName, '.scss');
-            let relativeScssPath = upath.resolve(relativeLookupDir, relativeScssFileName);
-
-            if (await fse.pathExists(relativeScssPath)) {
-                return relativeScssPath;
+        // 4: E:/VS/MyProject/client/css/@ryan/something.css
+        // 5: E:/VS/MyProject/client/css/@ryan/something/index.scss
+        // 6: E:/VS/MyProject/client/css/@ryan/something/index.css
+        if (!isRelative) {
+            try {
+                return await this.resolve(lookupStartPath, './' + request);
+            } catch (error) {
             }
         }
 
+        let requestFileName = upath.basename(request);      // something
+        let requestDir = upath.dirname(request);            // @ryan/
+
         // 3: E:/VS/MyProject/client/css/@ryan/_something.scss
         if (!requestFileName.startsWith('_')) {
+            let relativeLookupDir = upath.join(lookupStartPath, requestDir); // E:/VS/MyProject/client/css/@ryan/
             let partialFileName = '_' + upath.addExt(requestFileName, '.scss');
             let partialPath = upath.resolve(relativeLookupDir, partialFileName);
 
@@ -133,38 +132,9 @@ export class SassBuildTool {
             }
         }
 
-        if (!scss) {
-            // 4: E:/VS/MyProject/client/css/@ryan/something.css
-            {
-                let relativeCssFileName = upath.addExt(requestFileName, '.css');
-                let relativeCssPath = upath.resolve(relativeLookupDir, relativeCssFileName);
-
-                if (await fse.pathExists(relativeCssPath)) {
-                    return relativeCssPath;
-                }
-            }
-
-            let indexDir = upath.join(lookupStartDir, request);
-            // 5: E:/VS/MyProject/client/css/@ryan/something/index.scss
-            {
-                let indexScssPath = upath.resolve(indexDir, 'index.scss');
-                if (await fse.pathExists(indexScssPath)) {
-                    return indexScssPath;
-                }
-            }
-            // 6: E:/VS/MyProject/client/css/@ryan/something/index.css
-            {
-                let indexCssPath = upath.resolve(indexDir, 'index.css');
-                if (await fse.pathExists(indexCssPath)) {
-                    return indexCssPath;
-                }
-            }
-        }
-
         // 7: E:/VS/MyProject/node_modules/@ryan/something.scss
-        // 7: E:/VS/MyProject/node_modules/@ryan/something.css
-        // 7: E:/VS/MyProject/node_modules/@ryan/something/package.json:sass
-        // 7: E:/VS/MyProject/node_modules/@ryan/something/package.json:style
+        // 9: E:/VS/MyProject/node_modules/@ryan/something.css
+        // 10: E:/VS/MyProject/node_modules/@ryan/something/package.json
         return await this.resolve(lookupStartPath, request);
     }
 
@@ -185,9 +155,9 @@ export class SassBuildTool {
             sourceMapEmbed: this.flags.sourceMap,
             sourceMapContents: this.flags.sourceMap,
 
-            importer: (request, lookupStartPath, done) => {
-                this.sassImport(lookupStartPath, request).then(result => {
-                    // console.log(lookupStartPath, '+', request, '=', result);
+            importer: (request, source, done) => {
+                this.sassImport(source, request).then(result => {
+                    console.log(source, '+', request, '=', result);
                     done({
                         file: result
                     });

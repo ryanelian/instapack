@@ -42,7 +42,6 @@
     "yargs": "11.0.0"
   },
   "devDependencies": {
-    "@types/autoprefixer": "^6.7.3",
     "@types/chokidar": "^1.7.5",
     "@types/fs-extra": "^5.0.1",
     "@types/html-minifier": "^3.5.1",

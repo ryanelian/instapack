@@ -102,7 +102,7 @@ class SassBuildTool {
                 importer: (request, source, done) => {
                     this.sassImport(source, request).then(result => {
                         done({
-                            file: result
+                            file: upath.removeExt(result, '.css')
                         });
                     }).catch(error => {
                         done(error);

@@ -160,8 +160,9 @@ export class SassBuildTool {
             importer: (request, source, done) => {
                 this.sassImport(source, request).then(result => {
                     // console.log(source, '+', request, '=', result); console.log();
+                    // if resulting path's .css extension is not removed, will cause CSS @import...
                     done({
-                        file: result
+                        file: upath.removeExt(result, '.css')
                     });
                 }).catch(error => {
                     done(error);

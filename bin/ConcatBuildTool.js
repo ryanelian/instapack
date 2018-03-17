@@ -11,25 +11,28 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const fse = require("fs-extra");
 const upath = require("upath");
 const chalk_1 = require("chalk");
-const resolve = require("resolve");
+const enhanced_resolve_1 = require("enhanced-resolve");
 let Uglify = require('uglify-js');
 const EventHub_1 = require("./EventHub");
 const CompilerUtilities_1 = require("./CompilerUtilities");
 const PrettyUnits_1 = require("./PrettyUnits");
+let resolver = enhanced_resolve_1.ResolverFactory.createResolver({
+    fileSystem: new enhanced_resolve_1.NodeJsInputFileSystem(),
+    extensions: ['.js']
+});
 class ConcatBuildTool {
     constructor(settings, flags) {
         this.settings = settings;
         this.flags = flags;
     }
-    resolveAsPromise(path) {
+    resolveAsPromise(request) {
         return new Promise((ok, reject) => {
-            resolve(path, {
-                basedir: this.settings.root
-            }, (error, result) => {
+            resolver.resolve({}, this.settings.root, request, {}, (error, result) => {
                 if (error) {
                     reject(error);
                 }
                 else {
+                    console.log(this.settings.root, '+', request, '=', result);
                     ok(result);
                 }
             });

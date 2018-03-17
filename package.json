@@ -44,7 +44,6 @@
   "devDependencies": {
     "@types/autoprefixer": "^6.7.3",
     "@types/chokidar": "^1.7.5",
-    "@types/enhanced-resolve": "^3.0.5",
     "@types/fs-extra": "^5.0.1",
     "@types/html-minifier": "^3.5.1",
     "@types/loader-utils": "^1.1.3",

@@ -1,13 +1,18 @@
 import * as fse from 'fs-extra';
 import * as upath from 'upath';
 import chalk from 'chalk';
-import * as resolve from 'resolve';
+import { NodeJsInputFileSystem, ResolverFactory } from 'enhanced-resolve';
 let Uglify = require('uglify-js');
 
 import hub from './EventHub';
 import { Settings } from './Settings';
 import { ICompilerFlags, logAndWriteUtf8FileAsync, timedLog } from './CompilerUtilities';
 import { prettyHrTime } from './PrettyUnits';
+
+let resolver = ResolverFactory.createResolver({
+    fileSystem: new NodeJsInputFileSystem(),
+    extensions: ['.js']
+});
 
 /**
  * A simple key-value pair for UglifyES code input.
@@ -43,16 +48,15 @@ export class ConcatBuildTool {
 
     /**
      * Attempts to asynchronously resolve a module using node resolution logic, relative to project folder path.
-     * @param path 
+     * @param request 
      */
-    resolveAsPromise(path: string) {
+    resolveAsPromise(request: string) {
         return new Promise<string>((ok, reject) => {
-            resolve(path, {
-                basedir: this.settings.root
-            }, (error, result) => {
+            resolver.resolve({}, this.settings.root, request, {}, (error, result) => {
                 if (error) {
                     reject(error);
                 } else {
+                    console.log(this.settings.root, '+', request, '=', result);
                     ok(result);
                 }
             });

@@ -19,13 +19,6 @@
   version "3.4.30"
   resolved "https://registry.yarnpkg.com/@types/clean-css/-/clean-css-3.4.30.tgz#0052c136f5248002428e3638b37de4a39818641d"
 
-"@types/enhanced-resolve@^3.0.5":
-  version "3.0.5"
-  resolved "https://registry.yarnpkg.com/@types/enhanced-resolve/-/enhanced-resolve-3.0.5.tgz#a4bc3c52f206c14a67852d1da9e56bcf9188c517"
-  dependencies:
-    "@types/node" "*"
-    "@types/tapable" "^0"
-
 "@types/events@*":
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/@types/events/-/events-1.2.0.tgz#81a6731ce4df43619e5c8c945383b3e62a89ea86"

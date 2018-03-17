@@ -2,15 +2,6 @@ version: 1.0.{build}
 image: Visual Studio 2017
 environment:
   NODEJS_VERSION: 8
-  matrix:
-  - TEMPLATE: angularjs
-  - TEMPLATE: empty
-  - TEMPLATE: inferno
-  - TEMPLATE: react
-  - TEMPLATE: vue
-cache:
-    - node_modules
-    - '%LOCALAPPDATA%\Yarn'
 install:
 - ps: >-
     Install-Product node $env:NODEJS_VERSION
@@ -21,18 +12,57 @@ build_script:
 - ps: >-
     npm run build
     
-    npm link --silent
+    npm link --production --silent
 
 test_script:
 - ps: >-
-    instapack --version
-
     mkdir demo
 
     cd demo
 
-    ipack new $env:TEMPLATE
+    ipack new angularjs
 
     ipack
 
     ipack -dx
+
+    Remove-Item * -Recurse
+
+    ipack new empty
+
+    ipack
+
+    ipack -dx
+
+    Remove-Item * -Recurse
+
+    ipack new inferno
+
+    ipack
+
+    ipack -dx
+
+    Remove-Item * -Recurse
+
+    ipack new react
+
+    ipack
+
+    ipack -dx
+
+    Remove-Item * -Recurse
+
+    ipack new vue
+
+    ipack
+
+    ipack -dx
+
+    Remove-Item * -Recurse
+
+    ipack new vue-mobile
+
+    ipack
+
+    ipack -dx
+    

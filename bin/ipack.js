@@ -35,12 +35,6 @@ program.command({
         }).option('a', {
             alias: 'analyze',
             describe: 'Generates module size report for TypeScript build output.'
-        }).option('n', {
-            alias: 'noisy',
-            describe: 'Annoys you on build fails.'
-        }).option('v', {
-            alias: 'verbose',
-            describe: 'Trace diagnostic outputs for debugging instapack.'
         });
     },
     handler: argv => {

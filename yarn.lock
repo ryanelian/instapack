@@ -68,7 +68,7 @@
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/@types/source-list-map/-/source-list-map-0.1.2.tgz#0078836063ffaf17412349bba364087e0ac02ec9"
 
-"@types/tapable@*":
+"@types/tapable@^0":
   version "0.2.5"
   resolved "https://registry.yarnpkg.com/@types/tapable/-/tapable-0.2.5.tgz#2443fc12da514c81346b1a665675559cee21fa75"
 
@@ -86,13 +86,14 @@
     "@types/source-list-map" "*"
     source-map "^0.6.1"
 
-"@types/webpack@*", "@types/webpack@3.8.5":
-  version "3.8.5"
-  resolved "http://registry.npmjs.org/@types/webpack/-/@types/webpack-3.8.5.tgz#793a0dc6c49900095313c4f424eda6fb814dd76b"
+"@types/webpack@*", "@types/webpack@3":
+  version "3.8.11"
+  resolved "http://registry.npmjs.org/@types/webpack/-/webpack-3.8.11.tgz#df2d7f8db43dbc15b4e8ecbdc91e6f68ed6b83ab"
   dependencies:
     "@types/node" "*"
-    "@types/tapable" "*"
+    "@types/tapable" "^0"
     "@types/uglify-js" "*"
+    source-map "^0.6.0"
 
 "@types/yargs@^11.0.0":
   version "11.0.0"
@@ -3037,7 +3038,7 @@ source-map@^0.4.2:
   dependencies:
     amdefine ">=0.0.4"
 
-source-map@^0.6.1, source-map@~0.6.1:
+source-map@^0.6.0, source-map@^0.6.1, source-map@~0.6.1:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.6.1.tgz#74722af32e9614e9c287a8d0bbde48b5e2f1a263"
 

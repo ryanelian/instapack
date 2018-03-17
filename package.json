@@ -1,6 +1,6 @@
 {
   "name": "instapack",
-  "version": "6.2.0-beta3",
+  "version": "6.1.0",
   "description": "All-in-one web application client project compiler using TypeScript and Sass!",
   "main": "bin/index.js",
   "bin": {
@@ -50,13 +50,13 @@
     "@types/node": "8",
     "@types/node-sass": "^3.10.32",
     "@types/resolve": "^0.0.7",
-    "@types/webpack": "3.8.5",
+    "@types/webpack": "3",
     "@types/webpack-sources": "^0.1.4",
     "@types/yargs": "^11.0.0"
   },
   "resolutions": {
     "**/@types/node": "8",
-    "**/@types/webpack": "3.8.5"
+    "**/@types/webpack": "3"
   },
   "greenkeeper": {
     "ignore": [

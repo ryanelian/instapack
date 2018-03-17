@@ -32,7 +32,6 @@ class ConcatBuildTool {
                     reject(error);
                 }
                 else {
-                    console.log(this.settings.root, '+', request, '=', result);
                     ok(result);
                 }
             });

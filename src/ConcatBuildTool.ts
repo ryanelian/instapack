@@ -56,7 +56,7 @@ export class ConcatBuildTool {
                 if (error) {
                     reject(error);
                 } else {
-                    console.log(this.settings.root, '+', request, '=', result);
+                    // console.log(this.settings.root, '+', request, '=', result);
                     ok(result);
                 }
             });

@@ -8,7 +8,7 @@ install:
 - ps: >-
     Install-Product node $env:NODEJS_VERSION
 
-    npm link
+    npm link --loglevel error
 
 build_script:
 - ps: >-

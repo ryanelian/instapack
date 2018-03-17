@@ -15,7 +15,7 @@ cache:
   directories:
   - $HOME/.npm
 install:
-  - "npm link"
+- "npm link --loglevel error"
 script:
 - npm run build
 - mkdir demo

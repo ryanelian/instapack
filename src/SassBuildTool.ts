@@ -105,12 +105,12 @@ export class SassBuildTool {
         // E:/VS/MyProject/client/css/index.scss @import "@ryan/something"
 
         let lookupStartPath = upath.dirname(source);    // E:/VS/MyProject/client/css/
-        let isRelative = request.startsWith('./') || request.startsWith('../');
 
-        // 2: E:/VS/MyProject/client/css/@ryan/something.scss
-        // 4: E:/VS/MyProject/client/css/@ryan/something.css
-        // 5: E:/VS/MyProject/client/css/@ryan/something/index.scss
-        // 6: E:/VS/MyProject/client/css/@ryan/something/index.css
+        // 2: E:/VS/MyProject/client/css/@ryan/something.scss (Standard)
+        // 4: E:/VS/MyProject/client/css/@ryan/something.css (Standard)
+        // 5: E:/VS/MyProject/client/css/@ryan/something/index.scss (Custom)
+        // 6: E:/VS/MyProject/client/css/@ryan/something/index.css (Custom)
+        let isRelative = request.startsWith('./') || request.startsWith('../');
         if (!isRelative) {
             try {
                 return await this.resolve(lookupStartPath, './' + request);
@@ -118,7 +118,7 @@ export class SassBuildTool {
             }
         }
 
-        // 3: E:/VS/MyProject/client/css/@ryan/_something.scss
+        // 3: E:/VS/MyProject/client/css/@ryan/_something.scss (Standard)
         let requestFileName = upath.basename(request);                          // something
         if (!requestFileName.startsWith('_')) {
             let requestDir = upath.dirname(request);                            // @ryan/
@@ -131,12 +131,12 @@ export class SassBuildTool {
             }
         }
 
-        // 7: E:/VS/MyProject/node_modules/@ryan/something.scss
-        // 9: E:/VS/MyProject/node_modules/@ryan/something.css
-        // 10: E:/VS/MyProject/node_modules/@ryan/something/package.json
+        // 7: E:/VS/MyProject/node_modules/@ryan/something.scss (Custom)
+        // 9: E:/VS/MyProject/node_modules/@ryan/something.css (Custom)
+        // 10: E:/VS/MyProject/node_modules/@ryan/something/package.json (Custom)
         return await this.resolve(lookupStartPath, request);
 
-        // 8 WILL NOT WORK: E:/VS/MyProject/node_modules/@ryan/_something.scss
+        // 8 WILL NOT WORK: E:/VS/MyProject/node_modules/@ryan/_something.scss (Custom)
         // @import against partial files in node_modules must be explicit to prevent confusion!
     }
 

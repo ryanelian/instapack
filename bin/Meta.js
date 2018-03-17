@@ -38,7 +38,9 @@ class Meta {
         if (this.nagOnce) {
             return;
         }
-        this.updateChecker.abort();
+        if (this.updateChecker) {
+            this.updateChecker.abort();
+        }
         if (this.isOutdated) {
             console.log();
             console.log(chalk_1.default.yellow('instapack') + ' is outdated. New version: ' + chalk_1.default.green(this.remoteVersion));

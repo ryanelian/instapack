@@ -6,7 +6,7 @@ import * as fse from 'fs-extra';
 import * as upath from 'upath';
 import chalk from 'chalk';
 import { GlobalSettingsManager } from './GlobalSettingsManager';
-import { PackageManager } from './PackageManagers';
+import { PackageManager } from './PackageManager';
 
 /**
  * Exposes methods for developing a web app client project.
@@ -22,7 +22,9 @@ export = class instapack {
      */
     readonly settings: Settings;
 
-
+    /**
+     * Gets the object responsible for reading and writing the instapack global settings.
+     */
     readonly globalSettingsManager: GlobalSettingsManager;
 
     /**
@@ -49,6 +51,9 @@ export = class instapack {
         return templates;
     }
 
+    /**
+     * Gets all available keys for `instapack set` command.
+     */
     get availableSettings() {
         return this.globalSettingsManager.availableSettings;
     }
@@ -136,6 +141,12 @@ export = class instapack {
             console.error(chalk.red('ERROR'), 'invalid settings.');
             return;
         }
-        await this.globalSettingsManager.set(key, value);
+
+        try {
+            await this.globalSettingsManager.set(key, value);
+        } catch (error) {
+            console.error('Error when saving setting:');
+            console.error(error);
+        }
     }
 }

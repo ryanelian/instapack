@@ -15,8 +15,9 @@ const chalk_1 = require("chalk");
 class PackageManagerSettingMapper {
     constructor() {
         this.key = 'packageManager';
-        this.valueTransformer = (value) => value;
+        this.valueTransformer = (value) => value.toLowerCase();
         this.valueValidator = (value) => {
+            value = value.toLowerCase();
             return (value === 'yarn' || value === 'npm');
         };
     }
@@ -29,6 +30,7 @@ class IntegrityCheckSettingMapper {
             return (value.toLowerCase() === 'true');
         };
         this.valueValidator = (value) => {
+            value = value.toString();
             return (value === 'true' || value === 'false');
         };
     }
@@ -74,15 +76,9 @@ class GlobalSettingsManager {
             let realKey = this.settingMappers[key].key;
             let realValue = this.settingMappers[key].valueTransformer(value);
             settings[realKey] = realValue;
-            try {
-                yield fse.ensureFile(file);
-                yield fse.writeJson(file, settings);
-                console.log('Successfully saved the new setting!');
-            }
-            catch (error) {
-                console.error('Error when saving file:');
-                console.error(error);
-            }
+            yield fse.ensureFile(file);
+            yield fse.writeJson(file, settings);
+            console.log('Successfully saved the new setting!');
         });
     }
 }

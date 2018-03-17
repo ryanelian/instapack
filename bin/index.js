@@ -13,7 +13,7 @@ const fse = require("fs-extra");
 const upath = require("upath");
 const chalk_1 = require("chalk");
 const GlobalSettingsManager_1 = require("./GlobalSettingsManager");
-const PackageManagers_1 = require("./PackageManagers");
+const PackageManager_1 = require("./PackageManager");
 module.exports = class instapack {
     get availableTasks() {
         return ['all', 'js', 'css', 'concat'];
@@ -37,7 +37,7 @@ module.exports = class instapack {
     }
     build(taskName, flags) {
         return __awaiter(this, void 0, void 0, function* () {
-            let packageManager = new PackageManagers_1.PackageManager();
+            let packageManager = new PackageManager_1.PackageManager();
             let compiler = new Compiler_1.Compiler(this.settings, flags);
             let settings = yield this.globalSettingsManager.tryRead();
             if (settings.integrityCheck) {
@@ -94,7 +94,13 @@ module.exports = class instapack {
                 console.error(chalk_1.default.red('ERROR'), 'invalid settings.');
                 return;
             }
-            yield this.globalSettingsManager.set(key, value);
+            try {
+                yield this.globalSettingsManager.set(key, value);
+            }
+            catch (error) {
+                console.error('Error when saving setting:');
+                console.error(error);
+            }
         });
     }
 };

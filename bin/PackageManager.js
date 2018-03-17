@@ -14,18 +14,18 @@ class PackageManager {
     get isWindows() {
         return (process_1.platform === 'win32');
     }
-    get isOSX() {
+    get isMac() {
         return (process_1.platform === 'darwin');
     }
-    commandExistCheckerCommand(command) {
+    toolExistCheckerCommand(tool) {
         if (this.isWindows) {
-            return 'where ' + command;
+            return 'where ' + tool;
         }
-        else if (this.isOSX) {
-            return 'which ' + command;
+        else if (this.isMac) {
+            return 'which ' + tool;
         }
         else {
-            return 'whereis ' + command;
+            return 'whereis ' + tool;
         }
     }
     runWithOutputs(command) {
@@ -33,9 +33,9 @@ class PackageManager {
             stdio: [0, 1, 2]
         });
     }
-    doesCommandExists(command) {
+    doesToolExists(tool) {
         return new Promise((ok, reject) => {
-            cp.exec(this.commandExistCheckerCommand(command), (error, stdout, stderr) => {
+            cp.exec(this.toolExistCheckerCommand(tool), (error, stdout, stderr) => {
                 if (error) {
                     ok(false);
                 }
@@ -51,7 +51,7 @@ class PackageManager {
                 packageManager = 'yarn';
             }
             if (packageManager === 'yarn') {
-                let yarnExists = yield this.doesCommandExists('yarn');
+                let yarnExists = yield this.doesToolExists('yarn');
                 if (!yarnExists) {
                     packageManager = 'npm';
                 }

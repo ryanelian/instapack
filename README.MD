@@ -142,7 +142,13 @@ In addition, build flags are available:
 
 ### clean
 
-Remove files in the output folders.
+Remove all files in the output folders.
+
+### set <key> <value>
+
+- `package-manager` allows setting default package manager to be used for restoring and integrity-checking `node_modules` prior build. Possible values: `yarn` and `npm` 
+
+- `integrity-check` allows disabling package restore prior build. Possible values: `true` and `false`
 
 ## Configuration
 

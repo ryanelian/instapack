@@ -3,23 +3,35 @@ import chalk from 'chalk';
 import { platform } from 'process';
 import { GlobalSettingsManager } from './GlobalSettingsManager';
 
+/**
+ * Contains methods responsible for restoring user packages.
+ */
 export class PackageManager {
-
+    /**
+     * Detects if instapack is running on Windows OS.
+     */
     get isWindows() {
         return (platform === 'win32');
     }
 
-    get isOSX() {
+    /**
+     * Detects if instapack is running on Mac OS.
+     */
+    get isMac() {
         return (platform === 'darwin');
     }
 
-    commandExistCheckerCommand(command: string) {
+    /**
+     * Returns OS-suitable command for detecting whether another CLI tool is available on the system. 
+     * @param tool 
+     */
+    toolExistCheckerCommand(tool: string) {
         if (this.isWindows) {
-            return 'where ' + command;
-        } else if (this.isOSX) {
-            return 'which ' + command
+            return 'where ' + tool;
+        } else if (this.isMac) {
+            return 'which ' + tool
         } else {
-            return 'whereis ' + command;
+            return 'whereis ' + tool;
         }
     }
 
@@ -34,9 +46,13 @@ export class PackageManager {
         });
     }
 
-    doesCommandExists(command: string) {
+    /**
+     * Asynchronously checks whether a CLI tool exists in the system.
+     * @param tool 
+     */
+    doesToolExists(tool: string) {
         return new Promise<boolean>((ok, reject) => {
-            cp.exec(this.commandExistCheckerCommand(command), (error, stdout, stderr) => {
+            cp.exec(this.toolExistCheckerCommand(tool), (error, stdout, stderr) => {
                 if (error) {
                     ok(false);
                     // console.log(error);
@@ -47,13 +63,20 @@ export class PackageManager {
         });
     }
 
+    /**
+     * Asynchronously attempts to restore project packages using selected tool.
+     * If the tool is not defined, defaults to yarn.
+     * If yarn is not found in the system, fallback to npm.
+     * Throws if the tool is unknown.
+     * @param packageManager 
+     */
     async restore(packageManager) {
         if (!packageManager) {
             packageManager = 'yarn';
         }
 
         if (packageManager === 'yarn') {
-            let yarnExists = await this.doesCommandExists('yarn');
+            let yarnExists = await this.doesToolExists('yarn');
             if (!yarnExists) {
                 packageManager = 'npm';
             }

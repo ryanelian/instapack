@@ -20,49 +20,14 @@ test_script:
 
     cd demo
 
-    ipack new angularjs
+    ipack new angularjs; ipack; ipack -dx; Remove-Item * -Recurse
 
-    ipack
+    ipack new empty; ipack; ipack -dx; Remove-Item * -Recurse
 
-    ipack -dx
+    ipack new inferno; ipack; ipack -dx; Remove-Item * -Recurse
 
-    Remove-Item * -Recurse
+    ipack new react; ipack; ipack -dx; Remove-Item * -Recurse
 
-    ipack new empty
+    ipack new vue; ipack; ipack -dx; Remove-Item * -Recurse
 
-    ipack
-
-    ipack -dx
-
-    Remove-Item * -Recurse
-
-    ipack new inferno
-
-    ipack
-
-    ipack -dx
-
-    Remove-Item * -Recurse
-
-    ipack new react
-
-    ipack
-
-    ipack -dx
-
-    Remove-Item * -Recurse
-
-    ipack new vue
-
-    ipack
-
-    ipack -dx
-
-    Remove-Item * -Recurse
-
-    ipack new vue-mobile
-
-    ipack
-
-    ipack -dx
-    
+    ipack new vue-mobile; ipack; ipack -dx; Remove-Item * -Recurse

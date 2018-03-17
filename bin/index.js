@@ -9,9 +9,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 const Compiler_1 = require("./Compiler");
 const Settings_1 = require("./Settings");
-const Scaffold_1 = require("./Scaffold");
 const fse = require("fs-extra");
 const upath = require("upath");
+const chalk_1 = require("chalk");
+const GlobalSettingsManager_1 = require("./GlobalSettingsManager");
+const PackageManager_1 = require("./PackageManager");
 module.exports = class instapack {
     get availableTasks() {
         return ['all', 'js', 'css', 'concat'];
@@ -25,22 +27,49 @@ module.exports = class instapack {
         });
         return templates;
     }
+    get availableSettings() {
+        return this.globalSettingsManager.availableSettings;
+    }
     constructor(projectFolder) {
         this.projectFolder = projectFolder;
         this.settings = Settings_1.Settings.tryReadFromPackageJson(projectFolder);
+        this.globalSettingsManager = new GlobalSettingsManager_1.GlobalSettingsManager();
     }
     build(taskName, flags) {
-        let compiler = new Compiler_1.Compiler(this.settings, flags);
-        let scaffold = new Scaffold_1.Scaffold();
-        if (compiler.needPackageRestore) {
-            scaffold.restorePackages();
-        }
-        compiler.build(taskName);
+        return __awaiter(this, void 0, void 0, function* () {
+            let packageManager = new PackageManager_1.PackageManager();
+            let compiler = new Compiler_1.Compiler(this.settings, flags);
+            let settings = yield this.globalSettingsManager.tryRead();
+            if (settings.integrityCheck) {
+                let packageJsonExists = yield fse.pathExists(this.settings.packageJson);
+                if (packageJsonExists) {
+                    try {
+                        yield packageManager.restore(settings.packageManager);
+                    }
+                    catch (error) {
+                        console.error(chalk_1.default.red('ERROR'), 'when restoring package:');
+                        console.error(error);
+                    }
+                }
+                else {
+                    console.warn(chalk_1.default.yellow('WARNING'), 'unable to find', chalk_1.default.cyan(this.settings.packageJson), chalk_1.default.grey('skipping package restore...'));
+                }
+            }
+            compiler.build(taskName);
+        });
     }
     scaffold(template) {
         return __awaiter(this, void 0, void 0, function* () {
-            let scaffold = new Scaffold_1.Scaffold();
-            yield scaffold.usingTemplate(template, this.projectFolder);
+            let templateFolder = upath.join(__dirname, '../templates', template);
+            let exist = yield fse.pathExists(templateFolder);
+            if (!exist) {
+                console.error(chalk_1.default.red('ERROR'), 'Unable to find new project template for:', chalk_1.default.cyan(template));
+                return;
+            }
+            console.log('Initializing new project using template:', chalk_1.default.cyan(template));
+            console.log('Scaffolding project into your web app...');
+            yield fse.copy(templateFolder, this.projectFolder);
+            console.log(chalk_1.default.green('Scaffold completed.'), 'To build the app, type:', chalk_1.default.yellow('ipack'));
         });
     }
     clean() {
@@ -54,6 +83,22 @@ module.exports = class instapack {
                 console.log('Clean successful: ' + this.settings.outputCssFolder);
             }
             catch (error) {
+                console.error(error);
+            }
+        });
+    }
+    changeGlobalSetting(key, value) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let valid = this.globalSettingsManager.validate(key, value);
+            if (!valid) {
+                console.error(chalk_1.default.red('ERROR'), 'invalid settings.');
+                return;
+            }
+            try {
+                yield this.globalSettingsManager.set(key, value);
+            }
+            catch (error) {
+                console.error('Error when saving setting:');
                 console.error(error);
             }
         });

@@ -1,7 +1,6 @@
 import * as upath from 'upath';
 import * as fse from 'fs-extra';
 import * as chalk from 'chalk';
-import * as os from 'os';
 import * as TypeScript from 'typescript';
 
 /**
@@ -121,13 +120,6 @@ export class Settings {
     */
     get jsOutVendorFileName(): string {
         return upath.removeExt(this.jsOut, '.js') + '.dll.js';
-    }
-
-    /**
-     * Cache folder path for cache-loader in user's local temp folder.
-     */
-    get cacheFolder(): string {
-        return upath.join(os.tmpdir(), 'instapack', 'cache');
     }
 
     /**

@@ -19,7 +19,11 @@
     "removeComments": true,
 
     "outDir": "bin",
-    "pretty": true
+    "pretty": true,
+
+    "lib": [
+      "es2016"
+    ]
   },
   "exclude": [
     "node_modules",

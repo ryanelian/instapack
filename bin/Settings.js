@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const upath = require("upath");
 const fse = require("fs-extra");
-const os = require("os");
 const TypeScript = require("typescript");
 class Settings {
     constructor(root, settings) {
@@ -34,9 +33,6 @@ class Settings {
     }
     get jsOutVendorFileName() {
         return upath.removeExt(this.jsOut, '.js') + '.dll.js';
-    }
-    get cacheFolder() {
-        return upath.join(os.tmpdir(), 'instapack', 'cache');
     }
     get concatCount() {
         return Object.keys(this.concat).length;

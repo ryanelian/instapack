@@ -53,14 +53,18 @@ class Compiler {
         CompilerUtilities_1.timedLog('Source Maps:', chalk_1.default.yellow(this.flags.sourceMap ? 'Enabled' : 'Disabled'));
     }
     startBackgroundTask(taskName) {
-        if (taskName === 'all') {
-            this.startBackgroundTask('js');
-            this.startBackgroundTask('css');
-            this.startBackgroundTask('concat');
-            return;
-        }
-        let valid = this.validateBackgroundTask(taskName);
-        if (valid) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (taskName === 'all') {
+                let t1 = this.startBackgroundTask('js');
+                let t2 = this.startBackgroundTask('css');
+                let t3 = this.startBackgroundTask('concat');
+                yield Promise.all([t1, t2, t3]);
+                return;
+            }
+            let valid = yield this.validateBackgroundTask(taskName);
+            if (!valid) {
+                return;
+            }
             let child = child_process_1.fork(__filename);
             child.send({
                 build: taskName,
@@ -70,38 +74,47 @@ class Compiler {
             });
             this.buildTasks.push(child);
             if (taskName === 'js') {
-                this.startBackgroundTask('type-checker');
+                yield this.startBackgroundTask('type-checker');
             }
-        }
+        });
     }
     validateBackgroundTask(taskName) {
-        switch (taskName) {
-            case 'js': {
-                let entry = this.settings.jsEntry;
-                let exist = fse.pathExistsSync(entry);
-                if (!exist) {
-                    CompilerUtilities_1.timedLog('Entry file', chalk_1.default.cyan(entry), 'was not found.', chalk_1.default.red('Aborting JS build.'));
+        return __awaiter(this, void 0, void 0, function* () {
+            switch (taskName) {
+                case 'js': {
+                    let entry = this.settings.jsEntry;
+                    let tsconfig = this.settings.tsConfigJson;
+                    let checkEntry = fse.pathExists(entry);
+                    let checkProject = fse.pathExists(tsconfig);
+                    if ((yield checkEntry) === false) {
+                        CompilerUtilities_1.timedLog('Entry file', chalk_1.default.cyan(entry), 'was not found.', chalk_1.default.red('Aborting JS build!'));
+                        return false;
+                    }
+                    if ((yield checkProject) === false) {
+                        CompilerUtilities_1.timedLog('Project file', chalk_1.default.cyan(tsconfig), 'was not found.', chalk_1.default.red('Aborting JS build!'));
+                        return false;
+                    }
+                    return true;
                 }
-                return exist;
-            }
-            case 'css': {
-                let entry = this.settings.cssEntry;
-                let exist = fse.pathExistsSync(entry);
-                if (!exist) {
-                    CompilerUtilities_1.timedLog('Entry file', chalk_1.default.cyan(entry), 'was not found.', chalk_1.default.red('Aborting CSS build.'));
+                case 'css': {
+                    let entry = this.settings.cssEntry;
+                    let exist = yield fse.pathExists(entry);
+                    if (!exist) {
+                        CompilerUtilities_1.timedLog('Entry file', chalk_1.default.cyan(entry), 'was not found.', chalk_1.default.red('Aborting CSS build!'));
+                    }
+                    return exist;
                 }
-                return exist;
+                case 'concat': {
+                    return (this.settings.concatCount > 0);
+                }
+                case 'type-checker': {
+                    return true;
+                }
+                default: {
+                    throw Error('Task `' + taskName + '` does not exists!');
+                }
             }
-            case 'concat': {
-                return (this.settings.concatCount > 0);
-            }
-            case 'type-checker': {
-                return true;
-            }
-            default: {
-                throw Error('Task `' + taskName + '` does not exists!');
-            }
-        }
+        });
     }
     killAllBuilds() {
         for (let task of this.buildTasks) {
@@ -126,6 +139,7 @@ class Compiler {
         });
     }
     build(taskName) {
+        let task;
         if (process.send === undefined) {
             if (!this._userBuildTaskParameter) {
                 this._userBuildTaskParameter = taskName;
@@ -134,10 +148,9 @@ class Compiler {
                     this.restartBuildsOnConfigurationChanges();
                 }
             }
-            this.startBackgroundTask(taskName);
+            task = this.startBackgroundTask(taskName);
         }
         else {
-            let task;
             switch (taskName) {
                 case 'js': {
                     task = this.buildJS();
@@ -159,21 +172,12 @@ class Compiler {
                     throw Error('Task `' + taskName + '` does not exists!');
                 }
             }
-            task.catch(error => {
-                console.error(chalk_1.default.red('FATAL ERROR'), 'during', taskName.toUpperCase(), 'build:');
-                console.error(error);
-                EventHub_1.default.buildDone();
-            });
         }
-    }
-    get needPackageRestore() {
-        let hasNodeModules = fse.pathExistsSync(this.settings.npmFolder);
-        let hasPackageJson = fse.pathExistsSync(this.settings.packageJson);
-        let restore = hasPackageJson && !hasNodeModules;
-        if (restore) {
-            CompilerUtilities_1.timedLog(chalk_1.default.cyan('node_modules'), 'folder not found. Performing automatic package restore...');
-        }
-        return restore;
+        task.catch(error => {
+            console.error(chalk_1.default.red('FATAL ERROR'), 'during', taskName.toUpperCase(), 'build:');
+            console.error(error);
+            EventHub_1.default.buildDone();
+        });
     }
     buildJS() {
         return __awaiter(this, void 0, void 0, function* () {

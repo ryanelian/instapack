@@ -104,7 +104,7 @@ Out of the box, these files will be used as the entry points:
 
 ## Commands
 
-You may use `instapack` or `ipack` or `ipk` to invoke the command line interface.
+You may use `instapack` or `ipack` to invoke the command line interface.
 
 ### new [template]
 
@@ -130,19 +130,25 @@ Performs compilation against selected project type. Available projects: `all`, `
 
 In addition, build flags are available:
 
-- `-w` or `--watch` enables incremental compilation on source code changes.
+- `-w` or `--watch` enables automatic incremental build on source code changes. :robot:
 
-- `-d` or `--dev` disables outputs minification for **fast build!**
+- `-d` or `--dev` disables build outputs optimization and minification for **fast build!**
 
-- `-u` or `--uncharted` disables source maps. (Slightly improves build speed)
+- `-x` or `--xdebug` disables source maps, producing undebuggable outputs. (Slightly improves build speed)
 
-- `-a` or `--analyze` generates module size report `analysis.html` next to the JS build output. For sanity, this flag will be ignored when using `-d` or `-w` flags.
+- `-a` or `--analyze` generates module size report `analysis.html` next to the TypeScript build output. For sanity, this flag will be ignored when using `-d` or `-w` flags.
 
 > You can combine multiple build flags, for example: `ipack -dw` = `dev` + `watch` mode for **massive productivity gainz!** :muscle:
 
 ### clean
 
-Remove files in the output folders.
+Remove all files in the output folders.
+
+### set <key> <value>
+
+- `package-manager` allows setting default package manager to be used for restoring and integrity-checking `node_modules` prior build. Possible values: `yarn` and `npm` 
+
+- `integrity-check` allows disabling package restore prior build. Possible values: `true` and `false`
 
 ## Configuration
 
@@ -334,8 +340,8 @@ Alternatively, you may build directly from the source code repository:
 ```powershell
 git clone https://github.com/ryanelian/instapack.git
 cd instapack
-npm link        # symlink global to local package for development
-npm run build   # alternatively, `npm install -g typescript` then `tsc`
+.\link.ps1
+.\build.ps1
 ipack --version
 ```
 

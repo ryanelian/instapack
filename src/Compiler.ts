@@ -100,30 +100,32 @@ export class Compiler {
      * Launch Node.js child process using this same Compiler module for building in separate process. 
      * @param taskName 
      */
-    private startBackgroundTask(taskName: string) {
+    private async startBackgroundTask(taskName: string) {
         if (taskName === 'all') {
-            this.startBackgroundTask('js');
-            this.startBackgroundTask('css');
-            this.startBackgroundTask('concat');
+            let t1 = this.startBackgroundTask('js');
+            let t2 = this.startBackgroundTask('css');
+            let t3 = this.startBackgroundTask('concat');
+            await Promise.all([t1, t2, t3]);
             return;
         }
 
-        let valid = this.validateBackgroundTask(taskName);
-        if (valid) {
-            // console.log(__filename);            
-            let child = fork(__filename);
-            child.send({
-                build: taskName,
-                root: this.settings.root,
-                flags: this.flags,
-                settings: this.settings.core
-            } as IBuildCommand);
+        let valid = await this.validateBackgroundTask(taskName);
+        if (!valid) {
+            return;
+        }
 
-            this.buildTasks.push(child);
+        let child = fork(__filename);
+        child.send({
+            build: taskName,
+            root: this.settings.root,
+            flags: this.flags,
+            settings: this.settings.core
+        } as IBuildCommand);
 
-            if (taskName === 'js') {
-                this.startBackgroundTask('type-checker');
-            }
+        this.buildTasks.push(child);
+
+        if (taskName === 'js') {
+            await this.startBackgroundTask('type-checker');
         }
     }
 
@@ -131,21 +133,31 @@ export class Compiler {
      * Checks whether a build task should be run.
      * @param taskName 
      */
-    private validateBackgroundTask(taskName: string) {
+    private async validateBackgroundTask(taskName: string) {
         switch (taskName) {
             case 'js': {
                 let entry = this.settings.jsEntry;
-                let exist = fse.pathExistsSync(entry);
-                if (!exist) {
-                    timedLog('Entry file', chalk.cyan(entry), 'was not found.', chalk.red('Aborting JS build.'));
+                let tsconfig = this.settings.tsConfigJson
+                let checkEntry = fse.pathExists(entry);
+                let checkProject = fse.pathExists(tsconfig);
+
+                if (await checkEntry === false) {
+                    timedLog('Entry file', chalk.cyan(entry), 'was not found.', chalk.red('Aborting JS build!'));
+                    return false;
                 }
-                return exist;
+
+                if (await checkProject === false) {
+                    timedLog('Project file', chalk.cyan(tsconfig), 'was not found.', chalk.red('Aborting JS build!'));
+                    return false;
+                }
+
+                return true;
             }
             case 'css': {
                 let entry = this.settings.cssEntry;
-                let exist = fse.pathExistsSync(entry);
+                let exist = await fse.pathExists(entry);
                 if (!exist) {
-                    timedLog('Entry file', chalk.cyan(entry), 'was not found.', chalk.red('Aborting CSS build.'));
+                    timedLog('Entry file', chalk.cyan(entry), 'was not found.', chalk.red('Aborting CSS build!'));
                 }
                 return exist;
             }
@@ -198,6 +210,8 @@ export class Compiler {
      * @param taskName 
      */
     build(taskName: string) {
+        let task: Promise<void>;
+
         if (process.send === undefined) {
             // parent
             if (!this._userBuildTaskParameter) {
@@ -208,10 +222,8 @@ export class Compiler {
                 }
             }
 
-            this.startBackgroundTask(taskName);
+            task = this.startBackgroundTask(taskName);
         } else {
-            let task: Promise<void>;
-
             // child
             switch (taskName) {
                 case 'js': {
@@ -236,27 +248,13 @@ export class Compiler {
             }
 
             // console.log(taskName);
-            task.catch(error => {
-                console.error(chalk.red('FATAL ERROR'), 'during', taskName.toUpperCase(), 'build:');
-                console.error(error);
-                hub.buildDone();
-            });
-        }
-    }
-
-    /**
-     * Returns true when package.json exists in project root folder but node_modules folder is missing.
-     */
-    get needPackageRestore() {
-        let hasNodeModules = fse.pathExistsSync(this.settings.npmFolder);
-        let hasPackageJson = fse.pathExistsSync(this.settings.packageJson);
-
-        let restore = hasPackageJson && !hasNodeModules;
-        if (restore) {
-            timedLog(chalk.cyan('node_modules'), 'folder not found. Performing automatic package restore...');
         }
 
-        return restore;
+        task.catch(error => {
+            console.error(chalk.red('FATAL ERROR'), 'during', taskName.toUpperCase(), 'build:');
+            console.error(error);
+            hub.buildDone();
+        });
     }
 
     /**

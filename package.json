@@ -4,9 +4,8 @@
   "description": "All-in-one web application client project compiler using TypeScript and Sass!",
   "main": "bin/index.js",
   "bin": {
-    "ipk": "bin/cli.js",
-    "ipack": "bin/cli.js",
-    "instapack": "bin/cli.js"
+    "ipack": "bin/ipack.js",
+    "instapack": "bin/ipack.js"
   },
   "repository": {
     "type": "git",
@@ -26,14 +25,14 @@
     "chalk": "2.3.2",
     "chokidar": "2.0.2",
     "fs-extra": "5.0.0",
-    "html-minifier": "3.5.10",
+    "html-minifier": "3.5.11",
     "loader-utils": "1.1.0",
     "node-sass": "4.8.1",
-    "postcss": "6.0.19",
+    "postcss": "6.0.20",
     "postcss-discard-comments": "4.0.0-rc.2",
     "resolve": "1.5.0",
     "source-map": "0.7.2",
-    "typescript": "2.7.2",
+    "typescript": "2.8.0-rc",
     "uglify-js": "3.3.15",
     "upath": "1.0.4",
     "vue-template-compiler": "2.5.16",

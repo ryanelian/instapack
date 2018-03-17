@@ -334,8 +334,8 @@ Alternatively, you may build directly from the source code repository:
 ```powershell
 git clone https://github.com/ryanelian/instapack.git
 cd instapack
-npm link --production   # symlink global to local package for development
-npm run build           # alternatively, `npm install -g typescript` then `tsc`
+npm link        # symlink global to local package for development
+npm run build   # alternatively, `npm install -g typescript` then `tsc`
 ipack --version
 ```
 

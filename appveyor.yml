@@ -2,17 +2,17 @@ version: 1.0.{build}
 image: Visual Studio 2017
 environment:
   NODEJS_VERSION: 8
+cache:
+    - '%APPDATA%\npm-cache'
 install:
 - ps: >-
     Install-Product node $env:NODEJS_VERSION
 
-    yarn
+    npm link
 
 build_script:
 - ps: >-
     npm run build
-    
-    npm link --production --silent
 
 test_script:
 - ps: >-
@@ -20,14 +20,14 @@ test_script:
 
     cd demo
 
-    ipack new angularjs; ipack; ipack -dx; Remove-Item * -Recurse
+    Remove-Item * -Recurse; ipack new angularjs; ipack; ipack -dx
 
-    ipack new empty; ipack; ipack -dx; Remove-Item * -Recurse
+    Remove-Item * -Recurse; ipack new empty; ipack; ipack -dx
 
-    ipack new inferno; ipack; ipack -dx; Remove-Item * -Recurse
+    Remove-Item * -Recurse; ipack new inferno; ipack; ipack -dx
 
-    ipack new react; ipack; ipack -dx; Remove-Item * -Recurse
+    Remove-Item * -Recurse; ipack new react; ipack; ipack -dx
 
-    ipack new vue; ipack; ipack -dx; Remove-Item * -Recurse
+    Remove-Item * -Recurse; ipack new vue; ipack; ipack -dx
 
-    ipack new vue-mobile; ipack; ipack -dx; Remove-Item * -Recurse
+    Remove-Item * -Recurse; ipack new vue-mobile; ipack; ipack -dx

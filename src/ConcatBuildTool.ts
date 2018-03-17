@@ -50,9 +50,9 @@ export class ConcatBuildTool {
      * Attempts to asynchronously resolve a module using node resolution logic, relative to project folder path.
      * @param request 
      */
-    resolveAsPromise(request: string) {
+    resolve(request: string) {
         return new Promise<string>((ok, reject) => {
-            resolver.resolve({}, this.settings.root, request, {}, (error, result) => {
+            resolver.resolve({}, this.settings.root, request, {}, (error: Error, result: string) => {
                 if (error) {
                     reject(error);
                 } else {
@@ -68,7 +68,7 @@ export class ConcatBuildTool {
      * @param paths 
      */
     async resolveThenReadFiles(paths: string[]) {
-        let p1 = paths.map(Q => this.resolveAsPromise(Q));
+        let p1 = paths.map(Q => this.resolve(Q));
         let resolutions = await Promise.all(p1);
         let p2 = resolutions.map(Q => fse.readFile(Q, 'utf8'));
         let contents = await Promise.all(p2);

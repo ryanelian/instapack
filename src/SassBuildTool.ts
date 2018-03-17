@@ -7,12 +7,19 @@ import * as postcss from 'postcss';
 import * as autoprefixer from 'autoprefixer';
 import * as discardComments from 'postcss-discard-comments';
 import { RawSourceMap } from 'source-map';
+import { NodeJsInputFileSystem, ResolverFactory } from 'enhanced-resolve';
 
 import hub from './EventHub';
 import { Settings } from './Settings';
 import { ICompilerFlags, logAndWriteUtf8FileAsync, timedLog } from './CompilerUtilities';
 import { prettyHrTime } from './PrettyUnits';
 import { prettyError } from './PrettyObject';
+
+let resolver = ResolverFactory.createResolver({
+    fileSystem: new NodeJsInputFileSystem(),
+    extensions: ['.scss', '.css'],
+    mainFields: ['sass', 'style']
+});
 
 /**
  * Contains methods for compiling a Sass project.
@@ -70,6 +77,98 @@ export class SassBuildTool {
     }
 
     /**
+     * Resolves an Sass module import as a Promise.
+     * @param lookupStartPath 
+     * @param request 
+     */
+    resolve(lookupStartPath: string, request: string) {
+        return new Promise<string>((ok, reject) => {
+            resolver.resolve({}, lookupStartPath, request, {}, (error: Error, result: string) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    ok(result);
+                }
+            });
+        });
+    }
+
+    /**
+     * Implements a smarter Sass @import logic.
+     * In addition to the default behavior and node_modules homing behavior, 
+     * this new method looks into index file in relative folder and package.json for sass and style fields. 
+     * @param lookupStartPath 
+     * @param request 
+     */
+    async sassImport(lookupStartPath: string, request: string) {
+        // https://github.com/ryanelian/instapack/issues/99
+
+        // @import "@ryan/something"
+        // E:/VS/MyProject/client/css/index.scss
+
+        let lookupStartDir = upath.dirname(lookupStartPath);    // E:/VS/MyProject/cient/css/
+        let requestFileName = upath.basename(request);          // something
+        let requestDir = upath.dirname(request);                // @ryan/
+        let scss = upath.extname(request) === '.scss';
+
+        let relativeLookupDir = upath.join(lookupStartDir, requestDir); // E:/VS/MyProject/cient/css/@ryan/
+
+        // 2: E:/VS/MyProject/client/css/@ryan/something.scss
+        {
+            let relativeScssFileName = upath.addExt(requestFileName, '.scss');
+            let relativeScssPath = upath.resolve(relativeLookupDir, relativeScssFileName);
+
+            if (await fse.pathExists(relativeScssPath)) {
+                return relativeScssPath;
+            }
+        }
+
+        // 3: E:/VS/MyProject/client/css/@ryan/_something.scss
+        if (!requestFileName.startsWith('_')) {
+            let partialFileName = '_' + upath.addExt(requestFileName, '.scss');
+            let partialPath = upath.resolve(relativeLookupDir, partialFileName);
+
+            if (await fse.pathExists(partialPath)) {
+                return partialPath;
+            }
+        }
+
+        if (!scss) {
+            // 4: E:/VS/MyProject/client/css/@ryan/something.css
+            {
+                let relativeCssFileName = upath.addExt(requestFileName, '.css');
+                let relativeCssPath = upath.resolve(relativeLookupDir, relativeCssFileName);
+
+                if (await fse.pathExists(relativeCssPath)) {
+                    return relativeCssPath;
+                }
+            }
+
+            let indexDir = upath.join(lookupStartDir, request);
+            // 5: E:/VS/MyProject/client/css/@ryan/something/index.scss
+            {
+                let indexScssPath = upath.resolve(indexDir, 'index.scss');
+                if (await fse.pathExists(indexScssPath)) {
+                    return indexScssPath;
+                }
+            }
+            // 6: E:/VS/MyProject/client/css/@ryan/something/index.css
+            {
+                let indexCssPath = upath.resolve(indexDir, 'index.css');
+                if (await fse.pathExists(indexCssPath)) {
+                    return indexCssPath;
+                }
+            }
+        }
+
+        // 7: E:/VS/MyProject/node_modules/@ryan/something.scss
+        // 7: E:/VS/MyProject/node_modules/@ryan/something.css
+        // 7: E:/VS/MyProject/node_modules/@ryan/something/package.json:sass
+        // 7: E:/VS/MyProject/node_modules/@ryan/something/package.json:style
+        return await this.resolve(lookupStartPath, request);
+    }
+
+    /**
      * Builds CSS project asynchronously.
      */
     async build() {
@@ -80,12 +179,22 @@ export class SassBuildTool {
             file: cssInput,
             outFile: cssOutput,
             data: await fse.readFile(cssInput, 'utf8'),
-            includePaths: [this.settings.npmFolder],
 
             outputStyle: (this.flags.production ? 'compressed' : 'expanded'),
             sourceMap: this.flags.sourceMap,
             sourceMapEmbed: this.flags.sourceMap,
             sourceMapContents: this.flags.sourceMap,
+
+            importer: (request, lookupStartPath, done) => {
+                this.sassImport(lookupStartPath, request).then(result => {
+                    // console.log(lookupStartPath, '+', request, '=', result);
+                    done({
+                        file: result
+                    });
+                }).catch(error => {
+                    done(error);
+                });
+            }
         };
 
         let sassResult = await this.compileSassAsync(sassOptions);

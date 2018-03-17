@@ -16,10 +16,16 @@ const sass = require("node-sass");
 const postcss = require("postcss");
 const autoprefixer = require("autoprefixer");
 const discardComments = require("postcss-discard-comments");
+const enhanced_resolve_1 = require("enhanced-resolve");
 const EventHub_1 = require("./EventHub");
 const CompilerUtilities_1 = require("./CompilerUtilities");
 const PrettyUnits_1 = require("./PrettyUnits");
 const PrettyObject_1 = require("./PrettyObject");
+let resolver = enhanced_resolve_1.ResolverFactory.createResolver({
+    fileSystem: new enhanced_resolve_1.NodeJsInputFileSystem(),
+    extensions: ['.scss', '.css'],
+    mainFields: ['sass', 'style']
+});
 class SassBuildTool {
     constructor(settings, flags) {
         this.settings = settings;
@@ -45,6 +51,64 @@ class SassBuildTool {
             return '/' + upath.relative(this.settings.root, absolute);
         });
     }
+    resolve(lookupStartPath, request) {
+        return new Promise((ok, reject) => {
+            resolver.resolve({}, lookupStartPath, request, {}, (error, result) => {
+                if (error) {
+                    reject(error);
+                }
+                else {
+                    ok(result);
+                }
+            });
+        });
+    }
+    sassImport(lookupStartPath, request) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let lookupStartDir = upath.dirname(lookupStartPath);
+            let requestFileName = upath.basename(request);
+            let requestDir = upath.dirname(request);
+            let scss = upath.extname(request) === '.scss';
+            let relativeLookupDir = upath.join(lookupStartDir, requestDir);
+            {
+                let relativeScssFileName = upath.addExt(requestFileName, '.scss');
+                let relativeScssPath = upath.resolve(relativeLookupDir, relativeScssFileName);
+                if (yield fse.pathExists(relativeScssPath)) {
+                    return relativeScssPath;
+                }
+            }
+            if (!requestFileName.startsWith('_')) {
+                let partialFileName = '_' + upath.addExt(requestFileName, '.scss');
+                let partialPath = upath.resolve(relativeLookupDir, partialFileName);
+                if (yield fse.pathExists(partialPath)) {
+                    return partialPath;
+                }
+            }
+            if (!scss) {
+                {
+                    let relativeCssFileName = upath.addExt(requestFileName, '.css');
+                    let relativeCssPath = upath.resolve(relativeLookupDir, relativeCssFileName);
+                    if (yield fse.pathExists(relativeCssPath)) {
+                        return relativeCssPath;
+                    }
+                }
+                let indexDir = upath.join(lookupStartDir, request);
+                {
+                    let indexScssPath = upath.resolve(indexDir, 'index.scss');
+                    if (yield fse.pathExists(indexScssPath)) {
+                        return indexScssPath;
+                    }
+                }
+                {
+                    let indexCssPath = upath.resolve(indexDir, 'index.css');
+                    if (yield fse.pathExists(indexCssPath)) {
+                        return indexCssPath;
+                    }
+                }
+            }
+            return yield this.resolve(lookupStartPath, request);
+        });
+    }
     build() {
         return __awaiter(this, void 0, void 0, function* () {
             let cssInput = this.settings.cssEntry;
@@ -53,11 +117,19 @@ class SassBuildTool {
                 file: cssInput,
                 outFile: cssOutput,
                 data: yield fse.readFile(cssInput, 'utf8'),
-                includePaths: [this.settings.npmFolder],
                 outputStyle: (this.flags.production ? 'compressed' : 'expanded'),
                 sourceMap: this.flags.sourceMap,
                 sourceMapEmbed: this.flags.sourceMap,
                 sourceMapContents: this.flags.sourceMap,
+                importer: (request, lookupStartPath, done) => {
+                    this.sassImport(lookupStartPath, request).then(result => {
+                        done({
+                            file: result
+                        });
+                    }).catch(error => {
+                        done(error);
+                    });
+                }
             };
             let sassResult = yield this.compileSassAsync(sassOptions);
             let plugins = [autoprefixer];

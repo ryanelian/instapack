@@ -25,7 +25,7 @@ class ConcatBuildTool {
         this.settings = settings;
         this.flags = flags;
     }
-    resolveAsPromise(request) {
+    resolve(request) {
         return new Promise((ok, reject) => {
             resolver.resolve({}, this.settings.root, request, {}, (error, result) => {
                 if (error) {
@@ -39,7 +39,7 @@ class ConcatBuildTool {
     }
     resolveThenReadFiles(paths) {
         return __awaiter(this, void 0, void 0, function* () {
-            let p1 = paths.map(Q => this.resolveAsPromise(Q));
+            let p1 = paths.map(Q => this.resolve(Q));
             let resolutions = yield Promise.all(p1);
             let p2 = resolutions.map(Q => fse.readFile(Q, 'utf8'));
             let contents = yield Promise.all(p2);

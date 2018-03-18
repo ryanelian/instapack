@@ -325,6 +325,14 @@ export class MyComponent extends Vue {
 
 > [A global TypeScript definition file for `*.vue.html` module](https://github.com/ryanelian/instapack/blob/master/templates/vue/client/js/template.d.ts) is required for importing a template using ES Module syntax. That file will be created for you when using the `vue` new project template!
 
+- Sass also has a customized but standard-compliant module system using `@import` syntax:
+
+  - Include files relative to the source, which include _partial.scss files. (Standard Sass behavior)
+
+  - Include files relative to the source in a named folder, but as `index.scss` or `index.css`.
+
+  - Include files, resolved from `node_modules`. Reads `package.json` to locate the file in `sass` or `style` field.
+
 ## Release Cadence
 
 Starting version 4.0.0, instapack follows [Semantic Versioning](http://semver.org/).

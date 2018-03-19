@@ -25,7 +25,7 @@
     "chalk": "2.3.2",
     "chokidar": "2.0.2",
     "fs-extra": "5.0.0",
-    "html-minifier": "3.5.11",
+    "html-minifier": "3.5.12",
     "loader-utils": "1.1.0",
     "node-sass": "4.8.1",
     "postcss": "6.0.20",

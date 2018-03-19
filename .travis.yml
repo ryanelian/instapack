@@ -21,7 +21,7 @@ after_script: greenkeeper-lockfile-upload
 install:
 - npm link --loglevel error
 - rm package-lock.json
-- yarn install --frozen-lockfile
+- yarn install
 script:
 - npm run build
 - mkdir demo

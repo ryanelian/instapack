@@ -331,13 +331,15 @@ export class MyComponent extends Vue {
 
 ### Sass @import
 
-instapack also has a custom-made but standard-compliant Sass module system using `@import` syntax:
+instapack also has a custom-made Node-like but standard-compliant Sass module system using `@import` syntax:
 
 - Include files relative to the source, which include _partial.scss files. (Standard Sass behavior)
 
-- Include files relative to the source in a named folder, but as `index.scss` or `index.css`.
+- Include files relative to the source in a named folder, but as `index.scss` or `index.css`
 
-- Include files, resolved from `node_modules`. Reads `package.json` to locate the file in `sass` or `style` field.
+- Include files, resolved from `node_modules`
+
+  - Also reads `package.json` to locate the file in `sass` or `style` field!
 
 > Unlike Sass which ignores `@import` of files explicitly named with `.css` extension (which often caused confusion), instapack will pick up those files!
 

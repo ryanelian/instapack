@@ -291,7 +291,7 @@ import List from 'linq';
 
 ### CommonJS / Node.js require
 
-- Easily import normal / legacy / older JavaScript modules within the project or from `node_modules`. However, **you will NOT get intellisense!** (Modules will be imported as `any` data type.)
+- Easily import normal / older / legacy JavaScript modules within the project or from `node_modules`. However, **you will NOT get intellisense!** (Modules will be imported as `any` data type.)
 
 ```js
 let $ = require('jquery');
@@ -303,7 +303,7 @@ let $ = require('jquery');
 let template = require('./mytemplate.html') as string;
 ```
 
-- Import a static JSON file content as a JavaScript module object.
+- Import a static JSON file content as a JavaScript object.
 
 ```ts
 let something = require('./something.json') as ISomething;
@@ -311,7 +311,7 @@ let something = require('./something.json') as ISomething;
 
 > CommonJS `require` method in TypeScript is provided through `@types/requirejs` package. Use `as` type-hint for clarity and convenience.
 
-### Vue HTML Templates via ES Modules
+### Vue Pre-Compiled HTML Templates
 
 In pursuit of greater app performance, instapack allows Ahead-of-Time (AoT) compilation of HTML templates using Vue.js render syntax. HTML files with special file extension `.vue.html` will be compiled into an object to be passed into Vue Component decorator as parameters:
 
@@ -327,7 +327,7 @@ export class MyComponent extends Vue {
 }
 ```
 
-> [A global TypeScript definition file for `*.vue.html` module](https://github.com/ryanelian/instapack/blob/master/templates/vue/client/js/template.d.ts) is required for importing a template using ES Module syntax. That file will be created for you when using the `vue` new project template!
+> [A global TypeScript definition file for `*.vue.html` module](https://github.com/ryanelian/instapack/blob/master/templates/vue/client/js/template.d.ts) is required for importing a template using ES Modules syntax. That file will be created for you when using the `vue` new project template!
 
 ### Sass @import
 

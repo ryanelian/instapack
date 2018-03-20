@@ -275,7 +275,7 @@ so [CDN](https://en.wikipedia.org/wiki/Content_delivery_network) can be used! :t
 
 ## Module Systems
 
-### ES / TypeScript Modules
+### TypeScript / ES Modules
 
 [Import and export](https://www.typescriptlang.org/docs/handbook/modules.html) other `.ts` / `.tsx` files in the project or normal JavaScript modules from `node_modules`. This technique allows the ease of development using intellisense for modules with type definitions:
 

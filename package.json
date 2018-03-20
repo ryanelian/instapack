@@ -30,7 +30,7 @@
     "node-sass": "4.8.1",
     "postcss": "6.0.20",
     "postcss-discard-comments": "4.0.0-rc.2",
-    "resolve": "1.5.0",
+    "resolve": "1.6.0",
     "source-map": "0.7.2",
     "typescript": "2.8.0-rc",
     "uglify-js": "3.3.15",

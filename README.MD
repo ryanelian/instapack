@@ -297,7 +297,7 @@ import List from 'linq';
 let $ = require('jquery');
 ```
 
-- Import `.html` file to be minified and then stringified. This technique is handy for working with frameworks relying on HTML-based templates such as AngularJS, mustache.js, Handlebars.js, Ember.js, and Vue.js:
+- Import a `.html` file to be minified and then stringified. This technique is handy for working with frameworks relying on HTML-based templates such as AngularJS, mustache.js / Handlebars.js, and Vue.js:
 
 ```ts
 let template = require('./mytemplate.html') as string;
@@ -309,7 +309,7 @@ let template = require('./mytemplate.html') as string;
 let something = require('./something.json') as ISomething;
 ```
 
-> CommonJS `require` method in TypeScript is provided through `@types/requirejs` package. Use `as` type-hint for brevity and convenience.
+> CommonJS `require` method in TypeScript is provided through `@types/requirejs` package. Use `as` type-hint for clarity and convenience.
 
 ### Vue HTML Templates via ES Modules
 
@@ -331,13 +331,15 @@ export class MyComponent extends Vue {
 
 ### Sass @import
 
-Sass also has a customized but standard-compliant module system using `@import` syntax:
+instapack also has a custom-made but standard-compliant Sass module system using `@import` syntax:
 
 - Include files relative to the source, which include _partial.scss files. (Standard Sass behavior)
 
 - Include files relative to the source in a named folder, but as `index.scss` or `index.css`.
 
 - Include files, resolved from `node_modules`. Reads `package.json` to locate the file in `sass` or `style` field.
+
+> Unlike Sass which ignores `@import` of files explicitly named with `.css` extension (which often caused confusion), instapack will pick up those files!
 
 ## Release Cadence
 

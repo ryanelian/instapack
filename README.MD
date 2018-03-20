@@ -275,41 +275,45 @@ so [CDN](https://en.wikipedia.org/wiki/Content_delivery_network) can be used! :t
 
 ## Module Systems
 
-- Use [ES Harmony module syntax](https://www.typescriptlang.org/docs/handbook/modules.html) to import and export other `.ts` / `.tsx` files in the project or JavaScript modules from `node_modules` installed via `npm` or `yarn`. This technique allows the ease of development using intellisense for modules with type definitions:
+### ES / TypeScript Modules
 
-  - The module has `"typings": "something.d.ts"` in its `package.json`. For example: `vue`, `linq`
+[Import and export](https://www.typescriptlang.org/docs/handbook/modules.html) other `.ts` / `.tsx` files in the project or normal JavaScript modules from `node_modules`. This technique allows the ease of development using intellisense for modules with type definitions:
 
-  - The module has [@types](https://microsoft.github.io/TypeSearch/) installed. For example, `react` and `@types/react`
+- The module has `"typings": "something.d.ts"` in its `package.json`. For example: `vue`, `linq`
+
+- The module has [@types](https://microsoft.github.io/TypeSearch/) installed. For example, `react` and `@types/react`
 
 ```ts
 import List from 'linq';
 ```
 
-- You may also use CommonJS module syntax to import JavaScript modules from `node_modules` installed via `npm`, but **you will NOT get intellisense** (module will be imported as `any` data type).
+> When the imported module does not have any type definitions, it will be imported as `any` data type (no intellisense).
+
+### CommonJS / Node.js require
+
+- Easily import normal / legacy / older JavaScript modules within the project or from `node_modules`. However, **you will NOT get intellisense!** (Modules will be imported as `any` data type.)
 
 ```js
 let $ = require('jquery');
 ```
 
-- Use CommonJS module syntax to import non-TypeScript modules (files with `.js` extension). This technique is **NOT recommended** but allows interoperability between the TypeScript project and older codes written in plain JavaScript:
-
-```js
-require('./something');
-```
-
-- Use CommonJS syntax to easily import an HTML template as a simple string (type-hinted). This technique allows working with libraries or frameworks relying on HTML-based templates such as AngularJS, mustache.js, Handlebars.js, Ember.js, and Vue.js. The input file will be minified and then stringified.
+- Import `.html` file to be minified and then stringified. This technique is handy for working with frameworks relying on HTML-based templates such as AngularJS, mustache.js, Handlebars.js, Ember.js, and Vue.js:
 
 ```ts
 let template = require('./mytemplate.html') as string;
 ```
 
-- Use CommonJS syntax to import a static JSON file content as a JavaScript module object. This import can be type-hinted for convenience.
+- Import a static JSON file content as a JavaScript module object.
 
 ```ts
-let something = require('./something.json') as Something;
+let something = require('./something.json') as ISomething;
 ```
 
-- In pursuit of greater app performance, instapack allows Ahead-of-Time (AoT) compilation of HTML templates using Vue.js render syntax. HTML files with special file extension `.vue.html` will be compiled into an object to be passed into Vue Component decorator as parameters:
+> CommonJS `require` method in TypeScript is provided through `@types/requirejs` package. Use `as` type-hint for brevity and convenience.
+
+### Vue HTML Templates via ES Modules
+
+In pursuit of greater app performance, instapack allows Ahead-of-Time (AoT) compilation of HTML templates using Vue.js render syntax. HTML files with special file extension `.vue.html` will be compiled into an object to be passed into Vue Component decorator as parameters:
 
 ```ts
 import Vue from 'vue';
@@ -325,13 +329,15 @@ export class MyComponent extends Vue {
 
 > [A global TypeScript definition file for `*.vue.html` module](https://github.com/ryanelian/instapack/blob/master/templates/vue/client/js/template.d.ts) is required for importing a template using ES Module syntax. That file will be created for you when using the `vue` new project template!
 
-- Sass also has a customized but standard-compliant module system using `@import` syntax:
+### Sass @import
 
-  - Include files relative to the source, which include _partial.scss files. (Standard Sass behavior)
+Sass also has a customized but standard-compliant module system using `@import` syntax:
 
-  - Include files relative to the source in a named folder, but as `index.scss` or `index.css`.
+- Include files relative to the source, which include _partial.scss files. (Standard Sass behavior)
 
-  - Include files, resolved from `node_modules`. Reads `package.json` to locate the file in `sass` or `style` field.
+- Include files relative to the source in a named folder, but as `index.scss` or `index.css`.
+
+- Include files, resolved from `node_modules`. Reads `package.json` to locate the file in `sass` or `style` field.
 
 ## Release Cadence
 

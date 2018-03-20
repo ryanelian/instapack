@@ -94,7 +94,7 @@
     }
 }
 
-export let ValidationMessageComponent: angular.IComponentOptions = {
+export let ValidationMessage: angular.IComponentOptions = {
     template: require('./ValidationMessage.html') as string,
     bindings: {
         input: '<for',

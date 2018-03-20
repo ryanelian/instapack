@@ -81,7 +81,7 @@ export class SassBuildTool {
      * @param lookupStartPath 
      * @param request 
      */
-    resolve(lookupStartPath: string, request: string) {
+    resolveAsync(lookupStartPath: string, request: string) {
         return new Promise<string>((ok, reject) => {
             resolver.resolve({}, lookupStartPath, request, {}, (error: Error, result: string) => {
                 if (error) {
@@ -113,7 +113,7 @@ export class SassBuildTool {
         let isRelative = request.startsWith('./') || request.startsWith('../');
         if (!isRelative) {
             try {
-                return await this.resolve(lookupStartPath, './' + request);
+                return await this.resolveAsync(lookupStartPath, './' + request);
             } catch (error) {
             }
         }
@@ -134,7 +134,7 @@ export class SassBuildTool {
         // 7: E:/VS/MyProject/node_modules/@ryan/something.scss (Custom)
         // 9: E:/VS/MyProject/node_modules/@ryan/something.css (Custom)
         // 10: E:/VS/MyProject/node_modules/@ryan/something/package.json (Custom)
-        return await this.resolve(lookupStartPath, request);
+        return await this.resolveAsync(lookupStartPath, request);
 
         // 8 WILL NOT WORK: E:/VS/MyProject/node_modules/@ryan/_something.scss (Custom)
         // @import against partial files in node_modules must be explicit to prevent confusion!
@@ -171,26 +171,7 @@ export class SassBuildTool {
         };
 
         let sassResult = await this.compileSassAsync(sassOptions);
-
-        let plugins: any[] = [autoprefixer];
-        if (this.flags.production) {
-            plugins.push(discardComments({
-                removeAll: true
-            }));
-        }
-
-        let postCssSourceMapOption: postcss.SourceMapOptions = null;
-        if (this.flags.sourceMap) {
-            postCssSourceMapOption = {
-                inline: false
-            };
-        }
-
-        let cssResult = await postcss(plugins).process(sassResult.css, {
-            from: cssOutput,
-            to: cssOutput,
-            map: postCssSourceMapOption
-        });
+        let cssResult = await postcss(this.postcssPlugins).process(sassResult.css, this.postcssOptions);
 
         let t1 = logAndWriteUtf8FileAsync(cssOutput, cssResult.css);
         if (cssResult.map) {
@@ -200,6 +181,40 @@ export class SassBuildTool {
             await logAndWriteUtf8FileAsync(cssOutput + '.map', JSON.stringify(sm));
         }
         await t1;
+    }
+
+    /**
+     * Gets the PostCSS plugins to be used.
+     */
+    get postcssPlugins() {
+        let plugins: any[] = [autoprefixer];
+        if (this.flags.production) {
+            plugins.push(discardComments({
+                removeAll: true
+            }));
+        }
+
+        return plugins;
+    }
+
+    /**
+     * Gets the appropriate PostCSS options using project settings and build flags.
+     */
+    get postcssOptions() {
+        let cssOutput = this.settings.outputCssFile;
+
+        let options: postcss.ProcessOptions = {
+            from: cssOutput,
+            to: cssOutput
+        };
+
+        if (this.flags.sourceMap) {
+            options.map = {
+                inline: false
+            };
+        }
+
+        return options;
     }
 
     /**

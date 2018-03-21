@@ -164,12 +164,19 @@ export class TypeScriptCheckerTool {
     /**
      * Performs full static check (semantic and syntactic diagnostics) against the TypeScript project using the project entry file.
      */
-    typeCheck() {
-        for (let file of this.includeFiles) {
-            if (!fse.pathExistsSync(file)) {
-                console.error(chalk.red('FATAL ERROR') + ' during type-check, included file not found: ' + chalk.grey(file));
-                return;
-            }
+    async typeCheck() {
+        try {
+            let checks = Array.from(this.includeFiles).map(file => {
+                return fse.pathExists(file).then(exist => {
+                    if (!exist) {
+                        console.error(chalk.red('FATAL ERROR') + ' during type-check, included file not found: ' + chalk.grey(file));
+                        throw new Error('File not found: ' + file);
+                    }
+                });
+            });
+            await Promise.all(checks);
+        } catch {
+            return;
         }
 
         let tsc = TypeScript.createProgram(Array.from(this.includeFiles), this.compilerOptions, this.host);

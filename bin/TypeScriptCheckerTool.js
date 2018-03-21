@@ -1,4 +1,12 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const TypeScript = require("typescript");
 const chalk_1 = require("chalk");
@@ -59,41 +67,51 @@ class TypeScriptCheckerTool {
         return hash.digest('hex');
     }
     typeCheck() {
-        for (let file of this.includeFiles) {
-            if (!fse.pathExistsSync(file)) {
-                console.error(chalk_1.default.red('FATAL ERROR') + ' during type-check, included file not found: ' + chalk_1.default.grey(file));
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                let checks = Array.from(this.includeFiles).map(file => {
+                    return fse.pathExists(file).then(exist => {
+                        if (!exist) {
+                            console.error(chalk_1.default.red('FATAL ERROR') + ' during type-check, included file not found: ' + chalk_1.default.grey(file));
+                            throw new Error('File not found: ' + file);
+                        }
+                    });
+                });
+                yield Promise.all(checks);
+            }
+            catch (_a) {
                 return;
             }
-        }
-        let tsc = TypeScript.createProgram(Array.from(this.includeFiles), this.compilerOptions, this.host);
-        CompilerUtilities_1.timedLog('Type-checking using TypeScript', chalk_1.default.yellow(TypeScript.version));
-        let start = process.hrtime();
-        try {
-            let errors = [];
-            for (let source of tsc.getSourceFiles()) {
-                if (source.fileName.endsWith('.d.ts')) {
-                    continue;
+            let tsc = TypeScript.createProgram(Array.from(this.includeFiles), this.compilerOptions, this.host);
+            CompilerUtilities_1.timedLog('Type-checking using TypeScript', chalk_1.default.yellow(TypeScript.version));
+            let start = process.hrtime();
+            try {
+                let errors = [];
+                for (let source of tsc.getSourceFiles()) {
+                    if (source.fileName.endsWith('.d.ts')) {
+                        continue;
+                    }
+                    let diagnostics = tsc.getSemanticDiagnostics(source)
+                        .concat(tsc.getSyntacticDiagnostics(source));
+                    let newErrors = this.renderDiagnostics(diagnostics);
+                    for (let error of newErrors) {
+                        errors.push(error);
+                    }
                 }
-                let diagnostics = tsc.getSemanticDiagnostics(source)
-                    .concat(tsc.getSyntacticDiagnostics(source));
-                let newErrors = this.renderDiagnostics(diagnostics);
-                for (let error of newErrors) {
-                    errors.push(error);
+                if (!errors.length) {
+                    console.log(chalk_1.default.green('Types OK') + chalk_1.default.grey(': Successfully checked TypeScript project without errors.'));
+                }
+                else {
+                    let errorsOut = '\n' + errors.join('\n\n') + '\n';
+                    console.error(errorsOut);
                 }
             }
-            if (!errors.length) {
-                console.log(chalk_1.default.green('Types OK') + chalk_1.default.grey(': Successfully checked TypeScript project without errors.'));
+            finally {
+                let time = PrettyUnits_1.prettyHrTime(process.hrtime(start));
+                CompilerUtilities_1.timedLog('Finished type-checking after', chalk_1.default.green(time));
+                EventHub_1.default.buildDone();
             }
-            else {
-                let errorsOut = '\n' + errors.join('\n\n') + '\n';
-                console.error(errorsOut);
-            }
-        }
-        finally {
-            let time = PrettyUnits_1.prettyHrTime(process.hrtime(start));
-            CompilerUtilities_1.timedLog('Finished type-checking after', chalk_1.default.green(time));
-            EventHub_1.default.buildDone();
-        }
+        });
     }
     renderDiagnostics(diagnostics) {
         let errors = diagnostics.map(diagnostic => {

@@ -107,12 +107,14 @@ class ConcatBuildTool {
             if (o.endsWith('.js') === false) {
                 o += '.js';
             }
-            fse.removeSync(upath.join(this.settings.outputJsFolder, o + '.map'));
-            let task = this.concatTarget(o, modules).catch(error => {
+            let t1 = this.concatTarget(o, modules).catch(error => {
                 console.error(chalk_1.default.red('ERROR'), 'when concatenating', chalk_1.default.blue(o));
                 console.error(error);
-            }).then(() => { });
-            tasks.push(task);
+            });
+            let sourceMapPath = upath.join(this.settings.outputJsFolder, o + '.map');
+            let t2 = fse.remove(sourceMapPath);
+            tasks.push(t1);
+            tasks.push(t2);
         }
         return Promise.all(tasks);
     }

@@ -153,8 +153,7 @@ export class GlobalSettingsManager {
         let realValue = this.settingMappers[key].valueTransformer(value);
         settings[realKey] = realValue;
 
-        await fse.ensureFile(file);
-        await fse.writeJson(file, settings);
+        await fse.outputJson(file, settings);
         console.log('Successfully saved the new setting!');
     }
 }

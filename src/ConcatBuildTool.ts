@@ -157,13 +157,16 @@ export class ConcatBuildTool {
                 o += '.js';
             }
 
-            fse.removeSync(upath.join(this.settings.outputJsFolder, o + '.map'));
-            let task = this.concatTarget(o, modules).catch(error => {
+            let t1 = this.concatTarget(o, modules).catch(error => {
                 console.error(chalk.red('ERROR'), 'when concatenating', chalk.blue(o));
                 console.error(error);
-            }).then(/* finally: Promise will never throw any errors! */() => { });
+            });
 
-            tasks.push(task);
+            let sourceMapPath = upath.join(this.settings.outputJsFolder, o + '.map');
+            let t2 = fse.remove(sourceMapPath);
+
+            tasks.push(t1);
+            tasks.push(t2);
         }
 
         return Promise.all(tasks);

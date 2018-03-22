@@ -1,14 +1,13 @@
 ﻿import angular from 'angular';
-
-// angular-animate and angular-touch is required by Angular UI Bootstrap.
-// angular-messages is required by Validation Message component.
 import animate from 'angular-animate';
 import touch from 'angular-touch';
 import messages from 'angular-messages';
 import uib from 'angular-ui-bootstrap';
+// angular-animate and angular-touch are required by Angular UI Bootstrap.
+// angular-messages is required by the Validation Message component.
 
-import * as Components from './components';
-import * as Services from './services';
+import { ValidationMessage } from './components/ValidationMessage';
+import { SampleService } from './services/SampleService';
 
 let app = angular.module('aspnet', [uib, animate, touch, messages]);
 
@@ -17,4 +16,5 @@ app.run(['$q', ($q: angular.IQService) => {
     window['Promise'] = $q;
 }]);
 
-app.component('validationMessage', Components.ValidationMessageComponent);
+app.component('validationMessage', ValidationMessage);
+app.service('sampleService', SampleService);

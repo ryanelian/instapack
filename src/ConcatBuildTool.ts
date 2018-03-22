@@ -1,13 +1,18 @@
 import * as fse from 'fs-extra';
 import * as upath from 'upath';
 import chalk from 'chalk';
-import * as resolve from 'resolve';
+import { NodeJsInputFileSystem, ResolverFactory } from 'enhanced-resolve';
 let Uglify = require('uglify-js');
 
 import hub from './EventHub';
 import { Settings } from './Settings';
 import { ICompilerFlags, logAndWriteUtf8FileAsync, timedLog } from './CompilerUtilities';
 import { prettyHrTime } from './PrettyUnits';
+
+let resolver = ResolverFactory.createResolver({
+    fileSystem: new NodeJsInputFileSystem(),
+    extensions: ['.js']
+});
 
 /**
  * A simple key-value pair for UglifyES code input.
@@ -43,16 +48,15 @@ export class ConcatBuildTool {
 
     /**
      * Attempts to asynchronously resolve a module using node resolution logic, relative to project folder path.
-     * @param path 
+     * @param request 
      */
-    resolveAsPromise(path: string) {
+    resolve(request: string) {
         return new Promise<string>((ok, reject) => {
-            resolve(path, {
-                basedir: this.settings.root
-            }, (error, result) => {
+            resolver.resolve({}, this.settings.root, request, {}, (error: Error, result: string) => {
                 if (error) {
                     reject(error);
                 } else {
+                    // console.log(this.settings.root, '+', request, '=', result);
                     ok(result);
                 }
             });
@@ -64,7 +68,7 @@ export class ConcatBuildTool {
      * @param paths 
      */
     async resolveThenReadFiles(paths: string[]) {
-        let p1 = paths.map(Q => this.resolveAsPromise(Q));
+        let p1 = paths.map(Q => this.resolve(Q));
         let resolutions = await Promise.all(p1);
         let p2 = resolutions.map(Q => fse.readFile(Q, 'utf8'));
         let contents = await Promise.all(p2);
@@ -153,13 +157,16 @@ export class ConcatBuildTool {
                 o += '.js';
             }
 
-            fse.removeSync(upath.join(this.settings.outputJsFolder, o + '.map'));
-            let task = this.concatTarget(o, modules).catch(error => {
+            let t1 = this.concatTarget(o, modules).catch(error => {
                 console.error(chalk.red('ERROR'), 'when concatenating', chalk.blue(o));
                 console.error(error);
-            }).then(/* finally: Promise will never throw any errors! */() => { });
+            });
 
-            tasks.push(task);
+            let sourceMapPath = upath.join(this.settings.outputJsFolder, o + '.map');
+            let t2 = fse.remove(sourceMapPath);
+
+            tasks.push(t1);
+            tasks.push(t2);
         }
 
         return Promise.all(tasks);

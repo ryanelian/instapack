@@ -11,21 +11,23 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const fse = require("fs-extra");
 const upath = require("upath");
 const chalk_1 = require("chalk");
-const resolve = require("resolve");
+const enhanced_resolve_1 = require("enhanced-resolve");
 let Uglify = require('uglify-js');
 const EventHub_1 = require("./EventHub");
 const CompilerUtilities_1 = require("./CompilerUtilities");
 const PrettyUnits_1 = require("./PrettyUnits");
+let resolver = enhanced_resolve_1.ResolverFactory.createResolver({
+    fileSystem: new enhanced_resolve_1.NodeJsInputFileSystem(),
+    extensions: ['.js']
+});
 class ConcatBuildTool {
     constructor(settings, flags) {
         this.settings = settings;
         this.flags = flags;
     }
-    resolveAsPromise(path) {
+    resolve(request) {
         return new Promise((ok, reject) => {
-            resolve(path, {
-                basedir: this.settings.root
-            }, (error, result) => {
+            resolver.resolve({}, this.settings.root, request, {}, (error, result) => {
                 if (error) {
                     reject(error);
                 }
@@ -37,7 +39,7 @@ class ConcatBuildTool {
     }
     resolveThenReadFiles(paths) {
         return __awaiter(this, void 0, void 0, function* () {
-            let p1 = paths.map(Q => this.resolveAsPromise(Q));
+            let p1 = paths.map(Q => this.resolve(Q));
             let resolutions = yield Promise.all(p1);
             let p2 = resolutions.map(Q => fse.readFile(Q, 'utf8'));
             let contents = yield Promise.all(p2);
@@ -105,12 +107,14 @@ class ConcatBuildTool {
             if (o.endsWith('.js') === false) {
                 o += '.js';
             }
-            fse.removeSync(upath.join(this.settings.outputJsFolder, o + '.map'));
-            let task = this.concatTarget(o, modules).catch(error => {
+            let t1 = this.concatTarget(o, modules).catch(error => {
                 console.error(chalk_1.default.red('ERROR'), 'when concatenating', chalk_1.default.blue(o));
                 console.error(error);
-            }).then(() => { });
-            tasks.push(task);
+            });
+            let sourceMapPath = upath.join(this.settings.outputJsFolder, o + '.map');
+            let t2 = fse.remove(sourceMapPath);
+            tasks.push(t1);
+            tasks.push(t2);
         }
         return Promise.all(tasks);
     }

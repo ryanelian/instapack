@@ -7,12 +7,19 @@ import * as postcss from 'postcss';
 import * as autoprefixer from 'autoprefixer';
 import * as discardComments from 'postcss-discard-comments';
 import { RawSourceMap } from 'source-map';
+import { NodeJsInputFileSystem, ResolverFactory } from 'enhanced-resolve';
 
 import hub from './EventHub';
 import { Settings } from './Settings';
 import { ICompilerFlags, logAndWriteUtf8FileAsync, timedLog } from './CompilerUtilities';
 import { prettyHrTime } from './PrettyUnits';
 import { prettyError } from './PrettyObject';
+
+let resolver = ResolverFactory.createResolver({
+    fileSystem: new NodeJsInputFileSystem(),
+    extensions: ['.scss', '.css'],
+    mainFields: ['sass', 'style']
+});
 
 /**
  * Contains methods for compiling a Sass project.
@@ -70,6 +77,70 @@ export class SassBuildTool {
     }
 
     /**
+     * Resolves an Sass module import as a Promise.
+     * @param lookupStartPath 
+     * @param request 
+     */
+    resolveAsync(lookupStartPath: string, request: string) {
+        return new Promise<string>((ok, reject) => {
+            resolver.resolve({}, lookupStartPath, request, {}, (error: Error, result: string) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    ok(result);
+                }
+            });
+        });
+    }
+
+    /**
+     * Implements a smarter Sass @import logic.
+     * Performs node-like module resolution logic, which includes looking into package.json (for sass and style fields).
+     * Still supports auto-relatives and (relative) _partials file resolution. 
+     * @param source 
+     * @param request 
+     */
+    async sassImport(source: string, request: string) {
+        // https://github.com/ryanelian/instapack/issues/99
+        // E:/VS/MyProject/client/css/index.scss @import "@ryan/something"
+
+        let lookupStartPath = upath.dirname(source);    // E:/VS/MyProject/client/css/
+
+        // 2: E:/VS/MyProject/client/css/@ryan/something.scss (Standard)
+        // 4: E:/VS/MyProject/client/css/@ryan/something.css (Standard)
+        // 5: E:/VS/MyProject/client/css/@ryan/something/index.scss (Custom)
+        // 6: E:/VS/MyProject/client/css/@ryan/something/index.css (Custom)
+        let isRelative = request.startsWith('./') || request.startsWith('../');
+        if (!isRelative) {
+            try {
+                return await this.resolveAsync(lookupStartPath, './' + request);
+            } catch (error) {
+            }
+        }
+
+        // 3: E:/VS/MyProject/client/css/@ryan/_something.scss (Standard)
+        let requestFileName = upath.basename(request);                          // something
+        if (!requestFileName.startsWith('_')) {
+            let requestDir = upath.dirname(request);                            // @ryan/
+            let relativeLookupDir = upath.join(lookupStartPath, requestDir);    // E:/VS/MyProject/client/css/@ryan/
+            let partialFileName = '_' + upath.addExt(requestFileName, '.scss');
+            let partialPath = upath.resolve(relativeLookupDir, partialFileName);
+
+            if (await fse.pathExists(partialPath)) {
+                return partialPath;
+            }
+        }
+
+        // 7: E:/VS/MyProject/node_modules/@ryan/something.scss (Custom)
+        // 9: E:/VS/MyProject/node_modules/@ryan/something.css (Custom)
+        // 10: E:/VS/MyProject/node_modules/@ryan/something/package.json (Custom)
+        return await this.resolveAsync(lookupStartPath, request);
+
+        // 8 WILL NOT WORK: E:/VS/MyProject/node_modules/@ryan/_something.scss (Custom)
+        // @import against partial files in node_modules must be explicit to prevent confusion!
+    }
+
+    /**
      * Builds CSS project asynchronously.
      */
     async build() {
@@ -80,35 +151,27 @@ export class SassBuildTool {
             file: cssInput,
             outFile: cssOutput,
             data: await fse.readFile(cssInput, 'utf8'),
-            includePaths: [this.settings.npmFolder],
 
             outputStyle: (this.flags.production ? 'compressed' : 'expanded'),
             sourceMap: this.flags.sourceMap,
             sourceMapEmbed: this.flags.sourceMap,
             sourceMapContents: this.flags.sourceMap,
+
+            importer: (request, source, done) => {
+                this.sassImport(source, request).then(result => {
+                    // console.log(source, '+', request, '=', result); console.log();
+                    // if resulting path's .css extension is not removed, will cause CSS @import...
+                    done({
+                        file: upath.removeExt(result, '.css')
+                    });
+                }).catch(error => {
+                    done(error);
+                });
+            }
         };
 
         let sassResult = await this.compileSassAsync(sassOptions);
-
-        let plugins: any[] = [autoprefixer];
-        if (this.flags.production) {
-            plugins.push(discardComments({
-                removeAll: true
-            }));
-        }
-
-        let postCssSourceMapOption: postcss.SourceMapOptions = null;
-        if (this.flags.sourceMap) {
-            postCssSourceMapOption = {
-                inline: false
-            };
-        }
-
-        let cssResult = await postcss(plugins).process(sassResult.css, {
-            from: cssOutput,
-            to: cssOutput,
-            map: postCssSourceMapOption
-        });
+        let cssResult = await postcss(this.postcssPlugins).process(sassResult.css, this.postcssOptions);
 
         let t1 = logAndWriteUtf8FileAsync(cssOutput, cssResult.css);
         if (cssResult.map) {
@@ -118,6 +181,40 @@ export class SassBuildTool {
             await logAndWriteUtf8FileAsync(cssOutput + '.map', JSON.stringify(sm));
         }
         await t1;
+    }
+
+    /**
+     * Gets the PostCSS plugins to be used.
+     */
+    get postcssPlugins() {
+        let plugins: any[] = [autoprefixer];
+        if (this.flags.production) {
+            plugins.push(discardComments({
+                removeAll: true
+            }));
+        }
+
+        return plugins;
+    }
+
+    /**
+     * Gets the appropriate PostCSS options using project settings and build flags.
+     */
+    get postcssOptions() {
+        let cssOutput = this.settings.outputCssFile;
+
+        let options: postcss.ProcessOptions = {
+            from: cssOutput,
+            to: cssOutput
+        };
+
+        if (this.flags.sourceMap) {
+            options.map = {
+                inline: false
+            };
+        }
+
+        return options;
     }
 
     /**

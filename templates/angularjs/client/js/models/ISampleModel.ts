@@ -1,4 +1,4 @@
-export interface SampleModel {
+export interface ISampleModel {
     the: number;
     quick: boolean;
     brown: string;

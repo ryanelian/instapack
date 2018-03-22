@@ -16,10 +16,16 @@ const sass = require("node-sass");
 const postcss = require("postcss");
 const autoprefixer = require("autoprefixer");
 const discardComments = require("postcss-discard-comments");
+const enhanced_resolve_1 = require("enhanced-resolve");
 const EventHub_1 = require("./EventHub");
 const CompilerUtilities_1 = require("./CompilerUtilities");
 const PrettyUnits_1 = require("./PrettyUnits");
 const PrettyObject_1 = require("./PrettyObject");
+let resolver = enhanced_resolve_1.ResolverFactory.createResolver({
+    fileSystem: new enhanced_resolve_1.NodeJsInputFileSystem(),
+    extensions: ['.scss', '.css'],
+    mainFields: ['sass', 'style']
+});
 class SassBuildTool {
     constructor(settings, flags) {
         this.settings = settings;
@@ -45,6 +51,42 @@ class SassBuildTool {
             return '/' + upath.relative(this.settings.root, absolute);
         });
     }
+    resolveAsync(lookupStartPath, request) {
+        return new Promise((ok, reject) => {
+            resolver.resolve({}, lookupStartPath, request, {}, (error, result) => {
+                if (error) {
+                    reject(error);
+                }
+                else {
+                    ok(result);
+                }
+            });
+        });
+    }
+    sassImport(source, request) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let lookupStartPath = upath.dirname(source);
+            let isRelative = request.startsWith('./') || request.startsWith('../');
+            if (!isRelative) {
+                try {
+                    return yield this.resolveAsync(lookupStartPath, './' + request);
+                }
+                catch (error) {
+                }
+            }
+            let requestFileName = upath.basename(request);
+            if (!requestFileName.startsWith('_')) {
+                let requestDir = upath.dirname(request);
+                let relativeLookupDir = upath.join(lookupStartPath, requestDir);
+                let partialFileName = '_' + upath.addExt(requestFileName, '.scss');
+                let partialPath = upath.resolve(relativeLookupDir, partialFileName);
+                if (yield fse.pathExists(partialPath)) {
+                    return partialPath;
+                }
+            }
+            return yield this.resolveAsync(lookupStartPath, request);
+        });
+    }
     build() {
         return __awaiter(this, void 0, void 0, function* () {
             let cssInput = this.settings.cssEntry;
@@ -53,30 +95,22 @@ class SassBuildTool {
                 file: cssInput,
                 outFile: cssOutput,
                 data: yield fse.readFile(cssInput, 'utf8'),
-                includePaths: [this.settings.npmFolder],
                 outputStyle: (this.flags.production ? 'compressed' : 'expanded'),
                 sourceMap: this.flags.sourceMap,
                 sourceMapEmbed: this.flags.sourceMap,
                 sourceMapContents: this.flags.sourceMap,
+                importer: (request, source, done) => {
+                    this.sassImport(source, request).then(result => {
+                        done({
+                            file: upath.removeExt(result, '.css')
+                        });
+                    }).catch(error => {
+                        done(error);
+                    });
+                }
             };
             let sassResult = yield this.compileSassAsync(sassOptions);
-            let plugins = [autoprefixer];
-            if (this.flags.production) {
-                plugins.push(discardComments({
-                    removeAll: true
-                }));
-            }
-            let postCssSourceMapOption = null;
-            if (this.flags.sourceMap) {
-                postCssSourceMapOption = {
-                    inline: false
-                };
-            }
-            let cssResult = yield postcss(plugins).process(sassResult.css, {
-                from: cssOutput,
-                to: cssOutput,
-                map: postCssSourceMapOption
-            });
+            let cssResult = yield postcss(this.postcssPlugins).process(sassResult.css, this.postcssOptions);
             let t1 = CompilerUtilities_1.logAndWriteUtf8FileAsync(cssOutput, cssResult.css);
             if (cssResult.map) {
                 let sm = cssResult.map.toJSON();
@@ -85,6 +119,28 @@ class SassBuildTool {
             }
             yield t1;
         });
+    }
+    get postcssPlugins() {
+        let plugins = [autoprefixer];
+        if (this.flags.production) {
+            plugins.push(discardComments({
+                removeAll: true
+            }));
+        }
+        return plugins;
+    }
+    get postcssOptions() {
+        let cssOutput = this.settings.outputCssFile;
+        let options = {
+            from: cssOutput,
+            to: cssOutput
+        };
+        if (this.flags.sourceMap) {
+            options.map = {
+                inline: false
+            };
+        }
+        return options;
     }
     buildWithStopwatch() {
         return __awaiter(this, void 0, void 0, function* () {

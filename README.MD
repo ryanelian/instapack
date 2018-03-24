@@ -28,17 +28,9 @@ ipack new empty
 ipack
 ```
 
-[Programmable API](https://github.com/ryanelian/instapack/blob/master/src/index.ts) is also provided if you wish to integrate instapack into your very own build script:
-
-```js
-const instapack = require('instapack');
-
-let projectFolder = process.cwd();
-let ipack = new instapack(projectFolder);
-ipack.build('all');
-```
-
 Practical guides can be read in [books](https://github.com/ryanelian/instapack/tree/master/books) folder.
+
+> [Programmable Node.js API](https://github.com/ryanelian/instapack/blob/master/src/index.ts) is also provided if you wish to integrate instapack into your very own build script.
 
 ## System Requirements
 
@@ -423,6 +415,8 @@ For this very reason, it is highly recommended to:
 - Add anti-virus exclusion to Yarn cache folder: `C:\Users\Ryan\AppData\Local\Yarn`. To double check, type: `yarn cache dir`
 
 - Add anti-virus exclusion to NodeJS installation folder: `C:\Program Files\nodejs`. To double check, type: `where.exe node`
+
+- Add anti-virus exclusion to `%APPDATA%\npm` and [`%APPDATA%\npm-cache`](https://docs.npmjs.com/cli/cache) folders.
 
 - Add anti-virus exclusion to Git installation folder: `C:\Program Files\Git`. To double check, type: `where.exe git`
 

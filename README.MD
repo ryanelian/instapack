@@ -28,9 +28,25 @@ ipack new empty
 ipack
 ```
 
-Practical guides can be read in [books](https://github.com/ryanelian/instapack/tree/master/books) folder.
+Out of the box, these files will be used as the program entry points:
 
-> [Programmable Node.js API](https://github.com/ryanelian/instapack/blob/master/src/index.ts) is also provided if you wish to integrate instapack into your very own build script.
+- `client/js/index.ts` compiled to `wwwroot/js/ipack.js`
+
+  - Include this file in your HTML using `<script>` at the bottom / before `</body>` so the browser can render the page while downloading the script.
+
+  - Anything imported from `node_modules` will be put into `ipack.dll.js`. Please also include this file in your HTML just before `ipack.js`
+
+- `client/css/index.scss` compiled to `wwwroot/css/ipack.css`
+
+  - Include this file in your HTML using `<link>` at the top / before `</head>` so the browser can style and render the page as it loads.
+
+  - Spiced :hot_pepper: with [AutoPrefixer](https://github.com/postcss/autoprefixer) for applying CSS vendor-prefixes automatically!
+
+- Concatenate files listed in `package.json`. Usually the output file will be included in the HTML before `ipack.js`. [Read more below.](#configuration)
+
+Practical guides can be read in the [books](https://github.com/ryanelian/instapack/tree/master/books) folder.
+
+> [Programmable Node.js API](https://github.com/ryanelian/instapack/blob/master/src/index.ts) is also provided if you wish to integrate instapack into your own build script.
 
 ## System Requirements
 
@@ -74,26 +90,6 @@ Powered by [webpack](https://webpack.js.org), instapack effortlessly devours mod
 
 With this powerful tool, you can save time :watch:, save precious SSD space :space_invader:, and save yourself from the pain of manually maintaining project build scripts! :coffee:
 
-## How does it work?
-
-Out of the box, these files will be used as the entry points:
-
-- `client/js/index.ts`, compiled to `wwwroot/js/ipack.js`
-
-  - Simply include this file in your HTML using `<script>` at the bottom / before </body> so the browser can render the page while loading the script.
-
-  - Anything imported from `node_modules` will be put into `ipack.dll.js`. Please include this file in your HTML just before `ipack.js`
-
-- `client/css/index.scss`, compiled to `wwwroot/css/ipack.css`
-
-  - Also include this file in your HTML using `<link>` on the top / before `</head>` so the browser can style and render the page as it loads.
-
-  - The Sass language compiler service has been configured to enable `@import` from `node_modules`!
-
-  - Spiced with :hot_pepper: [PostCSS AutoPrefixer](https://github.com/postcss/autoprefixer) for applying CSS vendor-prefixes automatically!
-
-- Concatenate files listed in `package.json`. Usually the output file will be included in the HTML before `ipack.js`. Read more below.
-
 ## Commands
 
 You may use `instapack` or `ipack` to invoke the command line interface.
@@ -110,11 +106,11 @@ Scaffolds a new instapack project into your existing app folder where the comman
 
 - `inferno` when you want to develop a web app with Inferno and Bootstrap 4.
 
-- `vue-mobile` when you want to develop a _[Progressive Web Application](https://developers.google.com/web/progressive-web-apps/)_ using Vue.js and Onsen UI! (Cordova-compatible, read FAQ below.)
+- `vue-mobile` when you want to develop a _[Progressive Web Application](https://developers.google.com/web/progressive-web-apps/)_ using Vue.js and Onsen UI! (Cordova-compatible, [read FAQ below](#how-to-develop-a-cordova-app-using-vue-mobile-template).)
 
 - `angularjs` when you need to develop a legacy web app with AngularJS 1.7 and Bootstrap 3. (Includes [jquery-validation-unobtrusive](https://github.com/aspnet/jquery-validation-unobtrusive) for ASP.NET MVC client-side validation.)
 
-If no template parameter is provided, `vue` will be chosen.
+If no template parameter is provided, `vue` will be chosen. :vulcan_salute:
 
 ### build [project]
 
@@ -124,7 +120,7 @@ In addition, build flags are available:
 
 - `-w` or `--watch` enables automatic incremental build on source code changes. :robot:
 
-- `-d` or `--dev` disables build outputs optimization and minification for **fast build!**
+- `-d` or `--dev` disables build outputs optimization and minification for **FAST build!** :fire:
 
 - `-x` or `--xdebug` disables source maps, producing undebuggable outputs. (Slightly improves build speed)
 
@@ -142,15 +138,14 @@ Remove all files in the output folders.
 
 - `integrity-check` allows disabling package restore prior build. Possible values: `true` and `false`
 
-## Configuration
+## Configurations
 
-instapack puts configuration inside `package.json` to reduce project files clutter. For example, this is the included `package.json` with `vue` template:
+instapack puts configurations inside `package.json` to reduce project files clutter. For example, this is the included `package.json` with `vue` template:
+
+> `name`, `version`, `private`, and `dependencies` fields were removed for brevity.
 
 ```json
 {
-  "name": "aspnet",
-  "version": "1.0.0",
-  "private": true,
   "instapack": {
     "output": "wwwroot",
     "concat": {
@@ -163,24 +158,6 @@ instapack puts configuration inside `package.json` to reduce project files clutt
     "alias": {
       "vue": "vue/dist/vue.common"
     }
-  },
-  "dependencies": {
-    "@fortawesome/fontawesome": "^1.1.4",
-    "@fortawesome/fontawesome-free-regular": "^5.0.8",
-    "@fortawesome/fontawesome-free-solid": "^5.0.8",
-    "@types/requirejs": "^2.1.31",
-    "aspnet-validation": "^0.0.4",
-    "axios": "^0.18.0",
-    "bootstrap": "4.0.0",
-    "bootstrap.native": "^2.0.21",
-    "es6-promise": "^4.2.4",
-    "linq": "^3.0.9",
-    "moment": "^2.21.0",
-    "noty": "^3.2.0-beta",
-    "tslib": "^1.9.0",
-    "vex-js": "^4.1.0",
-    "vue": "^2.5.15",
-    "vue-class-component": "^6.2.0"
   }
 }
 ```
@@ -193,9 +170,7 @@ instapack puts configuration inside `package.json` to reduce project files clutt
 
 - `cssOut` allows setting the CSS output file name. By default, it is set to `ipack.css`
 
-- `alias` allows overriding module `import` calls from all files, including dependencies. Read more: https://webpack.js.org/configuration/resolve/
-
-  - This was needed because the default Vue.js package main file points to the runtime-only build, which does not include the HTML template compiler... To avoid using this, use the `.vue.html` template module. (Read below)
+- `alias` allows overriding module `import` calls from all files, including dependencies. [Read more.](https://webpack.js.org/configuration/resolve/)
 
   - [TypeScript `paths` compiler option in `tsconfig.json`](https://www.typescriptlang.org/docs/handbook/module-resolution.html) will be translated into aliases with caveats:
     
@@ -205,7 +180,7 @@ instapack puts configuration inside `package.json` to reduce project files clutt
     
 > Packages are imported without relative paths, therefore `*` path turns all project modules into package imports. This can cause the project to be less maintainable or confusing...
 
-- `externals` allows rewriting module `import` calls from all files, including dependencies, to globally exposed objects via `window` object. Read more: https://webpack.js.org/configuration/externals/
+- `externals` allows rewriting module `import` calls from all files, including dependencies, to globally exposed objects via `window` object. [Read more.](https://webpack.js.org/configuration/externals/)
 
 For example:
 
@@ -219,35 +194,35 @@ For example:
 }
 ```
 
-converts this...
-
 ```ts
+// converts this...
 import jQuery from 'jquery';
-```
 
-into this...
-
-```ts
-const jQuery = window["$"];
+// into this...
+// const jQuery = window["$"];
 ```
 
 so [CDN](https://en.wikipedia.org/wiki/Content_delivery_network) can be used! :tada:
 
 ```html
-<script src="https://unpkg.com/jquery@3.2.1/dist/jquery.js"></script>
+<script src="https://unpkg.com/jquery@3.3.1/dist/jquery.js"></script>
 ```
 
 - `concat` allows packing browser libraries to be consumed directly from `<script src="...">` rather than as a module.
 
   - The file names will be resolved node-style (**but NOT their contents**), which allows concatenating packages downloaded from `npm` to be bundled, minified, and then placed into the output JS folder. 
 
-  - Use concatenation for libraries that cannot be imported / do not need to be imported (for example, jQuery plugins). This hybrid approach allows greater compatibility with older libraries, while enjoying the rich development experience using TypeScript.
+  - Use concatenation for libraries that cannot be imported / do not need to be imported (for example, jQuery plugins). This hybrid approach allows excellent interop with older libraries!
 
-  - For consuming the libraries within the TypeScript app code, load them before `bundle.js` then use the `externals` module configuration. (You may use CommonJS syntax to import the module; read more below...)
+  - For consuming the libraries within the TypeScript app code: include the concatenated file **BEFORE** the app bundle then...
   
-  - Alternatively, reference the library objects directly from the `window` object (e.g. `window['$']`).
+    - Combo with the `externals` module configuration for easy import using `require` / [CommonJS module syntax](#commonjs--nodejs-require).
 
-**concat configuration example:** (produces `vendor.js` bundle)
+    - Alternatively (for strongly-typed import), write a TypeScript module declaration (`declare module`) then import using [ES Modules syntax](#typescript--es-modules).
+
+    - Possible but not recommended: reference the library objects directly from the `window` (e.g. `window['$']`).
+
+**Another `concat` configuration example:** (produces `vendor.js` bundle, handy for ASP.NET MVC)
 
 ```json
 {
@@ -269,7 +244,7 @@ so [CDN](https://en.wikipedia.org/wiki/Content_delivery_network) can be used! :t
 
 ### TypeScript / ES Modules
 
-[Import and export](https://www.typescriptlang.org/docs/handbook/modules.html) other `.ts` / `.tsx` files in the project or normal JavaScript modules from `node_modules`. This technique allows the ease of development using intellisense for modules with type definitions:
+[Imports and exports](https://www.typescriptlang.org/docs/handbook/modules.html) other `.ts` / `.tsx` files in the project or normal JS modules from `node_modules`. This technique allows the ease of development using intellisense for modules with type definitions:
 
 - The module has `"typings": "something.d.ts"` in its `package.json`. For example: `vue`, `linq`
 
@@ -283,29 +258,28 @@ import List from 'linq';
 
 ### CommonJS / Node.js require
 
-- Easily import normal / older / legacy JavaScript modules within the project or from `node_modules`. However, **you will NOT get intellisense!** (Modules will be imported as `any` data type.)
+- Easily imports ordinary JS modules within the project or from `node_modules`. However, **you will NOT get intellisense!** (Modules will be imported as `any` data type.)
+
+- Imports a static JSON file to be parsed as JS object.
 
 ```js
 let $ = require('jquery');
+let settings = require('./settings.json') as ISettings;
 ```
 
-- Import a `.html` file to be minified and then stringified. This technique is handy for working with frameworks relying on HTML-based templates such as AngularJS, mustache.js / Handlebars.js, and Vue.js:
+- Imports an `.html` file to be minified and then stringified. This technique is invaluable for working with frameworks relying on HTML-based templates such as AngularJS, mustache.js / Handlebars.js, and Vue.js:
 
 ```ts
 let template = require('./mytemplate.html') as string;
 ```
 
-- Import a static JSON file content as a JavaScript object.
+> CommonJS `require` method in TypeScript is provided through `@types/requirejs` package.
 
-```ts
-let something = require('./something.json') as ISomething;
-```
-
-> CommonJS `require` method in TypeScript is provided through `@types/requirejs` package. Use `as` type-hint for clarity and convenience.
+> Use `as` type-hint for clarity and convenience.
 
 ### Vue Pre-Compiled HTML Templates
 
-In pursuit of greater app performance, instapack allows Ahead-of-Time (AoT) compilation of HTML templates using Vue.js render syntax. HTML files with special file extension `.vue.html` will be compiled into an object to be passed into Vue Component decorator as parameters:
+In pursuit of greater app performance, instapack allows Ahead-of-Time (AoT) compilation of HTML templates using Vue.js render component options. HTML files with special file extension `.vue.html` will be imported as an object to be passed into Vue Component decorator as parameters:
 
 ```ts
 import Vue from 'vue';
@@ -329,9 +303,7 @@ instapack also has a custom-made Node-like but standard-compliant Sass module sy
 
 - Include files relative to the source in a named folder, but as `index.scss` or `index.css`
 
-- Include files, resolved from `node_modules`
-
-  - Also reads `package.json` to locate the file in `sass` or `style` field!
+- Include files, resolved from `node_modules`. Also reads `package.json` to locate the file in `sass` or `style` field!
 
 > Unlike Sass which ignores `@import` of files explicitly named with `.css` extension (which often caused confusion), instapack will pick up those files!
 

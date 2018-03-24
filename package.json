@@ -28,7 +28,7 @@
     "fs-extra": "5.0.0",
     "html-minifier": "3.5.12",
     "loader-utils": "1.1.0",
-    "node-sass": "4.8.1",
+    "node-sass": "4.8.3",
     "postcss": "6.0.21",
     "postcss-discard-comments": "4.0.0-rc.2",
     "source-map": "0.7.2",

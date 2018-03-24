@@ -12,7 +12,7 @@
 
 If you encounter [errors](https://github.com/npm/npm/issues/18380) during installation, try:
 
-- Running install [as Administrator](https://www.howtogeek.com/194041/how-to-open-the-command-prompt-as-administrator-in-windows-8.1/) or using elevated privileges (sudo).
+- Running install [as Administrator](https://www.howtogeek.com/194041/how-to-open-the-command-prompt-as-administrator-in-windows-8.1/) or using elevated privileges (`sudo`).
 
 - Or clear the npm cache: `npm cache clean --force` then: `npm install -g instapack --no-optional`
 

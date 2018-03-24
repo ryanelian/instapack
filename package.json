@@ -2,6 +2,39 @@
   "name": "instapack",
   "version": "6.1.0",
   "description": "All-in-one web application client project compiler using TypeScript and Sass!",
+  "keywords": [
+    "typescript",
+    "javascript",
+    "sass",
+    "css",
+    "html-template",
+    "nodejs",
+    "compiler",
+    "bundler",
+    "minify",
+    "sourcemaps",
+    "build-tool",
+    "developer-tools",
+    "front-end",
+    "client-side",
+    "vue",
+    "react",
+    "inferno",
+    "angularjs",
+    "single-page-app",
+    "progressive-web-app"
+  ],
+  "homepage": "https://github.com/ryanelian/instapack#readme",
+  "bugs": {
+    "url": "https://github.com/ryanelian/instapack/issues",
+    "email": "ryan.elian@accelist.com"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Ryan Elian",
+    "email": "ryan.elian@accelist.com",
+    "url": "https://elian.plus"
+  },
   "main": "bin/index.js",
   "bin": {
     "ipack": "bin/ipack.js",
@@ -9,17 +42,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ryanelian/instapack.git"
-  },
-  "author": "Ryan Elian",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/ryanelian/instapack/issues"
+    "url": "https://github.com/ryanelian/instapack.git"
   },
   "scripts": {
     "build": "tsc"
   },
-  "homepage": "https://github.com/ryanelian/instapack#readme",
   "dependencies": {
     "autoprefixer": "8.2.0",
     "chalk": "2.3.2",
@@ -52,6 +79,7 @@
     "@types/webpack-sources": "^0.1.4",
     "@types/yargs": "^11.0.0"
   },
+  "preferGlobal": true,
   "resolutions": {
     "**/@types/node": "8",
     "**/@types/webpack": "3"

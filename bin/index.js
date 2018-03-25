@@ -53,7 +53,7 @@ module.exports = class instapack {
                     }
                 }
                 else {
-                    console.warn(chalk_1.default.yellow('WARNING'), 'unable to find', chalk_1.default.cyan(this.settings.packageJson), chalk_1.default.grey('skipping package restore...'));
+                    Shout_1.Shout.warning('unable to find', chalk_1.default.cyan(this.settings.packageJson), chalk_1.default.grey('skipping package restore...'));
                 }
             }
             compiler.build(taskName);

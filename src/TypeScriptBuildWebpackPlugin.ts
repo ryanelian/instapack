@@ -77,7 +77,7 @@ export class TypeScriptBuildWebpackPlugin {
      */
     apply(compiler: Compiler) {
         if (this.options.target !== 'ES5') {
-            console.warn(chalk.red('DANGER') + ' TypeScript compile target is not ' + chalk.yellow('ES5') + '! ' + chalk.grey('(tsconfig.json)'));
+            Shout.danger('TypeScript compile target is not', chalk.yellow('ES5'), '!' + chalk.grey('(tsconfig.json)'));
         }
 
         compiler.plugin('compile', compilation => {

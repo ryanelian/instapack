@@ -21,22 +21,22 @@ class TypeScriptBuildTool {
             return;
         }
         if (!this.tsconfigOptions.baseUrl) {
-            console.warn(chalk_1.default.yellow('WARNING'), chalk_1.default.cyan('tsconfig.json'), 'paths are defined, but baseUrl is not!');
+            Shout_1.Shout.warning(chalk_1.default.cyan('tsconfig.json'), 'paths are defined, but baseUrl is not!');
             return;
         }
         for (let key in this.tsconfigOptions.paths) {
             let originalKey = key;
             if (key === '*') {
-                console.warn(chalk_1.default.yellow('WARNING'), chalk_1.default.cyan('tsconfig.json'), 'paths:', chalk_1.default.yellow(key), 'is not supported!');
+                Shout_1.Shout.warning(chalk_1.default.cyan('tsconfig.json'), 'paths:', chalk_1.default.yellow(key), 'is not supported!');
                 continue;
             }
             let values = this.tsconfigOptions.paths[key];
             if (values.length > 1) {
-                console.warn(chalk_1.default.yellow('WARNING'), chalk_1.default.cyan('tsconfig.json'), 'paths:', chalk_1.default.yellow(key), 'resolves to more than one path!', chalk_1.default.grey('(Only the first will be honored.)'));
+                Shout_1.Shout.warning(chalk_1.default.cyan('tsconfig.json'), 'paths:', chalk_1.default.yellow(key), 'resolves to more than one path!', chalk_1.default.grey('(Only the first will be honored.)'));
             }
             let value = values[0];
             if (!value) {
-                console.warn(chalk_1.default.yellow('WARNING'), chalk_1.default.cyan('tsconfig.json'), 'paths:', chalk_1.default.yellow(key), 'is empty!');
+                Shout_1.Shout.warning(chalk_1.default.cyan('tsconfig.json'), 'paths:', chalk_1.default.yellow(key), 'is empty!');
                 continue;
             }
             let wildcard = false;
@@ -49,7 +49,7 @@ class TypeScriptBuildTool {
             }
             else {
                 if (wildcard) {
-                    console.warn(chalk_1.default.yellow('WARNING'), chalk_1.default.cyan('tsconfig.json'), 'paths:', chalk_1.default.yellow(originalKey), 'is a wildcard but its value is not!', chalk_1.default.grey('(Resolves to index.ts)'));
+                    Shout_1.Shout.warning(chalk_1.default.cyan('tsconfig.json'), 'paths:', chalk_1.default.yellow(originalKey), 'is a wildcard but its value is not!', chalk_1.default.grey('(Resolves to index.ts)'));
                 }
             }
             if (!this.settings.alias[key]) {

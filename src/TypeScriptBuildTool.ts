@@ -53,7 +53,7 @@ export class TypeScriptBuildTool {
         }
 
         if (!this.tsconfigOptions.baseUrl) {
-            console.warn(chalk.yellow('WARNING'), chalk.cyan('tsconfig.json'), 'paths are defined, but baseUrl is not!');
+            Shout.warning(chalk.cyan('tsconfig.json'), 'paths are defined, but baseUrl is not!');
             return;
         }
 
@@ -62,20 +62,22 @@ export class TypeScriptBuildTool {
 
             // not going support this anti-pattern: it mixes package and project file namespaces. Dirty AF!
             if (key === '*') {
-                console.warn(chalk.yellow('WARNING'), chalk.cyan('tsconfig.json'), 'paths:', chalk.yellow(key), 'is not supported!');
+                Shout.warning(chalk.cyan('tsconfig.json'), 'paths:', chalk.yellow(key), 'is not supported!');
                 continue;
             }
 
             // technical limitation: 1 alias = 1 path, not multiple paths...
             let values = this.tsconfigOptions.paths[key];
             if (values.length > 1) {
-                console.warn(chalk.yellow('WARNING'), chalk.cyan('tsconfig.json'), 'paths:', chalk.yellow(key),
-                    'resolves to more than one path!', chalk.grey('(Only the first will be honored.)'));
+                Shout.warning(chalk.cyan('tsconfig.json'),
+                    'paths:', chalk.yellow(key), 'resolves to more than one path!',
+                    chalk.grey('(Only the first will be honored.)')
+                );
             }
 
             let value = values[0];
             if (!value) {
-                console.warn(chalk.yellow('WARNING'), chalk.cyan('tsconfig.json'), 'paths:', chalk.yellow(key), 'is empty!');
+                Shout.warning(chalk.cyan('tsconfig.json'), 'paths:', chalk.yellow(key), 'is empty!');
                 continue;
             }
 
@@ -90,8 +92,10 @@ export class TypeScriptBuildTool {
                 value = value.substr(0, value.length - 2);
             } else {
                 if (wildcard) {
-                    console.warn(chalk.yellow('WARNING'), chalk.cyan('tsconfig.json'), 'paths:', chalk.yellow(originalKey),
-                        'is a wildcard but its value is not!', chalk.grey('(Resolves to index.ts)'));
+                    Shout.warning(chalk.cyan('tsconfig.json'),
+                        'paths:', chalk.yellow(originalKey), 'is a wildcard but its value is not!',
+                        chalk.grey('(Resolves to index.ts)')
+                    );
                 }
             }
 

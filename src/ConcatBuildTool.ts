@@ -145,12 +145,15 @@ export class ConcatBuildTool {
         for (let target in targets) {
             let modules = targets[target];
             if (!modules || modules.length === 0) {
-                console.warn(chalk.red('WARNING'), 'concat list for', chalk.blue(target), 'is empty!');
+                Shout.warning('concat list for', chalk.blue(target), 'is empty!');
                 continue;
             }
             if (typeof modules === 'string') {
                 modules = [modules];
-                console.warn(chalk.red('WARNING'), 'concat list for', chalk.blue(target), 'is a', chalk.yellow('string'), 'instead of a', chalk.yellow('string[]'));
+                Shout.warning('concat list for', chalk.blue(target),
+                    'is a', chalk.yellow('string'),
+                    'instead of a', chalk.yellow('string[]')
+                );
             }
 
             let o = target;

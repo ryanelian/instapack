@@ -97,12 +97,12 @@ class ConcatBuildTool {
         for (let target in targets) {
             let modules = targets[target];
             if (!modules || modules.length === 0) {
-                console.warn(chalk_1.default.red('WARNING'), 'concat list for', chalk_1.default.blue(target), 'is empty!');
+                Shout_1.Shout.warning('concat list for', chalk_1.default.blue(target), 'is empty!');
                 continue;
             }
             if (typeof modules === 'string') {
                 modules = [modules];
-                console.warn(chalk_1.default.red('WARNING'), 'concat list for', chalk_1.default.blue(target), 'is a', chalk_1.default.yellow('string'), 'instead of a', chalk_1.default.yellow('string[]'));
+                Shout_1.Shout.warning('concat list for', chalk_1.default.blue(target), 'is a', chalk_1.default.yellow('string'), 'instead of a', chalk_1.default.yellow('string[]'));
             }
             let o = target;
             if (o.endsWith('.js') === false) {

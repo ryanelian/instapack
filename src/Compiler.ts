@@ -284,7 +284,7 @@ export class Compiler {
      * Concat JavaScript files.
      */
     async buildConcat() {
-        Shout.timed('Resolving', chalk.cyan(this.settings.concatCount.toString()), 'concat target(s)...');
+        Shout.timed('Resolving', chalk.green(this.settings.concatCount.toString()), 'concat target(s)...');
 
         let tool = new ConcatBuildTool(this.settings, this.flags);
         await tool.buildWithStopwatch();

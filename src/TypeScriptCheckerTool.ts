@@ -136,7 +136,7 @@ export class TypeScriptCheckerTool {
     private addOrUpdateSourceFileCache(fileName: string) {
         let source = this.readSourceFile(fileName, this.compilerOptions.target, error => {
             Shout.error('when reading TypeScript source file:', fileName);
-            console.error(error);
+            console.error(chalk.red(error));
         });
 
         let version = this.getFileContentHash(source.text);

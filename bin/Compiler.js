@@ -198,7 +198,7 @@ class Compiler {
     }
     buildConcat() {
         return __awaiter(this, void 0, void 0, function* () {
-            Shout_1.Shout.timed('Resolving', chalk_1.default.cyan(this.settings.concatCount.toString()), 'concat target(s)...');
+            Shout_1.Shout.timed('Resolving', chalk_1.default.green(this.settings.concatCount.toString()), 'concat target(s)...');
             let tool = new ConcatBuildTool_1.ConcatBuildTool(this.settings, this.flags);
             yield tool.buildWithStopwatch();
         });

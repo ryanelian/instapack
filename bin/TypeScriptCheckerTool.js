@@ -50,7 +50,7 @@ class TypeScriptCheckerTool {
     addOrUpdateSourceFileCache(fileName) {
         let source = this.readSourceFile(fileName, this.compilerOptions.target, error => {
             Shout_1.Shout.error('when reading TypeScript source file:', fileName);
-            console.error(error);
+            console.error(chalk_1.default.red(error));
         });
         let version = this.getFileContentHash(source.text);
         let lastVersion = this.versions[fileName];

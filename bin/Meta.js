@@ -17,7 +17,9 @@ class Meta {
         return false;
     }
     checkForUpdates() {
-        this.updateChecker = cp.exec('npm view instapack version', (error, stdout, stderr) => {
+        let checker = cp.exec('npm view instapack version', {
+            timeout: 5 * 1000
+        }, (error, stdout, stderr) => {
             if (error || stderr) {
                 return;
             }
@@ -27,9 +29,6 @@ class Meta {
     updateNag() {
         if (this.nagOnce) {
             return;
-        }
-        if (this.updateChecker) {
-            this.updateChecker.kill();
         }
         if (this.isOutdated) {
             console.log();

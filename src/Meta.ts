@@ -8,11 +8,6 @@ const packageJSON = require('../package.json');
  */
 export class Meta {
     /**
-     * Sets or gets the HTTP request for checking remote instapack version.
-     */
-    private updateChecker: cp.ChildProcess;
-
-    /**
      * Sets or gets the nag display flag. User should not be nagged twice.
      */
     private nagOnce: boolean;
@@ -51,7 +46,9 @@ export class Meta {
      * Triggers a background npm latest package version check.
      */
     checkForUpdates() {
-        this.updateChecker = cp.exec('npm view instapack version', (error, stdout, stderr) => {
+        let checker = cp.exec('npm view instapack version', {
+            timeout: 5 * 1000
+        }, (error, stdout, stderr) => {
             if (error || stderr) {
                 return;
             }
@@ -66,10 +63,6 @@ export class Meta {
     updateNag() {
         if (this.nagOnce) {
             return;
-        }
-
-        if (this.updateChecker) {
-            this.updateChecker.kill();
         }
 
         if (this.isOutdated) {

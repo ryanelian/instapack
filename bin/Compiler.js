@@ -19,7 +19,7 @@ const TypeScriptCheckerTool_1 = require("./TypeScriptCheckerTool");
 const SassBuildTool_1 = require("./SassBuildTool");
 const ConcatBuildTool_1 = require("./ConcatBuildTool");
 const Settings_1 = require("./Settings");
-const CompilerUtilities_1 = require("./CompilerUtilities");
+const Shout_1 = require("./Shout");
 class Compiler {
     constructor(settings, flags) {
         this.buildTasks = [];
@@ -32,25 +32,25 @@ class Compiler {
         return compiler;
     }
     chat() {
-        CompilerUtilities_1.timedLog('Output to folder', chalk_1.default.cyan(this.settings.outputFolder));
+        Shout_1.Shout.timed('Output to folder', chalk_1.default.cyan(this.settings.outputFolder));
         if (this.flags.production) {
-            CompilerUtilities_1.timedLog(chalk_1.default.yellow("Production"), "Mode: Outputs will be minified.", chalk_1.default.red("(Slow build)"));
+            Shout_1.Shout.timed(chalk_1.default.yellow("Production"), "Mode: Outputs will be minified.", chalk_1.default.red("(Slow build)"));
         }
         else {
-            CompilerUtilities_1.timedLog(chalk_1.default.yellow("Development"), "Mode: Outputs will", chalk_1.default.red("NOT be minified!"), "(Fast build)");
-            CompilerUtilities_1.timedLog(chalk_1.default.red("Do not forget to minify"), "before pushing to repository or production server!");
+            Shout_1.Shout.timed(chalk_1.default.yellow("Development"), "Mode: Outputs will", chalk_1.default.red("NOT be minified!"), "(Fast build)");
+            Shout_1.Shout.timed(chalk_1.default.red("Do not forget to minify"), "before pushing to repository or production server!");
         }
         if (this.flags.watch) {
-            CompilerUtilities_1.timedLog(chalk_1.default.yellow("Watch"), "Mode: Source codes will be automatically compiled on changes.");
+            Shout_1.Shout.timed(chalk_1.default.yellow("Watch"), "Mode: Source codes will be automatically compiled on changes.");
         }
         if (!this.flags.production || this.flags.watch) {
             this.flags.analyze = false;
         }
         if (this.flags.analyze) {
             let analysisPath = this.settings.outputJsFolder + '/analysis.html';
-            CompilerUtilities_1.timedLog(chalk_1.default.yellow('Analyze'), 'Mode:', chalk_1.default.cyan(analysisPath));
+            Shout_1.Shout.timed(chalk_1.default.yellow('Analyze'), 'Mode:', chalk_1.default.cyan(analysisPath));
         }
-        CompilerUtilities_1.timedLog('Source Maps:', chalk_1.default.yellow(this.flags.sourceMap ? 'Enabled' : 'Disabled'));
+        Shout_1.Shout.timed('Source Maps:', chalk_1.default.yellow(this.flags.sourceMap ? 'Enabled' : 'Disabled'));
     }
     startBackgroundTask(taskName) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -87,11 +87,11 @@ class Compiler {
                     let checkEntry = fse.pathExists(entry);
                     let checkProject = fse.pathExists(tsconfig);
                     if ((yield checkEntry) === false) {
-                        CompilerUtilities_1.timedLog('Entry file', chalk_1.default.cyan(entry), 'was not found.', chalk_1.default.red('Aborting JS build!'));
+                        Shout_1.Shout.timed('Entry file', chalk_1.default.cyan(entry), 'was not found.', chalk_1.default.red('Aborting JS build!'));
                         return false;
                     }
                     if ((yield checkProject) === false) {
-                        CompilerUtilities_1.timedLog('Project file', chalk_1.default.cyan(tsconfig), 'was not found.', chalk_1.default.red('Aborting JS build!'));
+                        Shout_1.Shout.timed('Project file', chalk_1.default.cyan(tsconfig), 'was not found.', chalk_1.default.red('Aborting JS build!'));
                         return false;
                     }
                     return true;
@@ -100,7 +100,7 @@ class Compiler {
                     let entry = this.settings.cssEntry;
                     let exist = yield fse.pathExists(entry);
                     if (!exist) {
-                        CompilerUtilities_1.timedLog('Entry file', chalk_1.default.cyan(entry), 'was not found.', chalk_1.default.red('Aborting CSS build!'));
+                        Shout_1.Shout.timed('Entry file', chalk_1.default.cyan(entry), 'was not found.', chalk_1.default.red('Aborting CSS build!'));
                     }
                     return exist;
                 }
@@ -128,14 +128,14 @@ class Compiler {
         })
             .on('change', (file) => {
             file = upath.toUnix(file);
-            CompilerUtilities_1.timedLog(chalk_1.default.cyan(file), 'was edited. Restarting builds...');
+            Shout_1.Shout.timed(chalk_1.default.cyan(file), 'was edited. Restarting builds...');
             this.killAllBuilds();
             this.settings = Settings_1.Settings.tryReadFromPackageJson(this.settings.root);
             this.build(this._userBuildTaskParameter);
         })
             .on('unlink', (file) => {
             file = upath.toUnix(file);
-            CompilerUtilities_1.timedLog(chalk_1.default.cyan(file), 'was deleted.', chalk_1.default.red('BAD IDEA!'));
+            Shout_1.Shout.timed(chalk_1.default.cyan(file), 'was deleted.', chalk_1.default.red('BAD IDEA!'));
         });
     }
     build(taskName) {
@@ -198,7 +198,7 @@ class Compiler {
     }
     buildConcat() {
         return __awaiter(this, void 0, void 0, function* () {
-            CompilerUtilities_1.timedLog('Resolving', chalk_1.default.cyan(this.settings.concatCount.toString()), 'concat target(s)...');
+            Shout_1.Shout.timed('Resolving', chalk_1.default.cyan(this.settings.concatCount.toString()), 'concat target(s)...');
             let tool = new ConcatBuildTool_1.ConcatBuildTool(this.settings, this.flags);
             yield tool.buildWithStopwatch();
         });

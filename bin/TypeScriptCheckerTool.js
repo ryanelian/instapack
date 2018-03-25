@@ -15,8 +15,8 @@ const upath = require("upath");
 const chokidar = require("chokidar");
 const crypto_1 = require("crypto");
 const EventHub_1 = require("./EventHub");
-const CompilerUtilities_1 = require("./CompilerUtilities");
 const PrettyUnits_1 = require("./PrettyUnits");
+const Shout_1 = require("./Shout");
 class TypeScriptCheckerTool {
     constructor(settings) {
         this.files = {};
@@ -83,7 +83,7 @@ class TypeScriptCheckerTool {
                 return;
             }
             let tsc = TypeScript.createProgram(Array.from(this.includeFiles), this.compilerOptions, this.host);
-            CompilerUtilities_1.timedLog('Type-checking using TypeScript', chalk_1.default.yellow(TypeScript.version));
+            Shout_1.Shout.timed('Type-checking using TypeScript', chalk_1.default.yellow(TypeScript.version));
             let start = process.hrtime();
             try {
                 let errors = [];
@@ -108,7 +108,7 @@ class TypeScriptCheckerTool {
             }
             finally {
                 let time = PrettyUnits_1.prettyHrTime(process.hrtime(start));
-                CompilerUtilities_1.timedLog('Finished type-checking after', chalk_1.default.green(time));
+                Shout_1.Shout.timed('Finished type-checking after', chalk_1.default.green(time));
                 EventHub_1.default.buildDone();
             }
         });

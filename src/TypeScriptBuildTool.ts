@@ -5,10 +5,11 @@ import * as TypeScript from 'typescript';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 
 import hub from './EventHub';
-import { timedLog, ICompilerFlags } from './CompilerUtilities';
+import { ICompilerFlags } from './CompilerUtilities';
 import { Settings } from './Settings';
 import { prettyBytes, prettyMilliseconds } from './PrettyUnits';
 import { TypeScriptBuildWebpackPlugin } from './TypeScriptBuildWebpackPlugin';
+import { Shout } from './Shout';
 
 /**
  * Contains methods for compiling a TypeScript project.
@@ -291,14 +292,14 @@ export class TypeScriptBuildTool {
             for (let asset of o.assets) {
                 if (asset.emitted) {
                     let kb = prettyBytes(asset.size);
-                    timedLog(chalk.blue(asset.name), chalk.magenta(kb));
+                    Shout.timed(chalk.blue(asset.name), chalk.magenta(kb));
                 }
             }
 
             let t = prettyMilliseconds(o.time);
-            timedLog('Finished JS build after', chalk.green(t));
+            Shout.timed('Finished JS build after', chalk.green(t));
             if (this.flags.analyze) {
-                timedLog('Generating the module size analysis report for JS output, please wait...');
+                Shout.timed('Generating the module size analysis report for JS output, please wait...');
                 setTimeout(() => {
                     process.exit(0);
                 }, 5 * 1000);

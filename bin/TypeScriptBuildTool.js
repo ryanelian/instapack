@@ -6,9 +6,9 @@ const webpack = require("webpack");
 const TypeScript = require("typescript");
 const webpack_bundle_analyzer_1 = require("webpack-bundle-analyzer");
 const EventHub_1 = require("./EventHub");
-const CompilerUtilities_1 = require("./CompilerUtilities");
 const PrettyUnits_1 = require("./PrettyUnits");
 const TypeScriptBuildWebpackPlugin_1 = require("./TypeScriptBuildWebpackPlugin");
+const Shout_1 = require("./Shout");
 class TypeScriptBuildTool {
     constructor(settings, flags) {
         this.settings = settings;
@@ -200,13 +200,13 @@ class TypeScriptBuildTool {
             for (let asset of o.assets) {
                 if (asset.emitted) {
                     let kb = PrettyUnits_1.prettyBytes(asset.size);
-                    CompilerUtilities_1.timedLog(chalk_1.default.blue(asset.name), chalk_1.default.magenta(kb));
+                    Shout_1.Shout.timed(chalk_1.default.blue(asset.name), chalk_1.default.magenta(kb));
                 }
             }
             let t = PrettyUnits_1.prettyMilliseconds(o.time);
-            CompilerUtilities_1.timedLog('Finished JS build after', chalk_1.default.green(t));
+            Shout_1.Shout.timed('Finished JS build after', chalk_1.default.green(t));
             if (this.flags.analyze) {
-                CompilerUtilities_1.timedLog('Generating the module size analysis report for JS output, please wait...');
+                Shout_1.Shout.timed('Generating the module size analysis report for JS output, please wait...');
                 setTimeout(() => {
                     process.exit(0);
                 }, 5 * 1000);

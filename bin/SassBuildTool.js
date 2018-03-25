@@ -21,6 +21,7 @@ const EventHub_1 = require("./EventHub");
 const CompilerUtilities_1 = require("./CompilerUtilities");
 const PrettyUnits_1 = require("./PrettyUnits");
 const PrettyObject_1 = require("./PrettyObject");
+const Shout_1 = require("./Shout");
 let resolver = enhanced_resolve_1.ResolverFactory.createResolver({
     fileSystem: new enhanced_resolve_1.NodeJsInputFileSystem(),
     extensions: ['.scss', '.css'],
@@ -111,11 +112,11 @@ class SassBuildTool {
             };
             let sassResult = yield this.compileSassAsync(sassOptions);
             let cssResult = yield postcss(this.postcssPlugins).process(sassResult.css, this.postcssOptions);
-            let t1 = CompilerUtilities_1.logAndWriteUtf8FileAsync(cssOutput, cssResult.css);
+            let t1 = CompilerUtilities_1.outputFileThenLog(cssOutput, cssResult.css);
             if (cssResult.map) {
                 let sm = cssResult.map.toJSON();
                 this.fixSourceMap(sm);
-                yield CompilerUtilities_1.logAndWriteUtf8FileAsync(cssOutput + '.map', JSON.stringify(sm));
+                yield CompilerUtilities_1.outputFileThenLog(cssOutput + '.map', JSON.stringify(sm));
             }
             yield t1;
         });
@@ -144,7 +145,7 @@ class SassBuildTool {
     }
     buildWithStopwatch() {
         return __awaiter(this, void 0, void 0, function* () {
-            CompilerUtilities_1.timedLog('Compiling CSS', chalk_1.default.cyan(this.settings.cssEntry));
+            Shout_1.Shout.timed('Compiling CSS', chalk_1.default.cyan(this.settings.cssEntry));
             let start = process.hrtime();
             try {
                 yield this.build();
@@ -154,7 +155,7 @@ class SassBuildTool {
             }
             finally {
                 let time = PrettyUnits_1.prettyHrTime(process.hrtime(start));
-                CompilerUtilities_1.timedLog('Finished CSS build after', chalk_1.default.green(time));
+                Shout_1.Shout.timed('Finished CSS build after', chalk_1.default.green(time));
                 EventHub_1.default.buildDone();
             }
         });

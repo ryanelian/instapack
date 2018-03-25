@@ -7,8 +7,8 @@ import { createHash } from 'crypto';
 
 import hub from './EventHub';
 import { Settings } from './Settings';
-import { timedLog } from './CompilerUtilities';
 import { prettyHrTime } from './PrettyUnits';
+import { Shout } from './Shout';
 
 /**
  * Key-value pair of file name to cached raw file content. Used for caching TypeScript Compiler Host readFile method.
@@ -181,7 +181,7 @@ export class TypeScriptCheckerTool {
 
         let tsc = TypeScript.createProgram(Array.from(this.includeFiles), this.compilerOptions, this.host);
 
-        timedLog('Type-checking using TypeScript', chalk.yellow(TypeScript.version));
+        Shout.timed('Type-checking using TypeScript', chalk.yellow(TypeScript.version));
         let start = process.hrtime();
 
         try {
@@ -207,7 +207,7 @@ export class TypeScriptCheckerTool {
             }
         } finally {
             let time = prettyHrTime(process.hrtime(start));
-            timedLog('Finished type-checking after', chalk.green(time));
+            Shout.timed('Finished type-checking after', chalk.green(time));
             hub.buildDone();
         }
     }

@@ -11,9 +11,10 @@ import { NodeJsInputFileSystem, ResolverFactory } from 'enhanced-resolve';
 
 import hub from './EventHub';
 import { Settings } from './Settings';
-import { ICompilerFlags, logAndWriteUtf8FileAsync, timedLog } from './CompilerUtilities';
+import { ICompilerFlags, outputFileThenLog } from './CompilerUtilities';
 import { prettyHrTime } from './PrettyUnits';
 import { prettyError } from './PrettyObject';
+import { Shout } from './Shout';
 
 let resolver = ResolverFactory.createResolver({
     fileSystem: new NodeJsInputFileSystem(),
@@ -173,12 +174,12 @@ export class SassBuildTool {
         let sassResult = await this.compileSassAsync(sassOptions);
         let cssResult = await postcss(this.postcssPlugins).process(sassResult.css, this.postcssOptions);
 
-        let t1 = logAndWriteUtf8FileAsync(cssOutput, cssResult.css);
+        let t1 = outputFileThenLog(cssOutput, cssResult.css);
         if (cssResult.map) {
             let sm = cssResult.map.toJSON();
             // HACK78
             this.fixSourceMap(sm as any);
-            await logAndWriteUtf8FileAsync(cssOutput + '.map', JSON.stringify(sm));
+            await outputFileThenLog(cssOutput + '.map', JSON.stringify(sm));
         }
         await t1;
     }
@@ -221,7 +222,7 @@ export class SassBuildTool {
      * Executes build method with a formatted error and stopwatch wrapper. 
      */
     async buildWithStopwatch() {
-        timedLog('Compiling CSS', chalk.cyan(this.settings.cssEntry));
+        Shout.timed('Compiling CSS', chalk.cyan(this.settings.cssEntry));
         let start = process.hrtime();
         try {
             await this.build();
@@ -231,7 +232,7 @@ export class SassBuildTool {
         }
         finally {
             let time = prettyHrTime(process.hrtime(start));
-            timedLog('Finished CSS build after', chalk.green(time));
+            Shout.timed('Finished CSS build after', chalk.green(time));
             hub.buildDone();
         }
     }

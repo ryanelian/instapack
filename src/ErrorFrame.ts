@@ -19,32 +19,41 @@ export class StackFrame {
 
     innerFrame: StackFrame;
 
-    static parseFrame(line: string) {
-        if (stackFrameParser.test(line)) {
-            let parsed = stackFrameParser.exec(line);
-            let frame = new StackFrame();
+    raw: string;
 
-            frame.isEval = Boolean(parsed[1]);
-            frame.methodName = parsed[2];
+    parseSuccess: boolean;
 
-            let details = parsed[3];
-            frame.innerFrame = this.parseFrame(details);
-            if (!frame.innerFrame) {
-                frame.filePath = upath.toUnix(details);
-            }
-
-            frame.isAnonymous = Boolean(parsed[4]);
-            frame.lineNumber = parseInt(parsed[5]);
-            frame.columnNumber = parseInt(parsed[6]);
-
-            // console.log();
-            // console.log(line);
-            // console.log(JSON.stringify(frame, null, 2));
-
+    static parseFrame(line: string): StackFrame {
+        let frame = new StackFrame();
+        line = line.trim();
+        frame.raw = line;
+        frame.parseSuccess = stackFrameParser.test(line);
+        if (frame.parseSuccess === false) {
             return frame;
-        } else {
-            return null;
         }
+
+        let parsed = stackFrameParser.exec(line);
+        frame.isEval = Boolean(parsed[1]);
+        frame.methodName = parsed[2];
+
+        let details = parsed[3].trim();
+        if (details) {
+            if (details.endsWith('.js')) {
+                frame.filePath = upath.toUnix(details);
+            } else {
+                frame.innerFrame = this.parseFrame(details);
+            }
+        }
+
+        frame.isAnonymous = Boolean(parsed[4]);
+        frame.lineNumber = parseInt(parsed[5]);
+        frame.columnNumber = parseInt(parsed[6]);
+
+        // console.log();
+        // console.log(line);
+        // console.log(JSON.stringify(frame, null, 2));
+
+        return frame;
     }
 
     static parseErrorStack(errorStack: string): StackFrame[] {
@@ -55,12 +64,7 @@ export class StackFrame {
 
         for (let line of lines) {
             let frame = this.parseFrame(line);
-            if (frame) {
-                frames.push(frame);
-            } else {
-                console.warn('Cannot render an Error Frame. Please file an issue to instapack at GitHub: ');
-                console.warn(line);
-            }
+            frames.push(frame);
         }
 
         return frames;
@@ -95,6 +99,17 @@ export class StackFrame {
             render += ' ';
         }
         render += '- ';
+
+        if (this.parseSuccess === false) {
+            let s = this.raw.substr(3);
+            if (s.includes('<anonymous>')) {
+                render += chalk.magenta(s);
+            } else {
+                render += chalk.red(s);
+            }
+
+            return render;
+        }
 
         if (this.isEval) {
             render += chalk.yellow('eval') + ' ';

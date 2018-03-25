@@ -5,24 +5,29 @@ const upath = require("upath");
 const stackFrameParser = /^\s*(eval )?at ((?:new )?\S+) (?:\[as handler\] )?\((.+?)(, <anonymous>)?:(\d+):(\d+)\)$/;
 class StackFrame {
     static parseFrame(line) {
-        if (stackFrameParser.test(line)) {
-            let parsed = stackFrameParser.exec(line);
-            let frame = new StackFrame();
-            frame.isEval = Boolean(parsed[1]);
-            frame.methodName = parsed[2];
-            let details = parsed[3];
-            frame.innerFrame = this.parseFrame(details);
-            if (!frame.innerFrame) {
-                frame.filePath = upath.toUnix(details);
-            }
-            frame.isAnonymous = Boolean(parsed[4]);
-            frame.lineNumber = parseInt(parsed[5]);
-            frame.columnNumber = parseInt(parsed[6]);
+        let frame = new StackFrame();
+        line = line.trim();
+        frame.raw = line;
+        frame.parseSuccess = stackFrameParser.test(line);
+        if (frame.parseSuccess === false) {
             return frame;
         }
-        else {
-            return null;
+        let parsed = stackFrameParser.exec(line);
+        frame.isEval = Boolean(parsed[1]);
+        frame.methodName = parsed[2];
+        let details = parsed[3].trim();
+        if (details) {
+            if (details.endsWith('.js')) {
+                frame.filePath = upath.toUnix(details);
+            }
+            else {
+                frame.innerFrame = this.parseFrame(details);
+            }
         }
+        frame.isAnonymous = Boolean(parsed[4]);
+        frame.lineNumber = parseInt(parsed[5]);
+        frame.columnNumber = parseInt(parsed[6]);
+        return frame;
     }
     static parseErrorStack(errorStack) {
         let lines = errorStack.split('\n');
@@ -30,13 +35,7 @@ class StackFrame {
         let frames = [];
         for (let line of lines) {
             let frame = this.parseFrame(line);
-            if (frame) {
-                frames.push(frame);
-            }
-            else {
-                console.warn('Cannot render an Error Frame. Please file an issue to instapack at GitHub: ');
-                console.warn(line);
-            }
+            frames.push(frame);
         }
         return frames;
     }
@@ -63,6 +62,16 @@ class StackFrame {
             render += ' ';
         }
         render += '- ';
+        if (this.parseSuccess === false) {
+            let s = this.raw.substr(3);
+            if (s.includes('<anonymous>')) {
+                render += chalk_1.default.magenta(s);
+            }
+            else {
+                render += chalk_1.default.red(s);
+            }
+            return render;
+        }
         if (this.isEval) {
             render += chalk_1.default.yellow('eval') + ' ';
         }

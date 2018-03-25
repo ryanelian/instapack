@@ -81,14 +81,6 @@ export class PrettyObject {
     }
 
     /**
-     * Detects whether an object is Sass Error.
-     * @param o 
-     */
-    isSassError(o): boolean {
-        return (o instanceof Error) && o['formatted'];
-    }
-
-    /**
      * Recursively converts an object to its string representative, with colors for command line interface.
      * @param o 
      * @param level 
@@ -116,10 +108,6 @@ export class PrettyObject {
             }
             return result.join('\n');
         } else if (typeof o === 'object') {
-            if (this.isSassError(o)) {
-                return chalk.red(o['formatted'] as string);
-            }
-
             let result = [];
             for (let key of Object.keys(o).sort()) {
                 if (this.isFunction(o[key])) {
@@ -146,15 +134,3 @@ export class PrettyObject {
 
 let p = new PrettyObject();
 export default p;
-
-/**
- * Returns a formatted error.
- * @param error 
- */
-export function prettyError(error: Error) {
-    try {
-        return p.render(error);
-    } catch {
-        return chalk.red(error as any);
-    }
-}

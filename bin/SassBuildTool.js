@@ -20,7 +20,6 @@ const enhanced_resolve_1 = require("enhanced-resolve");
 const EventHub_1 = require("./EventHub");
 const CompilerUtilities_1 = require("./CompilerUtilities");
 const PrettyUnits_1 = require("./PrettyUnits");
-const PrettyObject_1 = require("./PrettyObject");
 const Shout_1 = require("./Shout");
 let resolver = enhanced_resolve_1.ResolverFactory.createResolver({
     fileSystem: new enhanced_resolve_1.NodeJsInputFileSystem(),
@@ -151,7 +150,7 @@ class SassBuildTool {
                 yield this.build();
             }
             catch (error) {
-                console.error(PrettyObject_1.prettyError(error));
+                Shout_1.Shout.stackTrace(error);
             }
             finally {
                 let time = PrettyUnits_1.prettyHrTime(process.hrtime(start));

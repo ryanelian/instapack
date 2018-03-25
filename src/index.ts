@@ -85,7 +85,7 @@ export = class instapack {
                     await packageManager.restore(settings.packageManager);
                 } catch (error) {
                     Shout.error('when restoring package:');
-                    console.error(error);
+                    Shout.stackTrace(error);
                 }
             } else {
                 Shout.warning('unable to find', chalk.cyan(this.settings.packageJson), chalk.grey('skipping package restore...'));
@@ -127,7 +127,7 @@ export = class instapack {
             await cleanCSS;
             console.log('Clean successful: ' + this.settings.outputCssFolder);
         } catch (error) {
-            console.error(error);
+            Shout.stackTrace(error);
         }
     }
 
@@ -147,7 +147,7 @@ export = class instapack {
             await this.globalSettingsManager.set(key, value);
         } catch (error) {
             Shout.error('when saving new settings:');
-            console.error(error);
+            Shout.stackTrace(error);
         }
     }
 }

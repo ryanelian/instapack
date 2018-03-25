@@ -281,10 +281,7 @@ export class TypeScriptBuildTool {
     build() {
         webpack(this.webpackConfiguration, (error, stats) => {
             if (error) {
-                Shout.error('during JS build:');
-                console.error(error);
-                hub.buildDone();
-                return;
+                throw error;
             }
 
             let o = stats.toJson(this.webpackStatsJsonMinimal);

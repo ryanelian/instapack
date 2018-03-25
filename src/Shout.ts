@@ -70,5 +70,19 @@ export let Shout = {
         let message = concatenateTokens(tokens);
         let output = chalk.magenta('Sass') + message;
         console.log(output);
+    },
+
+    stackTrace: function(error: Error){
+        let render: string;
+
+        if (error['formatted']){
+            // for node-sass compile error
+            render = chalk.red(error['formatted'])
+        } else {
+            // TODO
+            render = chalk.red(error.toString());
+        }
+
+        console.error(error);
     }
 };

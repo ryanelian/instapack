@@ -175,7 +175,7 @@ class Compiler {
         }
         task.catch(error => {
             Shout_1.Shout.fatal(`during ${taskName.toUpperCase()} 'build:`);
-            console.error(error);
+            Shout_1.Shout.stackTrace(error);
             EventHub_1.default.buildDone();
         });
     }

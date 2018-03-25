@@ -253,7 +253,7 @@ export class Compiler {
 
         task.catch(error => {
             Shout.fatal(`during ${taskName.toUpperCase()} 'build:`);
-            console.error(error);
+            Shout.stackTrace(error);
             hub.buildDone();
         });
     }

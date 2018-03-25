@@ -49,7 +49,7 @@ module.exports = class instapack {
                     }
                     catch (error) {
                         Shout_1.Shout.error('when restoring package:');
-                        console.error(error);
+                        Shout_1.Shout.stackTrace(error);
                     }
                 }
                 else {
@@ -84,7 +84,7 @@ module.exports = class instapack {
                 console.log('Clean successful: ' + this.settings.outputCssFolder);
             }
             catch (error) {
-                console.error(error);
+                Shout_1.Shout.stackTrace(error);
             }
         });
     }
@@ -100,7 +100,7 @@ module.exports = class instapack {
             }
             catch (error) {
                 Shout_1.Shout.error('when saving new settings:');
-                console.error(error);
+                Shout_1.Shout.stackTrace(error);
             }
         });
     }

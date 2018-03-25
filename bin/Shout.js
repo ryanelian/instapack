@@ -55,5 +55,15 @@ exports.Shout = {
         let message = concatenateTokens(tokens);
         let output = chalk_1.default.magenta('Sass') + message;
         console.log(output);
+    },
+    stackTrace: function (error) {
+        let render;
+        if (error['formatted']) {
+            render = chalk_1.default.red(error['formatted']);
+        }
+        else {
+            render = chalk_1.default.red(error.toString());
+        }
+        console.error(error);
     }
 };

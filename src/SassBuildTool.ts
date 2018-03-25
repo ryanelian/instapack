@@ -13,7 +13,6 @@ import hub from './EventHub';
 import { Settings } from './Settings';
 import { ICompilerFlags, outputFileThenLog } from './CompilerUtilities';
 import { prettyHrTime } from './PrettyUnits';
-import { prettyError } from './PrettyObject';
 import { Shout } from './Shout';
 
 let resolver = ResolverFactory.createResolver({
@@ -228,7 +227,7 @@ export class SassBuildTool {
             await this.build();
         }
         catch (error) {
-            console.error(prettyError(error));
+            Shout.stackTrace(error);
         }
         finally {
             let time = prettyHrTime(process.hrtime(start));

@@ -9,13 +9,14 @@
         "output": "www"
     },
     "dependencies": {
+        "@types/luxon": "^0.5.0",
         "@types/pouchdb-browser": "^6.1.2",
         "@types/requirejs": "^2.1.31",
         "axios": "^0.18.0",
         "es6-promise": "^4.2.4",
         "font-awesome": "^4.7.0",
         "linq": "^3.0.9",
-        "moment": "^2.21.0",
+        "luxon": "^1.0.0",
         "onsenui": "^2.9.2",
         "pouchdb-browser": "^6.4.3",
         "tslib": "^1.9.0",

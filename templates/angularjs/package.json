@@ -20,6 +20,7 @@
     "@types/angular": "^1.6.43",
     "@types/bootbox": "^4.4.36",
     "@types/jquery": "^3.3.1",
+    "@types/luxon": "^0.5.0",
     "@types/requirejs": "^2.1.31",
     "angular": "^1.6.9",
     "angular-animate": "^1.6.9",
@@ -32,7 +33,7 @@
     "jquery-validation": "^1.17.0",
     "jquery-validation-unobtrusive": "^3.2.8",
     "linq": "^3.0.9",
-    "moment": "^2.21.0",
+    "luxon": "^1.0.0",
     "tslib": "^1.9.0"
   }
 }

@@ -1,9 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const https = require("https");
+const cp = require("child_process");
 const chalk_1 = require("chalk");
 const packageJSON = require('../package.json');
-const remotePackageJsonUrl = 'https://raw.githubusercontent.com/ryanelian/instapack/master/package.json';
 class Meta {
     get name() {
         return packageJSON.name;
@@ -18,28 +17,19 @@ class Meta {
         return false;
     }
     checkForUpdates() {
-        this.updateChecker = https.get(remotePackageJsonUrl, response => {
-            let body = '';
-            response.setEncoding('utf8');
-            response.on('data', data => {
-                body += data;
-            });
-            response.on('end', () => {
-                try {
-                    let json = JSON.parse(body);
-                    this.remoteVersion = json.version;
-                }
-                catch (error) {
-                }
-            });
-        }).on('error', () => { });
+        this.updateChecker = cp.exec('npm view instapack version', (error, stdout, stderr) => {
+            if (error || stderr) {
+                return;
+            }
+            this.remoteVersion = stdout.trim();
+        });
     }
     updateNag() {
         if (this.nagOnce) {
             return;
         }
         if (this.updateChecker) {
-            this.updateChecker.abort();
+            this.updateChecker.kill();
         }
         if (this.isOutdated) {
             console.log();

@@ -1,9 +1,7 @@
-import * as https from 'https';
-import { ClientRequest } from 'http';
+import * as cp from 'child_process';
 import chalk from 'chalk';
 
 const packageJSON = require('../package.json');
-const remotePackageJsonUrl = 'https://raw.githubusercontent.com/ryanelian/instapack/master/package.json';
 
 /**
  * Contains properties and methods
@@ -12,7 +10,7 @@ export class Meta {
     /**
      * Sets or gets the HTTP request for checking remote instapack version.
      */
-    private updateChecker: ClientRequest;
+    private updateChecker: cp.ChildProcess;
 
     /**
      * Sets or gets the nag display flag. User should not be nagged twice.
@@ -50,26 +48,16 @@ export class Meta {
     }
 
     /**
-     * Triggers a background HTTP request to instapack GitHub master branch, checking remote package version.
+     * Triggers a background npm latest package version check.
      */
     checkForUpdates() {
-        this.updateChecker = https.get(remotePackageJsonUrl, response => {
+        this.updateChecker = cp.exec('npm view instapack version', (error, stdout, stderr) => {
+            if (error || stderr) {
+                return;
+            }
 
-            let body = '';
-            response.setEncoding('utf8');
-            response.on('data', data => {
-                body += data;
-            });
-
-            response.on('end', () => {
-                try {
-                    let json = JSON.parse(body);
-                    this.remoteVersion = json.version;
-                } catch (error) {
-                }
-            });
-
-        }).on('error', () => { });
+            this.remoteVersion = stdout.trim();
+        });
     }
 
     /**
@@ -81,7 +69,7 @@ export class Meta {
         }
 
         if (this.updateChecker) {
-            this.updateChecker.abort();
+            this.updateChecker.kill();
         }
 
         if (this.isOutdated) {

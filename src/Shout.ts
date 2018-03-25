@@ -78,7 +78,8 @@ export let Shout = {
 
         if (error['formatted']) {
             // for node-sass compile error
-            render = chalk.red(error['formatted']);
+            let formatted = (error['formatted'] as string).trim();
+            render = chalk.red(formatted);
         } else {
             render = chalk.bgRed(error.name) + ' ' + error.message;
             for (let frame of StackFrame.parseErrorStack(error.stack)) {

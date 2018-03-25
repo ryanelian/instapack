@@ -188,7 +188,10 @@ class TypeScriptBuildTool {
     build() {
         webpack(this.webpackConfiguration, (error, stats) => {
             if (error) {
-                throw error;
+                Shout_1.Shout.fatal('during JS build (tool):');
+                Shout_1.Shout.stackTrace(error);
+                EventHub_1.default.buildDone();
+                return;
             }
             let o = stats.toJson(this.webpackStatsJsonMinimal);
             if (stats.hasErrors() || stats.hasWarnings()) {
@@ -205,7 +208,7 @@ class TypeScriptBuildTool {
             if (this.flags.analyze) {
                 Shout_1.Shout.timed('Generating the module size analysis report for JS output, please wait...');
                 setTimeout(() => {
-                    process.exit(0);
+                    EventHub_1.default.buildDone();
                 }, 5 * 1000);
                 return;
             }

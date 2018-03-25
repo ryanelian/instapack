@@ -34,7 +34,7 @@ class StackFrame {
                 frames.push(frame);
             }
             else {
-                console.warn('Cannot render an Error Frame, please file an issue to instapack at GitHub: ');
+                console.warn('Cannot render an Error Frame. Please file an issue to instapack at GitHub: ');
                 console.warn(line);
             }
         }

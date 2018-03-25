@@ -60,7 +60,8 @@ exports.Shout = {
     stackTrace: function (error) {
         let render;
         if (error['formatted']) {
-            render = chalk_1.default.red(error['formatted']);
+            let formatted = error['formatted'].trim();
+            render = chalk_1.default.red(formatted);
         }
         else {
             render = chalk_1.default.bgRed(error.name) + ' ' + error.message;

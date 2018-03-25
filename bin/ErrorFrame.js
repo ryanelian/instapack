@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const chalk_1 = require("chalk");
 const upath = require("upath");
-const stackFrameParser = /^\s*(eval )?at (\S+) \((.+?)(, <anonymous>)?:(\d+):(\d+)\)$/;
+const stackFrameParser = /^\s*(eval )?at ((?:new )?\S+) (?:\[as handler\] )?\((.+?)(, <anonymous>)?:(\d+):(\d+)\)$/;
 class StackFrame {
     static parseFrame(line) {
         if (stackFrameParser.test(line)) {
@@ -30,7 +30,13 @@ class StackFrame {
         let frames = [];
         for (let line of lines) {
             let frame = this.parseFrame(line);
-            frames.push(frame);
+            if (frame) {
+                frames.push(frame);
+            }
+            else {
+                console.warn('Cannot render an Error Frame, please file an issue to instapack at GitHub: ');
+                console.warn(line);
+            }
         }
         return frames;
     }
@@ -51,7 +57,7 @@ class StackFrame {
         }
         return s;
     }
-    render(level = 1) {
+    render(level = 0) {
         let render = '';
         for (let i = 0; i < level * 2; i++) {
             render += ' ';

@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import * as upath from 'upath';
 
-const stackFrameParser = /^\s*(eval )?at (\S+) \((.+?)(, <anonymous>)?:(\d+):(\d+)\)$/;
+const stackFrameParser = /^\s*(eval )?at ((?:new )?\S+) (?:\[as handler\] )?\((.+?)(, <anonymous>)?:(\d+):(\d+)\)$/;
 
 export class StackFrame {
 
@@ -55,7 +55,12 @@ export class StackFrame {
 
         for (let line of lines) {
             let frame = this.parseFrame(line);
-            frames.push(frame);
+            if (frame) {
+                frames.push(frame);
+            } else {
+                console.warn('Cannot render an Error Frame. Please file an issue to instapack at GitHub: ');
+                console.warn(line);
+            }
         }
 
         return frames;
@@ -83,7 +88,7 @@ export class StackFrame {
         return s;
     }
 
-    render(level: number = 1): string {
+    render(level: number = 0): string {
         let render = '';
 
         for (let i = 0; i < level * 2; i++) {

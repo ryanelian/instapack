@@ -173,17 +173,17 @@ class SassBuildTool {
         })
             .on('add', file => {
             file = upath.toUnix(file);
-            console.log(chalk_1.default.magenta('Sass') + chalk_1.default.grey(' tracking new file: ' + file));
+            Shout_1.Shout.sass(chalk_1.default.grey('tracking new file:', file));
             debounce();
         })
             .on('change', file => {
             file = upath.toUnix(file);
-            console.log(chalk_1.default.magenta('Sass') + chalk_1.default.grey(' updating file: ' + file));
+            Shout_1.Shout.sass(chalk_1.default.grey('updating file:', file));
             debounce();
         })
             .on('unlink', file => {
             file = upath.toUnix(file);
-            console.log(chalk_1.default.magenta('Sass') + chalk_1.default.grey(' removing file: ' + file));
+            Shout_1.Shout.sass(chalk_1.default.grey('removing file:', file));
             debounce();
         });
     }

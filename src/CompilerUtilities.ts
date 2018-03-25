@@ -25,6 +25,6 @@ export function outputFileThenLog(filePath: string, content: string) {
     let name = upath.basename(filePath);
     let size = prettyBytes(bundle.byteLength);
 
-    Shout.timed(chalk.blue(name) + ' ' + chalk.magenta(size));
+    Shout.timed(chalk.blue(name), chalk.magenta(size));
     return fse.outputFile(filePath, bundle);
 }

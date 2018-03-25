@@ -256,7 +256,7 @@ export class TypeScriptCheckerTool {
                 }
 
                 this.addOrUpdateSourceFileCache(file);
-                console.log(chalk.blue('TypeScript') + chalk.grey(' tracking new file: ' + file));
+                Shout.typescript(chalk.grey('tracking new file:', file));
                 debounce();
             })
             .on('change', (file: string) => {
@@ -264,7 +264,7 @@ export class TypeScriptCheckerTool {
 
                 let changed = this.addOrUpdateSourceFileCache(file);
                 if (changed) {
-                    console.log(chalk.blue('TypeScript') + chalk.grey(' updating file: ' + file));
+                    Shout.typescript(chalk.grey('updating file:', file));
                     debounce();
                 }
             })
@@ -275,7 +275,7 @@ export class TypeScriptCheckerTool {
                     this.includeFiles.delete(file);
                 }
 
-                console.log(chalk.blue('TypeScript') + chalk.grey(' removing file: ' + file));
+                Shout.typescript(chalk.grey('removing file:', file));
 
                 if (this.sources[file]) {
                     delete this.sources[file];

@@ -9,7 +9,7 @@ function outputFileThenLog(filePath, content) {
     let bundle = Buffer.from(content, 'utf8');
     let name = upath.basename(filePath);
     let size = PrettyUnits_1.prettyBytes(bundle.byteLength);
-    Shout_1.Shout.timed(chalk_1.default.blue(name) + ' ' + chalk_1.default.magenta(size));
+    Shout_1.Shout.timed(chalk_1.default.blue(name), chalk_1.default.magenta(size));
     return fse.outputFile(filePath, bundle);
 }
 exports.outputFileThenLog = outputFileThenLog;

@@ -142,14 +142,14 @@ class TypeScriptCheckerTool {
                 this.includeFiles.add(file);
             }
             this.addOrUpdateSourceFileCache(file);
-            console.log(chalk_1.default.blue('TypeScript') + chalk_1.default.grey(' tracking new file: ' + file));
+            Shout_1.Shout.typescript(chalk_1.default.grey('tracking new file:', file));
             debounce();
         })
             .on('change', (file) => {
             file = upath.toUnix(file);
             let changed = this.addOrUpdateSourceFileCache(file);
             if (changed) {
-                console.log(chalk_1.default.blue('TypeScript') + chalk_1.default.grey(' updating file: ' + file));
+                Shout_1.Shout.typescript(chalk_1.default.grey('updating file:', file));
                 debounce();
             }
         })
@@ -158,7 +158,7 @@ class TypeScriptCheckerTool {
             if (file.endsWith('.d.ts') && this.includeFiles.has(file)) {
                 this.includeFiles.delete(file);
             }
-            console.log(chalk_1.default.blue('TypeScript') + chalk_1.default.grey(' removing file: ' + file));
+            Shout_1.Shout.typescript(chalk_1.default.grey('removing file:', file));
             if (this.sources[file]) {
                 delete this.sources[file];
                 delete this.versions[file];

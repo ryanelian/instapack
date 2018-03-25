@@ -188,7 +188,7 @@ class TypeScriptBuildTool {
     build() {
         webpack(this.webpackConfiguration, (error, stats) => {
             if (error) {
-                console.error(chalk_1.default.red('FATAL ERROR'), 'during JS build:');
+                Shout_1.Shout.error('during JS build:');
                 console.error(error);
                 EventHub_1.default.buildDone();
                 return;

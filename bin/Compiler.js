@@ -169,12 +169,12 @@ class Compiler {
                     break;
                 }
                 default: {
-                    throw Error('Task `' + taskName + '` does not exists!');
+                    throw Error(`Task '${taskName}' does not exists!`);
                 }
             }
         }
         task.catch(error => {
-            console.error(chalk_1.default.red('FATAL ERROR'), 'during', taskName.toUpperCase(), 'build:');
+            Shout_1.Shout.fatal(`during ${taskName.toUpperCase()} 'build:`);
             console.error(error);
             EventHub_1.default.buildDone();
         });

@@ -29,21 +29,21 @@ exports.Shout = {
     error: function (...tokens) {
         let message = concatenateTokens(tokens);
         let output = `[${chalk_1.default.red('ERROR')}]${message}`;
-        console.log(output);
+        console.error(output);
     },
     fatal: function (...tokens) {
         let message = concatenateTokens(tokens);
         let output = `[${chalk_1.default.red('FATAL ERROR')}]${message}`;
-        console.log(output);
+        console.error(output);
     },
     danger: function (...tokens) {
         let message = concatenateTokens(tokens);
         let output = `[${chalk_1.default.red('DANGER')}]${message}`;
-        console.log(output);
+        console.warn(output);
     },
     warning: function (...tokens) {
         let message = concatenateTokens(tokens);
         let output = `[${chalk_1.default.yellow('WARNING')}]${message}`;
-        console.log(output);
+        console.warn(output);
     },
 };

@@ -135,7 +135,7 @@ export class TypeScriptCheckerTool {
      */
     private addOrUpdateSourceFileCache(fileName: string) {
         let source = this.readSourceFile(fileName, this.compilerOptions.target, error => {
-            console.error(chalk.red('Error') + ' when reading SourceFile: ' + fileName);
+            Shout.error('when reading TypeScript source file:', fileName);
             console.error(error);
         });
 
@@ -169,7 +169,7 @@ export class TypeScriptCheckerTool {
             let checks = Array.from(this.includeFiles).map(file => {
                 return fse.pathExists(file).then(exist => {
                     if (!exist) {
-                        console.error(chalk.red('FATAL ERROR') + ' during type-check, included file not found: ' + chalk.grey(file));
+                        Shout.fatal('during type-check, included file not found:' + chalk.grey(file));
                         throw new Error('File not found: ' + file);
                     }
                 });

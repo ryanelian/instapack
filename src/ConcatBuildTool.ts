@@ -159,7 +159,7 @@ export class ConcatBuildTool {
             }
 
             let t1 = this.concatTarget(o, modules).catch(error => {
-                console.error(chalk.red('ERROR'), 'when concatenating', chalk.blue(o));
+                Shout.error('when concatenating', chalk.blue(o));
                 console.error(error);
             });
 

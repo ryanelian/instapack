@@ -7,6 +7,7 @@ import * as upath from 'upath';
 import chalk from 'chalk';
 import { GlobalSettingsManager } from './GlobalSettingsManager';
 import { PackageManager } from './PackageManager';
+import { Shout } from './Shout';
 
 /**
  * Exposes methods for developing a web app client project.
@@ -83,7 +84,7 @@ export = class instapack {
                 try {
                     await packageManager.restore(settings.packageManager);
                 } catch (error) {
-                    console.error(chalk.red('ERROR'), 'when restoring package:');
+                    Shout.error('when restoring package:');
                     console.error(error);
                 }
             } else {
@@ -103,7 +104,7 @@ export = class instapack {
 
         let exist = await fse.pathExists(templateFolder);
         if (!exist) {
-            console.error(chalk.red('ERROR'), 'Unable to find new project template for:', chalk.cyan(template));
+            Shout.error('Unable to find new project template for:', chalk.cyan(template));
             return;
         }
 
@@ -138,14 +139,14 @@ export = class instapack {
     async changeGlobalSetting(key: string, value: string) {
         let valid = this.globalSettingsManager.validate(key, value);
         if (!valid) {
-            console.error(chalk.red('ERROR'), 'invalid settings.');
+            Shout.error('invalid setting! Please consult README.')
             return;
         }
 
         try {
             await this.globalSettingsManager.set(key, value);
         } catch (error) {
-            console.error('Error when saving setting:');
+            Shout.error('when saving new settings:');
             console.error(error);
         }
     }

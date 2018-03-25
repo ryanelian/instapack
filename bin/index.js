@@ -14,6 +14,7 @@ const upath = require("upath");
 const chalk_1 = require("chalk");
 const GlobalSettingsManager_1 = require("./GlobalSettingsManager");
 const PackageManager_1 = require("./PackageManager");
+const Shout_1 = require("./Shout");
 module.exports = class instapack {
     get availableTasks() {
         return ['all', 'js', 'css', 'concat'];
@@ -47,7 +48,7 @@ module.exports = class instapack {
                         yield packageManager.restore(settings.packageManager);
                     }
                     catch (error) {
-                        console.error(chalk_1.default.red('ERROR'), 'when restoring package:');
+                        Shout_1.Shout.error('when restoring package:');
                         console.error(error);
                     }
                 }
@@ -63,7 +64,7 @@ module.exports = class instapack {
             let templateFolder = upath.join(__dirname, '../templates', template);
             let exist = yield fse.pathExists(templateFolder);
             if (!exist) {
-                console.error(chalk_1.default.red('ERROR'), 'Unable to find new project template for:', chalk_1.default.cyan(template));
+                Shout_1.Shout.error('Unable to find new project template for:', chalk_1.default.cyan(template));
                 return;
             }
             console.log('Initializing new project using template:', chalk_1.default.cyan(template));
@@ -91,14 +92,14 @@ module.exports = class instapack {
         return __awaiter(this, void 0, void 0, function* () {
             let valid = this.globalSettingsManager.validate(key, value);
             if (!valid) {
-                console.error(chalk_1.default.red('ERROR'), 'invalid settings.');
+                Shout_1.Shout.error('invalid setting! Please consult README.');
                 return;
             }
             try {
                 yield this.globalSettingsManager.set(key, value);
             }
             catch (error) {
-                console.error('Error when saving setting:');
+                Shout_1.Shout.error('when saving new settings:');
                 console.error(error);
             }
         });

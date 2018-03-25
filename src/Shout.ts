@@ -39,24 +39,24 @@ export let Shout = {
     error: function (...tokens) {
         let message = concatenateTokens(tokens);
         let output = `[${chalk.red('ERROR')}]${message}`;
-        console.log(output);
+        console.error(output);
     },
 
     fatal: function (...tokens) {
         let message = concatenateTokens(tokens);
         let output = `[${chalk.red('FATAL ERROR')}]${message}`;
-        console.log(output);
+        console.error(output);
     },
 
     danger: function (...tokens) {
         let message = concatenateTokens(tokens);
         let output = `[${chalk.red('DANGER')}]${message}`;
-        console.log(output);
+        console.warn(output);
     },
 
     warning: function (...tokens) {
         let message = concatenateTokens(tokens);
         let output = `[${chalk.yellow('WARNING')}]${message}`;
-        console.log(output);
+        console.warn(output);
     },
 };

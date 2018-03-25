@@ -244,7 +244,7 @@ export class Compiler {
                     break;
                 }
                 default: {
-                    throw Error('Task `' + taskName + '` does not exists!');
+                    throw Error(`Task '${taskName}' does not exists!`);
                 }
             }
 
@@ -252,7 +252,7 @@ export class Compiler {
         }
 
         task.catch(error => {
-            console.error(chalk.red('FATAL ERROR'), 'during', taskName.toUpperCase(), 'build:');
+            Shout.fatal(`during ${taskName.toUpperCase()} 'build:`);
             console.error(error);
             hub.buildDone();
         });

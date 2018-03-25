@@ -49,7 +49,7 @@ class TypeScriptCheckerTool {
     }
     addOrUpdateSourceFileCache(fileName) {
         let source = this.readSourceFile(fileName, this.compilerOptions.target, error => {
-            console.error(chalk_1.default.red('Error') + ' when reading SourceFile: ' + fileName);
+            Shout_1.Shout.error('when reading TypeScript source file:', fileName);
             console.error(error);
         });
         let version = this.getFileContentHash(source.text);
@@ -72,7 +72,7 @@ class TypeScriptCheckerTool {
                 let checks = Array.from(this.includeFiles).map(file => {
                     return fse.pathExists(file).then(exist => {
                         if (!exist) {
-                            console.error(chalk_1.default.red('FATAL ERROR') + ' during type-check, included file not found: ' + chalk_1.default.grey(file));
+                            Shout_1.Shout.fatal('during type-check, included file not found:' + chalk_1.default.grey(file));
                             throw new Error('File not found: ' + file);
                         }
                     });

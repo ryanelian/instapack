@@ -48,8 +48,7 @@ module.exports = class instapack {
                         yield packageManager.restore(settings.packageManager);
                     }
                     catch (error) {
-                        Shout_1.Shout.error('when restoring package:');
-                        Shout_1.Shout.stackTrace(error);
+                        Shout_1.Shout.error('when restoring package:', error);
                     }
                 }
                 else {
@@ -77,15 +76,10 @@ module.exports = class instapack {
         return __awaiter(this, void 0, void 0, function* () {
             let cleanCSS = fse.emptyDir(this.settings.outputCssFolder);
             let cleanJS = fse.emptyDir(this.settings.outputJsFolder);
-            try {
-                yield cleanJS;
-                console.log('Clean successful: ' + this.settings.outputJsFolder);
-                yield cleanCSS;
-                console.log('Clean successful: ' + this.settings.outputCssFolder);
-            }
-            catch (error) {
-                Shout_1.Shout.stackTrace(error);
-            }
+            yield cleanJS;
+            console.log('Clean successful: ' + this.settings.outputJsFolder);
+            yield cleanCSS;
+            console.log('Clean successful: ' + this.settings.outputCssFolder);
         });
     }
     changeGlobalSetting(key, value) {
@@ -99,8 +93,7 @@ module.exports = class instapack {
                 yield this.globalSettingsManager.set(key, value);
             }
             catch (error) {
-                Shout_1.Shout.error('when saving new settings:');
-                Shout_1.Shout.stackTrace(error);
+                Shout_1.Shout.error('when saving new settings:', error);
             }
         });
     }

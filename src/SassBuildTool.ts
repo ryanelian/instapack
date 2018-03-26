@@ -227,7 +227,17 @@ export class SassBuildTool {
             await this.build();
         }
         catch (error) {
-            Shout.stackTrace(error);
+            let render: string;
+
+            if (error['formatted']) {
+                // for node-sass compile error
+                let formatted = 'Sass ' + (error['formatted'] as string).trim();
+                render = chalk.red(formatted);
+            } else {
+                render = chalk.red(error.stack);
+            }
+    
+            console.error('\n' + render + '\n');
         }
         finally {
             let time = prettyHrTime(process.hrtime(start));

@@ -84,8 +84,7 @@ export = class instapack {
                 try {
                     await packageManager.restore(settings.packageManager);
                 } catch (error) {
-                    Shout.error('when restoring package:');
-                    Shout.stackTrace(error);
+                    Shout.error('when restoring package:', error);
                 }
             } else {
                 Shout.warning('unable to find', chalk.cyan(this.settings.packageJson), chalk.grey('skipping package restore...'));
@@ -121,14 +120,10 @@ export = class instapack {
         let cleanCSS = fse.emptyDir(this.settings.outputCssFolder);
         let cleanJS = fse.emptyDir(this.settings.outputJsFolder);
 
-        try {
-            await cleanJS;
-            console.log('Clean successful: ' + this.settings.outputJsFolder);
-            await cleanCSS;
-            console.log('Clean successful: ' + this.settings.outputCssFolder);
-        } catch (error) {
-            Shout.stackTrace(error);
-        }
+        await cleanJS;
+        console.log('Clean successful: ' + this.settings.outputJsFolder);
+        await cleanCSS;
+        console.log('Clean successful: ' + this.settings.outputCssFolder);
     }
 
     /**
@@ -146,8 +141,7 @@ export = class instapack {
         try {
             await this.globalSettingsManager.set(key, value);
         } catch (error) {
-            Shout.error('when saving new settings:');
-            Shout.stackTrace(error);
+            Shout.error('when saving new settings:', error);
         }
     }
 }

@@ -188,14 +188,14 @@ class TypeScriptBuildTool {
     build() {
         webpack(this.webpackConfiguration, (error, stats) => {
             if (error) {
-                Shout_1.Shout.fatal('during JS build (tool):');
-                Shout_1.Shout.stackTrace(error);
+                Shout_1.Shout.fatal('during JS build (tool):', error);
                 EventHub_1.default.buildDone();
                 return;
             }
             let o = stats.toJson(this.webpackStatsJsonMinimal);
             if (stats.hasErrors() || stats.hasWarnings()) {
-                console.log(stats.toString(this.webpackStatsErrorsOnly));
+                let buildErrors = '\n' + stats.toString(this.webpackStatsErrorsOnly).trim() + '\n';
+                console.error(buildErrors);
             }
             for (let asset of o.assets) {
                 if (asset.emitted) {

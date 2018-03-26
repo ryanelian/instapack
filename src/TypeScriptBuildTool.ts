@@ -281,8 +281,7 @@ export class TypeScriptBuildTool {
     build() {
         webpack(this.webpackConfiguration, (error, stats) => {
             if (error) {
-                Shout.fatal('during JS build (tool):');
-                Shout.stackTrace(error);
+                Shout.fatal('during JS build (tool):', error);
                 hub.buildDone();
                 return;
             }
@@ -290,7 +289,8 @@ export class TypeScriptBuildTool {
             let o = stats.toJson(this.webpackStatsJsonMinimal);
 
             if (stats.hasErrors() || stats.hasWarnings()) {
-                console.log(stats.toString(this.webpackStatsErrorsOnly));
+                let buildErrors = '\n' + stats.toString(this.webpackStatsErrorsOnly).trim() + '\n';
+                console.error(buildErrors);
             }
 
             for (let asset of o.assets) {

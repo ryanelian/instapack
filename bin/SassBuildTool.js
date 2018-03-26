@@ -150,7 +150,15 @@ class SassBuildTool {
                 yield this.build();
             }
             catch (error) {
-                Shout_1.Shout.stackTrace(error);
+                let render;
+                if (error['formatted']) {
+                    let formatted = 'Sass ' + error['formatted'].trim();
+                    render = chalk_1.default.red(formatted);
+                }
+                else {
+                    render = chalk_1.default.red(error.stack);
+                }
+                console.error('\n' + render + '\n');
             }
             finally {
                 let time = PrettyUnits_1.prettyHrTime(process.hrtime(start));

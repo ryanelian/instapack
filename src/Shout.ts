@@ -1,5 +1,4 @@
 import chalk from 'chalk';
-import { StackFrame } from './ErrorFrame';
 
 /**
  * Converts a number into a string. If the number is less than 10, adds 0 as prefix.
@@ -24,8 +23,16 @@ function nowFormatted() {
 
 function concatenateTokens(tokens: any[]) {
     let message = '';
-    for (let i = 0; i < tokens.length; i++) {
-        message += ' ' + tokens[i];
+    for (let token of tokens) {
+        if (token instanceof Error) {
+            message += '\n' + chalk.red(token.stack);
+            // render = chalk.bgRed(error.name) + ' ' + error.message;
+            // for (let frame of StackFrame.parseErrorStack(error.stack)) {
+            //     render += '\n' + frame.render();
+            // }
+        } else {
+            message += ' ' + token;
+        }
     }
     return message;
 }
@@ -39,13 +46,13 @@ export let Shout = {
 
     error: function (...tokens) {
         let message = concatenateTokens(tokens);
-        let output = chalk.red('ERROR') + message;
+        let output = '\n' + chalk.red('ERROR') + message + '\n';
         console.error(output);
     },
 
     fatal: function (...tokens) {
         let message = concatenateTokens(tokens);
-        let output = chalk.red('FATAL ERROR') + message;
+        let output = '\n' + chalk.red('FATAL ERROR') + message + '\n';
         console.error(output);
     },
 
@@ -71,24 +78,5 @@ export let Shout = {
         let message = concatenateTokens(tokens);
         let output = chalk.magenta('Sass') + message;
         console.log(output);
-    },
-
-    stackTrace: function (error: Error) {
-        let render: string;
-
-        if (error['formatted']) {
-            // for node-sass compile error
-            let formatted = (error['formatted'] as string).trim();
-            render = chalk.red(formatted);
-        } else {
-            render = chalk.bgRed(error.name) + ' ' + error.message;
-            for (let frame of StackFrame.parseErrorStack(error.stack)) {
-                render += '\n' + frame.render();
-            }
-        }
-
-        console.error();
-        console.error(render);
-        console.error();
     }
 };

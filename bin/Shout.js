@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const chalk_1 = require("chalk");
-const ErrorFrame_1 = require("./ErrorFrame");
 function padZeroToDoubleDigits(x) {
     let s = '';
     if (x < 10) {
@@ -16,8 +15,13 @@ function nowFormatted() {
 }
 function concatenateTokens(tokens) {
     let message = '';
-    for (let i = 0; i < tokens.length; i++) {
-        message += ' ' + tokens[i];
+    for (let token of tokens) {
+        if (token instanceof Error) {
+            message += '\n' + chalk_1.default.red(token.stack);
+        }
+        else {
+            message += ' ' + token;
+        }
     }
     return message;
 }
@@ -29,12 +33,12 @@ exports.Shout = {
     },
     error: function (...tokens) {
         let message = concatenateTokens(tokens);
-        let output = chalk_1.default.red('ERROR') + message;
+        let output = '\n' + chalk_1.default.red('ERROR') + message + '\n';
         console.error(output);
     },
     fatal: function (...tokens) {
         let message = concatenateTokens(tokens);
-        let output = chalk_1.default.red('FATAL ERROR') + message;
+        let output = '\n' + chalk_1.default.red('FATAL ERROR') + message + '\n';
         console.error(output);
     },
     danger: function (...tokens) {
@@ -56,21 +60,5 @@ exports.Shout = {
         let message = concatenateTokens(tokens);
         let output = chalk_1.default.magenta('Sass') + message;
         console.log(output);
-    },
-    stackTrace: function (error) {
-        let render;
-        if (error['formatted']) {
-            let formatted = error['formatted'].trim();
-            render = chalk_1.default.red(formatted);
-        }
-        else {
-            render = chalk_1.default.bgRed(error.name) + ' ' + error.message;
-            for (let frame of ErrorFrame_1.StackFrame.parseErrorStack(error.stack)) {
-                render += '\n' + frame.render();
-            }
-        }
-        console.error();
-        console.error(render);
-        console.error();
     }
 };

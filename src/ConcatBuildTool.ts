@@ -162,8 +162,7 @@ export class ConcatBuildTool {
             }
 
             let t1 = this.concatTarget(o, modules).catch(error => {
-                Shout.error('when concatenating', chalk.blue(o));
-                Shout.stackTrace(error);
+                Shout.error('when concatenating', chalk.blue(o) + ':', error);
             });
 
             let sourceMapPath = upath.join(this.settings.outputJsFolder, o + '.map');

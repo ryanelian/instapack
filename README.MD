@@ -42,7 +42,7 @@ Out of the box, these files will be used as the program entry points:
 
   - Spiced :hot_pepper: with [AutoPrefixer](https://github.com/postcss/autoprefixer) for applying CSS vendor-prefixes automatically!
 
-- Concatenate files listed in `package.json`. Usually the output file will be included in the HTML before `ipack.js`. [Read more below.](#configuration)
+- Concatenate files listed in `package.json`. Usually the output file will be included in the HTML before `ipack.js`. [Read more ↓](#configurations)
 
 Practical guides can be read in the [books](https://github.com/ryanelian/instapack/tree/master/books) folder.
 
@@ -106,7 +106,7 @@ Scaffolds a new instapack project into your existing app folder where the comman
 
 - `inferno` when you want to develop a web app with Inferno and Bootstrap 4.
 
-- `vue-mobile` when you want to develop a _[Progressive Web Application](https://developers.google.com/web/progressive-web-apps/)_ using Vue.js and Onsen UI! (Cordova-compatible, [read FAQ below](#how-to-develop-a-cordova-app-using-vue-mobile-template).)
+- `vue-mobile` when you want to develop a _[Progressive Web Application](https://developers.google.com/web/progressive-web-apps/)_ using Vue.js and Onsen UI! (Cordova-compatible, [read more on FAQ ↓](#how-to-develop-a-cordova-app-using-vue-mobile-template).)
 
 - `angularjs` when you need to develop a legacy web app with AngularJS 1.7 and Bootstrap 3. (Includes [jquery-validation-unobtrusive](https://github.com/aspnet/jquery-validation-unobtrusive) for ASP.NET MVC client-side validation.)
 
@@ -170,7 +170,7 @@ instapack puts configurations inside `package.json` to reduce project files clut
 
 - `cssOut` allows setting the CSS output file name. By default, it is set to `ipack.css`
 
-- `alias` allows overriding module `import` calls from all files, including dependencies. [Read more.](https://webpack.js.org/configuration/resolve/)
+- `alias` allows overriding module `import` calls from all files, including dependencies. [Read more ↗](https://webpack.js.org/configuration/resolve/)
 
   - [TypeScript `paths` compiler option in `tsconfig.json`](https://www.typescriptlang.org/docs/handbook/module-resolution.html) will be translated into aliases with caveats:
     
@@ -180,7 +180,7 @@ instapack puts configurations inside `package.json` to reduce project files clut
     
 > Packages are imported without relative paths, therefore `*` path turns all project modules into package imports. This can cause the project to be less maintainable or confusing...
 
-- `externals` allows rewriting module `import` calls from all files, including dependencies, to globally exposed objects via `window` object. [Read more.](https://webpack.js.org/configuration/externals/)
+- `externals` allows rewriting module `import` calls from all files, including dependencies, to globally exposed objects via `window` object. [Read more ↗](https://webpack.js.org/configuration/externals/)
 
 For example:
 

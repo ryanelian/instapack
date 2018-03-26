@@ -201,8 +201,7 @@ export class Compiler {
             })
             .on('unlink', (file: string) => {
                 file = upath.toUnix(file);
-
-                Shout.timed(chalk.cyan(file), 'was deleted.', chalk.red('BAD IDEA!')); // "wtf are you doing?"
+                Shout.danger(chalk.cyan(file), 'was deleted!'); // "wtf are you doing?"
             });
     }
 

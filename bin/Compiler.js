@@ -135,7 +135,7 @@ class Compiler {
         })
             .on('unlink', (file) => {
             file = upath.toUnix(file);
-            Shout_1.Shout.timed(chalk_1.default.cyan(file), 'was deleted.', chalk_1.default.red('BAD IDEA!'));
+            Shout_1.Shout.danger(chalk_1.default.cyan(file), 'was deleted!');
         });
     }
     build(taskName) {

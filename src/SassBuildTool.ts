@@ -231,13 +231,12 @@ export class SassBuildTool {
 
             if (error['formatted']) {
                 // for node-sass compile error
-                let formatted = 'Sass ' + (error['formatted'] as string).trim();
+                let formatted = 'Sass Compile' + (error['formatted'] as string).trim();
                 render = chalk.red(formatted);
+                console.error('\n' + render + '\n');
             } else {
-                render = chalk.red(error.stack);
+                Shout.error('during Sass build:', error);
             }
-    
-            console.error('\n' + render + '\n');
         }
         finally {
             let time = prettyHrTime(process.hrtime(start));

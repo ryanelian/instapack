@@ -152,13 +152,13 @@ class SassBuildTool {
             catch (error) {
                 let render;
                 if (error['formatted']) {
-                    let formatted = 'Sass ' + error['formatted'].trim();
+                    let formatted = 'Sass Compile' + error['formatted'].trim();
                     render = chalk_1.default.red(formatted);
+                    console.error('\n' + render + '\n');
                 }
                 else {
-                    render = chalk_1.default.red(error.stack);
+                    Shout_1.Shout.error('during Sass build:', error);
                 }
-                console.error('\n' + render + '\n');
             }
             finally {
                 let time = PrettyUnits_1.prettyHrTime(process.hrtime(start));

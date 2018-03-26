@@ -106,7 +106,7 @@ Scaffolds a new instapack project into your existing app folder where the comman
 
 - `inferno` when you want to develop a web app with Inferno and Bootstrap 4.
 
-- `vue-mobile` when you want to develop a _[Progressive Web Application](https://developers.google.com/web/progressive-web-apps/)_ using Vue.js and Onsen UI! (Cordova-compatible, [read more on FAQ ↓](#how-to-develop-a-cordova-app-using-vue-mobile-template).)
+- `vue-mobile` when you want to develop a _[Progressive Web Application](https://developers.google.com/web/progressive-web-apps/)_ using Vue.js and Onsen UI! (Cordova-compatible, [read more on FAQ ↓](#how-to-develop-a-cordova-app-using-vue-mobile-template))
 
 - `angularjs` when you need to develop a legacy web app with AngularJS 1.7 and Bootstrap 3. (Includes [jquery-validation-unobtrusive](https://github.com/aspnet/jquery-validation-unobtrusive) for ASP.NET MVC client-side validation.)
 
@@ -331,11 +331,9 @@ ipack --version
 
 ### Can I use [insert_framework_name_here] ?
 
-Yes, absolutely!
+Yes, absolutely! **If it worked when using standard JavaScript, it WILL work with instapack!!**
 
-You can even use jQuery or plain vanilla JS; don't worry, we're not gonna judge. :smile:
-
-Add the packages required for your project using yarn / npm then start hacking. We'll take care of the outputs.
+Add the packages required for your project using npm / Yarn and then start hacking. We'll take care of the outputs.
 
 Also, pull requests are welcomed if you have a great starting templates and books for those projects. We'd love to expand our collections!
 

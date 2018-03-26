@@ -4,7 +4,7 @@ import { Source, SourceMapSource, RawSource } from 'webpack-sources';
 import { RawSourceMap } from 'source-map';
 let Uglify = require('uglify-js');
 
-import { timedLog } from './CompilerUtilities';
+import { Shout } from './Shout';
 
 /**
  * Options required for TypeScriptBuildWebpackPlugin to function, collected from Settings and ICompilerFlags.
@@ -77,11 +77,11 @@ export class TypeScriptBuildWebpackPlugin {
      */
     apply(compiler: Compiler) {
         if (this.options.target !== 'ES5') {
-            console.warn(chalk.red('DANGER') + ' TypeScript compile target is not ' + chalk.yellow('ES5') + '! ' + chalk.grey('(tsconfig.json)'));
+            Shout.danger('TypeScript compile target is not', chalk.yellow('ES5'), '!' + chalk.grey('(tsconfig.json)'));
         }
 
         compiler.plugin('compile', compilation => {
-            timedLog('Compiling JS >', chalk.yellow(this.options.target), chalk.cyan(this.options.jsEntry));
+            Shout.timed('Compiling JS >', chalk.yellow(this.options.target), chalk.cyan(this.options.jsEntry));
         });
 
         if (!this.options.production) {

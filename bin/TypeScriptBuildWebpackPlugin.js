@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const chalk_1 = require("chalk");
 const webpack_sources_1 = require("webpack-sources");
 let Uglify = require('uglify-js');
-const CompilerUtilities_1 = require("./CompilerUtilities");
+const Shout_1 = require("./Shout");
 class TypeScriptBuildWebpackPlugin {
     constructor(options) {
         this.options = options;
@@ -29,10 +29,10 @@ class TypeScriptBuildWebpackPlugin {
     }
     apply(compiler) {
         if (this.options.target !== 'ES5') {
-            console.warn(chalk_1.default.red('DANGER') + ' TypeScript compile target is not ' + chalk_1.default.yellow('ES5') + '! ' + chalk_1.default.grey('(tsconfig.json)'));
+            Shout_1.Shout.danger('TypeScript compile target is not', chalk_1.default.yellow('ES5'), '!' + chalk_1.default.grey('(tsconfig.json)'));
         }
         compiler.plugin('compile', compilation => {
-            CompilerUtilities_1.timedLog('Compiling JS >', chalk_1.default.yellow(this.options.target), chalk_1.default.cyan(this.options.jsEntry));
+            Shout_1.Shout.timed('Compiling JS >', chalk_1.default.yellow(this.options.target), chalk_1.default.cyan(this.options.jsEntry));
         });
         if (!this.options.production) {
             return;

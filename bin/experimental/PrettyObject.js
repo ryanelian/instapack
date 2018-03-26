@@ -31,9 +31,6 @@ class PrettyObject {
         }
         return s;
     }
-    isSassError(o) {
-        return (o instanceof Error) && o['formatted'];
-    }
     render(o, level = 0) {
         if (o === undefined) {
             return this.nullChalk('undefined');
@@ -60,9 +57,6 @@ class PrettyObject {
             return result.join('\n');
         }
         else if (typeof o === 'object') {
-            if (this.isSassError(o)) {
-                return chalk_1.default.red(o['formatted']);
-            }
             let result = [];
             for (let key of Object.keys(o).sort()) {
                 if (this.isFunction(o[key])) {
@@ -88,12 +82,3 @@ class PrettyObject {
 exports.PrettyObject = PrettyObject;
 let p = new PrettyObject();
 exports.default = p;
-function prettyError(error) {
-    try {
-        return p.render(error);
-    }
-    catch (_a) {
-        return chalk_1.default.red(error);
-    }
-}
-exports.prettyError = prettyError;

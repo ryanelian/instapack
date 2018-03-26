@@ -1,19 +1,12 @@
-import * as https from 'https';
-import { ClientRequest } from 'http';
+import * as cp from 'child_process';
 import chalk from 'chalk';
 
 const packageJSON = require('../package.json');
-const remotePackageJsonUrl = 'https://raw.githubusercontent.com/ryanelian/instapack/master/package.json';
 
 /**
  * Contains properties and methods
  */
 export class Meta {
-    /**
-     * Sets or gets the HTTP request for checking remote instapack version.
-     */
-    private updateChecker: ClientRequest;
-
     /**
      * Sets or gets the nag display flag. User should not be nagged twice.
      */
@@ -50,26 +43,18 @@ export class Meta {
     }
 
     /**
-     * Triggers a background HTTP request to instapack GitHub master branch, checking remote package version.
+     * Triggers a background npm latest package version check.
      */
     checkForUpdates() {
-        this.updateChecker = https.get(remotePackageJsonUrl, response => {
+        let checker = cp.exec('npm view instapack version', {
+            timeout: 5 * 1000
+        }, (error, stdout, stderr) => {
+            if (error || stderr) {
+                return;
+            }
 
-            let body = '';
-            response.setEncoding('utf8');
-            response.on('data', data => {
-                body += data;
-            });
-
-            response.on('end', () => {
-                try {
-                    let json = JSON.parse(body);
-                    this.remoteVersion = json.version;
-                } catch (error) {
-                }
-            });
-
-        }).on('error', () => { });
+            this.remoteVersion = stdout.trim();
+        });
     }
 
     /**
@@ -80,15 +65,11 @@ export class Meta {
             return;
         }
 
-        if (this.updateChecker) {
-            this.updateChecker.abort();
-        }
-
         if (this.isOutdated) {
             console.log();
-            console.log(chalk.yellow('instapack') + ' is outdated. New version: ' + chalk.green(this.remoteVersion));
+            console.log(chalk.yellow('instapack'), 'is outdated. New version:', chalk.green(this.remoteVersion));
             if (parseInt(process.versions.node[0]) < 8) {
-                console.log(chalk.red('BEFORE UPDATING: ') + chalk.yellow('install the latest Node.js LTS version 8 ') + 'for better build performance!');
+                console.log(chalk.red('BEFORE UPDATING:'), chalk.yellow('install the latest Node.js LTS version 8'), 'for better build performance!');
                 console.log('Download URL: ' + chalk.blue('https://nodejs.org/en/download/'));
             }
         }

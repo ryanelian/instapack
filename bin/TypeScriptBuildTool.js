@@ -6,9 +6,9 @@ const webpack = require("webpack");
 const TypeScript = require("typescript");
 const webpack_bundle_analyzer_1 = require("webpack-bundle-analyzer");
 const EventHub_1 = require("./EventHub");
-const CompilerUtilities_1 = require("./CompilerUtilities");
 const PrettyUnits_1 = require("./PrettyUnits");
 const TypeScriptBuildWebpackPlugin_1 = require("./TypeScriptBuildWebpackPlugin");
+const Shout_1 = require("./Shout");
 class TypeScriptBuildTool {
     constructor(settings, flags) {
         this.settings = settings;
@@ -21,22 +21,22 @@ class TypeScriptBuildTool {
             return;
         }
         if (!this.tsconfigOptions.baseUrl) {
-            console.warn(chalk_1.default.yellow('WARNING'), chalk_1.default.cyan('tsconfig.json'), 'paths are defined, but baseUrl is not!');
+            Shout_1.Shout.warning(chalk_1.default.cyan('tsconfig.json'), 'paths are defined, but baseUrl is not!');
             return;
         }
         for (let key in this.tsconfigOptions.paths) {
             let originalKey = key;
             if (key === '*') {
-                console.warn(chalk_1.default.yellow('WARNING'), chalk_1.default.cyan('tsconfig.json'), 'paths:', chalk_1.default.yellow(key), 'is not supported!');
+                Shout_1.Shout.warning(chalk_1.default.cyan('tsconfig.json'), 'paths:', chalk_1.default.yellow(key), 'is not supported!');
                 continue;
             }
             let values = this.tsconfigOptions.paths[key];
             if (values.length > 1) {
-                console.warn(chalk_1.default.yellow('WARNING'), chalk_1.default.cyan('tsconfig.json'), 'paths:', chalk_1.default.yellow(key), 'resolves to more than one path!', chalk_1.default.grey('(Only the first will be honored.)'));
+                Shout_1.Shout.warning(chalk_1.default.cyan('tsconfig.json'), 'paths:', chalk_1.default.yellow(key), 'resolves to more than one path!', chalk_1.default.grey('(Only the first will be honored.)'));
             }
             let value = values[0];
             if (!value) {
-                console.warn(chalk_1.default.yellow('WARNING'), chalk_1.default.cyan('tsconfig.json'), 'paths:', chalk_1.default.yellow(key), 'is empty!');
+                Shout_1.Shout.warning(chalk_1.default.cyan('tsconfig.json'), 'paths:', chalk_1.default.yellow(key), 'is empty!');
                 continue;
             }
             let wildcard = false;
@@ -49,7 +49,7 @@ class TypeScriptBuildTool {
             }
             else {
                 if (wildcard) {
-                    console.warn(chalk_1.default.yellow('WARNING'), chalk_1.default.cyan('tsconfig.json'), 'paths:', chalk_1.default.yellow(originalKey), 'is a wildcard but its value is not!', chalk_1.default.grey('(Resolves to index.ts)'));
+                    Shout_1.Shout.warning(chalk_1.default.cyan('tsconfig.json'), 'paths:', chalk_1.default.yellow(originalKey), 'is a wildcard but its value is not!', chalk_1.default.grey('(Resolves to index.ts)'));
                 }
             }
             if (!this.settings.alias[key]) {
@@ -188,27 +188,27 @@ class TypeScriptBuildTool {
     build() {
         webpack(this.webpackConfiguration, (error, stats) => {
             if (error) {
-                console.error(chalk_1.default.red('FATAL ERROR'), 'during JS build:');
-                console.error(error);
+                Shout_1.Shout.fatal('during JS build (tool):', error);
                 EventHub_1.default.buildDone();
                 return;
             }
             let o = stats.toJson(this.webpackStatsJsonMinimal);
             if (stats.hasErrors() || stats.hasWarnings()) {
-                console.log(stats.toString(this.webpackStatsErrorsOnly));
+                let buildErrors = '\n' + stats.toString(this.webpackStatsErrorsOnly).trim() + '\n';
+                console.error(buildErrors);
             }
             for (let asset of o.assets) {
                 if (asset.emitted) {
                     let kb = PrettyUnits_1.prettyBytes(asset.size);
-                    CompilerUtilities_1.timedLog(chalk_1.default.blue(asset.name), chalk_1.default.magenta(kb));
+                    Shout_1.Shout.timed(chalk_1.default.blue(asset.name), chalk_1.default.magenta(kb));
                 }
             }
             let t = PrettyUnits_1.prettyMilliseconds(o.time);
-            CompilerUtilities_1.timedLog('Finished JS build after', chalk_1.default.green(t));
+            Shout_1.Shout.timed('Finished JS build after', chalk_1.default.green(t));
             if (this.flags.analyze) {
-                CompilerUtilities_1.timedLog('Generating the module size analysis report for JS output, please wait...');
+                Shout_1.Shout.timed('Generating the module size analysis report for JS output, please wait...');
                 setTimeout(() => {
-                    process.exit(0);
+                    EventHub_1.default.buildDone();
                 }, 5 * 1000);
                 return;
             }

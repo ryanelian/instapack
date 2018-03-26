@@ -15,8 +15,8 @@ const upath = require("upath");
 const chokidar = require("chokidar");
 const crypto_1 = require("crypto");
 const EventHub_1 = require("./EventHub");
-const CompilerUtilities_1 = require("./CompilerUtilities");
 const PrettyUnits_1 = require("./PrettyUnits");
+const Shout_1 = require("./Shout");
 class TypeScriptCheckerTool {
     constructor(settings) {
         this.files = {};
@@ -49,8 +49,8 @@ class TypeScriptCheckerTool {
     }
     addOrUpdateSourceFileCache(fileName) {
         let source = this.readSourceFile(fileName, this.compilerOptions.target, error => {
-            console.error(chalk_1.default.red('Error') + ' when reading SourceFile: ' + fileName);
-            console.error(error);
+            Shout_1.Shout.error('when reading TypeScript source file:', fileName);
+            console.error(chalk_1.default.red(error));
         });
         let version = this.getFileContentHash(source.text);
         let lastVersion = this.versions[fileName];
@@ -72,7 +72,7 @@ class TypeScriptCheckerTool {
                 let checks = Array.from(this.includeFiles).map(file => {
                     return fse.pathExists(file).then(exist => {
                         if (!exist) {
-                            console.error(chalk_1.default.red('FATAL ERROR') + ' during type-check, included file not found: ' + chalk_1.default.grey(file));
+                            Shout_1.Shout.fatal('during type-check, included file not found:' + chalk_1.default.grey(file));
                             throw new Error('File not found: ' + file);
                         }
                     });
@@ -83,7 +83,7 @@ class TypeScriptCheckerTool {
                 return;
             }
             let tsc = TypeScript.createProgram(Array.from(this.includeFiles), this.compilerOptions, this.host);
-            CompilerUtilities_1.timedLog('Type-checking using TypeScript', chalk_1.default.yellow(TypeScript.version));
+            Shout_1.Shout.timed('Type-checking using TypeScript', chalk_1.default.yellow(TypeScript.version));
             let start = process.hrtime();
             try {
                 let errors = [];
@@ -108,7 +108,7 @@ class TypeScriptCheckerTool {
             }
             finally {
                 let time = PrettyUnits_1.prettyHrTime(process.hrtime(start));
-                CompilerUtilities_1.timedLog('Finished type-checking after', chalk_1.default.green(time));
+                Shout_1.Shout.timed('Finished type-checking after', chalk_1.default.green(time));
                 EventHub_1.default.buildDone();
             }
         });
@@ -142,14 +142,14 @@ class TypeScriptCheckerTool {
                 this.includeFiles.add(file);
             }
             this.addOrUpdateSourceFileCache(file);
-            console.log(chalk_1.default.blue('TypeScript') + chalk_1.default.grey(' tracking new file: ' + file));
+            Shout_1.Shout.typescript(chalk_1.default.grey('tracking new file:', file));
             debounce();
         })
             .on('change', (file) => {
             file = upath.toUnix(file);
             let changed = this.addOrUpdateSourceFileCache(file);
             if (changed) {
-                console.log(chalk_1.default.blue('TypeScript') + chalk_1.default.grey(' updating file: ' + file));
+                Shout_1.Shout.typescript(chalk_1.default.grey('updating file:', file));
                 debounce();
             }
         })
@@ -158,7 +158,7 @@ class TypeScriptCheckerTool {
             if (file.endsWith('.d.ts') && this.includeFiles.has(file)) {
                 this.includeFiles.delete(file);
             }
-            console.log(chalk_1.default.blue('TypeScript') + chalk_1.default.grey(' removing file: ' + file));
+            Shout_1.Shout.typescript(chalk_1.default.grey('removing file:', file));
             if (this.sources[file]) {
                 delete this.sources[file];
                 delete this.versions[file];

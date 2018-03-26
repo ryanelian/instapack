@@ -6,7 +6,8 @@ let Uglify = require('uglify-js');
 
 import hub from './EventHub';
 import { Settings } from './Settings';
-import { ICompilerFlags, logAndWriteUtf8FileAsync, timedLog } from './CompilerUtilities';
+import { ICompilerFlags, outputFileThenLog } from './CompilerUtilities';
+import { Shout } from './Shout';
 import { prettyHrTime } from './PrettyUnits';
 
 let resolver = ResolverFactory.createResolver({
@@ -127,9 +128,9 @@ export class ConcatBuildTool {
         let result = await this.concatFilesAsync(target, files);
 
         let outPath = upath.join(this.settings.outputJsFolder, target);
-        let p1 = logAndWriteUtf8FileAsync(outPath, result.code);
+        let p1 = outputFileThenLog(outPath, result.code);
         if (result.map) {
-            await logAndWriteUtf8FileAsync(outPath + '.map', result.map);
+            await outputFileThenLog(outPath + '.map', result.map);
         }
         await p1;
     }
@@ -144,12 +145,15 @@ export class ConcatBuildTool {
         for (let target in targets) {
             let modules = targets[target];
             if (!modules || modules.length === 0) {
-                console.warn(chalk.red('WARNING'), 'concat list for', chalk.blue(target), 'is empty!');
+                Shout.warning('concat list for', chalk.blue(target), 'is empty!');
                 continue;
             }
             if (typeof modules === 'string') {
                 modules = [modules];
-                console.warn(chalk.red('WARNING'), 'concat list for', chalk.blue(target), 'is a', chalk.yellow('string'), 'instead of a', chalk.yellow('string[]'));
+                Shout.warning('concat list for', chalk.blue(target),
+                    'is a', chalk.yellow('string'),
+                    'instead of a', chalk.yellow('string[]')
+                );
             }
 
             let o = target;
@@ -158,8 +162,7 @@ export class ConcatBuildTool {
             }
 
             let t1 = this.concatTarget(o, modules).catch(error => {
-                console.error(chalk.red('ERROR'), 'when concatenating', chalk.blue(o));
-                console.error(error);
+                Shout.error('when concatenating', chalk.blue(o) + ':', error);
             });
 
             let sourceMapPath = upath.join(this.settings.outputJsFolder, o + '.map');
@@ -182,7 +185,7 @@ export class ConcatBuildTool {
         }
         finally {
             let time = prettyHrTime(process.hrtime(start));
-            timedLog('Finished JS concat after', chalk.green(time));
+            Shout.timed('Finished JS concat after', chalk.green(time));
             hub.buildDone();
         }
     }

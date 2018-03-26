@@ -7,8 +7,8 @@ import { createHash } from 'crypto';
 
 import hub from './EventHub';
 import { Settings } from './Settings';
-import { timedLog } from './CompilerUtilities';
 import { prettyHrTime } from './PrettyUnits';
+import { Shout } from './Shout';
 
 /**
  * Key-value pair of file name to cached raw file content. Used for caching TypeScript Compiler Host readFile method.
@@ -135,8 +135,8 @@ export class TypeScriptCheckerTool {
      */
     private addOrUpdateSourceFileCache(fileName: string) {
         let source = this.readSourceFile(fileName, this.compilerOptions.target, error => {
-            console.error(chalk.red('Error') + ' when reading SourceFile: ' + fileName);
-            console.error(error);
+            Shout.error('when reading TypeScript source file:', fileName);
+            console.error(chalk.red(error));
         });
 
         let version = this.getFileContentHash(source.text);
@@ -169,7 +169,7 @@ export class TypeScriptCheckerTool {
             let checks = Array.from(this.includeFiles).map(file => {
                 return fse.pathExists(file).then(exist => {
                     if (!exist) {
-                        console.error(chalk.red('FATAL ERROR') + ' during type-check, included file not found: ' + chalk.grey(file));
+                        Shout.fatal('during type-check, included file not found:' + chalk.grey(file));
                         throw new Error('File not found: ' + file);
                     }
                 });
@@ -181,7 +181,7 @@ export class TypeScriptCheckerTool {
 
         let tsc = TypeScript.createProgram(Array.from(this.includeFiles), this.compilerOptions, this.host);
 
-        timedLog('Type-checking using TypeScript', chalk.yellow(TypeScript.version));
+        Shout.timed('Type-checking using TypeScript', chalk.yellow(TypeScript.version));
         let start = process.hrtime();
 
         try {
@@ -207,7 +207,7 @@ export class TypeScriptCheckerTool {
             }
         } finally {
             let time = prettyHrTime(process.hrtime(start));
-            timedLog('Finished type-checking after', chalk.green(time));
+            Shout.timed('Finished type-checking after', chalk.green(time));
             hub.buildDone();
         }
     }
@@ -256,7 +256,7 @@ export class TypeScriptCheckerTool {
                 }
 
                 this.addOrUpdateSourceFileCache(file);
-                console.log(chalk.blue('TypeScript') + chalk.grey(' tracking new file: ' + file));
+                Shout.typescript(chalk.grey('tracking new file:', file));
                 debounce();
             })
             .on('change', (file: string) => {
@@ -264,7 +264,7 @@ export class TypeScriptCheckerTool {
 
                 let changed = this.addOrUpdateSourceFileCache(file);
                 if (changed) {
-                    console.log(chalk.blue('TypeScript') + chalk.grey(' updating file: ' + file));
+                    Shout.typescript(chalk.grey('updating file:', file));
                     debounce();
                 }
             })
@@ -275,7 +275,7 @@ export class TypeScriptCheckerTool {
                     this.includeFiles.delete(file);
                 }
 
-                console.log(chalk.blue('TypeScript') + chalk.grey(' removing file: ' + file));
+                Shout.typescript(chalk.grey('removing file:', file));
 
                 if (this.sources[file]) {
                     delete this.sources[file];

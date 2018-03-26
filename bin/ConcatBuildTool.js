@@ -15,6 +15,7 @@ const enhanced_resolve_1 = require("enhanced-resolve");
 let Uglify = require('uglify-js');
 const EventHub_1 = require("./EventHub");
 const CompilerUtilities_1 = require("./CompilerUtilities");
+const Shout_1 = require("./Shout");
 const PrettyUnits_1 = require("./PrettyUnits");
 let resolver = enhanced_resolve_1.ResolverFactory.createResolver({
     fileSystem: new enhanced_resolve_1.NodeJsInputFileSystem(),
@@ -83,9 +84,9 @@ class ConcatBuildTool {
             let files = yield this.resolveThenReadFiles(modules);
             let result = yield this.concatFilesAsync(target, files);
             let outPath = upath.join(this.settings.outputJsFolder, target);
-            let p1 = CompilerUtilities_1.logAndWriteUtf8FileAsync(outPath, result.code);
+            let p1 = CompilerUtilities_1.outputFileThenLog(outPath, result.code);
             if (result.map) {
-                yield CompilerUtilities_1.logAndWriteUtf8FileAsync(outPath + '.map', result.map);
+                yield CompilerUtilities_1.outputFileThenLog(outPath + '.map', result.map);
             }
             yield p1;
         });
@@ -96,20 +97,19 @@ class ConcatBuildTool {
         for (let target in targets) {
             let modules = targets[target];
             if (!modules || modules.length === 0) {
-                console.warn(chalk_1.default.red('WARNING'), 'concat list for', chalk_1.default.blue(target), 'is empty!');
+                Shout_1.Shout.warning('concat list for', chalk_1.default.blue(target), 'is empty!');
                 continue;
             }
             if (typeof modules === 'string') {
                 modules = [modules];
-                console.warn(chalk_1.default.red('WARNING'), 'concat list for', chalk_1.default.blue(target), 'is a', chalk_1.default.yellow('string'), 'instead of a', chalk_1.default.yellow('string[]'));
+                Shout_1.Shout.warning('concat list for', chalk_1.default.blue(target), 'is a', chalk_1.default.yellow('string'), 'instead of a', chalk_1.default.yellow('string[]'));
             }
             let o = target;
             if (o.endsWith('.js') === false) {
                 o += '.js';
             }
             let t1 = this.concatTarget(o, modules).catch(error => {
-                console.error(chalk_1.default.red('ERROR'), 'when concatenating', chalk_1.default.blue(o));
-                console.error(error);
+                Shout_1.Shout.error('when concatenating', chalk_1.default.blue(o) + ':', error);
             });
             let sourceMapPath = upath.join(this.settings.outputJsFolder, o + '.map');
             let t2 = fse.remove(sourceMapPath);
@@ -126,7 +126,7 @@ class ConcatBuildTool {
             }
             finally {
                 let time = PrettyUnits_1.prettyHrTime(process.hrtime(start));
-                CompilerUtilities_1.timedLog('Finished JS concat after', chalk_1.default.green(time));
+                Shout_1.Shout.timed('Finished JS concat after', chalk_1.default.green(time));
                 EventHub_1.default.buildDone();
             }
         });

@@ -10,7 +10,8 @@ import { TypeScriptCheckerTool } from './TypeScriptCheckerTool';
 import { SassBuildTool } from './SassBuildTool';
 import { ConcatBuildTool } from './ConcatBuildTool';
 import { Settings, ISettingsCore } from './Settings';
-import { timedLog, ICompilerFlags } from './CompilerUtilities';
+import { ICompilerFlags } from './CompilerUtilities';
+import { Shout } from './Shout';
 
 /**
  * Represents POJO serializable build metadata for child Compiler process.
@@ -71,17 +72,17 @@ export class Compiler {
      * Displays information about currently used build flags.
      */
     private chat() {
-        timedLog('Output to folder', chalk.cyan(this.settings.outputFolder));
+        Shout.timed('Output to folder', chalk.cyan(this.settings.outputFolder));
 
         if (this.flags.production) {
-            timedLog(chalk.yellow("Production"), "Mode: Outputs will be minified.", chalk.red("(Slow build)"));
+            Shout.timed(chalk.yellow("Production"), "Mode: Outputs will be minified.", chalk.red("(Slow build)"));
         } else {
-            timedLog(chalk.yellow("Development"), "Mode: Outputs will", chalk.red("NOT be minified!"), "(Fast build)");
-            timedLog(chalk.red("Do not forget to minify"), "before pushing to repository or production server!");
+            Shout.timed(chalk.yellow("Development"), "Mode: Outputs will", chalk.red("NOT be minified!"), "(Fast build)");
+            Shout.timed(chalk.red("Do not forget to minify"), "before pushing to repository or production server!");
         }
 
         if (this.flags.watch) {
-            timedLog(chalk.yellow("Watch"), "Mode: Source codes will be automatically compiled on changes.");
+            Shout.timed(chalk.yellow("Watch"), "Mode: Source codes will be automatically compiled on changes.");
         }
 
         if (!this.flags.production || this.flags.watch) {
@@ -90,10 +91,10 @@ export class Compiler {
 
         if (this.flags.analyze) {
             let analysisPath = this.settings.outputJsFolder + '/analysis.html';
-            timedLog(chalk.yellow('Analyze'), 'Mode:', chalk.cyan(analysisPath));
+            Shout.timed(chalk.yellow('Analyze'), 'Mode:', chalk.cyan(analysisPath));
         }
 
-        timedLog('Source Maps:', chalk.yellow(this.flags.sourceMap ? 'Enabled' : 'Disabled'));
+        Shout.timed('Source Maps:', chalk.yellow(this.flags.sourceMap ? 'Enabled' : 'Disabled'));
     }
 
     /**
@@ -142,12 +143,12 @@ export class Compiler {
                 let checkProject = fse.pathExists(tsconfig);
 
                 if (await checkEntry === false) {
-                    timedLog('Entry file', chalk.cyan(entry), 'was not found.', chalk.red('Aborting JS build!'));
+                    Shout.timed('Entry file', chalk.cyan(entry), 'was not found.', chalk.red('Aborting JS build!'));
                     return false;
                 }
 
                 if (await checkProject === false) {
-                    timedLog('Project file', chalk.cyan(tsconfig), 'was not found.', chalk.red('Aborting JS build!'));
+                    Shout.timed('Project file', chalk.cyan(tsconfig), 'was not found.', chalk.red('Aborting JS build!'));
                     return false;
                 }
 
@@ -157,7 +158,7 @@ export class Compiler {
                 let entry = this.settings.cssEntry;
                 let exist = await fse.pathExists(entry);
                 if (!exist) {
-                    timedLog('Entry file', chalk.cyan(entry), 'was not found.', chalk.red('Aborting CSS build!'));
+                    Shout.timed('Entry file', chalk.cyan(entry), 'was not found.', chalk.red('Aborting CSS build!'));
                 }
                 return exist;
             }
@@ -193,15 +194,14 @@ export class Compiler {
             .on('change', (file: string) => {
                 file = upath.toUnix(file);
 
-                timedLog(chalk.cyan(file), 'was edited. Restarting builds...');
+                Shout.timed(chalk.cyan(file), 'was edited. Restarting builds...');
                 this.killAllBuilds();
                 this.settings = Settings.tryReadFromPackageJson(this.settings.root);
                 this.build(this._userBuildTaskParameter);
             })
             .on('unlink', (file: string) => {
                 file = upath.toUnix(file);
-
-                timedLog(chalk.cyan(file), 'was deleted.', chalk.red('BAD IDEA!')); // "wtf are you doing?"
+                Shout.danger(chalk.cyan(file), 'was deleted!'); // "wtf are you doing?"
             });
     }
 
@@ -243,7 +243,7 @@ export class Compiler {
                     break;
                 }
                 default: {
-                    throw Error('Task `' + taskName + '` does not exists!');
+                    throw Error(`Task '${taskName}' does not exists!`);
                 }
             }
 
@@ -251,8 +251,7 @@ export class Compiler {
         }
 
         task.catch(error => {
-            console.error(chalk.red('FATAL ERROR'), 'during', taskName.toUpperCase(), 'build:');
-            console.error(error);
+            Shout.fatal(`during ${taskName.toUpperCase()} build:`, error);
             hub.buildDone();
         });
     }
@@ -283,7 +282,7 @@ export class Compiler {
      * Concat JavaScript files.
      */
     async buildConcat() {
-        timedLog('Resolving', chalk.cyan(this.settings.concatCount.toString()), 'concat target(s)...');
+        Shout.timed('Resolving', chalk.green(this.settings.concatCount.toString()), 'concat target(s)...');
 
         let tool = new ConcatBuildTool(this.settings, this.flags);
         await tool.buildWithStopwatch();

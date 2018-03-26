@@ -235,7 +235,7 @@ export class SassBuildTool {
                 render = chalk.red(formatted);
                 console.error('\n' + render + '\n');
             } else {
-                Shout.error('during Sass build:', error);
+                Shout.error('during CSS build:', error);
             }
         }
         finally {

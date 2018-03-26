@@ -157,7 +157,7 @@ class SassBuildTool {
                     console.error('\n' + render + '\n');
                 }
                 else {
-                    Shout_1.Shout.error('during Sass build:', error);
+                    Shout_1.Shout.error('during CSS build:', error);
                 }
             }
             finally {

@@ -34,7 +34,7 @@ program.command({
             describe: 'Disables source maps, producing undebuggable outputs.'
         }).option('s', {
             alias: 'stats',
-            describe: 'Generates module size report for TypeScript build output.'
+            describe: 'Generates webpack stats.json of TypeScript build for analysis.'
         });
     },
     handler: argv => {

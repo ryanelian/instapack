@@ -196,7 +196,7 @@ class TypeScriptBuildTool {
                     Shout_1.Shout.timed(chalk_1.default.blue(asset.name), chalk_1.default.magenta(kb));
                 }
             }
-            if (this.flags.analyze) {
+            if (this.flags.stats) {
                 fse.outputJsonSync(this.settings.statJsonPath, stats.toJson());
             }
             let t = PrettyUnits_1.prettyMilliseconds(o.time);

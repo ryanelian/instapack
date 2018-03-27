@@ -9,10 +9,10 @@ import { Shout } from './Shout';
  * Defines build flags to be used by Compiler class.
  */
 export interface ICompilerFlags {
-    production: boolean,
-    watch: boolean,
-    sourceMap: boolean,
-    analyze: boolean
+    production: boolean;
+    watch: boolean;
+    sourceMap: boolean;
+    stats: boolean;
 }
 
 /**

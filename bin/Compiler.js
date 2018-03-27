@@ -44,10 +44,10 @@ class Compiler {
             Shout_1.Shout.timed(chalk_1.default.yellow("Watch"), "Mode: Source codes will be automatically compiled on changes.");
         }
         if (!this.flags.production || this.flags.watch) {
-            this.flags.analyze = false;
+            this.flags.stats = false;
         }
-        if (this.flags.analyze) {
-            Shout_1.Shout.timed(chalk_1.default.yellow('Analyze'), 'Mode:', chalk_1.default.cyan(this.settings.statJsonPath));
+        if (this.flags.stats) {
+            Shout_1.Shout.timed(chalk_1.default.yellow('Stats'), 'Mode:', chalk_1.default.cyan(this.settings.statJsonPath));
         }
         Shout_1.Shout.timed('Source Maps:', chalk_1.default.yellow(this.flags.sourceMap ? 'Enabled' : 'Disabled'));
     }

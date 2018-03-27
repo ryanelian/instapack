@@ -32,8 +32,8 @@ program.command({
         }).option('x', {
             alias: 'xdebug',
             describe: 'Disables source maps, producing undebuggable outputs.'
-        }).option('a', {
-            alias: 'analyze',
+        }).option('s', {
+            alias: 'stats',
             describe: 'Generates module size report for TypeScript build output.'
         });
     },
@@ -44,7 +44,7 @@ program.command({
             production: !Boolean(argv.dev),
             watch: Boolean(argv.watch),
             sourceMap: !Boolean(argv.xdebug),
-            analyze: Boolean(argv.analyze)
+            stats: Boolean(argv.stats)
         });
     }
 });

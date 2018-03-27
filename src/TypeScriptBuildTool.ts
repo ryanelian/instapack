@@ -292,7 +292,7 @@ export class TypeScriptBuildTool {
                 }
             }
 
-            if (this.flags.analyze) {
+            if (this.flags.stats) {
                 fse.outputJsonSync(this.settings.statJsonPath, stats.toJson());
             }
 

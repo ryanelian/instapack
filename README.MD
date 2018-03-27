@@ -56,7 +56,9 @@ Out of the box, these files will be used as the program entry points:
 
   - Spiced :hot_pepper: with [AutoPrefixer](https://github.com/postcss/autoprefixer) for applying CSS vendor-prefixes automatically!
 
-- Concatenate files listed in `package.json`. Usually the output file will be included in the HTML before `ipack.js`. [Read more ↓](#configurations)
+- Concatenate files listed in `package.json` ([Read more ↓](#configurations))
+
+  - Usually the output file should be included in the HTML before `ipack.js`
 
 Practical guides can be read in the [books](https://github.com/ryanelian/instapack/tree/master/books) folder.
 

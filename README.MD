@@ -8,7 +8,7 @@
 
 ## Install
 
-### Machine-Wide (Simpler)
+### Machine-Wide (simpler and convenient)
 
 `npm install -g instapack`
 
@@ -20,7 +20,7 @@ If you encounter [errors](https://github.com/npm/npm/issues/18380) during instal
 
 - **Or use [Yarn](https://yarnpkg.com/en/docs/install) instead:** `yarn global add instapack`
 
-### Per Project (Consistent Build)
+### Per Project (consistent build)
 
 `npm install instapack@[version] -D -E` or `yarn add instapack@[version] -D -E` then modify the project's `package.json`
 
@@ -33,6 +33,8 @@ If you encounter [errors](https://github.com/npm/npm/issues/18380) during instal
 ```
 
 > After that, [`npm run build`](https://docs.npmjs.com/cli/run-script) or [`yarn run build`](https://yarnpkg.com/lang/en/docs/cli/run/)
+
+> [Programmable Node.js API](https://github.com/ryanelian/instapack/blob/master/src/index.ts) is also provided if you wish to integrate instapack into your own build script.
 
 ## Quick Start Guide
 
@@ -61,8 +63,6 @@ Out of the box, these files will be used as the program entry points:
   - Usually the output file should be included in the HTML before `ipack.js`
 
 Practical guides can be read in the [books](https://github.com/ryanelian/instapack/tree/master/books) folder.
-
-> [Programmable Node.js API](https://github.com/ryanelian/instapack/blob/master/src/index.ts) is also provided if you wish to integrate instapack into your own build script.
 
 ## System Requirements
 

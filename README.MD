@@ -8,17 +8,31 @@
 
 ## Install
 
+### Machine-Wide (Simpler)
+
 `npm install -g instapack`
 
 If you encounter [errors](https://github.com/npm/npm/issues/18380) during installation, try:
 
-- Running install [as Administrator](https://www.howtogeek.com/194041/how-to-open-the-command-prompt-as-administrator-in-windows-8.1/) or using elevated privileges (`sudo`).
-
-- Or clear the npm cache: `npm cache clean --force` then: `npm install -g instapack --no-optional`
+- Using shell [as Administrator](https://www.howtogeek.com/194041/how-to-open-the-command-prompt-as-administrator-in-windows-8.1/) or elevated privileges (`sudo`), clear the npm cache: `npm cache clean --force` and then: `npm install -g instapack --no-optional`
 
 - Or downgrade to npm 4 to avoid [buggy npm 5](https://github.com/npm/npm/issues/16991): `npm install -g npm@4`
 
 - **Or use [Yarn](https://yarnpkg.com/en/docs/install) instead:** `yarn global add instapack`
+
+### Per Project (Consistent Build)
+
+`npm install instapack@[version] -D -E` or `yarn add instapack@[version] -D -E` then modify the project's `package.json`
+
+```json
+{
+  "scripts": {
+    "build": "ipack"
+  }
+}
+```
+
+> After that, [`npm run build`](https://docs.npmjs.com/cli/run-script) or [`yarn run build`](https://yarnpkg.com/lang/en/docs/cli/run/)
 
 ## Quick Start Guide
 
@@ -86,7 +100,7 @@ Recently every hecking framework on this planet :earth_asia: has their own CLI, 
 
 instapack is an initiative to develop a command line tool for compiling most apps developed using mainstream JavaScript frameworks, with a :lemon: twist: **It can easily build an app written in TypeScript with minimal or no further configurations!**
 
-Powered by [webpack](https://webpack.js.org), instapack effortlessly devours modules written using modern JS standards (ES Harmony, CommonJS, AMD, UMD) and is capable of importing HTML templates out of the box. instapack is battle-tested :hocho: and is designed to cover 99.99% *normal* use cases when developing a modern web app.
+Powered by [webpack](https://webpack.js.org), instapack effortlessly devours modules written using modern JS standards (ES Harmony, CommonJS, AMD, UMD) and is capable of importing HTML templates out of the box. instapack is battle-tested :hocho: and is designed to cover *most normal use cases* when developing a modern web app.
 
 With this powerful tool, you can save time :watch:, save precious SSD space :space_invader:, and save yourself from the pain of manually maintaining project build scripts! :coffee:
 

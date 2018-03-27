@@ -47,8 +47,7 @@ class Compiler {
             this.flags.analyze = false;
         }
         if (this.flags.analyze) {
-            let analysisPath = this.settings.outputJsFolder + '/analysis.html';
-            Shout_1.Shout.timed(chalk_1.default.yellow('Analyze'), 'Mode:', chalk_1.default.cyan(analysisPath));
+            Shout_1.Shout.timed(chalk_1.default.yellow('Analyze'), 'Mode:', chalk_1.default.cyan(this.settings.statJsonPath));
         }
         Shout_1.Shout.timed('Source Maps:', chalk_1.default.yellow(this.flags.sourceMap ? 'Enabled' : 'Disabled'));
     }

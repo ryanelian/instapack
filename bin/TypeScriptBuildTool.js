@@ -1,10 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const path = require("path");
+const fse = require("fs-extra");
 const chalk_1 = require("chalk");
 const webpack = require("webpack");
 const TypeScript = require("typescript");
-const webpack_bundle_analyzer_1 = require("webpack-bundle-analyzer");
 const EventHub_1 = require("./EventHub");
 const PrettyUnits_1 = require("./PrettyUnits");
 const TypeScriptBuildWebpackPlugin_1 = require("./TypeScriptBuildWebpackPlugin");
@@ -100,13 +100,6 @@ class TypeScriptBuildTool {
             filename: this.settings.jsOutVendorFileName,
             minChunks: module => module.context && module.context.includes('node_modules')
         }));
-        if (this.flags.analyze) {
-            plugins.push(new webpack_bundle_analyzer_1.BundleAnalyzerPlugin({
-                analyzerMode: 'static',
-                reportFilename: 'analysis.html',
-                logLevel: 'warn'
-            }));
-        }
         if (this.flags.production) {
             plugins.push(new webpack.DefinePlugin({
                 'process.env': {
@@ -203,15 +196,11 @@ class TypeScriptBuildTool {
                     Shout_1.Shout.timed(chalk_1.default.blue(asset.name), chalk_1.default.magenta(kb));
                 }
             }
+            if (this.flags.analyze) {
+                fse.outputJsonSync(this.settings.statJsonPath, stats.toJson());
+            }
             let t = PrettyUnits_1.prettyMilliseconds(o.time);
             Shout_1.Shout.timed('Finished JS build after', chalk_1.default.green(t));
-            if (this.flags.analyze) {
-                Shout_1.Shout.timed('Generating the module size analysis report for JS output, please wait...');
-                setTimeout(() => {
-                    EventHub_1.default.buildDone();
-                }, 5 * 1000);
-                return;
-            }
             EventHub_1.default.buildDone();
         });
     }

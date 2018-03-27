@@ -64,7 +64,6 @@
     "upath": "1.0.4",
     "vue-template-compiler": "2.5.16",
     "webpack": "3.11.0",
-    "webpack-bundle-analyzer": "2.11.1",
     "webpack-sources": "1.1.0",
     "yargs": "11.0.0"
   },

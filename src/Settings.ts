@@ -168,20 +168,6 @@ export class Settings {
     }
 
     /**
-     * Gets the full path to bower_components folder.
-     */
-    get bowerFolder(): string {
-        return upath.join(this.root, 'bower_components');
-    }
-
-    /**
-     * Gets the full path to project DLL manifest JSON file.
-     */
-    get dllManifestJsonPath(): string {
-        return upath.join(this.npmFolder, 'dll-manifest.json');
-    }
-
-    /**
      * Gets the full path to the root client project folder.
      */
     get inputFolder(): string {
@@ -251,6 +237,13 @@ export class Settings {
      */
     get outputJsFile(): string {
         return upath.join(this.outputJsFolder, this.jsOut);
+    }
+
+    /**
+     * Gets the full path to TypeScript build stats JSON file.
+     */
+    get statJsonPath(): string {
+        return upath.join(this.outputJsFolder, 'stats.json');
     }
 
     /**

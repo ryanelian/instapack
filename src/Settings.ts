@@ -277,13 +277,14 @@ export class Settings {
     /**
      * Attempts to read the settings from package.json in the same folder where the command line is invoked at.
      */
-    static tryReadFromPackageJson(root: string): Settings {
+    static async tryReadFromPackageJson(root: string): Promise<Settings> {
         let parse: any;
 
         try {
-            let json = upath.join(root, 'package.json');
+            let jsonPath = upath.join(root, 'package.json');
             // console.log('Loading settings ' + chalk.cyan(json));
-            parse = fse.readJsonSync(json).instapack;
+            let json = await fse.readJson(jsonPath);
+            parse = json.instapack;
         } catch (ex) {
             // console.log('Failed to load settings. Using default settings.');
         }

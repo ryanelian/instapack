@@ -19,11 +19,6 @@ export = class instapack {
     private readonly projectFolder: string;
 
     /**
-     * Gets the settings used for performing build tasks.
-     */
-    readonly settings: Settings;
-
-    /**
      * Gets the object responsible for reading and writing the instapack global settings.
      */
     readonly globalSettingsManager: GlobalSettingsManager;
@@ -64,7 +59,6 @@ export = class instapack {
      */
     constructor(projectFolder: string) {
         this.projectFolder = projectFolder;
-        this.settings = Settings.tryReadFromPackageJson(projectFolder);
         this.globalSettingsManager = new GlobalSettingsManager();
     }
 
@@ -74,20 +68,23 @@ export = class instapack {
      * @param flags 
      */
     async build(taskName: string, flags: ICompilerFlags) {
-        let packageManager = new PackageManager();
-        let compiler = new Compiler(this.settings, flags);
 
-        let settings = await this.globalSettingsManager.tryRead();
-        if (settings.integrityCheck) {
-            let packageJsonExists = await fse.pathExists(this.settings.packageJson);
+        let settings = await Settings.tryReadFromPackageJson(this.projectFolder);        
+        let compiler = new Compiler(settings, flags);
+
+        let globalSettings = await this.globalSettingsManager.tryRead();
+        let packageManager = new PackageManager();
+        
+        if (globalSettings.integrityCheck) {
+            let packageJsonExists = await fse.pathExists(settings.packageJson);
             if (packageJsonExists) {
                 try {
-                    await packageManager.restore(settings.packageManager);
+                    await packageManager.restore(globalSettings.packageManager);
                 } catch (error) {
                     Shout.error('when restoring package:', error);
                 }
             } else {
-                Shout.warning('unable to find', chalk.cyan(this.settings.packageJson), chalk.grey('skipping package restore...'));
+                Shout.warning('unable to find', chalk.cyan(settings.packageJson), chalk.grey('skipping package restore...'));
             }
         }
 
@@ -117,13 +114,14 @@ export = class instapack {
      * Cleans the JavaScript and CSS output folder and the temporary cache folder.
      */
     async clean() {
-        let cleanCSS = fse.emptyDir(this.settings.outputCssFolder);
-        let cleanJS = fse.emptyDir(this.settings.outputJsFolder);
+        let settings = await Settings.tryReadFromPackageJson(this.projectFolder);       
+        let cleanCSS = fse.emptyDir(settings.outputCssFolder);
+        let cleanJS = fse.emptyDir(settings.outputJsFolder);
 
         await cleanJS;
-        console.log('Clean successful: ' + this.settings.outputJsFolder);
+        console.log('Clean successful: ' + settings.outputJsFolder);
         await cleanCSS;
-        console.log('Clean successful: ' + this.settings.outputCssFolder);
+        console.log('Clean successful: ' + settings.outputCssFolder);
     }
 
     /**

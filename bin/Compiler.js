@@ -147,7 +147,7 @@ class Compiler {
                 snapshots[file] = snap;
                 Shout_1.Shout.timed(chalk_1.default.cyan(file), 'was edited. Restarting builds...');
                 this.killAllBuilds();
-                this.settings = Settings_1.Settings.tryReadFromPackageJson(this.settings.root);
+                this.settings = yield Settings_1.Settings.tryReadFromPackageJson(this.settings.root);
                 this.build(taskName, false);
             }), 500);
         };

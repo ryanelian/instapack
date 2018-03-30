@@ -216,7 +216,7 @@ export class Compiler {
                 Shout.timed(chalk.cyan(file), 'was edited. Restarting builds...');
                 this.killAllBuilds();
 
-                this.settings = Settings.tryReadFromPackageJson(this.settings.root);
+                this.settings = await Settings.tryReadFromPackageJson(this.settings.root);
                 this.build(taskName, false);
             }, 500);
         };

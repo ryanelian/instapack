@@ -33,26 +33,26 @@ module.exports = class instapack {
     }
     constructor(projectFolder) {
         this.projectFolder = projectFolder;
-        this.settings = Settings_1.Settings.tryReadFromPackageJson(projectFolder);
         this.globalSettingsManager = new GlobalSettingsManager_1.GlobalSettingsManager();
     }
     build(taskName, flags) {
         return __awaiter(this, void 0, void 0, function* () {
+            let settings = yield Settings_1.Settings.tryReadFromPackageJson(this.projectFolder);
+            let compiler = new Compiler_1.Compiler(settings, flags);
+            let globalSettings = yield this.globalSettingsManager.tryRead();
             let packageManager = new PackageManager_1.PackageManager();
-            let compiler = new Compiler_1.Compiler(this.settings, flags);
-            let settings = yield this.globalSettingsManager.tryRead();
-            if (settings.integrityCheck) {
-                let packageJsonExists = yield fse.pathExists(this.settings.packageJson);
+            if (globalSettings.integrityCheck) {
+                let packageJsonExists = yield fse.pathExists(settings.packageJson);
                 if (packageJsonExists) {
                     try {
-                        yield packageManager.restore(settings.packageManager);
+                        yield packageManager.restore(globalSettings.packageManager);
                     }
                     catch (error) {
                         Shout_1.Shout.error('when restoring package:', error);
                     }
                 }
                 else {
-                    Shout_1.Shout.warning('unable to find', chalk_1.default.cyan(this.settings.packageJson), chalk_1.default.grey('skipping package restore...'));
+                    Shout_1.Shout.warning('unable to find', chalk_1.default.cyan(settings.packageJson), chalk_1.default.grey('skipping package restore...'));
                 }
             }
             compiler.build(taskName);
@@ -74,12 +74,13 @@ module.exports = class instapack {
     }
     clean() {
         return __awaiter(this, void 0, void 0, function* () {
-            let cleanCSS = fse.emptyDir(this.settings.outputCssFolder);
-            let cleanJS = fse.emptyDir(this.settings.outputJsFolder);
+            let settings = yield Settings_1.Settings.tryReadFromPackageJson(this.projectFolder);
+            let cleanCSS = fse.emptyDir(settings.outputCssFolder);
+            let cleanJS = fse.emptyDir(settings.outputJsFolder);
             yield cleanJS;
-            console.log('Clean successful: ' + this.settings.outputJsFolder);
+            console.log('Clean successful: ' + settings.outputJsFolder);
             yield cleanCSS;
-            console.log('Clean successful: ' + this.settings.outputCssFolder);
+            console.log('Clean successful: ' + settings.outputCssFolder);
         });
     }
     changeGlobalSetting(key, value) {

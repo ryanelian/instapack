@@ -1,8 +1,8 @@
 import * as path from 'path';
+import * as fse from 'fs-extra';
 import chalk from 'chalk';
 import * as webpack from 'webpack';
 import * as TypeScript from 'typescript';
-import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 
 import hub from './EventHub';
 import { ICompilerFlags } from './CompilerUtilities';
@@ -170,14 +170,6 @@ export class TypeScriptBuildTool {
             minChunks: module => module.context && module.context.includes('node_modules')
         }));
 
-        if (this.flags.analyze) {
-            plugins.push(new BundleAnalyzerPlugin({
-                analyzerMode: 'static',
-                reportFilename: 'analysis.html',
-                logLevel: 'warn'
-            }));
-        }
-
         if (this.flags.production) {
             plugins.push(new webpack.DefinePlugin({
                 'process.env': {
@@ -300,16 +292,12 @@ export class TypeScriptBuildTool {
                 }
             }
 
-            let t = prettyMilliseconds(o.time);
-            Shout.timed('Finished JS build after', chalk.green(t));
-            if (this.flags.analyze) {
-                Shout.timed('Generating the module size analysis report for JS output, please wait...');
-                setTimeout(() => {
-                    hub.buildDone();
-                }, 5 * 1000);
-                return;
+            if (this.flags.stats) {
+                fse.outputJsonSync(this.settings.statJsonPath, stats.toJson());
             }
 
+            let t = prettyMilliseconds(o.time);
+            Shout.timed('Finished JS build after', chalk.green(t));
             hub.buildDone();
         });
     }

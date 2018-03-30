@@ -140,7 +140,7 @@ In addition, build flags are available:
 
 - `-x` or `--xdebug` disables source maps, producing undebuggable outputs. (Slightly improves build speed)
 
-- `-a` or `--analyze` generates module size report `analysis.html` next to the TypeScript build output. For sanity, this flag will be ignored when using `-d` or `-w` flags.
+- `-s` or `--stats` generates `stats.json` next to the TypeScript build outputs, which can be fed to [webpack-bundle-analyzer](https://www.npmjs.com/package/webpack-bundle-analyzer) or [webpack-visualizer](http://chrisbateman.github.io/webpack-visualizer/). For sanity, this flag will be ignored when using `-d` or `-w` flags.
 
 > You can combine multiple build flags, for example: `ipack -dw` = `dev` + `watch` mode for **massive productivity gainz!** :muscle:
 

@@ -57,12 +57,6 @@ class Settings {
     get npmFolder() {
         return upath.join(this.root, 'node_modules');
     }
-    get bowerFolder() {
-        return upath.join(this.root, 'bower_components');
-    }
-    get dllManifestJsonPath() {
-        return upath.join(this.npmFolder, 'dll-manifest.json');
-    }
     get inputFolder() {
         return upath.join(this.root, this.input);
     }
@@ -94,6 +88,9 @@ class Settings {
     }
     get outputJsFile() {
         return upath.join(this.outputJsFolder, this.jsOut);
+    }
+    get statJsonPath() {
+        return upath.join(this.outputJsFolder, 'stats.json');
     }
     get outputJsSourceMap() {
         return this.outputJsFile + '.map';

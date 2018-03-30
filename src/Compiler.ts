@@ -86,12 +86,11 @@ export class Compiler {
         }
 
         if (!this.flags.production || this.flags.watch) {
-            this.flags.analyze = false;
+            this.flags.stats = false;
         }
-
-        if (this.flags.analyze) {
-            let analysisPath = this.settings.outputJsFolder + '/analysis.html';
-            Shout.timed(chalk.yellow('Analyze'), 'Mode:', chalk.cyan(analysisPath));
+        
+        if (this.flags.stats) {
+            Shout.timed(chalk.yellow('Stats'), 'Mode:', chalk.cyan(this.settings.statJsonPath));
         }
 
         Shout.timed('Source Maps:', chalk.yellow(this.flags.sourceMap ? 'Enabled' : 'Disabled'));

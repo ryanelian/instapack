@@ -134,13 +134,13 @@ Performs compilation against selected project type. Available projects: `all`, `
 
 In addition, build flags are available:
 
-- `-w` or `--watch` enables automatic incremental build on source code changes. :robot:
+- `--watch` or `-w` enables automatic incremental build on source code changes. :robot:
 
-- `-d` or `--dev` disables build outputs optimization and minification for **FAST build!** :fire:
+- `--dev` or `-d` disables build outputs optimization and minification for **FAST build!** :fire:
 
-- `-x` or `--xdebug` disables source maps, producing undebuggable outputs. (Slightly improves build speed)
+- `--xdebug` or `-x` disables source maps, producing undebuggable outputs. (Slightly improves build speed)
 
-- `-s` or `--stats` generates `stats.json` next to the TypeScript build outputs, which can be fed to [webpack-bundle-analyzer](https://www.npmjs.com/package/webpack-bundle-analyzer) or [webpack-visualizer](http://chrisbateman.github.io/webpack-visualizer/). For sanity, this flag will be ignored when using `-d` or `-w` flags.
+- `--stats` generates `stats.json` next to the TypeScript build outputs, which can be fed to [webpack-bundle-analyzer](https://www.npmjs.com/package/webpack-bundle-analyzer) or [webpack-visualizer](http://chrisbateman.github.io/webpack-visualizer/). For sanity, this flag will be ignored when using `-d` or `-w` flags.
 
 > You can combine multiple build flags, for example: `ipack -dw` = `dev` + `watch` mode for **massive productivity gainz!** :muscle:
 

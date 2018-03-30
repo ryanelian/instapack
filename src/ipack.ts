@@ -31,17 +31,16 @@ program.command({
     aliases: ['*'],
     builder: yargs => {
         return yargs.choices('project', app.availableTasks)
-            .option('w', {
-                alias: 'watch',
+            .option('watch', {
+                alias: 'w',
                 describe: 'Enables automatic incremental build on source code changes.'
-            }).option('d', {
-                alias: 'dev',
+            }).option('dev', {
+                alias: 'd',
                 describe: 'Disables build outputs optimization and minification.'
-            }).option('x', {
-                alias: 'xdebug',
+            }).option('xdebug', {
+                alias: 'x',
                 describe: 'Disables source maps, producing undebuggable outputs.'
-            }).option('s', {
-                alias: 'stats',
+            }).option('stats', {
                 describe: 'Generates webpack stats.json next to the TypeScript build outputs for analysis.'
             })/*.option('n', {
                 alias: 'noisy',

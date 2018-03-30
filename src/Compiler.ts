@@ -85,11 +85,11 @@ export class Compiler {
             this.flags.stats = false;
         }
 
-        if (this.flags.stats) {
-            Shout.timed(chalk.yellow('Stats'), 'Mode:', chalk.cyan(this.settings.statJsonPath));
-        }
-
         Shout.timed('Source Maps:', chalk.yellow(this.flags.sourceMap ? 'Enabled' : 'Disabled'));
+
+        if (this.flags.stats) {
+            Shout.timed('JS build stats:', chalk.cyan(this.settings.statJsonPath));
+        }
     }
 
     /**

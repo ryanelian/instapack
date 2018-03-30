@@ -47,10 +47,10 @@ class Compiler {
         if (!this.flags.production || this.flags.watch) {
             this.flags.stats = false;
         }
-        if (this.flags.stats) {
-            Shout_1.Shout.timed(chalk_1.default.yellow('Stats'), 'Mode:', chalk_1.default.cyan(this.settings.statJsonPath));
-        }
         Shout_1.Shout.timed('Source Maps:', chalk_1.default.yellow(this.flags.sourceMap ? 'Enabled' : 'Disabled'));
+        if (this.flags.stats) {
+            Shout_1.Shout.timed('JS build stats:', chalk_1.default.cyan(this.settings.statJsonPath));
+        }
     }
     startBackgroundTask(taskName) {
         return __awaiter(this, void 0, void 0, function* () {

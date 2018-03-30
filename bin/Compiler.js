@@ -12,6 +12,7 @@ const fse = require("fs-extra");
 const chalk_1 = require("chalk");
 const chokidar = require("chokidar");
 const upath = require("upath");
+const assert = require("assert");
 const child_process_1 = require("child_process");
 const EventHub_1 = require("./EventHub");
 const TypeScriptBuildTool_1 = require("./TypeScriptBuildTool");
@@ -121,30 +122,55 @@ class Compiler {
         }
         this.buildTasks = [];
     }
-    restartBuildsOnConfigurationChanges() {
+    deepEqual(a, b) {
+        try {
+            assert.deepStrictEqual(a, b);
+            return true;
+        }
+        catch (_a) {
+            return false;
+        }
+    }
+    restartBuildsOnConfigurationChanges(taskName) {
+        let snapshots = {
+            [this.settings.packageJson]: fse.readJsonSync(this.settings.packageJson),
+            [this.settings.tsConfigJson]: fse.readJsonSync(this.settings.tsConfigJson),
+        };
+        let debounced;
+        let debounce = (file) => {
+            clearTimeout(debounced);
+            debounced = setTimeout(() => __awaiter(this, void 0, void 0, function* () {
+                let snap = yield fse.readJson(file);
+                if (this.deepEqual(snapshots[file], snap)) {
+                    return;
+                }
+                snapshots[file] = snap;
+                Shout_1.Shout.timed(chalk_1.default.cyan(file), 'was edited. Restarting builds...');
+                this.killAllBuilds();
+                this.settings = Settings_1.Settings.tryReadFromPackageJson(this.settings.root);
+                this.build(taskName, false);
+            }), 500);
+        };
         chokidar.watch([this.settings.packageJson, this.settings.tsConfigJson], {
             ignoreInitial: true
         })
             .on('change', (file) => {
             file = upath.toUnix(file);
-            Shout_1.Shout.timed(chalk_1.default.cyan(file), 'was edited. Restarting builds...');
-            this.killAllBuilds();
-            this.settings = Settings_1.Settings.tryReadFromPackageJson(this.settings.root);
-            this.build(this._userBuildTaskParameter);
+            debounce(file);
         })
             .on('unlink', (file) => {
             file = upath.toUnix(file);
+            snapshots[file] = null;
             Shout_1.Shout.danger(chalk_1.default.cyan(file), 'was deleted!');
         });
     }
-    build(taskName) {
+    build(taskName, initial = true) {
         let task;
         if (process.send === undefined) {
-            if (!this._userBuildTaskParameter) {
-                this._userBuildTaskParameter = taskName;
+            if (initial) {
                 this.chat();
                 if (this.flags.watch) {
-                    this.restartBuildsOnConfigurationChanges();
+                    this.restartBuildsOnConfigurationChanges(taskName);
                 }
             }
             task = this.startBackgroundTask(taskName);

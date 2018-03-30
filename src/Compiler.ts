@@ -2,6 +2,7 @@ import * as fse from 'fs-extra';
 import chalk from 'chalk';
 import * as chokidar from 'chokidar';
 import * as upath from 'upath';
+import * as assert from 'assert';
 import { fork, ChildProcess } from 'child_process';
 
 import hub from './EventHub';
@@ -37,11 +38,6 @@ export class Compiler {
      * Gets the compiler build flags.
      */
     private readonly flags: ICompilerFlags;
-
-    /**
-     * Stores the initial instapack build command from user.
-     */
-    private _userBuildTaskParameter: string;
 
     /**
      * Store all build child processes spawned.
@@ -88,7 +84,7 @@ export class Compiler {
         if (!this.flags.production || this.flags.watch) {
             this.flags.stats = false;
         }
-        
+
         if (this.flags.stats) {
             Shout.timed(chalk.yellow('Stats'), 'Mode:', chalk.cyan(this.settings.statJsonPath));
         }
@@ -184,22 +180,57 @@ export class Compiler {
     }
 
     /**
+     * A *slow* but sure implementation of object deep equality comparer using Node assert.
+     * @param a 
+     * @param b 
+     */
+    deepEqual(a, b) {
+        try {
+            assert.deepStrictEqual(a, b);
+            return true;
+        } catch{
+            return false;
+        }
+    }
+
+    /**
      * Restart invoked build task(s) when package.json and tsconfig.json are edited!
      */
-    restartBuildsOnConfigurationChanges() {
+    restartBuildsOnConfigurationChanges(taskName: string) {
+
+        let snapshots = {
+            [this.settings.packageJson]: fse.readJsonSync(this.settings.packageJson),
+            [this.settings.tsConfigJson]: fse.readJsonSync(this.settings.tsConfigJson),
+        };
+
+        let debounced: NodeJS.Timer;
+        let debounce = (file: string) => {
+            clearTimeout(debounced);
+            debounced = setTimeout(async () => {
+                let snap = await fse.readJson(file);
+                if (this.deepEqual(snapshots[file], snap)) {
+                    return;
+                }
+
+                snapshots[file] = snap;
+                Shout.timed(chalk.cyan(file), 'was edited. Restarting builds...');
+                this.killAllBuilds();
+
+                this.settings = Settings.tryReadFromPackageJson(this.settings.root);
+                this.build(taskName, false);
+            }, 500);
+        };
+
         chokidar.watch([this.settings.packageJson, this.settings.tsConfigJson], {
             ignoreInitial: true
         })
             .on('change', (file: string) => {
                 file = upath.toUnix(file);
-
-                Shout.timed(chalk.cyan(file), 'was edited. Restarting builds...');
-                this.killAllBuilds();
-                this.settings = Settings.tryReadFromPackageJson(this.settings.root);
-                this.build(this._userBuildTaskParameter);
+                debounce(file);
             })
             .on('unlink', (file: string) => {
                 file = upath.toUnix(file);
+                snapshots[file] = null;
                 Shout.danger(chalk.cyan(file), 'was deleted!'); // "wtf are you doing?"
             });
     }
@@ -208,16 +239,15 @@ export class Compiler {
      * Runs the selected build task.
      * @param taskName 
      */
-    build(taskName: string) {
+    build(taskName: string, initial = true) {
         let task: Promise<void>;
 
         if (process.send === undefined) {
             // parent
-            if (!this._userBuildTaskParameter) {
-                this._userBuildTaskParameter = taskName;
+            if (initial) {
                 this.chat();
                 if (this.flags.watch) {
-                    this.restartBuildsOnConfigurationChanges();
+                    this.restartBuildsOnConfigurationChanges(taskName);
                 }
             }
 

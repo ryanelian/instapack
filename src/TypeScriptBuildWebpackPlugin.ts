@@ -2,7 +2,7 @@ import chalk from 'chalk';
 import { Compiler } from 'webpack';
 import { Source, SourceMapSource, RawSource } from 'webpack-sources';
 import { RawSourceMap } from 'source-map';
-let Uglify = require('uglify-js');
+import * as UglifyJS from 'uglify-js';
 
 import { Shout } from './Shout';
 
@@ -94,7 +94,7 @@ export class TypeScriptBuildWebpackPlugin {
                     for (let file of chunk.files) {
                         let asset = compilation.assets[file] as Source;
                         let input = this.createMinificationInput(asset, file);
-                        let minified = Uglify.minify(input.payload, input.options);
+                        let minified = UglifyJS.minify(input.payload, input.options);
 
                         if (minified.error) {
                             compilation.errors.push(minified.error);

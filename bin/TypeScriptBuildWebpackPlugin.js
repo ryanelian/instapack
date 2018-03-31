@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const chalk_1 = require("chalk");
 const webpack_sources_1 = require("webpack-sources");
-let Uglify = require('uglify-js');
+const UglifyJS = require("uglify-js");
 const Shout_1 = require("./Shout");
 class TypeScriptBuildWebpackPlugin {
     constructor(options) {
@@ -43,7 +43,7 @@ class TypeScriptBuildWebpackPlugin {
                     for (let file of chunk.files) {
                         let asset = compilation.assets[file];
                         let input = this.createMinificationInput(asset, file);
-                        let minified = Uglify.minify(input.payload, input.options);
+                        let minified = UglifyJS.minify(input.payload, input.options);
                         if (minified.error) {
                             compilation.errors.push(minified.error);
                         }

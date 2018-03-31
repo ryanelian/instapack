@@ -2,7 +2,7 @@ import * as fse from 'fs-extra';
 import * as upath from 'upath';
 import chalk from 'chalk';
 import { NodeJsInputFileSystem, ResolverFactory } from 'enhanced-resolve';
-let Uglify = require('uglify-js');
+import * as UglifyJS from 'uglify-js';
 
 import hub from './EventHub';
 import { Settings } from './Settings';
@@ -109,7 +109,7 @@ export class ConcatBuildTool {
         }
 
         return new Promise<any>((ok, error) => {
-            let result = Uglify.minify(files, options);
+            let result = UglifyJS.minify(files, options);
             if (result.error) {
                 error(result.error)
             } else {

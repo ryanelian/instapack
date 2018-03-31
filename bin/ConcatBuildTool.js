@@ -12,7 +12,7 @@ const fse = require("fs-extra");
 const upath = require("upath");
 const chalk_1 = require("chalk");
 const enhanced_resolve_1 = require("enhanced-resolve");
-let Uglify = require('uglify-js');
+const UglifyJS = require("uglify-js");
 const EventHub_1 = require("./EventHub");
 const CompilerUtilities_1 = require("./CompilerUtilities");
 const Shout_1 = require("./Shout");
@@ -70,7 +70,7 @@ class ConcatBuildTool {
             };
         }
         return new Promise((ok, error) => {
-            let result = Uglify.minify(files, options);
+            let result = UglifyJS.minify(files, options);
             if (result.error) {
                 error(result.error);
             }

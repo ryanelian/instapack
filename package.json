@@ -60,7 +60,7 @@
     "postcss-discard-comments": "4.0.0-rc.2",
     "source-map": "0.7.2",
     "typescript": "2.8.1",
-    "uglify-js": "3.3.16",
+    "uglify-js": "3.3.17",
     "upath": "1.0.4",
     "vue-template-compiler": "2.5.16",
     "webpack": "3.11.0",

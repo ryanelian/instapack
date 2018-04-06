@@ -334,12 +334,16 @@ export class Compiler {
 if (process.send) { // Child Process
     process.on('message', (command: IBuildCommand) => {
         // console.log(command);
-        if (command.build) {
-            if (!command.flags.watch || command.build === 'concat') {
-                hub.exitOnBuildDone();
-            }
-
-            Compiler.fromCommand(command).build(command.build);
+        if (!command.build) {
+            return;
         }
+
+        if (command.flags.watch && command.build !== 'concat') {
+            Shout.enableNotification = true;
+        } else {
+            hub.exitOnBuildDone();
+        }
+        
+        Compiler.fromCommand(command).build(command.build);
     });
 }

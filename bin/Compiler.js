@@ -241,11 +241,15 @@ class Compiler {
 exports.Compiler = Compiler;
 if (process.send) {
     process.on('message', (command) => {
-        if (command.build) {
-            if (!command.flags.watch || command.build === 'concat') {
-                EventHub_1.default.exitOnBuildDone();
-            }
-            Compiler.fromCommand(command).build(command.build);
+        if (!command.build) {
+            return;
         }
+        if (command.flags.watch && command.build !== 'concat') {
+            Shout_1.Shout.enableNotification = true;
+        }
+        else {
+            EventHub_1.default.exitOnBuildDone();
+        }
+        Compiler.fromCommand(command).build(command.build);
     });
 }

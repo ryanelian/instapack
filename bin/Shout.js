@@ -63,7 +63,11 @@ exports.Shout = {
         let output = chalk_1.default.magenta('Sass') + message;
         console.log(output);
     },
+    enableNotification: false,
     notify: function (...tokens) {
+        if (!this.enableNotification) {
+            return;
+        }
         let message = '...';
         let icon = path.join(__dirname, '../img/madobe.png');
         if (tokens && tokens.length) {

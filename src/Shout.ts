@@ -40,9 +40,7 @@ function concatenateTokens(tokens: any[]) {
 }
 
 export let Shout = {
-
-    enableNotification: false,
-
+    
     timed: function (...tokens) {
         let message = concatenateTokens(tokens);
         let output = `[${chalk.grey(nowFormatted())}]` + message;
@@ -86,10 +84,6 @@ export let Shout = {
     },
 
     notify: function (...tokens) {
-        if (!this.enableNotification) {
-            return;
-        }
-
         let message = '...';
         let icon = path.join(__dirname, '../img/madobe.png');
         if (tokens && tokens.length) {

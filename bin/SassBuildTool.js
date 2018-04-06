@@ -151,6 +151,7 @@ class SassBuildTool {
             }
             catch (error) {
                 let render;
+                Shout_1.Shout.notify('You have one or more CSS build errors!');
                 if (error['formatted']) {
                     let formatted = 'Sass Compile' + error['formatted'].trim();
                     render = chalk_1.default.red(formatted);

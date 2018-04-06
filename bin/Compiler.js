@@ -200,6 +200,7 @@ class Compiler {
         }
         task.catch(error => {
             Shout_1.Shout.fatal(`during ${taskName.toUpperCase()} build:`, error);
+            Shout_1.Shout.notify(`FATAL ERROR during ${taskName.toUpperCase()} build!`);
             EventHub_1.default.buildDone();
         });
     }

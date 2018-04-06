@@ -281,6 +281,7 @@ export class Compiler {
 
         task.catch(error => {
             Shout.fatal(`during ${taskName.toUpperCase()} build:`, error);
+            Shout.notify(`FATAL ERROR during ${taskName.toUpperCase()} build!`);
             hub.buildDone();
         });
     }

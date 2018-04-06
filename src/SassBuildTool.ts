@@ -228,6 +228,7 @@ export class SassBuildTool {
         }
         catch (error) {
             let render: string;
+            Shout.notify('You have one or more CSS build errors!');
 
             if (error['formatted']) {
                 // for node-sass compile error

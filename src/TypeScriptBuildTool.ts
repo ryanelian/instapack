@@ -274,6 +274,7 @@ export class TypeScriptBuildTool {
         webpack(this.webpackConfiguration, (error, stats) => {
             if (error) {
                 Shout.fatal('during JS build (tool):', error);
+                Shout.notify('FATAL ERROR during JS build!');
                 hub.buildDone();
                 return;
             }
@@ -283,6 +284,7 @@ export class TypeScriptBuildTool {
             if (stats.hasErrors() || stats.hasWarnings()) {
                 let buildErrors = '\n' + stats.toString(this.webpackStatsErrorsOnly).trim() + '\n';
                 console.error(buildErrors);
+                Shout.notify('You have one or more JS build errors / warnings!');
             }
 
             for (let asset of o.assets) {

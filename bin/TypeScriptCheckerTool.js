@@ -102,6 +102,12 @@ class TypeScriptCheckerTool {
                     console.log(chalk_1.default.green('Types OK') + chalk_1.default.grey(': Successfully checked TypeScript project without errors.'));
                 }
                 else {
+                    if (errors.length === 1) {
+                        Shout_1.Shout.notify(`You have one TypeScript check error!`);
+                    }
+                    else {
+                        Shout_1.Shout.notify(`You have ${errors.length} TypeScript check errors!`);
+                    }
                     let errorsOut = '\n' + errors.join('\n\n') + '\n';
                     console.error(errorsOut);
                 }

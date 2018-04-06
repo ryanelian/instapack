@@ -36,25 +36,11 @@ class IntegrityCheckSettingMapper {
     }
 }
 exports.IntegrityCheckSettingMapper = IntegrityCheckSettingMapper;
-class NotificationSettingMapper {
-    constructor() {
-        this.key = 'enableNotification';
-        this.valueTransformer = (value) => {
-            return (value.toLowerCase() === 'true');
-        };
-        this.valueValidator = (value) => {
-            value = value.toLowerCase();
-            return (value === 'true' || value === 'false');
-        };
-    }
-}
-exports.NotificationSettingMapper = NotificationSettingMapper;
 class GlobalSettingsManager {
     constructor() {
         this.settingMappers = {
             'package-manager': new PackageManagerSettingMapper(),
-            'integrity-check': new IntegrityCheckSettingMapper(),
-            'enable-notification': new NotificationSettingMapper()
+            'integrity-check': new IntegrityCheckSettingMapper()
         };
     }
     get globalSettingJsonPath() {
@@ -77,8 +63,7 @@ class GlobalSettingsManager {
             catch (_a) {
                 return {
                     packageManager: 'yarn',
-                    integrityCheck: true,
-                    enableNotification: false
+                    integrityCheck: true
                 };
             }
         });

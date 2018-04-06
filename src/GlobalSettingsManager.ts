@@ -16,11 +16,6 @@ export interface IGlobalSettings {
      * Sets or gets package restore feature prior build.
      */
     integrityCheck: boolean;
-
-    /**
-     * Sets or gets notification feature on build fails.
-     */
-    enableNotification: boolean;
 }
 
 /**
@@ -91,29 +86,6 @@ export class IntegrityCheckSettingMapper implements ISettingMapper<boolean> {
     };
 }
 
-export class NotificationSettingMapper implements ISettingMapper<boolean> {
-
-    /**
-     * Gets the real key of the setting when stored.
-     */
-    readonly key: string = 'enableNotification';
-
-    /**
-     * Convert user input value into its object representative.
-     */
-    valueTransformer = (value: string) => {
-        return (value.toLowerCase() === 'true');
-    };
-
-    /**
-     * Validates the user input value.
-     */
-    valueValidator = (value: string) => {
-        value = value.toLowerCase();
-        return (value === 'true' || value === 'false');
-    };
-}
-
 /**
  * Contains members for reading and writing the global tool settings.
  */
@@ -132,8 +104,7 @@ export class GlobalSettingsManager {
         [key: string]: ISettingMapper<any>
     } = {
             'package-manager': new PackageManagerSettingMapper(),
-            'integrity-check': new IntegrityCheckSettingMapper(),
-            'enable-notification': new NotificationSettingMapper()
+            'integrity-check': new IntegrityCheckSettingMapper()
         };
 
     /**
@@ -168,8 +139,7 @@ export class GlobalSettingsManager {
             // console.log('Failed to read global settings file; creating a new one instead.');
             return {
                 packageManager: 'yarn',
-                integrityCheck: true,
-                enableNotification: false
+                integrityCheck: true
             };
         }
     }

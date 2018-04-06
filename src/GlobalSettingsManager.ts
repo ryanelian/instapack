@@ -13,9 +13,14 @@ export interface IGlobalSettings {
     packageManager: string;
 
     /**
-     * Sets or gets true when package restore should be done prior build.
+     * Sets or gets package restore feature prior build.
      */
     integrityCheck: boolean;
+
+    /**
+     * Sets or gets notification feature on build fails.
+     */
+    enableNotification: boolean;
 }
 
 /**
@@ -70,12 +75,41 @@ export class IntegrityCheckSettingMapper implements ISettingMapper<boolean> {
      */
     readonly key: string = 'integrityCheck';
 
+    /**
+     * Convert user input value into its object representative.
+     */
     valueTransformer = (value: string) => {
         return (value.toLowerCase() === 'true');
     };
 
+    /**
+     * Validates the user input value.
+     */
     valueValidator = (value: string) => {
-        value = value.toString();
+        value = value.toLowerCase();
+        return (value === 'true' || value === 'false');
+    };
+}
+
+export class NotificationSettingMapper implements ISettingMapper<boolean> {
+
+    /**
+     * Gets the real key of the setting when stored.
+     */
+    readonly key: string = 'enableNotification';
+
+    /**
+     * Convert user input value into its object representative.
+     */
+    valueTransformer = (value: string) => {
+        return (value.toLowerCase() === 'true');
+    };
+
+    /**
+     * Validates the user input value.
+     */
+    valueValidator = (value: string) => {
+        value = value.toLowerCase();
         return (value === 'true' || value === 'false');
     };
 }
@@ -98,7 +132,8 @@ export class GlobalSettingsManager {
         [key: string]: ISettingMapper<any>
     } = {
             'package-manager': new PackageManagerSettingMapper(),
-            'integrity-check': new IntegrityCheckSettingMapper()
+            'integrity-check': new IntegrityCheckSettingMapper(),
+            'enable-notification': new NotificationSettingMapper()
         };
 
     /**
@@ -133,7 +168,8 @@ export class GlobalSettingsManager {
             // console.log('Failed to read global settings file; creating a new one instead.');
             return {
                 packageManager: 'yarn',
-                integrityCheck: true
+                integrityCheck: true,
+                enableNotification: false
             };
         }
     }

@@ -76,11 +76,11 @@ If using [the latest Visual Studio Code](https://code.visualstudio.com/), it sho
 
 ## Features
 
-- Hyper-opinionated web app client project builder with near-zero configurations. It just works. :sparkling_heart:
+- Hyper-opinionated web app client project builder with near-zero configurations. It just works! :sparkling_heart:
 
 - Built-in new project scaffold tool. :gift:
 
-- Rich debugging experience: set breakpoints, view variable values, and step into the TypeScript source code! :mag:
+- Rich debugging experience: set breakpoints, view variables, and step into the TypeScript source code! :mag:
 
 ## Design Goals
 
@@ -98,7 +98,7 @@ If using [the latest Visual Studio Code](https://code.visualstudio.com/), it sho
 
 ## But... Why?
 
-Recently every hecking framework on this planet :earth_asia: has their own CLI, but only few are able to support TypeScript out of the box. So most people gave up on TypeScript right off the bat... :broken_heart:
+Recently every hecking framework on this planet :earth_asia: has their own CLI, but only few are able to support TypeScript out of the box. Hence, most people gave up on TypeScript right off the bat... :broken_heart:
 
 instapack is an initiative to develop a command line tool for compiling most apps developed using mainstream JavaScript frameworks, with a :lemon: twist: **It can easily build an app written in TypeScript with minimal or no further configurations!**
 
@@ -353,7 +353,7 @@ Add the packages required for your project using npm / Yarn and then start hacki
 
 Also, pull requests are welcomed if you have a great starting templates and books for those projects. We'd love to expand our collections!
 
-## How to debug using Visual Studio Code?
+### How to debug using Visual Studio Code?
 
 Install the [VS Code extension: Debugger for Chrome](https://marketplace.visualstudio.com/items?itemName=msjsdiag.debugger-for-chrome), open the project folder using VS Code (workspace should have `package.json`).
 

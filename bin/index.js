@@ -41,6 +41,7 @@ module.exports = class instapack {
             let compiler = new Compiler_1.Compiler(settings, flags);
             let globalSettings = yield this.globalSettingsManager.tryRead();
             let packageManager = new PackageManager_1.PackageManager();
+            Shout_1.Shout.enableNotification = globalSettings.enableNotification;
             if (globalSettings.integrityCheck) {
                 let packageJsonExists = yield fse.pathExists(settings.packageJson);
                 if (packageJsonExists) {

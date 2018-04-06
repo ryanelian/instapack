@@ -74,6 +74,9 @@ export = class instapack {
 
         let globalSettings = await this.globalSettingsManager.tryRead();
         let packageManager = new PackageManager();
+
+        Shout.enableNotification = globalSettings.enableNotification;
+        // Shout.notify('Build start!');
         
         if (globalSettings.integrityCheck) {
             let packageJsonExists = await fse.pathExists(settings.packageJson);

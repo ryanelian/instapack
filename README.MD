@@ -355,7 +355,7 @@ Also, pull requests are welcomed if you have a great starting templates and book
 
 ### How to debug using Visual Studio Code?
 
-Install the [VS Code extension: Debugger for Chrome](https://marketplace.visualstudio.com/items?itemName=msjsdiag.debugger-for-chrome), open the project folder using VS Code (workspace should have `package.json`).
+Install the [VS Code extension: Debugger for Chrome](https://marketplace.visualstudio.com/items?itemName=msjsdiag.debugger-for-chrome), open the project using VS Code (`package.json` should be located on your workspace folder root).
 
 Create a folder `.vscode` and a file `launch.json` inside it:
 
@@ -412,6 +412,18 @@ Nope.
 ### Can I change the js / css folder name?
 
 Nope.
+
+### Can I build multiple entry points?
+
+Nope. 
+
+However, you can _eject_ the `client` folder out of the back-end project folder, rename the `jsOut` file, and then redirect the `output` folder path back into the assets folder of the back-end project. This is the preferred way of doing things because:
+
+- You may have multiple front-end projects for a single back-end project.
+
+- Every front-end project can have vastly different `tsconfig.json` and `package.json` setup.
+
+- Prevents front-end projects from screwing around with each other's code.
 
 ### My package restore / IDE is slow. Help!
 

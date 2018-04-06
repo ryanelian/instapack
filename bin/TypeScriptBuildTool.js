@@ -178,6 +178,9 @@ class TypeScriptBuildTool {
             warnings: false
         };
     }
+    get inFolderMessage() {
+        return chalk_1.default.grey('in ' + this.settings.outputJsFolder + '/');
+    }
     build() {
         webpack(this.webpackConfiguration, (error, stats) => {
             if (error) {
@@ -195,7 +198,7 @@ class TypeScriptBuildTool {
             for (let asset of o.assets) {
                 if (asset.emitted) {
                     let kb = PrettyUnits_1.prettyBytes(asset.size);
-                    Shout_1.Shout.timed(chalk_1.default.blue(asset.name), chalk_1.default.magenta(kb));
+                    Shout_1.Shout.timed(chalk_1.default.blue(asset.name), chalk_1.default.magenta(kb), this.inFolderMessage);
                 }
             }
             if (this.flags.stats) {

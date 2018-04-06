@@ -33,7 +33,6 @@ class Compiler {
         return compiler;
     }
     chat() {
-        Shout_1.Shout.timed('Output to folder', chalk_1.default.cyan(this.settings.outputFolder));
         if (this.flags.production) {
             Shout_1.Shout.timed(chalk_1.default.yellow("Production"), "Mode: Outputs will be minified.", chalk_1.default.red("(Slow build)"));
         }

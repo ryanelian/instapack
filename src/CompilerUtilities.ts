@@ -22,9 +22,9 @@ export interface ICompilerFlags {
  */
 export function outputFileThenLog(filePath: string, content: string) {
     let bundle = Buffer.from(content, 'utf8');
-    let name = upath.basename(filePath);
+    let info = upath.parse(filePath);
     let size = prettyBytes(bundle.byteLength);
 
-    Shout.timed(chalk.blue(name), chalk.magenta(size));
+    Shout.timed(chalk.blue(info.base), chalk.magenta(size), chalk.grey('in ' + info.dir + '/'));
     return fse.outputFile(filePath, bundle);
 }

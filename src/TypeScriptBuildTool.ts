@@ -267,6 +267,10 @@ export class TypeScriptBuildTool {
         } as webpack.Stats.ToJsonOptions;
     }
 
+    get inFolderMessage() {
+        return chalk.grey('in ' + this.settings.outputJsFolder + '/');
+    }
+
     /**
      * Runs the TypeScript build engine. Automatically exits process if not in watch mode.
      */
@@ -290,7 +294,7 @@ export class TypeScriptBuildTool {
             for (let asset of o.assets) {
                 if (asset.emitted) {
                     let kb = prettyBytes(asset.size);
-                    Shout.timed(chalk.blue(asset.name), chalk.magenta(kb));
+                    Shout.timed(chalk.blue(asset.name), chalk.magenta(kb), this.inFolderMessage);
                 }
             }
 

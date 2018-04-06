@@ -68,8 +68,6 @@ export class Compiler {
      * Displays information about currently used build flags.
      */
     private chat() {
-        Shout.timed('Output to folder', chalk.cyan(this.settings.outputFolder));
-
         if (this.flags.production) {
             Shout.timed(chalk.yellow("Production"), "Mode: Outputs will be minified.", chalk.red("(Slow build)"));
         } else {

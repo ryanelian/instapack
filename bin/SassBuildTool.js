@@ -144,7 +144,7 @@ class SassBuildTool {
     }
     buildWithStopwatch() {
         return __awaiter(this, void 0, void 0, function* () {
-            Shout_1.Shout.timed('Compiling CSS', chalk_1.default.cyan(this.settings.cssEntry));
+            Shout_1.Shout.timed('Compiling', chalk_1.default.cyan('index.scss'), chalk_1.default.grey('in ' + this.settings.inputCssFolder + '/'));
             let start = process.hrtime();
             try {
                 yield this.build();

@@ -34,10 +34,10 @@ class Compiler {
     }
     chat() {
         if (this.flags.production) {
-            Shout_1.Shout.timed(chalk_1.default.yellow("Production"), "Mode: Outputs will be minified.", chalk_1.default.red("(Slow build)"));
+            Shout_1.Shout.timed(chalk_1.default.yellow("Production"), "Mode: Outputs minification is enabled.", chalk_1.default.red("(Slow build)"));
         }
         else {
-            Shout_1.Shout.timed(chalk_1.default.yellow("Development"), "Mode: Outputs will", chalk_1.default.red("NOT be minified!"), "(Fast build)");
+            Shout_1.Shout.timed(chalk_1.default.yellow("Development"), "Mode: Outputs minification", chalk_1.default.red("is disabled!"), chalk_1.default.grey("(Fast build)"));
             Shout_1.Shout.timed(chalk_1.default.red("Do not forget to minify"), "before pushing to repository or production server!");
         }
         if (this.flags.watch) {

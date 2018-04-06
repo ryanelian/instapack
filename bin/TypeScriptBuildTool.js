@@ -90,7 +90,7 @@ class TypeScriptBuildTool {
         let plugins = [];
         plugins.push(new webpack.NoEmitOnErrorsPlugin());
         plugins.push(new TypeScriptBuildWebpackPlugin_1.TypeScriptBuildWebpackPlugin({
-            jsEntry: this.settings.jsEntry,
+            inputJsFolder: this.settings.inputJsFolder,
             target: this.buildTarget,
             production: this.flags.production,
             sourceMap: this.flags.sourceMap

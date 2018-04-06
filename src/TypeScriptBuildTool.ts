@@ -156,7 +156,7 @@ export class TypeScriptBuildTool {
         let plugins = [];
         plugins.push(new webpack.NoEmitOnErrorsPlugin()); // Near-useless in current state...
         plugins.push(new TypeScriptBuildWebpackPlugin({
-            jsEntry: this.settings.jsEntry,
+            inputJsFolder: this.settings.inputJsFolder,
             target: this.buildTarget,
             production: this.flags.production,
             sourceMap: this.flags.sourceMap

@@ -32,7 +32,7 @@ class TypeScriptBuildWebpackPlugin {
             Shout_1.Shout.danger('TypeScript compile target is not', chalk_1.default.yellow('ES5'), '!' + chalk_1.default.grey('(tsconfig.json)'));
         }
         compiler.plugin('compile', compilation => {
-            Shout_1.Shout.timed('Compiling JS >', chalk_1.default.yellow(this.options.target), chalk_1.default.cyan(this.options.jsEntry));
+            Shout_1.Shout.timed('Compiling', chalk_1.default.cyan('index.ts'), '>', chalk_1.default.yellow(this.options.target), chalk_1.default.grey('in ' + this.options.inputJsFolder + '/'));
         });
         if (!this.options.production) {
             return;

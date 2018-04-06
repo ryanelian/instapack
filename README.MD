@@ -80,7 +80,7 @@ If using [the latest Visual Studio Code](https://code.visualstudio.com/), it sho
 
 - Built-in new project scaffold tool. :gift:
 
-- Rich debugging experience using DevTools: set breakpoints, view variable values, and step into the TypeScript source code directly in the browser! :mag:
+- Rich debugging experience: set breakpoints, view variable values, and step into the TypeScript source code! :mag:
 
 ## Design Goals
 
@@ -352,6 +352,29 @@ Yes, absolutely! **If it worked when using standard JavaScript, it WILL work wit
 Add the packages required for your project using npm / Yarn and then start hacking. We'll take care of the outputs.
 
 Also, pull requests are welcomed if you have a great starting templates and books for those projects. We'd love to expand our collections!
+
+## How to debug using Visual Studio Code?
+
+Install the [VS Code extension: Debugger for Chrome](https://marketplace.visualstudio.com/items?itemName=msjsdiag.debugger-for-chrome), open the project folder using VS Code (workspace should have `package.json`).
+
+Create a folder `.vscode` and a file `launch.json` inside it:
+
+```json
+{
+    "configurations": [
+        {
+            "name": "Chrome",
+            "type": "chrome",
+            "request": "launch",
+            "url": "http://localhost:43371/",
+            "webRoot": "${workspaceFolder}",
+            "smartStep": true
+        }
+    ]
+}
+```
+
+Replace the `url` parameter with the correct URL of your app, then press **F5** on your keyboard!
 
 ### How to develop a Cordova app using vue-mobile template?
 

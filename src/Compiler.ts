@@ -68,15 +68,15 @@ export class Compiler {
      * Displays information about currently used build flags.
      */
     private chat() {
+        if (this.flags.watch) {
+            Shout.timed(chalk.yellow("Watch"), "Mode: Source codes will be automatically compiled on changes.");
+        }
+        
         if (this.flags.production) {
             Shout.timed(chalk.yellow("Production"), "Mode: Outputs minification is enabled.", chalk.red("(Slow build)"));
         } else {
             Shout.timed(chalk.yellow("Development"), "Mode: Outputs minification", chalk.red("is disabled!"), chalk.grey("(Fast build)"));
-            Shout.timed(chalk.red("Do not forget to minify"), "before pushing to repository or production server!");
-        }
-
-        if (this.flags.watch) {
-            Shout.timed(chalk.yellow("Watch"), "Mode: Source codes will be automatically compiled on changes.");
+            Shout.timed(chalk.red("REMEMBER TO MINIFY"), "before pushing to production server!");
         }
 
         if (!this.flags.production || this.flags.watch) {

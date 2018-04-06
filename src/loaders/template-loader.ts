@@ -45,28 +45,27 @@ function functionArrayWrap(ar: string[]) {
 
 module.exports = function (this: loader.LoaderContext, html: string) {
     let template = minify(html, minifierOptions).trim();
-    let error = '';
 
     let fileName = this.resourcePath.toLowerCase();
     if (fileName.endsWith('.vue.html')) {
         let vueResult = compile(template);
+        // console.log(vueResult);
+
         let error = vueResult.errors[0];
-        if (!error) {
-            template = '{render:' + functionWrap(vueResult.render)
-                + ',staticRenderFns:' + functionArrayWrap(vueResult.staticRenderFns)
-                + '}';
+        if (error) {
+            this.callback(Error(error));
+            return;
         }
+
+        template = '{render:' + functionWrap(vueResult.render)
+            + ',staticRenderFns:' + functionArrayWrap(vueResult.staticRenderFns)
+            + '}';
     } else {
         template = JSON.stringify(template);
     }
 
     template = 'module.exports = ' + template;
     // console.log("Template compiled: " + fileName + "\n" + template);
-
-    if (error) {
-        this.callback(Error(error));
-        return;
-    }
 
     if (this.sourceMap) {
         let gen = new SourceMapGenerator({

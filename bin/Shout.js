@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const chalk_1 = require("chalk");
 const notifier = require("node-notifier");
-const path = require("path");
+const upath = require("upath");
 function padZeroToDoubleDigits(x) {
     let s = '';
     if (x < 10) {
@@ -69,7 +69,7 @@ exports.Shout = {
             return;
         }
         let message = '...';
-        let icon = path.join(__dirname, '../img/madobe.png');
+        let icon = upath.join(__dirname, '../img/madobe.png');
         if (tokens && tokens.length) {
             message = concatenateTokens(tokens);
         }

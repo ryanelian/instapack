@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import * as notifier from 'node-notifier';
-import * as path from 'path';
+import * as upath from 'upath';
 
 /**
  * Converts a number into a string. If the number is less than 10, adds 0 as prefix.
@@ -91,7 +91,7 @@ export let Shout = {
         }
 
         let message = '...';
-        let icon = path.join(__dirname, '../img/madobe.png');
+        let icon = upath.join(__dirname, '../img/madobe.png');
         if (tokens && tokens.length) {
             message = concatenateTokens(tokens);
         }

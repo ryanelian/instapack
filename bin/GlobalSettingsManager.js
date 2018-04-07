@@ -36,11 +36,25 @@ class IntegrityCheckSettingMapper {
     }
 }
 exports.IntegrityCheckSettingMapper = IntegrityCheckSettingMapper;
+class NotificationSettingMapper {
+    constructor() {
+        this.key = 'muteNotification';
+        this.valueTransformer = (value) => {
+            return (value.toLowerCase() === 'true');
+        };
+        this.valueValidator = (value) => {
+            value = value.toLowerCase();
+            return (value === 'true' || value === 'false');
+        };
+    }
+}
+exports.NotificationSettingMapper = NotificationSettingMapper;
 class GlobalSettingsManager {
     constructor() {
         this.settingMappers = {
             'package-manager': new PackageManagerSettingMapper(),
-            'integrity-check': new IntegrityCheckSettingMapper()
+            'integrity-check': new IntegrityCheckSettingMapper(),
+            'mute-notification': new NotificationSettingMapper()
         };
     }
     get globalSettingJsonPath() {
@@ -58,12 +72,23 @@ class GlobalSettingsManager {
     tryRead() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                return yield fse.readJson(this.globalSettingJsonPath);
+                let settings = yield fse.readJson(this.globalSettingJsonPath);
+                if (settings.packageManager === undefined) {
+                    settings.packageManager = 'yarn';
+                }
+                if (settings.integrityCheck === undefined) {
+                    settings.integrityCheck = true;
+                }
+                if (settings.muteNotification === undefined) {
+                    settings.muteNotification = false;
+                }
+                return settings;
             }
             catch (_a) {
                 return {
                     packageManager: 'yarn',
-                    integrityCheck: true
+                    integrityCheck: true,
+                    muteNotification: false
                 };
             }
         });

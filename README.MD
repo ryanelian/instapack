@@ -154,6 +154,8 @@ Remove all files in the output folders.
 
 - `integrity-check` allows disabling package restore prior build. Possible values: `true` and `false`
 
+- `mute-notification` allows disabling toast alert on build fails in watch mode. Possible values: `true` and `false`
+
 ## Configurations
 
 instapack puts configurations inside `package.json` to reduce project files clutter. For example, this is the included `package.json` with `vue` template:

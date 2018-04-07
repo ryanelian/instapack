@@ -164,6 +164,9 @@ class Compiler {
         });
     }
     build(taskName, initial = true) {
+        if (this.flags.watch) {
+            Shout_1.Shout.enableNotification = this.flags.notification;
+        }
         let task;
         if (process.send === undefined) {
             if (initial) {
@@ -246,7 +249,6 @@ if (process.send) {
         if (!command.flags.watch || command.build === 'concat') {
             EventHub_1.default.exitOnBuildDone();
         }
-        Shout_1.Shout.enableNotification = command.flags.notification;
         Compiler.fromCommand(command).build(command.build);
     });
 }

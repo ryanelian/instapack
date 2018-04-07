@@ -238,6 +238,10 @@ export class Compiler {
      * @param taskName 
      */
     build(taskName: string, initial = true) {
+        if (this.flags.watch) {
+            Shout.enableNotification = this.flags.notification;
+        }
+
         let task: Promise<void>;
 
         if (process.send === undefined) {
@@ -340,8 +344,6 @@ if (process.send) { // Child Process
             hub.exitOnBuildDone();
         }
 
-        Shout.enableNotification = command.flags.notification;
-        
         Compiler.fromCommand(command).build(command.build);
     });
 }

@@ -81,7 +81,7 @@ export = class instapack {
 
         // Shout.notify('Build start!');
 
-        if (globalSettings.integrityCheck) {
+        if (globalSettings.packageManager !== 'disabled') {
             let packageJsonExists = await fse.pathExists(settings.packageJson);
             if (packageJsonExists) {
                 try {

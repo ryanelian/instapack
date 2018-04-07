@@ -150,9 +150,7 @@ Remove all files in the output folders.
 
 ### set <key> <value>
 
-- `package-manager` allows setting default package manager to be used for restoring and integrity-checking `node_modules` prior build. Possible values: `yarn` and `npm` (default: `yarn`)
-
-- `integrity-check` enables package restore prior build when set to `true`. Possible values: `true` and `false` (default: `true`)
+- `package-manager` allows setting default package manager to be used for restoring and integrity-checking `node_modules` prior build. Possible values: `yarn`, `npm`, `disabled` (default: `yarn`)
 
 - `mute-notification` disables toast alert on build fails in watch mode when set to `true`. Possible values: `true` and `false` (default: `false`)
 

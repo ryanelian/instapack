@@ -44,7 +44,7 @@ module.exports = class instapack {
             if (flags.notification === undefined) {
                 flags.notification = !globalSettings.muteNotification;
             }
-            if (globalSettings.integrityCheck) {
+            if (globalSettings.packageManager !== 'disabled') {
                 let packageJsonExists = yield fse.pathExists(settings.packageJson);
                 if (packageJsonExists) {
                     try {

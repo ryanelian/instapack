@@ -45,8 +45,8 @@
     "@types/node" "*"
 
 "@types/node@*", "@types/node@8":
-  version "8.10.2"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-8.10.2.tgz#f1fb9c73414832c5b00ee954c4bbf68394e2e526"
+  version "8.10.3"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-8.10.3.tgz#ee34a5c732703cf45d2fadc163a299a6b2f456c2"
 
 "@types/relateurl@*":
   version "0.2.28"
@@ -2996,9 +2996,9 @@ typescript@2.8.1:
   version "2.8.1"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.8.1.tgz#6160e4f8f195d5ba81d4876f9c0cc1fbc0820624"
 
-uglify-js@3.3.18, uglify-js@3.3.x:
-  version "3.3.18"
-  resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-3.3.18.tgz#e16df66d71638df3c9bc61cce827e46f24bdac02"
+uglify-js@3.3.19, uglify-js@3.3.x:
+  version "3.3.19"
+  resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-3.3.19.tgz#997d59916dae94f3855b99d184b1f7013adce424"
   dependencies:
     commander "~2.15.0"
     source-map "~0.6.1"

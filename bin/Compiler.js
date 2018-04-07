@@ -243,12 +243,10 @@ if (process.send) {
         if (!command.build) {
             return;
         }
-        if (command.flags.watch && command.build !== 'concat') {
-            Shout_1.Shout.enableNotification = true;
-        }
-        else {
+        if (!command.flags.watch || command.build === 'concat') {
             EventHub_1.default.exitOnBuildDone();
         }
+        Shout_1.Shout.enableNotification = command.flags.notification;
         Compiler.fromCommand(command).build(command.build);
     });
 }

@@ -71,7 +71,7 @@ export class Compiler {
         if (this.flags.watch) {
             Shout.timed(chalk.yellow("Watch"), "Mode: Source codes will be automatically compiled on changes.");
         }
-        
+
         if (this.flags.production) {
             Shout.timed(chalk.yellow("Production"), "Mode: Outputs minification is enabled.", chalk.red("(Slow build)"));
         } else {
@@ -336,12 +336,12 @@ if (process.send) { // Child Process
             return;
         }
 
-        if (command.flags.watch && command.build !== 'concat') {
-            Shout.enableNotification = true;
-        } else {
+        if (!command.flags.watch || command.build === 'concat') {
             hub.exitOnBuildDone();
         }
 
+        Shout.enableNotification = command.flags.notification;
+        
         Compiler.fromCommand(command).build(command.build);
     });
 }

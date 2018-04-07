@@ -69,14 +69,18 @@ export = class instapack {
      */
     async build(taskName: string, flags: ICompilerFlags) {
 
-        let settings = await Settings.tryReadFromPackageJson(this.projectFolder);        
+        let settings = await Settings.tryReadFromPackageJson(this.projectFolder);
         let compiler = new Compiler(settings, flags);
 
         let globalSettings = await this.globalSettingsManager.tryRead();
         let packageManager = new PackageManager();
 
+        if (flags.notification === undefined) {
+            flags.notification = !globalSettings.muteNotification;
+        }
+
         // Shout.notify('Build start!');
-        
+
         if (globalSettings.integrityCheck) {
             let packageJsonExists = await fse.pathExists(settings.packageJson);
             if (packageJsonExists) {
@@ -116,7 +120,7 @@ export = class instapack {
      * Cleans the JavaScript and CSS output folder and the temporary cache folder.
      */
     async clean() {
-        let settings = await Settings.tryReadFromPackageJson(this.projectFolder);       
+        let settings = await Settings.tryReadFromPackageJson(this.projectFolder);
         let cleanCSS = fse.emptyDir(settings.outputCssFolder);
         let cleanJS = fse.emptyDir(settings.outputJsFolder);
 

@@ -13,6 +13,7 @@ export interface ICompilerFlags {
     watch: boolean;
     sourceMap: boolean;
     stats: boolean;
+    notification?: boolean;
 }
 
 /**

@@ -325,7 +325,7 @@ export class Compiler {
      */
     async checkTypeScript() {
         let tool = new TypeScriptCheckerTool(this.settings);
-        tool.typeCheck();
+        await tool.typeCheck();
 
         if (this.flags.watch) {
             tool.watch();

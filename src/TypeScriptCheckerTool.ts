@@ -3,6 +3,8 @@ import chalk from 'chalk';
 import * as fse from 'fs-extra';
 import * as upath from 'upath';
 import * as chokidar from 'chokidar';
+import * as glob from 'glob';
+import * as parse5 from 'parse5';
 import { createHash } from 'crypto';
 
 import hub from './EventHub';
@@ -72,11 +74,6 @@ export class TypeScriptCheckerTool {
     private readonly host: TypeScript.CompilerHost;
 
     /**
-     * Callback method handler for reading TypeScript SourceFile from disk. 
-     */
-    private readonly readSourceFile: (fileName: string, languageVersion: TypeScript.ScriptTarget, onError?: (message: string) => void, shouldCreateNewSourceFile?: boolean) => TypeScript.SourceFile;
-
-    /**
      * Constructs a new instance of TypeScriptCheckerTool using provided instapack Settings.
      * @param settings 
      */
@@ -109,7 +106,6 @@ export class TypeScriptCheckerTool {
             return fileContent;
         }
 
-        this.readSourceFile = this.host.getSourceFile;
         this.host.getSourceFile = (fileName, languageVersion, onError, shouldCreateNewSourceFile) => {
             if (this.sources[fileName]) {
                 // console.log('SOURCE (cache) ' + fileName);
@@ -119,7 +115,7 @@ export class TypeScriptCheckerTool {
             // Cache Miss: should only happen during...
             // 1. first-time check.
             // 2. importing existing files which were not imported during first-time check.
-            // Subsequent queries should be cached prior checking by the watch function.
+            // Subsequent queries SHOULD be cached prior checking by the watch function.
 
             // console.log('SOURCE ' + fileName);
             this.addOrUpdateSourceFileCache(fileName);
@@ -128,25 +124,71 @@ export class TypeScriptCheckerTool {
     }
 
     /**
+     * Reads TypeScript source code from virtual .vue.ts file,
+     * which corresponds to the real .vue file when script language is TypeScript.
+     * @param fileName 
+     */
+    private parseVueSource(fileName: string): string {
+        let redirect = upath.removeExt(fileName, '.ts');
+        let vue = fse.readFileSync(redirect, 'utf8');
+        let document = parse5.parseFragment(vue);
+
+        // console.log(document);
+        for (let tag of document.childNodes) {
+            if (tag.tagName === 'script') {
+                // console.log(tag);
+                let lang = tag.attrs.filter(Q => Q.name === 'lang')[0];
+                if (!lang) {
+                    return ''; // JS Language
+                }
+                if (lang.value !== 'ts') {
+                    return ''; // Unknown Language
+                }
+
+                let child = tag.childNodes.filter(Q => Q.nodeName === '#text')[0];
+                if (!child) {
+                    return ''; // Empty?
+                }
+
+                // console.log(child);
+                let text = child.value as string;
+                return text.trim();
+            }
+        }
+
+        return ''; // No Script
+    }
+
+    /**
      * Reads the SourceFile from disk then version it.
      * If the version changes, update the cache and return true.
      * Otherwise, returns false.
      * @param fileName 
      */
-    private addOrUpdateSourceFileCache(fileName: string) {
-        let source = this.readSourceFile(fileName, this.compilerOptions.target, error => {
-            Shout.error('when reading TypeScript source file:', fileName);
-            console.error(chalk.red(error));
-        });
+    private addOrUpdateSourceFileCache(fileName: string): boolean {
+        // console.log(fileName);
+        // chokidar passes file name with .vue extension...
+        if (fileName.endsWith('.vue')) {
+            fileName = fileName + '.ts';
+        }
 
-        let version = this.getFileContentHash(source.text);
+        let text: string;
+        // TypeScript requires file name with .ts extension!
+        if (fileName.endsWith('.vue.ts')) {
+            text = this.parseVueSource(fileName);
+        } else {
+            text = fse.readFileSync(fileName, 'utf8');
+        }
+
+        let version = this.getFileContentHash(text);
         let lastVersion = this.versions[fileName];
 
         if (version === lastVersion) {
             return false;
         }
 
-        this.sources[fileName] = source;
+        // https://github.com/Microsoft/TypeScript/blob/master/src/compiler/program.ts
+        this.sources[fileName] = TypeScript.createSourceFile(fileName, text, this.compilerOptions.target);
         this.versions[fileName] = version;
         return true;
     }
@@ -165,21 +207,23 @@ export class TypeScriptCheckerTool {
      * Performs full static check (semantic and syntactic diagnostics) against the TypeScript project using the project entry file.
      */
     async typeCheck() {
-        try {
-            let checks = Array.from(this.includeFiles).map(file => {
-                return fse.pathExists(file).then(exist => {
-                    if (!exist) {
-                        Shout.fatal('during type-check, included file not found:' + chalk.grey(file));
-                        throw new Error('File not found: ' + file);
-                    }
-                });
-            });
-            await Promise.all(checks);
-        } catch {
-            return;
-        }
+        let rootFiles = Array.from(this.includeFiles);
 
-        let tsc = TypeScript.createProgram(Array.from(this.includeFiles), this.compilerOptions, this.host);
+        // gather all vue files using glob pattern, then append .ts extension to enable type-check!
+        await new Promise((ok, reject) => {
+            glob(this.settings.vueGlobs, (error, files) => {
+                if (error) {
+                    reject(error);
+                }
+                for (let file of files) {
+                    rootFiles.push(file + '.ts');
+                }
+                ok();
+            });
+        });
+        // console.log(rootFiles);
+
+        let tsc = TypeScript.createProgram(rootFiles, this.compilerOptions, this.host);
 
         Shout.timed('Type-checking using TypeScript', chalk.yellow(TypeScript.version));
         let start = process.hrtime();
@@ -247,11 +291,13 @@ export class TypeScriptCheckerTool {
         let debounce = () => {
             clearTimeout(debounced);
             debounced = setTimeout(() => {
-                this.typeCheck();
+                this.typeCheck().catch(error => {
+                    Shout.fatal('during type-checking!', error);
+                });
             }, 300);
         };
 
-        chokidar.watch(this.settings.tsGlobs, {
+        chokidar.watch(this.settings.typeCheckGlobs, {
             ignoreInitial: true
         })
             .on('add', (file: string) => {

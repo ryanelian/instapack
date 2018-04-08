@@ -210,12 +210,19 @@ export class Settings {
     }
 
     /**
+     * Gets the glob patterns for Vue source code files.
+     */
+    get vueGlobs(): string {
+        return upath.join(this.inputJsFolder, '**', '*.vue');
+    }
+
+    /**
      * Gets the glob patterns for watching TypeScript project source code changes.
      */
-    get tsGlobs(): string[] {
+    get typeCheckGlobs(): string[] {
         let ts = upath.join(this.inputJsFolder, '**', '*.ts');
         let tsx = upath.join(this.inputJsFolder, '**', '*.tsx');
-        return [ts, tsx];
+        return [ts, tsx, this.vueGlobs];
     }
 
     /**

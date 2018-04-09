@@ -119,22 +119,44 @@ export class TypeScriptBuildTool {
     }
 
     /**
-     * Gets a configured TypeScript rules for webpack.
+     * Gets a transpile-only TypeScript rule for webpack, with source map support.
      */
-    get typescriptWebpackRules() {
+    get typescriptLoader() {
         let options = this.tsconfigOptions;
         options.sourceMap = this.flags.sourceMap;
         options.inlineSources = this.flags.sourceMap;
 
         return {
-            test: /\.tsx?$/,
-            use: [{
-                loader: 'core-typescript-loader',
-                options: {
-                    compilerOptions: options
-                }
-            }]
+            loader: 'core-typescript-loader',
+            options: {
+                compilerOptions: options
+            }
         };
+    }
+
+    /**
+     * Gets a configured TypeScript rules for webpack.
+     */
+    get typescriptWebpackRules() {
+        return {
+            test: /\.tsx?$/,
+            use: [this.typescriptLoader]
+        };
+    }
+
+    /**
+     * Gets a Vue Single-File Component rule for webpack.
+     */
+    get vueWebpackRules() {
+        return {
+            test: /\.vue$/,
+            loader: 'vue-loader',
+            options: {
+                loaders: {
+                    'ts': [this.typescriptLoader]
+                }
+            }
+        }
     }
 
     /**
@@ -156,7 +178,7 @@ export class TypeScriptBuildTool {
         let plugins = [];
         plugins.push(new webpack.NoEmitOnErrorsPlugin()); // Near-useless in current state...
         plugins.push(new TypeScriptBuildWebpackPlugin({
-            jsEntry: this.settings.jsEntry,
+            inputJsFolder: this.settings.inputJsFolder,
             target: this.buildTarget,
             production: this.flags.production,
             sourceMap: this.flags.sourceMap
@@ -267,6 +289,10 @@ export class TypeScriptBuildTool {
         } as webpack.Stats.ToJsonOptions;
     }
 
+    get inFolderMessage() {
+        return chalk.grey('in ' + this.settings.outputJsFolder + '/');
+    }
+
     /**
      * Runs the TypeScript build engine. Automatically exits process if not in watch mode.
      */
@@ -274,6 +300,7 @@ export class TypeScriptBuildTool {
         webpack(this.webpackConfiguration, (error, stats) => {
             if (error) {
                 Shout.fatal('during JS build (tool):', error);
+                Shout.notify('FATAL ERROR during JS build!');
                 hub.buildDone();
                 return;
             }
@@ -283,12 +310,13 @@ export class TypeScriptBuildTool {
             if (stats.hasErrors() || stats.hasWarnings()) {
                 let buildErrors = '\n' + stats.toString(this.webpackStatsErrorsOnly).trim() + '\n';
                 console.error(buildErrors);
+                Shout.notify('You have one or more JS build errors / warnings!');
             }
 
             for (let asset of o.assets) {
                 if (asset.emitted) {
                     let kb = prettyBytes(asset.size);
-                    Shout.timed(chalk.blue(asset.name), chalk.magenta(kb));
+                    Shout.timed(chalk.blue(asset.name), chalk.magenta(kb), this.inFolderMessage);
                 }
             }
 

@@ -18,29 +18,29 @@ class PackageManagerSettingMapper {
         this.valueTransformer = (value) => value.toLowerCase();
         this.valueValidator = (value) => {
             value = value.toLowerCase();
-            return (value === 'yarn' || value === 'npm');
+            return (value === 'yarn' || value === 'npm' || value === 'disabled');
         };
     }
 }
 exports.PackageManagerSettingMapper = PackageManagerSettingMapper;
-class IntegrityCheckSettingMapper {
+class NotificationSettingMapper {
     constructor() {
-        this.key = 'integrityCheck';
+        this.key = 'muteNotification';
         this.valueTransformer = (value) => {
             return (value.toLowerCase() === 'true');
         };
         this.valueValidator = (value) => {
-            value = value.toString();
+            value = value.toLowerCase();
             return (value === 'true' || value === 'false');
         };
     }
 }
-exports.IntegrityCheckSettingMapper = IntegrityCheckSettingMapper;
+exports.NotificationSettingMapper = NotificationSettingMapper;
 class GlobalSettingsManager {
     constructor() {
         this.settingMappers = {
             'package-manager': new PackageManagerSettingMapper(),
-            'integrity-check': new IntegrityCheckSettingMapper()
+            'mute-notification': new NotificationSettingMapper()
         };
     }
     get globalSettingJsonPath() {
@@ -58,12 +58,19 @@ class GlobalSettingsManager {
     tryRead() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                return yield fse.readJson(this.globalSettingJsonPath);
+                let settings = yield fse.readJson(this.globalSettingJsonPath);
+                if (settings.packageManager === undefined) {
+                    settings.packageManager = 'yarn';
+                }
+                if (settings.muteNotification === undefined) {
+                    settings.muteNotification = false;
+                }
+                return settings;
             }
             catch (_a) {
                 return {
                     packageManager: 'yarn',
-                    integrityCheck: true
+                    muteNotification: false
                 };
             }
         });

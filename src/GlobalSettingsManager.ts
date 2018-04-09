@@ -8,14 +8,14 @@ import chalk from 'chalk';
  */
 export interface IGlobalSettings {
     /**
-     * Sets or gets the user default package manager. Possible values: `yarn` or `npm`
+     * Sets or gets the user default package manager.
      */
-    packageManager: string;
+    packageManager: 'yarn' | 'npm' | 'disabled';
 
     /**
-     * Sets or gets true when package restore should be done prior build.
+     * Sets or gets toast notification mute flag. 
      */
-    integrityCheck: boolean;
+    muteNotification: boolean;
 }
 
 /**
@@ -57,25 +57,31 @@ export class PackageManagerSettingMapper implements ISettingMapper<string> {
      */
     valueValidator = (value: string) => {
         value = value.toLowerCase();
-        return (value === 'yarn' || value === 'npm');
+        return (value === 'yarn' || value === 'npm' || value === 'disabled');
     }
 }
 
 /**
- * Remaps user input setting for integrity check toggle.
+ * Remaps user input setting for notification.
  */
-export class IntegrityCheckSettingMapper implements ISettingMapper<boolean> {
+export class NotificationSettingMapper implements ISettingMapper<boolean> {
     /**
      * Gets the real key of the setting when stored.
      */
-    readonly key: string = 'integrityCheck';
+    readonly key: string = 'muteNotification';
 
+    /**
+     * Convert user input value into its object representative.
+     */
     valueTransformer = (value: string) => {
         return (value.toLowerCase() === 'true');
     };
 
+    /**
+     * Validates the user input value.
+     */
     valueValidator = (value: string) => {
-        value = value.toString();
+        value = value.toLowerCase();
         return (value === 'true' || value === 'false');
     };
 }
@@ -98,7 +104,7 @@ export class GlobalSettingsManager {
         [key: string]: ISettingMapper<any>
     } = {
             'package-manager': new PackageManagerSettingMapper(),
-            'integrity-check': new IntegrityCheckSettingMapper()
+            'mute-notification': new NotificationSettingMapper()
         };
 
     /**
@@ -127,13 +133,23 @@ export class GlobalSettingsManager {
      */
     async tryRead(): Promise<IGlobalSettings> {
         try {
-            return await fse.readJson(this.globalSettingJsonPath);
+            let settings: IGlobalSettings = await fse.readJson(this.globalSettingJsonPath);
+
+            if (settings.packageManager === undefined) {
+                settings.packageManager = 'yarn';
+            }
+
+            if (settings.muteNotification === undefined) {
+                settings.muteNotification = false;
+            }
+
+            return settings;
         }
         catch {
             // console.log('Failed to read global settings file; creating a new one instead.');
             return {
                 packageManager: 'yarn',
-                integrityCheck: true
+                muteNotification: false
             };
         }
     }

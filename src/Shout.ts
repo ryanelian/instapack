@@ -1,4 +1,6 @@
 import chalk from 'chalk';
+import * as notifier from 'node-notifier';
+import * as upath from 'upath';
 
 /**
  * Converts a number into a string. If the number is less than 10, adds 0 as prefix.
@@ -38,6 +40,7 @@ function concatenateTokens(tokens: any[]) {
 }
 
 export let Shout = {
+
     timed: function (...tokens) {
         let message = concatenateTokens(tokens);
         let output = `[${chalk.grey(nowFormatted())}]` + message;
@@ -78,5 +81,26 @@ export let Shout = {
         let message = concatenateTokens(tokens);
         let output = chalk.magenta('Sass') + message;
         console.log(output);
+    },
+
+    enableNotification: false,
+
+    notify: function (...tokens) {
+        if (!this.enableNotification) {
+            return;
+        }
+
+        let message = '...';
+        let icon = upath.join(__dirname, '../img/madobe.png');
+        if (tokens && tokens.length) {
+            message = concatenateTokens(tokens);
+        }
+
+        notifier.notify({
+            title: 'instapack',
+            message,
+            icon,
+            sound: false
+        });
     }
 };

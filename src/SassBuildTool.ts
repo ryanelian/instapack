@@ -221,13 +221,14 @@ export class SassBuildTool {
      * Executes build method with a formatted error and stopwatch wrapper. 
      */
     async buildWithStopwatch() {
-        Shout.timed('Compiling CSS', chalk.cyan(this.settings.cssEntry));
+        Shout.timed('Compiling', chalk.cyan('index.scss'), chalk.grey('in ' + this.settings.inputCssFolder + '/'));
         let start = process.hrtime();
         try {
             await this.build();
         }
         catch (error) {
             let render: string;
+            Shout.notify('You have one or more CSS build errors!');
 
             if (error['formatted']) {
                 // for node-sass compile error

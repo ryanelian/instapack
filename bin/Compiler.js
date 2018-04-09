@@ -33,16 +33,15 @@ class Compiler {
         return compiler;
     }
     chat() {
-        Shout_1.Shout.timed('Output to folder', chalk_1.default.cyan(this.settings.outputFolder));
+        if (this.flags.watch) {
+            Shout_1.Shout.timed(chalk_1.default.yellow("Watch"), "Mode: Source code will be automatically compiled on changes.");
+        }
         if (this.flags.production) {
-            Shout_1.Shout.timed(chalk_1.default.yellow("Production"), "Mode: Outputs will be minified.", chalk_1.default.red("(Slow build)"));
+            Shout_1.Shout.timed(chalk_1.default.yellow("Production"), "Mode: Outputs minification is enabled.", chalk_1.default.red("(Slow build)"));
         }
         else {
-            Shout_1.Shout.timed(chalk_1.default.yellow("Development"), "Mode: Outputs will", chalk_1.default.red("NOT be minified!"), "(Fast build)");
-            Shout_1.Shout.timed(chalk_1.default.red("Do not forget to minify"), "before pushing to repository or production server!");
-        }
-        if (this.flags.watch) {
-            Shout_1.Shout.timed(chalk_1.default.yellow("Watch"), "Mode: Source codes will be automatically compiled on changes.");
+            Shout_1.Shout.timed(chalk_1.default.yellow("Development"), "Mode: Outputs minification", chalk_1.default.red("is disabled!"), chalk_1.default.grey("(Fast build)"));
+            Shout_1.Shout.timed(chalk_1.default.red("REMEMBER TO MINIFY"), "before pushing to production server!");
         }
         if (!this.flags.production || this.flags.watch) {
             this.flags.stats = false;
@@ -165,6 +164,9 @@ class Compiler {
         });
     }
     build(taskName, initial = true) {
+        if (this.flags.watch) {
+            Shout_1.Shout.enableNotification = this.flags.notification;
+        }
         let task;
         if (process.send === undefined) {
             if (initial) {
@@ -200,6 +202,7 @@ class Compiler {
         }
         task.catch(error => {
             Shout_1.Shout.fatal(`during ${taskName.toUpperCase()} build:`, error);
+            Shout_1.Shout.notify(`FATAL ERROR during ${taskName.toUpperCase()} build!`);
             EventHub_1.default.buildDone();
         });
     }
@@ -230,7 +233,7 @@ class Compiler {
     checkTypeScript() {
         return __awaiter(this, void 0, void 0, function* () {
             let tool = new TypeScriptCheckerTool_1.TypeScriptCheckerTool(this.settings);
-            tool.typeCheck();
+            yield tool.typeCheck();
             if (this.flags.watch) {
                 tool.watch();
             }
@@ -240,11 +243,12 @@ class Compiler {
 exports.Compiler = Compiler;
 if (process.send) {
     process.on('message', (command) => {
-        if (command.build) {
-            if (!command.flags.watch || command.build === 'concat') {
-                EventHub_1.default.exitOnBuildDone();
-            }
-            Compiler.fromCommand(command).build(command.build);
+        if (!command.build) {
+            return;
         }
+        if (!command.flags.watch || command.build === 'concat') {
+            EventHub_1.default.exitOnBuildDone();
+        }
+        Compiler.fromCommand(command).build(command.build);
     });
 }

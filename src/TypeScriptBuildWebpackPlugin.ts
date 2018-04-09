@@ -10,7 +10,7 @@ import { Shout } from './Shout';
  * Options required for TypeScriptBuildWebpackPlugin to function, collected from Settings and ICompilerFlags.
  */
 interface ITypeScriptBuildWebpackPluginOptions {
-    jsEntry: string;
+    inputJsFolder: string;
     target: string;
     production: boolean;
     sourceMap: boolean;
@@ -81,7 +81,10 @@ export class TypeScriptBuildWebpackPlugin {
         }
 
         compiler.plugin('compile', compilation => {
-            Shout.timed('Compiling JS >', chalk.yellow(this.options.target), chalk.cyan(this.options.jsEntry));
+            Shout.timed('Compiling', chalk.cyan('index.ts'),
+                '>', chalk.yellow(this.options.target),
+                chalk.grey('in ' + this.options.inputJsFolder + '/')
+            );
         });
 
         if (!this.options.production) {

@@ -83,10 +83,13 @@ class Settings {
     get scssGlob() {
         return upath.join(this.inputCssFolder, '**', '*.scss');
     }
-    get tsGlobs() {
+    get vueGlobs() {
+        return upath.join(this.inputJsFolder, '**', '*.vue');
+    }
+    get typeCheckGlobs() {
         let ts = upath.join(this.inputJsFolder, '**', '*.ts');
         let tsx = upath.join(this.inputJsFolder, '**', '*.tsx');
-        return [ts, tsx];
+        return [ts, tsx, this.vueGlobs];
     }
     get outputFolder() {
         return upath.join(this.root, this.output);

@@ -64,18 +64,32 @@ class TypeScriptBuildTool {
         }
         return TypeScript.ScriptTarget[t];
     }
-    get typescriptWebpackRules() {
+    get typescriptLoader() {
         let options = this.tsconfigOptions;
         options.sourceMap = this.flags.sourceMap;
         options.inlineSources = this.flags.sourceMap;
         return {
+            loader: 'core-typescript-loader',
+            options: {
+                compilerOptions: options
+            }
+        };
+    }
+    get typescriptWebpackRules() {
+        return {
             test: /\.tsx?$/,
-            use: [{
-                    loader: 'core-typescript-loader',
-                    options: {
-                        compilerOptions: options
-                    }
-                }]
+            use: [this.typescriptLoader]
+        };
+    }
+    get vueWebpackRules() {
+        return {
+            test: /\.vue$/,
+            loader: 'vue-loader',
+            options: {
+                loaders: {
+                    'ts': [this.typescriptLoader]
+                }
+            }
         };
     }
     get templatesWebpackRules() {
@@ -90,7 +104,7 @@ class TypeScriptBuildTool {
         let plugins = [];
         plugins.push(new webpack.NoEmitOnErrorsPlugin());
         plugins.push(new TypeScriptBuildWebpackPlugin_1.TypeScriptBuildWebpackPlugin({
-            jsEntry: this.settings.jsEntry,
+            inputJsFolder: this.settings.inputJsFolder,
             target: this.buildTarget,
             production: this.flags.production,
             sourceMap: this.flags.sourceMap
@@ -178,10 +192,14 @@ class TypeScriptBuildTool {
             warnings: false
         };
     }
+    get inFolderMessage() {
+        return chalk_1.default.grey('in ' + this.settings.outputJsFolder + '/');
+    }
     build() {
         webpack(this.webpackConfiguration, (error, stats) => {
             if (error) {
                 Shout_1.Shout.fatal('during JS build (tool):', error);
+                Shout_1.Shout.notify('FATAL ERROR during JS build!');
                 EventHub_1.default.buildDone();
                 return;
             }
@@ -189,11 +207,12 @@ class TypeScriptBuildTool {
             if (stats.hasErrors() || stats.hasWarnings()) {
                 let buildErrors = '\n' + stats.toString(this.webpackStatsErrorsOnly).trim() + '\n';
                 console.error(buildErrors);
+                Shout_1.Shout.notify('You have one or more JS build errors / warnings!');
             }
             for (let asset of o.assets) {
                 if (asset.emitted) {
                     let kb = PrettyUnits_1.prettyBytes(asset.size);
-                    Shout_1.Shout.timed(chalk_1.default.blue(asset.name), chalk_1.default.magenta(kb));
+                    Shout_1.Shout.timed(chalk_1.default.blue(asset.name), chalk_1.default.magenta(kb), this.inFolderMessage);
                 }
             }
             if (this.flags.stats) {

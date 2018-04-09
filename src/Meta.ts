@@ -70,7 +70,7 @@ export class Meta {
             console.log(chalk.yellow('instapack'), 'is outdated. New version:', chalk.green(this.remoteVersion));
             if (parseInt(process.versions.node[0]) < 8) {
                 console.log(chalk.red('BEFORE UPDATING:'), chalk.yellow('install the latest Node.js LTS version 8'), 'for better build performance!');
-                console.log('Download URL: ' + chalk.blue('https://nodejs.org/en/download/'));
+                console.log('Download URL: ' + chalk.cyan('https://nodejs.org/en/download/'));
             }
         }
 

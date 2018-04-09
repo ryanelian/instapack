@@ -1,6 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const chalk_1 = require("chalk");
+const notifier = require("node-notifier");
+const upath = require("upath");
 function padZeroToDoubleDigits(x) {
     let s = '';
     if (x < 10) {
@@ -60,5 +62,22 @@ exports.Shout = {
         let message = concatenateTokens(tokens);
         let output = chalk_1.default.magenta('Sass') + message;
         console.log(output);
+    },
+    enableNotification: false,
+    notify: function (...tokens) {
+        if (!this.enableNotification) {
+            return;
+        }
+        let message = '...';
+        let icon = upath.join(__dirname, '../img/madobe.png');
+        if (tokens && tokens.length) {
+            message = concatenateTokens(tokens);
+        }
+        notifier.notify({
+            title: 'instapack',
+            message,
+            icon,
+            sound: false
+        });
     }
 };

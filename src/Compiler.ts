@@ -68,17 +68,15 @@ export class Compiler {
      * Displays information about currently used build flags.
      */
     private chat() {
-        Shout.timed('Output to folder', chalk.cyan(this.settings.outputFolder));
-
-        if (this.flags.production) {
-            Shout.timed(chalk.yellow("Production"), "Mode: Outputs will be minified.", chalk.red("(Slow build)"));
-        } else {
-            Shout.timed(chalk.yellow("Development"), "Mode: Outputs will", chalk.red("NOT be minified!"), "(Fast build)");
-            Shout.timed(chalk.red("Do not forget to minify"), "before pushing to repository or production server!");
+        if (this.flags.watch) {
+            Shout.timed(chalk.yellow("Watch"), "Mode: Source code will be automatically compiled on changes.");
         }
 
-        if (this.flags.watch) {
-            Shout.timed(chalk.yellow("Watch"), "Mode: Source codes will be automatically compiled on changes.");
+        if (this.flags.production) {
+            Shout.timed(chalk.yellow("Production"), "Mode: Outputs minification is enabled.", chalk.red("(Slow build)"));
+        } else {
+            Shout.timed(chalk.yellow("Development"), "Mode: Outputs minification", chalk.red("is disabled!"), chalk.grey("(Fast build)"));
+            Shout.timed(chalk.red("REMEMBER TO MINIFY"), "before pushing to production server!");
         }
 
         if (!this.flags.production || this.flags.watch) {
@@ -240,6 +238,10 @@ export class Compiler {
      * @param taskName 
      */
     build(taskName: string, initial = true) {
+        if (this.flags.watch) {
+            Shout.enableNotification = this.flags.notification;
+        }
+
         let task: Promise<void>;
 
         if (process.send === undefined) {
@@ -281,6 +283,7 @@ export class Compiler {
 
         task.catch(error => {
             Shout.fatal(`during ${taskName.toUpperCase()} build:`, error);
+            Shout.notify(`FATAL ERROR during ${taskName.toUpperCase()} build!`);
             hub.buildDone();
         });
     }
@@ -322,7 +325,7 @@ export class Compiler {
      */
     async checkTypeScript() {
         let tool = new TypeScriptCheckerTool(this.settings);
-        tool.typeCheck();
+        await tool.typeCheck();
 
         if (this.flags.watch) {
             tool.watch();
@@ -333,12 +336,14 @@ export class Compiler {
 if (process.send) { // Child Process
     process.on('message', (command: IBuildCommand) => {
         // console.log(command);
-        if (command.build) {
-            if (!command.flags.watch || command.build === 'concat') {
-                hub.exitOnBuildDone();
-            }
-
-            Compiler.fromCommand(command).build(command.build);
+        if (!command.build) {
+            return;
         }
+
+        if (!command.flags.watch || command.build === 'concat') {
+            hub.exitOnBuildDone();
+        }
+
+        Compiler.fromCommand(command).build(command.build);
     });
 }

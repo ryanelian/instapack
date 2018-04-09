@@ -64,18 +64,32 @@ class TypeScriptBuildTool {
         }
         return TypeScript.ScriptTarget[t];
     }
-    get typescriptWebpackRules() {
+    get typescriptLoader() {
         let options = this.tsconfigOptions;
         options.sourceMap = this.flags.sourceMap;
         options.inlineSources = this.flags.sourceMap;
         return {
+            loader: 'core-typescript-loader',
+            options: {
+                compilerOptions: options
+            }
+        };
+    }
+    get typescriptWebpackRules() {
+        return {
             test: /\.tsx?$/,
-            use: [{
-                    loader: 'core-typescript-loader',
-                    options: {
-                        compilerOptions: options
-                    }
-                }]
+            use: [this.typescriptLoader]
+        };
+    }
+    get vueWebpackRules() {
+        return {
+            test: /\.vue$/,
+            loader: 'vue-loader',
+            options: {
+                loaders: {
+                    'ts': [this.typescriptLoader]
+                }
+            }
         };
     }
     get templatesWebpackRules() {

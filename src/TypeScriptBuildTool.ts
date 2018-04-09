@@ -119,22 +119,44 @@ export class TypeScriptBuildTool {
     }
 
     /**
-     * Gets a configured TypeScript rules for webpack.
+     * Gets a transpile-only TypeScript rule for webpack, with source map support.
      */
-    get typescriptWebpackRules() {
+    get typescriptLoader() {
         let options = this.tsconfigOptions;
         options.sourceMap = this.flags.sourceMap;
         options.inlineSources = this.flags.sourceMap;
 
         return {
-            test: /\.tsx?$/,
-            use: [{
-                loader: 'core-typescript-loader',
-                options: {
-                    compilerOptions: options
-                }
-            }]
+            loader: 'core-typescript-loader',
+            options: {
+                compilerOptions: options
+            }
         };
+    }
+
+    /**
+     * Gets a configured TypeScript rules for webpack.
+     */
+    get typescriptWebpackRules() {
+        return {
+            test: /\.tsx?$/,
+            use: [this.typescriptLoader]
+        };
+    }
+
+    /**
+     * Gets a Vue Single-File Component rule for webpack.
+     */
+    get vueWebpackRules() {
+        return {
+            test: /\.vue$/,
+            loader: 'vue-loader',
+            options: {
+                loaders: {
+                    'ts': [this.typescriptLoader]
+                }
+            }
+        }
     }
 
     /**

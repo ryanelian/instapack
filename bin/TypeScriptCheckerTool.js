@@ -72,7 +72,11 @@ class TypeScriptCheckerTool {
         return '';
     }
     addOrUpdateSourceFileCache(fileName) {
+        if (fileName.endsWith('.d.ts')) {
+            this.includeFiles.add(fileName);
+        }
         if (fileName.endsWith('.vue')) {
+            this.vueFiles.add(fileName);
             fileName = fileName + '.ts';
         }
         let text;
@@ -91,6 +95,21 @@ class TypeScriptCheckerTool {
         this.versions[fileName] = version;
         return true;
     }
+    tryDeleteSourceFileCache(fileName) {
+        if (fileName.endsWith('.d.ts') && this.includeFiles.has(fileName)) {
+            this.includeFiles.delete(fileName);
+        }
+        if (fileName.endsWith('.vue') && this.vueFiles.has(fileName)) {
+            this.vueFiles.delete(fileName);
+            fileName = fileName + '.ts';
+        }
+        if (this.sources[fileName]) {
+            delete this.sources[fileName];
+            delete this.versions[fileName];
+            return true;
+        }
+        return false;
+    }
     getFileContentHash(content) {
         let hash = crypto_1.createHash('sha512');
         hash.update(content);
@@ -99,17 +118,23 @@ class TypeScriptCheckerTool {
     typeCheck() {
         return __awaiter(this, void 0, void 0, function* () {
             let rootFiles = Array.from(this.includeFiles);
-            yield new Promise((ok, reject) => {
-                glob(this.settings.vueGlobs, (error, files) => {
-                    if (error) {
-                        reject(error);
-                    }
-                    for (let file of files) {
-                        rootFiles.push(file + '.ts');
-                    }
-                    ok();
+            if (this.vueFiles === undefined) {
+                this.vueFiles = new Set();
+                yield new Promise((ok, reject) => {
+                    glob(this.settings.vueGlobs, (error, files) => {
+                        if (error) {
+                            reject(error);
+                        }
+                        for (let file of files) {
+                            this.vueFiles.add(file);
+                        }
+                        ok();
+                    });
                 });
-            });
+            }
+            for (let file of this.vueFiles) {
+                rootFiles.push(file + '.ts');
+            }
             let tsc = TypeScript.createProgram(rootFiles, this.compilerOptions, this.host);
             Shout_1.Shout.timed('Type-checking using TypeScript', chalk_1.default.yellow(TypeScript.version));
             let start = process.hrtime();
@@ -174,9 +199,6 @@ class TypeScriptCheckerTool {
         })
             .on('add', (file) => {
             file = upath.toUnix(file);
-            if (file.endsWith('.d.ts')) {
-                this.includeFiles.add(file);
-            }
             this.addOrUpdateSourceFileCache(file);
             Shout_1.Shout.typescript(chalk_1.default.grey('tracking new file:', file));
             debounce();
@@ -191,13 +213,9 @@ class TypeScriptCheckerTool {
         })
             .on('unlink', (file) => {
             file = upath.toUnix(file);
-            if (file.endsWith('.d.ts') && this.includeFiles.has(file)) {
-                this.includeFiles.delete(file);
-            }
-            Shout_1.Shout.typescript(chalk_1.default.grey('removing file:', file));
-            if (this.sources[file]) {
-                delete this.sources[file];
-                delete this.versions[file];
+            let deleted = this.tryDeleteSourceFileCache(file);
+            if (deleted) {
+                Shout_1.Shout.typescript(chalk_1.default.grey('removing file:', file));
                 debounce();
             }
         });

@@ -61,7 +61,12 @@ export class TypeScriptCheckerTool {
     /**
      * Gets the entry points to the TypeScript Program.
      */
-    private readonly includeFiles: Set<string>;
+    private includeFiles: Set<string>;
+
+    /**
+     * Gets the tracked .vue source code files.
+     */
+    private vueFiles: Set<string>;
 
     /**
      * Gets the shared TypeScript compiler options.
@@ -167,8 +172,14 @@ export class TypeScriptCheckerTool {
      */
     private addOrUpdateSourceFileCache(fileName: string): boolean {
         // console.log(fileName);
+
+        if (fileName.endsWith('.d.ts')) {
+            this.includeFiles.add(fileName);
+        }
+
         // chokidar passes file name with .vue extension...
         if (fileName.endsWith('.vue')) {
+            this.vueFiles.add(fileName);
             fileName = fileName + '.ts';
         }
 
@@ -194,6 +205,31 @@ export class TypeScriptCheckerTool {
     }
 
     /**
+     * Removes source file from cache.
+     * If file is a TypeScript definition file: put into root included files.
+     * If file is a Vue single-file component: track, then rename extension.
+     * @param fileName 
+     */
+    private tryDeleteSourceFileCache(fileName: string): boolean {
+        if (fileName.endsWith('.d.ts') && this.includeFiles.has(fileName)) {
+            this.includeFiles.delete(fileName);
+        }
+
+        if (fileName.endsWith('.vue') && this.vueFiles.has(fileName)) {
+            this.vueFiles.delete(fileName);
+            fileName = fileName + '.ts';
+        }
+
+        if (this.sources[fileName]) {
+            delete this.sources[fileName];
+            delete this.versions[fileName];
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Versions a text-based file content using fast SHA-512 algorithm.
      * @param content 
      */
@@ -210,17 +246,26 @@ export class TypeScriptCheckerTool {
         let rootFiles = Array.from(this.includeFiles);
 
         // gather all vue files using glob pattern, then append .ts extension to enable type-check!
-        await new Promise((ok, reject) => {
-            glob(this.settings.vueGlobs, (error, files) => {
-                if (error) {
-                    reject(error);
-                }
-                for (let file of files) {
-                    rootFiles.push(file + '.ts');
-                }
-                ok();
+        // glob scan happens one-time during initial type-check only, and then cached for performance.
+        // future file addition / deletion should during watch mode should manipulate vueFiles Set.
+        if (this.vueFiles === undefined) {
+            this.vueFiles = new Set<string>();
+            await new Promise((ok, reject) => {
+                glob(this.settings.vueGlobs, (error, files) => {
+                    if (error) {
+                        reject(error);
+                    }
+                    for (let file of files) {
+                        this.vueFiles.add(file);
+                    }
+                    ok();
+                });
             });
-        });
+        }
+
+        for (let file of this.vueFiles) {
+            rootFiles.push(file + '.ts');
+        }
         // console.log(rootFiles);
 
         let tsc = TypeScript.createProgram(rootFiles, this.compilerOptions, this.host);
@@ -303,10 +348,6 @@ export class TypeScriptCheckerTool {
             .on('add', (file: string) => {
                 file = upath.toUnix(file);
 
-                if (file.endsWith('.d.ts')) {
-                    this.includeFiles.add(file);
-                }
-
                 this.addOrUpdateSourceFileCache(file);
                 Shout.typescript(chalk.grey('tracking new file:', file));
                 debounce();
@@ -323,15 +364,9 @@ export class TypeScriptCheckerTool {
             .on('unlink', (file: string) => {
                 file = upath.toUnix(file);
 
-                if (file.endsWith('.d.ts') && this.includeFiles.has(file)) {
-                    this.includeFiles.delete(file);
-                }
-
-                Shout.typescript(chalk.grey('removing file:', file));
-
-                if (this.sources[file]) {
-                    delete this.sources[file];
-                    delete this.versions[file];
+                let deleted = this.tryDeleteSourceFileCache(file);
+                if (deleted) {
+                    Shout.typescript(chalk.grey('removing file:', file));
                     debounce();
                 }
             });

@@ -35,7 +35,7 @@ class TypeScriptCheckerTool {
             if (this.files[fileName]) {
                 return this.files[fileName];
             }
-            let fileContent = TypeScript.sys.readFile(fileName, 'utf8');
+            let fileContent = fse.readFileSync(fileName, 'utf8');
             this.files[fileName] = fileContent;
             this.versions[fileName] = this.getFileContentHash(fileContent);
             return fileContent;

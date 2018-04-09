@@ -105,7 +105,7 @@ export class TypeScriptCheckerTool {
             // package.json in node_modules should never change. Cache the contents once and re-use.
             // console.log('READ ' + fileName);
 
-            let fileContent = TypeScript.sys.readFile(fileName, 'utf8');
+            let fileContent = fse.readFileSync(fileName, 'utf8');
             this.files[fileName] = fileContent;
             this.versions[fileName] = this.getFileContentHash(fileContent);
             return fileContent;

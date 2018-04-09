@@ -34,7 +34,7 @@ class Compiler {
     }
     chat() {
         if (this.flags.watch) {
-            Shout_1.Shout.timed(chalk_1.default.yellow("Watch"), "Mode: Source codes will be automatically compiled on changes.");
+            Shout_1.Shout.timed(chalk_1.default.yellow("Watch"), "Mode: Source code will be automatically compiled on changes.");
         }
         if (this.flags.production) {
             Shout_1.Shout.timed(chalk_1.default.yellow("Production"), "Mode: Outputs minification is enabled.", chalk_1.default.red("(Slow build)"));

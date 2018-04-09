@@ -69,7 +69,7 @@ export class Compiler {
      */
     private chat() {
         if (this.flags.watch) {
-            Shout.timed(chalk.yellow("Watch"), "Mode: Source codes will be automatically compiled on changes.");
+            Shout.timed(chalk.yellow("Watch"), "Mode: Source code will be automatically compiled on changes.");
         }
 
         if (this.flags.production) {

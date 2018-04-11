@@ -18,7 +18,7 @@ import { Shout } from './Shout';
 let resolver = ResolverFactory.createResolver({
     fileSystem: new NodeJsInputFileSystem(),
     extensions: ['.scss', '.css'],
-    mainFields: ['sass', 'style']
+    mainFields: ['style']
 });
 
 /**

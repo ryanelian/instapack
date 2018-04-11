@@ -24,7 +24,7 @@ const Shout_1 = require("./Shout");
 let resolver = enhanced_resolve_1.ResolverFactory.createResolver({
     fileSystem: new enhanced_resolve_1.NodeJsInputFileSystem(),
     extensions: ['.scss', '.css'],
-    mainFields: ['sass', 'style']
+    mainFields: ['style']
 });
 class SassBuildTool {
     constructor(settings, flags) {

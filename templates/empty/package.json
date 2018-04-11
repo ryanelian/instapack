@@ -7,10 +7,10 @@
     "concat": {}
   },
   "dependencies": {
-    "@types/luxon": "^0.5.0",
+    "@types/luxon": "^0.5.1",
     "@types/requirejs": "^2.1.31",
     "es6-promise": "^4.2.4",
-    "linq": "^3.0.9",
+    "linq": "^3.1.0",
     "luxon": "^1.0.0",
     "tslib": "^1.9.0"
   }

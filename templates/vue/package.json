@@ -19,6 +19,7 @@
     "@fortawesome/fontawesome": "^1.1.5",
     "@fortawesome/fontawesome-free-regular": "^5.0.10",
     "@fortawesome/fontawesome-free-solid": "^5.0.10",
+    "@fortawesome/vue-fontawesome": "^0.0.22",
     "@types/luxon": "^0.5.1",
     "@types/requirejs": "^2.1.31",
     "aspnet-validation": "^0.0.4",
@@ -29,8 +30,9 @@
     "linq": "^3.1.0",
     "luxon": "^1.0.0",
     "noty": "^3.2.0-beta",
+    "sweetalert": "^2.1.0",
     "tslib": "^1.9.0",
-    "vex-js": "^4.1.0",
+    "vee-validate": "^2.0.6",
     "vue": "^2.5.16",
     "vue-class-component": "^6.2.0"
   }

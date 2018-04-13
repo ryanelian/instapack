@@ -1,2 +1,1 @@
-﻿import './icons';
-import './inferno-project';
+﻿import './inferno-project';

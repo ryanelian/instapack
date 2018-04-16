@@ -87,8 +87,11 @@ class TypeScriptBuildTool {
             loader: 'vue-loader',
             options: {
                 loaders: {
+                    'js': [this.typescriptLoader],
                     'ts': [this.typescriptLoader]
-                }
+                },
+                transformToRequire: {},
+                cssSourceMap: false
             }
         };
     }
@@ -132,7 +135,7 @@ class TypeScriptBuildTool {
             },
             externals: this.settings.externals,
             resolve: {
-                extensions: ['.ts', '.tsx', '.js', '.html', '.json'],
+                extensions: ['.ts', '.tsx', '.js', '.vue', '.html', '.json'],
                 alias: this.settings.alias
             },
             resolveLoader: {
@@ -143,7 +146,7 @@ class TypeScriptBuildTool {
                 ]
             },
             module: {
-                rules: [this.typescriptWebpackRules, this.templatesWebpackRules]
+                rules: [this.typescriptWebpackRules, this.templatesWebpackRules, this.vueWebpackRules]
             },
             plugins: this.getWebpackPlugins()
         };

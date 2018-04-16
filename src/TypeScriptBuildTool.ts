@@ -153,8 +153,11 @@ export class TypeScriptBuildTool {
             loader: 'vue-loader',
             options: {
                 loaders: {
+                    'js': [this.typescriptLoader], // replace babel-loader
                     'ts': [this.typescriptLoader]
-                }
+                },
+                transformToRequire: {},     // remove <img> src and SVG <image> xlink:href resolution
+                cssSourceMap: false         // avoid some relative path related bugs in css-loader and make the build a bit faster.
             }
         }
     }
@@ -217,7 +220,7 @@ export class TypeScriptBuildTool {
             },
             externals: this.settings.externals,
             resolve: {
-                extensions: ['.ts', '.tsx', '.js', '.html', '.json'],
+                extensions: ['.ts', '.tsx', '.js', '.vue', '.html', '.json'],
                 alias: this.settings.alias
             },
             resolveLoader: {
@@ -228,7 +231,7 @@ export class TypeScriptBuildTool {
                 ]
             },
             module: {
-                rules: [this.typescriptWebpackRules, this.templatesWebpackRules]
+                rules: [this.typescriptWebpackRules, this.templatesWebpackRules, this.vueWebpackRules]
             },
             plugins: this.getWebpackPlugins()
         };

@@ -7,8 +7,9 @@
     "concat": {
       "vendor": [
         "es6-promise/dist/es6-promise.auto",
-        "bootstrap.native/dist/polyfill",
-        "bootstrap.native/dist/bootstrap-native-v4"
+        "jquery/dist/jquery.slim",
+        "popper.js",
+        "bootstrap"
       ]
     },
     "alias": {
@@ -25,7 +26,6 @@
     "aspnet-validation": "^0.0.4",
     "axios": "^0.18.0",
     "bootstrap": "^4.1.0",
-    "bootstrap.native": "^2.0.22",
     "es6-promise": "^4.2.4",
     "linq": "^3.1.0",
     "luxon": "^1.0.0",
@@ -35,5 +35,9 @@
     "vee-validate": "^2.0.6",
     "vue": "^2.5.16",
     "vue-class-component": "^6.2.0"
+  },
+  "devDependencies": {
+    "jquery": "^3.3.1",
+    "popper.js": "^1.14.3"
   }
 }

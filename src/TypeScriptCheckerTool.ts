@@ -4,7 +4,7 @@ import * as fse from 'fs-extra';
 import * as upath from 'upath';
 import * as chokidar from 'chokidar';
 import * as glob from 'glob';
-import * as parse5 from 'parse5';
+import * as templateCompiler from 'vue-template-compiler';
 import { createHash } from 'crypto';
 
 import hub from './EventHub';
@@ -136,32 +136,17 @@ export class TypeScriptCheckerTool {
     private parseVueSource(fileName: string): string {
         let redirect = upath.removeExt(fileName, '.ts');
         let vue = fse.readFileSync(redirect, 'utf8');
-        let document = parse5.parseFragment(vue);
-
-        // console.log(document);
-        for (let tag of document.childNodes) {
-            if (tag.tagName === 'script') {
-                // console.log(tag);
-                let lang = tag.attrs.filter(Q => Q.name === 'lang')[0];
-                if (!lang) {
-                    return ''; // JS Language
-                }
-                if (lang.value !== 'ts') {
-                    return ''; // Unknown Language
-                }
-
-                let child = tag.childNodes.filter(Q => Q.nodeName === '#text')[0];
-                if (!child) {
-                    return ''; // Empty?
-                }
-
-                // console.log(child);
-                let text = child.value as string;
-                return text.trim();
-            }
+        let parse = templateCompiler.parseComponent(vue);
+        
+        if (!parse.script){
+            return '';
         }
 
-        return ''; // No Script
+        if (parse.script.lang !== 'ts'){
+            return '';
+        }
+
+        return (parse.script.content as string).trim();
     }
 
     /**

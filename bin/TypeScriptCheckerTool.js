@@ -14,7 +14,7 @@ const fse = require("fs-extra");
 const upath = require("upath");
 const chokidar = require("chokidar");
 const glob = require("glob");
-const parse5 = require("parse5");
+const templateCompiler = require("vue-template-compiler");
 const crypto_1 = require("crypto");
 const EventHub_1 = require("./EventHub");
 const PrettyUnits_1 = require("./PrettyUnits");
@@ -51,25 +51,14 @@ class TypeScriptCheckerTool {
     parseVueSource(fileName) {
         let redirect = upath.removeExt(fileName, '.ts');
         let vue = fse.readFileSync(redirect, 'utf8');
-        let document = parse5.parseFragment(vue);
-        for (let tag of document.childNodes) {
-            if (tag.tagName === 'script') {
-                let lang = tag.attrs.filter(Q => Q.name === 'lang')[0];
-                if (!lang) {
-                    return '';
-                }
-                if (lang.value !== 'ts') {
-                    return '';
-                }
-                let child = tag.childNodes.filter(Q => Q.nodeName === '#text')[0];
-                if (!child) {
-                    return '';
-                }
-                let text = child.value;
-                return text.trim();
-            }
+        let parse = templateCompiler.parseComponent(vue);
+        if (!parse.script) {
+            return '';
         }
-        return '';
+        if (parse.script.lang !== 'ts') {
+            return '';
+        }
+        return parse.script.content.trim();
     }
     addOrUpdateSourceFileCache(fileName) {
         if (fileName.endsWith('.d.ts')) {

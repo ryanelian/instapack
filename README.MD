@@ -116,15 +116,19 @@ Scaffolds a new instapack project into your existing app folder where the comman
 
 - `empty` when you need a minimal clean slate. (Use this template to author new templates!)
 
-- `vue` when you want to develop a web app with Vue.js and Bootstrap 4. (Includes [aspnet-validation](https://www.npmjs.com/package/aspnet-validation) for ASP.NET MVC client-side validation.)
+- `vue` when you want to develop a web app with Vue.js and Bootstrap 4. 
+
+  - Includes [aspnet-validation](https://www.npmjs.com/package/aspnet-validation) for ASP.NET MVC client-side validation.
 
 - `react` when you want to develop a web app with React and Semantic UI.
 
-- `inferno` when you want to develop a web app with Inferno and Bootstrap 4.
+- `inferno` when you want to develop a web app with Inferno.
 
 - `vue-mobile` when you want to develop a _[Progressive Web Application](https://developers.google.com/web/progressive-web-apps/)_ using Vue.js and Onsen UI! (Cordova-compatible, [read more on FAQ ↓](#how-to-develop-a-cordova-app-using-vue-mobile-template))
 
-- `angularjs` when you need to develop a legacy web app with AngularJS 1.7 and Bootstrap 3. (Includes [jquery-validation-unobtrusive](https://github.com/aspnet/jquery-validation-unobtrusive) for ASP.NET MVC client-side validation.)
+- `angularjs` when you need to develop a legacy web app with AngularJS 1.7 and Bootstrap 3.
+
+  - Includes [jquery-validation-unobtrusive](https://github.com/aspnet/jquery-validation-unobtrusive) for ASP.NET MVC client-side validation.
 
 If no template parameter is provided, `vue` will be chosen. :vulcan_salute:
 

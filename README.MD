@@ -171,8 +171,9 @@ instapack puts configurations inside `package.json` to reduce project files clut
     "concat": {
       "vendor": [
         "es6-promise/dist/es6-promise.auto",
-        "bootstrap.native/dist/polyfill",
-        "bootstrap.native/dist/bootstrap-native-v4"
+        "jquery/dist/jquery.slim",
+        "popper.js",
+        "bootstrap"
       ]
     },
     "alias": {
@@ -242,7 +243,7 @@ so [CDN](https://en.wikipedia.org/wiki/Content_delivery_network) can be used! :t
 
     - Possible but not recommended: reference the library objects directly from the `window` (e.g. `window['$']`).
 
-**Another `concat` configuration example:** (produces `vendor.js` bundle, handy for ASP.NET MVC)
+**Another `concat` configuration example:** (produces `vendor.js` bundle handy for ASP.NET MVC)
 
 ```json
 {
@@ -250,10 +251,9 @@ so [CDN](https://en.wikipedia.org/wiki/Content_delivery_network) can be used! :t
     "concat": {
       "vendor": [
         "jquery",
-        "bootstrap",
         "jquery-validation",
         "jquery-validation-unobtrusive",
-        "./client/lib/my-old-jquery-plugin"
+        "./client/lib/my-ancient-jquery-plugin"
       ]
     }
   }

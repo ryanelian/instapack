@@ -1,0 +1,4 @@
+{
+    "vetur.format.defaultFormatter.js": "vscode-typescript",
+    "vetur.format.defaultFormatter.ts": "vscode-typescript"
+}

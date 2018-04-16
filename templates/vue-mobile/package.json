@@ -8,6 +8,10 @@
     "instapack": {
         "output": "www"
     },
+    "prettier": {
+        "singleQuote": true,
+        "tabWidth": 4
+    },
     "dependencies": {
         "@types/luxon": "^0.5.1",
         "@types/pouchdb-browser": "^6.1.2",

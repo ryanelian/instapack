@@ -66,14 +66,6 @@ class SassBuildTool {
     sassImport(source, request) {
         return __awaiter(this, void 0, void 0, function* () {
             let lookupStartPath = upath.dirname(source);
-            let isRelative = request.startsWith('./') || request.startsWith('../');
-            if (!isRelative) {
-                try {
-                    return yield this.resolveAsync(lookupStartPath, './' + request);
-                }
-                catch (error) {
-                }
-            }
             let requestFileName = upath.basename(request);
             if (!requestFileName.startsWith('_')) {
                 let requestDir = upath.dirname(request);
@@ -82,6 +74,14 @@ class SassBuildTool {
                 let partialPath = upath.resolve(relativeLookupDir, partialFileName);
                 if (yield fse.pathExists(partialPath)) {
                     return partialPath;
+                }
+            }
+            let isRelative = request.startsWith('./') || request.startsWith('../');
+            if (!isRelative) {
+                try {
+                    return yield this.resolveAsync(lookupStartPath, './' + request);
+                }
+                catch (_a) {
                 }
             }
             return yield this.resolveAsync(lookupStartPath, request);

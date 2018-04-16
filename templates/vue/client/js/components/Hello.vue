@@ -1,12 +1,16 @@
+<template>
+<h1>Hello from {{ compiler }} and {{ framework }}!</h1>
+</template>
+
+<script lang="ts">
 import Vue from 'vue';
 import Component from 'vue-class-component';
-import { render, staticRenderFns } from './Hello.vue.html';
 
 @Component({
-    render, staticRenderFns,
     props: ['framework', 'compiler']
 })
-export class Hello extends Vue {
+export default class Hello extends Vue {
     framework: string;
     compiler: string;
 }
+</script>

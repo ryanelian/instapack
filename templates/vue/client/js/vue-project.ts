@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
 import VeeValidate from 'vee-validate';
-import { Hello } from './components/Hello';
+import Hello from './components/Hello.vue';
 
 Vue.use(VeeValidate, {
     classes: true

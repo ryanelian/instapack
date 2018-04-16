@@ -297,23 +297,37 @@ let template = require('./mytemplate.html') as string;
 
 > Use `as` type-hint for clarity and convenience.
 
-### Vue Pre-Compiled HTML Templates
+### Vue Single-File Components (Experimental)
 
-In pursuit of greater app performance, instapack allows Ahead-of-Time (AoT) compilation of HTML templates using Vue.js render component options. HTML files with special file extension `.vue.html` will be imported as an object to be passed into Vue Component decorator as parameters:
+instapack can now compile `.vue` files:
 
-```ts
+```vue
+<template>
+<h1>Hello from {{ compiler }} and {{ framework }}!</h1>
+</template>
+
+<script lang="ts">
 import Vue from 'vue';
 import Component from 'vue-class-component';
-import { render, staticRenderFns } from './MyComponent.vue.html';
-
 @Component({
-    render, staticRenderFns
+    props: ['framework', 'compiler']
 })
-export class MyComponent extends Vue {
+export default class Hello extends Vue {
+    framework: string;
+    compiler: string;
 }
+</script>
 ```
 
-> [A global TypeScript definition file for `*.vue.html` module](https://github.com/ryanelian/instapack/blob/master/templates/vue/client/js/template.d.ts) is required for importing a template using ES Modules syntax. That file will be created for you when using the `vue` new project template!
+- The HTML `<template>` will be compiled Ahead-of-Time (AoT) for greater performance!
+
+- JS / TS code within the `<script>` tag (with no `lang` attribute or `lang="ts"`) will be transpiled down to ES5 using TypeScript.
+
+- When using Visual Studio Code with [Vetur](https://marketplace.visualstudio.com/items?itemName=octref.vetur) extension, you will get intellisense! :star:
+
+- [A global TypeScript definition file for `*.vue` module](https://github.com/ryanelian/instapack/blob/vue-sfc/templates/vue/client/js/vue-shim.d.ts) is required for importing the `.vue` file using ES Modules syntax from TypeScript.
+
+  - This file will be created for you when using the `vue` new project template!
 
 ### Sass @import
 

@@ -49,7 +49,7 @@
   },
   "dependencies": {
     "autoprefixer": "8.3.0",
-    "chalk": "2.3.2",
+    "chalk": "2.4.0",
     "chokidar": "2.0.3",
     "enhanced-resolve": "4.0.0",
     "fs-extra": "5.0.0",

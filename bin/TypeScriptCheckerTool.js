@@ -58,7 +58,7 @@ class TypeScriptCheckerTool {
         if (parse.script.lang !== 'ts') {
             return '';
         }
-        return parse.script.content.trim();
+        return parse.script.content;
     }
     addOrUpdateSourceFileCache(fileName) {
         if (fileName.endsWith('.d.ts')) {

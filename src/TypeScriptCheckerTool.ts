@@ -146,7 +146,7 @@ export class TypeScriptCheckerTool {
             return '';
         }
 
-        return (parse.script.content as string).trim();
+        return parse.script.content as string;
     }
 
     /**

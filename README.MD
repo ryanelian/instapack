@@ -323,7 +323,7 @@ instapack also has a custom-made Node-like but standard-compliant Sass module sy
 
 - Include files relative to the source in a named folder, but as `index.scss` or `index.css`
 
-- Include files, resolved from `node_modules`. Also reads `package.json` to locate the file in `sass` or `style` field!
+- Include files, resolved from `node_modules`. Also reads `package.json` to locate the file in `style` field!
 
 > Unlike Sass which ignores `@import` of files explicitly named with `.css` extension (which often caused confusion), instapack will pick up those files!
 

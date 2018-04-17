@@ -4,7 +4,7 @@ import * as fse from 'fs-extra';
 import * as upath from 'upath';
 import * as chokidar from 'chokidar';
 import * as glob from 'glob';
-import * as parse5 from 'parse5';
+import * as templateCompiler from 'vue-template-compiler';
 import { createHash } from 'crypto';
 
 import hub from './EventHub';
@@ -136,32 +136,28 @@ export class TypeScriptCheckerTool {
     private parseVueSource(fileName: string): string {
         let redirect = upath.removeExt(fileName, '.ts');
         let vue = fse.readFileSync(redirect, 'utf8');
-        let document = parse5.parseFragment(vue);
+        let parse = templateCompiler.parseComponent(vue);
 
-        // console.log(document);
-        for (let tag of document.childNodes) {
-            if (tag.tagName === 'script') {
-                // console.log(tag);
-                let lang = tag.attrs.filter(Q => Q.name === 'lang')[0];
-                if (!lang) {
-                    return ''; // JS Language
-                }
-                if (lang.value !== 'ts') {
-                    return ''; // Unknown Language
-                }
+        if (!parse.script) {
+            return '';
+        }
 
-                let child = tag.childNodes.filter(Q => Q.nodeName === '#text')[0];
-                if (!child) {
-                    return ''; // Empty?
-                }
+        if (parse.script.lang !== 'ts') {
+            return '';
+        }
 
-                // console.log(child);
-                let text = child.value as string;
-                return text.trim();
+        let charIndex: number = parse.script.start;
+        let newlines = vue.substr(0, charIndex).match(/\r\n|\n|\r/g);
+        let code: string = parse.script.content;
+
+        if (newlines) {
+            for (let newline of newlines) {
+                code = '//' + newline + code;
             }
         }
 
-        return ''; // No Script
+        // console.log(code);
+        return code;
     }
 
     /**

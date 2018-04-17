@@ -42,10 +42,7 @@ program.command({
                 describe: 'Disables source maps, producing undebuggable outputs.'
             }).option('stats', {
                 describe: 'Generates webpack stats.json next to the TypeScript build outputs for analysis.'
-            })/*.option('n', {
-                alias: 'noisy',
-                describe: 'Annoys you on build fails.'
-            }).option('v', {
+            })/*.option('v', {
                 alias: 'verbose',
                 describe: 'Trace diagnostic outputs for debugging instapack.'
             })*/

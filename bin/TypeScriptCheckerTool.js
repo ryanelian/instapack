@@ -58,7 +58,15 @@ class TypeScriptCheckerTool {
         if (parse.script.lang !== 'ts') {
             return '';
         }
-        return parse.script.content;
+        let charIndex = parse.script.start;
+        let newlines = vue.substr(0, charIndex).match(/\r\n|\n|\r/g);
+        let code = parse.script.content;
+        if (newlines) {
+            for (let newline of newlines) {
+                code = '//' + newline + code;
+            }
+        }
+        return code;
     }
     addOrUpdateSourceFileCache(fileName) {
         if (fileName.endsWith('.d.ts')) {

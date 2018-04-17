@@ -137,16 +137,27 @@ export class TypeScriptCheckerTool {
         let redirect = upath.removeExt(fileName, '.ts');
         let vue = fse.readFileSync(redirect, 'utf8');
         let parse = templateCompiler.parseComponent(vue);
-        
-        if (!parse.script){
+
+        if (!parse.script) {
             return '';
         }
 
-        if (parse.script.lang !== 'ts'){
+        if (parse.script.lang !== 'ts') {
             return '';
         }
 
-        return parse.script.content as string;
+        let charIndex: number = parse.script.start;
+        let newlines = vue.substr(0, charIndex).match(/\r\n|\n|\r/g);
+        let code: string = parse.script.content;
+
+        if (newlines) {
+            for (let newline of newlines) {
+                code = '//' + newline + code;
+            }
+        }
+
+        // console.log(code);
+        return code;
     }
 
     /**

@@ -128,11 +128,11 @@ export class ConcatBuildTool {
         let result = await this.concatFilesAsync(target, files);
 
         let outPath = upath.join(this.settings.outputJsFolder, target);
-        let p1 = outputFileThenLog(outPath, result.code);
+        let t1 = outputFileThenLog(outPath, result.code);
         if (result.map) {
             await outputFileThenLog(outPath + '.map', result.map);
         }
-        await p1;
+        await t1;
     }
 
     /**
@@ -161,15 +161,11 @@ export class ConcatBuildTool {
                 o += '.js';
             }
 
-            let t1 = this.concatTarget(o, modules).catch(error => {
+            let task = this.concatTarget(o, modules).catch(error => {
                 Shout.error('when concatenating', chalk.blue(o) + ':', error);
             });
 
-            let sourceMapPath = upath.join(this.settings.outputJsFolder, o + '.map');
-            let t2 = fse.remove(sourceMapPath);
-
-            tasks.push(t1);
-            tasks.push(t2);
+            tasks.push(task);
         }
 
         return Promise.all(tasks);

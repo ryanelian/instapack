@@ -84,11 +84,11 @@ class ConcatBuildTool {
             let files = yield this.resolveThenReadFiles(modules);
             let result = yield this.concatFilesAsync(target, files);
             let outPath = upath.join(this.settings.outputJsFolder, target);
-            let p1 = CompilerUtilities_1.outputFileThenLog(outPath, result.code);
+            let t1 = CompilerUtilities_1.outputFileThenLog(outPath, result.code);
             if (result.map) {
                 yield CompilerUtilities_1.outputFileThenLog(outPath + '.map', result.map);
             }
-            yield p1;
+            yield t1;
         });
     }
     build() {
@@ -108,13 +108,10 @@ class ConcatBuildTool {
             if (o.endsWith('.js') === false) {
                 o += '.js';
             }
-            let t1 = this.concatTarget(o, modules).catch(error => {
+            let task = this.concatTarget(o, modules).catch(error => {
                 Shout_1.Shout.error('when concatenating', chalk_1.default.blue(o) + ':', error);
             });
-            let sourceMapPath = upath.join(this.settings.outputJsFolder, o + '.map');
-            let t2 = fse.remove(sourceMapPath);
-            tasks.push(t1);
-            tasks.push(t2);
+            tasks.push(task);
         }
         return Promise.all(tasks);
     }

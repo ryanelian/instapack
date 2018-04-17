@@ -292,7 +292,6 @@ export class Compiler {
      * Compiles the JavaScript project.
      */
     async buildJS() {
-        await fse.remove(this.settings.outputJsSourceMap);
         let tool = new TypeScriptBuildTool(this.settings, this.flags);
         tool.build();
     }
@@ -301,7 +300,6 @@ export class Compiler {
      * Compiles the CSS project.
      */
     async buildCSS() {
-        await fse.remove(this.settings.outputCssSourceMap);
         let tool = new SassBuildTool(this.settings, this.flags);
         await tool.buildWithStopwatch();
 

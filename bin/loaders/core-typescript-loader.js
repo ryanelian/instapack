@@ -1,5 +1,4 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 const TypeScript = require("typescript");
 const loader_utils_1 = require("loader-utils");
 module.exports = function (source) {

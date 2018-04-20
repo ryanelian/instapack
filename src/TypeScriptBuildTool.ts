@@ -3,6 +3,7 @@ import * as fse from 'fs-extra';
 import chalk from 'chalk';
 import * as webpack from 'webpack';
 import * as TypeScript from 'typescript';
+import { VueLoaderPlugin } from 'vue-loader';
 
 import hub from './EventHub';
 import { ICompilerFlags } from './CompilerUtilities';
@@ -113,34 +114,27 @@ export class TypeScriptBuildTool {
     get buildTarget() {
         let t = this.tsconfigOptions.target;
         if (!t) {
-            t = TypeScript.ScriptTarget.ES3;
+            t = TypeScript.ScriptTarget.ES5;
         }
         return TypeScript.ScriptTarget[t];
-    }
-
-    /**
-     * Gets a transpile-only TypeScript rule for webpack, with source map support.
-     */
-    get typescriptLoader() {
-        let options = this.tsconfigOptions;
-        options.sourceMap = this.flags.sourceMap;
-        options.inlineSources = this.flags.sourceMap;
-
-        return {
-            loader: 'core-typescript-loader',
-            options: {
-                compilerOptions: options
-            }
-        };
     }
 
     /**
      * Gets a configured TypeScript rules for webpack.
      */
     get typescriptWebpackRules() {
+        let options = this.tsconfigOptions;
+        options.sourceMap = this.flags.sourceMap;
+        options.inlineSources = this.flags.sourceMap;
+
         return {
             test: /\.tsx?$/,
-            use: [this.typescriptLoader]
+            use: [{
+                loader: 'core-typescript-loader',
+                options: {
+                    compilerOptions: options
+                }
+            }]
         };
     }
 
@@ -150,12 +144,12 @@ export class TypeScriptBuildTool {
     get vueWebpackRules() {
         return {
             test: /\.vue$/,
-            loader: 'vue-loader',
-            options: {
-                loaders: {
-                    'ts': [this.typescriptLoader]
+            use: [{
+                loader: 'vue-loader',
+                options: {
+                    transformAssetUrls: {},     // remove <img> src and SVG <image> xlink:href resolution
                 }
-            }
+            }]
         }
     }
 
@@ -172,11 +166,34 @@ export class TypeScriptBuildTool {
     }
 
     /**
+     * Gets CSS rules for webpack to prevent explosion during vue compile.
+     */
+    get cssWebpackRules() {
+        // <style module> IS NOT SUPPORTED BECAUSE css-loader TEAM PLANS TO REMOVE module OPTION!
+        //  https://github.com/webpack-contrib/css-loader/issues/509
+        return {
+            test: /\.css$/,
+            use: [
+                {
+                    loader: 'vue-style-loader'
+                }, {
+                    loader: 'css-loader',
+                    options: {
+                        url: false
+                    }
+                }
+            ]
+        }
+    }
+
+    /**
      * Returns a configured webpack plugins.
      */
     getWebpackPlugins() {
         let plugins = [];
         plugins.push(new webpack.NoEmitOnErrorsPlugin()); // Near-useless in current state...
+        plugins.push(new VueLoaderPlugin());
+
         plugins.push(new TypeScriptBuildWebpackPlugin({
             inputJsFolder: this.settings.inputJsFolder,
             target: this.buildTarget,
@@ -217,7 +234,7 @@ export class TypeScriptBuildTool {
             },
             externals: this.settings.externals,
             resolve: {
-                extensions: ['.ts', '.tsx', '.js', '.html', '.json'],
+                extensions: ['.ts', '.tsx', '.js', '.vue', '.html', '.json'],
                 alias: this.settings.alias
             },
             resolveLoader: {
@@ -228,7 +245,12 @@ export class TypeScriptBuildTool {
                 ]
             },
             module: {
-                rules: [this.typescriptWebpackRules, this.templatesWebpackRules]
+                rules: [
+                    this.typescriptWebpackRules,
+                    this.templatesWebpackRules,
+                    this.vueWebpackRules,
+                    this.cssWebpackRules
+                ]
             },
             plugins: this.getWebpackPlugins()
         };

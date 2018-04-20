@@ -100,7 +100,7 @@ If using [the latest Visual Studio Code](https://code.visualstudio.com/), it sho
 
 Recently every hecking framework on this planet :earth_asia: has their own CLI, but only few are able to support TypeScript out of the box. Hence, most people gave up on TypeScript right off the bat... :broken_heart:
 
-instapack is an initiative to develop a command line tool for compiling most apps developed using mainstream JavaScript frameworks, with a :lemon: twist: **It can easily build an app written in TypeScript with minimal or no further configurations!**
+instapack is an initiative to develop a command line tool for compiling most apps developed using mainstream JS frameworks, with a :lemon: twist: **It can easily build an app written in TypeScript with minimal or no further configurations!**
 
 Powered by [webpack](https://webpack.js.org), instapack effortlessly devours modules written using modern JS standards (ES Harmony, CommonJS, AMD, UMD) and is capable of importing HTML templates out of the box. instapack is battle-tested :hocho: and is designed to cover *most normal use cases* when developing a modern web app.
 
@@ -297,23 +297,41 @@ let template = require('./mytemplate.html') as string;
 
 > Use `as` type-hint for clarity and convenience.
 
-### Vue Pre-Compiled HTML Templates
+### Vue Single-File Components (BETA)
 
-In pursuit of greater app performance, instapack allows Ahead-of-Time (AoT) compilation of HTML templates using Vue.js render component options. HTML files with special file extension `.vue.html` will be imported as an object to be passed into Vue Component decorator as parameters:
+instapack can now compile `.vue` files:
 
-```ts
+```vue
+<template>
+<h1>Hello from {{ compiler }} and {{ framework }}!</h1>
+</template>
+
+<script lang="ts">
 import Vue from 'vue';
 import Component from 'vue-class-component';
-import { render, staticRenderFns } from './MyComponent.vue.html';
-
 @Component({
-    render, staticRenderFns
+    props: ['framework', 'compiler']
 })
-export class MyComponent extends Vue {
+export default class Hello extends Vue {
+    framework: string;
+    compiler: string;
 }
+</script>
 ```
 
-> [A global TypeScript definition file for `*.vue.html` module](https://github.com/ryanelian/instapack/blob/master/templates/vue/client/js/template.d.ts) is required for importing a template using ES Modules syntax. That file will be created for you when using the `vue` new project template!
+- The HTML `<template>` will be compiled Ahead-of-Time (AoT) for greater app startup performance!
+
+- When using Visual Studio Code with [Vetur](https://marketplace.visualstudio.com/items?itemName=octref.vetur) extension, you will get fabulous intellisense! :star2:
+
+- Please **DO NOT** use the `<style>` tag!
+
+  - Why: You cannot use Sass. The CSS will not be auto-prefixed and minified. Your CSS will be scattered across obscure files in the JS project. Non-scoped styles will pollute the global CSS namespace. **These WILL make your app less maintainable!**
+
+  - `<style module>` is not supported (for now) because [`css-loader` team are planning to remove `modules` option soon...](https://github.com/webpack-contrib/css-loader/issues/509)
+
+- [A global TypeScript definition file for `*.vue` module](https://github.com/ryanelian/instapack/blob/vue-sfc/templates/vue/client/js/vue-shim.d.ts) is required for importing the `.vue` file using ES Modules syntax from TypeScript.
+
+  - This file will be created for you when using the `vue` new project template!
 
 ### Sass @import
 
@@ -351,7 +369,7 @@ ipack --version
 
 ### Can I use [insert_framework_name_here] ?
 
-Yes, absolutely! **If it worked when using standard JavaScript, it WILL work with instapack!!**
+Yes, absolutely! **If it worked when using standard JS, it WILL work with instapack!!**
 
 Add the packages required for your project using npm / Yarn and then start hacking. We'll take care of the outputs.
 

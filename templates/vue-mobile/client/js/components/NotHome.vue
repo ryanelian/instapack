@@ -1,3 +1,4 @@
+<template>
 <v-ons-page>
     <v-ons-toolbar>
         <div class="left">
@@ -8,3 +9,12 @@
 
     <!-- Your page content here. -->
 </v-ons-page>
+</template>
+
+<script lang="ts">
+import Vue from 'vue';
+import Component from 'vue-class-component';
+
+@Component({})
+export default class NotHome extends Vue {}
+</script>

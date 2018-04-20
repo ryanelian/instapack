@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import VueOnsen from 'vue-onsenui';
-import { Root } from './components/Root';
+import Root from './components/Root.vue';
 
 Vue.use(VueOnsen);
 

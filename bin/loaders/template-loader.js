@@ -1,5 +1,4 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 const html_minifier_1 = require("html-minifier");
 const vue_template_compiler_1 = require("vue-template-compiler");
 const source_map_1 = require("source-map");

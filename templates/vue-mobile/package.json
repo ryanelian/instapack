@@ -8,13 +8,16 @@
     "instapack": {
         "output": "www"
     },
+    "prettier": {
+        "singleQuote": true,
+        "tabWidth": 4
+    },
     "dependencies": {
         "@types/luxon": "^0.5.1",
         "@types/pouchdb-browser": "^6.1.2",
         "@types/requirejs": "^2.1.31",
         "axios": "^0.18.0",
-        "es6-promise": "^4.2.4",
-        "font-awesome": "^4.7.0",
+        "fork-awesome": "^1.0.11",
         "linq": "^3.1.0",
         "luxon": "^1.0.0",
         "onsenui": "^2.9.2",

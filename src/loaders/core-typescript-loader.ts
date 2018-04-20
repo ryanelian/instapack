@@ -7,7 +7,7 @@ interface ICoreTypeScriptLoaderOptions {
     compilerOptions: TypeScript.CompilerOptions;
 }
 
-module.exports = function (this: loader.LoaderContext, source: string) {
+export = function (this: loader.LoaderContext, source: string) {
     let options = getOptions(this) as ICoreTypeScriptLoaderOptions;
 
     let result = TypeScript.transpileModule(source, {

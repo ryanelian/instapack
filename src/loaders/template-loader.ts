@@ -43,7 +43,7 @@ function functionArrayWrap(ar: string[]) {
     return '[' + result + ']';
 }
 
-module.exports = function (this: loader.LoaderContext, html: string) {
+export = function (this: loader.LoaderContext, html: string) {
     let template = minify(html, minifierOptions).trim();
 
     let fileName = this.resourcePath.toLowerCase();

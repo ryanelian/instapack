@@ -297,7 +297,7 @@ let template = require('./mytemplate.html') as string;
 
 > Use `as` type-hint for clarity and convenience.
 
-### Vue Single-File Components (Experimental)
+### Vue Single-File Components (BETA)
 
 instapack can now compile `.vue` files:
 

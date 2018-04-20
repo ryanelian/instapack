@@ -1,7 +1,7 @@
 {
   "name": "instapack",
-  "version": "6.2.0",
-  "description": "All-in-one web application client project compiler using TypeScript and Sass!",
+  "version": "6.3.0",
+  "description": "All-in-one TypeScript and Sass compiler for web applications!",
   "keywords": [
     "typescript",
     "javascript",
@@ -61,7 +61,7 @@
     "postcss": "6.0.21",
     "postcss-discard-comments": "4.0.0-rc.2",
     "source-map": "0.7.2",
-    "typescript": "2.8.1",
+    "typescript": "2.8.3",
     "uglify-js": "3.3.21",
     "upath": "1.0.4",
     "vue-template-compiler": "2.5.16",
@@ -85,11 +85,5 @@
   "resolutions": {
     "**/@types/node": "8",
     "**/@types/webpack": "3"
-  },
-  "greenkeeper": {
-    "ignore": [
-      "@types/node",
-      "@types/webpack"
-    ]
   }
 }

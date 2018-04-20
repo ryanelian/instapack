@@ -208,14 +208,12 @@ class Compiler {
     }
     buildJS() {
         return __awaiter(this, void 0, void 0, function* () {
-            yield fse.remove(this.settings.outputJsSourceMap);
             let tool = new TypeScriptBuildTool_1.TypeScriptBuildTool(this.settings, this.flags);
             tool.build();
         });
     }
     buildCSS() {
         return __awaiter(this, void 0, void 0, function* () {
-            yield fse.remove(this.settings.outputCssSourceMap);
             let tool = new SassBuildTool_1.SassBuildTool(this.settings, this.flags);
             yield tool.buildWithStopwatch();
             if (this.flags.watch) {

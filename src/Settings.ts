@@ -254,13 +254,6 @@ export class Settings {
     }
 
     /**
-     * Gets the full path to the JS compilation output source map.
-     */
-    get outputJsSourceMap(): string {
-        return this.outputJsFile + '.map';
-    }
-
-    /**
      * Gets the full path to the CSS compilation and concat output folder.
      */
     get outputCssFolder(): string {
@@ -272,13 +265,6 @@ export class Settings {
      */
     get outputCssFile(): string {
         return upath.join(this.outputCssFolder, this.cssOut);
-    }
-
-    /**
-     * Gets the full path to the CSS compilation output source map.
-     */
-    get outputCssSourceMap(): string {
-        return this.outputCssFile + '.map';
     }
 
     /**

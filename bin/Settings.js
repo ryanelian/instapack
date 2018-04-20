@@ -103,17 +103,11 @@ class Settings {
     get statJsonPath() {
         return upath.join(this.outputJsFolder, 'stats.json');
     }
-    get outputJsSourceMap() {
-        return this.outputJsFile + '.map';
-    }
     get outputCssFolder() {
         return upath.join(this.outputFolder, 'css');
     }
     get outputCssFile() {
         return upath.join(this.outputCssFolder, this.cssOut);
-    }
-    get outputCssSourceMap() {
-        return this.outputCssFile + '.map';
     }
     static tryReadFromPackageJson(root) {
         return __awaiter(this, void 0, void 0, function* () {

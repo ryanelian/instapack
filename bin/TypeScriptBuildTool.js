@@ -5,6 +5,7 @@ const fse = require("fs-extra");
 const chalk_1 = require("chalk");
 const webpack = require("webpack");
 const TypeScript = require("typescript");
+const vue_loader_1 = require("vue-loader");
 const EventHub_1 = require("./EventHub");
 const PrettyUnits_1 = require("./PrettyUnits");
 const TypeScriptBuildWebpackPlugin_1 = require("./TypeScriptBuildWebpackPlugin");
@@ -60,39 +61,33 @@ class TypeScriptBuildTool {
     get buildTarget() {
         let t = this.tsconfigOptions.target;
         if (!t) {
-            t = TypeScript.ScriptTarget.ES3;
+            t = TypeScript.ScriptTarget.ES5;
         }
         return TypeScript.ScriptTarget[t];
     }
-    get typescriptLoader() {
+    get typescriptWebpackRules() {
         let options = this.tsconfigOptions;
         options.sourceMap = this.flags.sourceMap;
         options.inlineSources = this.flags.sourceMap;
         return {
-            loader: 'core-typescript-loader',
-            options: {
-                compilerOptions: options
-            }
-        };
-    }
-    get typescriptWebpackRules() {
-        return {
             test: /\.tsx?$/,
-            use: [this.typescriptLoader]
+            use: [{
+                    loader: 'core-typescript-loader',
+                    options: {
+                        compilerOptions: options
+                    }
+                }]
         };
     }
     get vueWebpackRules() {
         return {
             test: /\.vue$/,
-            loader: 'vue-loader',
-            options: {
-                loaders: {
-                    'js': [this.typescriptLoader],
-                    'ts': [this.typescriptLoader]
-                },
-                transformToRequire: {},
-                cssSourceMap: false
-            }
+            use: [{
+                    loader: 'vue-loader',
+                    options: {
+                        transformAssetUrls: {},
+                    }
+                }]
         };
     }
     get templatesWebpackRules() {
@@ -103,9 +98,25 @@ class TypeScriptBuildTool {
                 }]
         };
     }
+    get cssWebpackRules() {
+        return {
+            test: /\.css$/,
+            use: [
+                {
+                    loader: 'vue-style-loader'
+                }, {
+                    loader: 'css-loader',
+                    options: {
+                        url: false
+                    }
+                }
+            ]
+        };
+    }
     getWebpackPlugins() {
         let plugins = [];
         plugins.push(new webpack.NoEmitOnErrorsPlugin());
+        plugins.push(new vue_loader_1.VueLoaderPlugin());
         plugins.push(new TypeScriptBuildWebpackPlugin_1.TypeScriptBuildWebpackPlugin({
             inputJsFolder: this.settings.inputJsFolder,
             target: this.buildTarget,
@@ -146,7 +157,12 @@ class TypeScriptBuildTool {
                 ]
             },
             module: {
-                rules: [this.typescriptWebpackRules, this.templatesWebpackRules, this.vueWebpackRules]
+                rules: [
+                    this.typescriptWebpackRules,
+                    this.templatesWebpackRules,
+                    this.vueWebpackRules,
+                    this.cssWebpackRules
+                ]
             },
             plugins: this.getWebpackPlugins()
         };

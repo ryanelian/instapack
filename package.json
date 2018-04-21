@@ -63,7 +63,7 @@
     "postcss-discard-comments": "2.0.4",
     "source-map": "0.7.2",
     "typescript": "2.8.3",
-    "uglify-js": "3.3.21",
+    "uglify-js": "3.3.22",
     "upath": "1.0.4",
     "vue-loader": "15.0.0-rc.2",
     "vue-template-compiler": "2.5.16",

@@ -1,18 +1,16 @@
 import chalk from 'chalk';
-import { Compiler } from 'webpack';
+import * as webpack from 'webpack';
 import { Source, SourceMapSource, RawSource } from 'webpack-sources';
 import { RawSourceMap } from 'source-map';
 import * as UglifyJS from 'uglify-js';
-
 import { Shout } from './Shout';
 
 /**
  * Options required for TypeScriptBuildWebpackPlugin to function, collected from Settings and ICompilerFlags.
  */
 interface ITypeScriptBuildWebpackPluginOptions {
-    inputJsFolder: string;
-    target: string;
-    production: boolean;
+    onBuildStart: () => any;
+    minify: boolean;
     sourceMap: boolean;
 }
 
@@ -75,24 +73,21 @@ export class TypeScriptBuildWebpackPlugin {
      * Apply function prototype for registering a webpack plugin.
      * @param compiler 
      */
-    apply(compiler: Compiler) {
-        if (this.options.target !== 'ES5') {
-            Shout.danger('TypeScript compile target is not', chalk.yellow('ES5'), '!' + chalk.grey('(tsconfig.json)'));
-        }
+    apply(compiler: webpack.Compiler) {
 
-        compiler.plugin('compile', compilation => {
-            Shout.timed('Compiling', chalk.cyan('index.ts'),
-                '>', chalk.yellow(this.options.target),
-                chalk.grey('in ' + this.options.inputJsFolder + '/')
-            );
+        let pluginId = 'typescript-build';
+
+        compiler.hooks.compile.tap(pluginId, compilation => {
+            this.options.onBuildStart();
         });
 
-        if (!this.options.production) {
+        if (!this.options.minify) {
             return;
         }
 
-        compiler.plugin('compilation', compilation => {
-            compilation.plugin('optimize-chunk-assets', (chunks, next) => {
+        compiler.hooks.compilation.tap(pluginId, compilation => {
+            compilation.hooks.optimizeChunkAssets.tapAsync(pluginId, (chunks, next) => {
+                Shout.timed('TypeScript compile finished! Minifying bundles...');
                 for (let chunk of chunks) {
                     for (let file of chunk.files) {
                         let asset = compilation.assets[file] as Source;
@@ -117,5 +112,7 @@ export class TypeScriptBuildWebpackPlugin {
                 next();
             });
         });
+
+        // end of function
     }
 }

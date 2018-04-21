@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const chalk_1 = require("chalk");
 const webpack_sources_1 = require("webpack-sources");
 const UglifyJS = require("uglify-js");
 const Shout_1 = require("./Shout");
@@ -28,17 +27,16 @@ class TypeScriptBuildWebpackPlugin {
         return input;
     }
     apply(compiler) {
-        if (this.options.target !== 'ES5') {
-            Shout_1.Shout.danger('TypeScript compile target is not', chalk_1.default.yellow('ES5'), '!' + chalk_1.default.grey('(tsconfig.json)'));
-        }
-        compiler.plugin('compile', compilation => {
-            Shout_1.Shout.timed('Compiling', chalk_1.default.cyan('index.ts'), '>', chalk_1.default.yellow(this.options.target), chalk_1.default.grey('in ' + this.options.inputJsFolder + '/'));
+        let pluginId = 'typescript-build';
+        compiler.hooks.compile.tap(pluginId, compilation => {
+            this.options.onBuildStart();
         });
-        if (!this.options.production) {
+        if (!this.options.minify) {
             return;
         }
-        compiler.plugin('compilation', compilation => {
-            compilation.plugin('optimize-chunk-assets', (chunks, next) => {
+        compiler.hooks.compilation.tap(pluginId, compilation => {
+            compilation.hooks.optimizeChunkAssets.tapAsync(pluginId, (chunks, next) => {
+                Shout_1.Shout.timed('TypeScript compile finished! Minifying bundles...');
                 for (let chunk of chunks) {
                     for (let file of chunk.files) {
                         let asset = compilation.assets[file];

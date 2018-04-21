@@ -118,8 +118,8 @@ export class Settings {
     * Gets the JS output common / vendored modules chunk file name.
     * For example, ipack.dll.js
     */
-    get jsOutVendorFileName(): string {
-        return upath.removeExt(this.jsOut, '.js') + '.dll.js';
+    get jsChunkFileName(): string {
+        return upath.removeExt(this.jsOut, '.js') + '.[name].js';
     }
 
     /**

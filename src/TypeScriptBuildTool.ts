@@ -109,17 +109,6 @@ export class TypeScriptBuildTool {
     }
 
     /**
-     * Returns TypeScript Compiler Options target as its enum name string representative.
-     */
-    get buildTarget() {
-        let t = this.tsconfigOptions.target;
-        if (!t) {
-            t = TypeScript.ScriptTarget.ES5;
-        }
-        return TypeScript.ScriptTarget[t];
-    }
-
-    /**
      * Gets a configured TypeScript rules for webpack.
      */
     get typescriptWebpackRules() {
@@ -158,7 +147,7 @@ export class TypeScriptBuildTool {
      */
     get templatesWebpackRules() {
         return {
-            test: /\.html?$/,
+            test: /\.html$/,
             use: [{
                 loader: 'template-loader'
             }]
@@ -187,36 +176,43 @@ export class TypeScriptBuildTool {
     }
 
     /**
+     * A simple flag to prevent instapack screaming about unsupported TypeScript build target twice. 
+     */
+    buildTargetWarned = false;
+
+    /**
+     * Chat to CLI user on build start. 
+     */
+    onBuildStart() {
+        let t = this.tsconfigOptions.target;
+        if (!t) {
+            t = TypeScript.ScriptTarget.ES3;
+        }
+        let buildTarget = TypeScript.ScriptTarget[t].toUpperCase();
+
+        if (buildTarget !== 'ES5' && !this.buildTargetWarned) {
+            Shout.danger('TypeScript compile target is not', chalk.yellow('ES5') + '!', chalk.grey('(tsconfig.json)'));
+            this.buildTargetWarned = true;
+        }
+        Shout.timed('Compiling', chalk.cyan('index.ts'),
+            '>', chalk.yellow(buildTarget),
+            chalk.grey('in ' + this.settings.inputJsFolder + '/')
+        );
+    }
+
+    /**
      * Returns a configured webpack plugins.
      */
     getWebpackPlugins() {
         let plugins = [];
-        plugins.push(new webpack.NoEmitOnErrorsPlugin()); // Near-useless in current state...
-        plugins.push(new VueLoaderPlugin());
 
         plugins.push(new TypeScriptBuildWebpackPlugin({
-            inputJsFolder: this.settings.inputJsFolder,
-            target: this.buildTarget,
-            production: this.flags.production,
+            onBuildStart: this.onBuildStart.bind(this),
+            minify: this.flags.production,
             sourceMap: this.flags.sourceMap
         }));
 
-        // https://webpack.js.org/plugins/commons-chunk-plugin/
-        // grab everything imported from node_modules, put into a separate file: ipack.dll.js
-        plugins.push(new webpack.optimize.CommonsChunkPlugin({
-            name: 'DLL',
-            filename: this.settings.jsOutVendorFileName,
-            minChunks: module => module.context && module.context.includes('node_modules')
-        }));
-
-        if (this.flags.production) {
-            plugins.push(new webpack.DefinePlugin({
-                'process.env': {
-                    'NODE_ENV': JSON.stringify('production')
-                }
-            }));
-        }
-
+        plugins.push(new VueLoaderPlugin());
         return plugins;
     }
 
@@ -229,19 +225,22 @@ export class TypeScriptBuildTool {
             entry: path.normalize(this.settings.jsEntry),
             output: {
                 filename: this.settings.jsOut,
-                // chunkFilename: this.settings.jsOutSplitFileName, // https://webpack.js.org/guides/code-splitting/
-                path: path.normalize(this.settings.outputJsFolder)
+                chunkFilename: this.settings.jsChunkFileName,   // https://webpack.js.org/guides/code-splitting
+                path: path.normalize(this.settings.outputJsFolder),
+                publicPath: 'js/'   // yay for using "js" folder in output!
             },
             externals: this.settings.externals,
             resolve: {
-                extensions: ['.ts', '.tsx', '.js', '.vue', '.html', '.json'],
+                extensions: ['.ts', '.tsx', '.js', '.mjs', '.wasm', '.json', '.vue', '.html'],
+                // .mjs causes runtime error when `module.exports` is being used instead of `export`.
+                // .wasm requires adding `application/wasm` MIME to web server (both IIS and Kestrel).
                 alias: this.settings.alias
             },
             resolveLoader: {
                 modules: [
-                    path.resolve(__dirname, 'loaders'),         // custom internal loaders
-                    path.resolve(__dirname, '../node_modules'), // local node_modules
-                    path.resolve(__dirname, '..', '..'),        // yarn's flat global node_modules
+                    path.resolve(__dirname, 'loaders'),             // custom internal loaders
+                    path.resolve(__dirname, '../node_modules'),     // local node_modules
+                    path.resolve(__dirname, '..', '..'),            // yarn's flat global node_modules
                 ]
             },
             module: {
@@ -252,11 +251,31 @@ export class TypeScriptBuildTool {
                     this.cssWebpackRules
                 ]
             },
+            mode: (this.flags.production ? 'production' : 'development'),
+            devtool: (this.flags.production ? 'source-map' : 'eval-source-map'),
+            optimization: {
+                minimize: false,        // https://medium.com/webpack/webpack-4-mode-and-optimization-5423a6bc597a
+                noEmitOnErrors: true,   // https://dev.to/flexdinesh/upgrade-to-webpack-4---5bc5
+                splitChunks: {          // https://webpack.js.org/plugins/split-chunks-plugin/
+                    cacheGroups: {
+                        vendors: {
+                            name: 'dll',
+                            test: /[\\/]node_modules[\\/]/,
+                            chunks: 'all',
+                            enforce: true,
+                            priority: -10
+                        }
+                    }
+                }
+            },
+            performance: {
+                hints: false    // https://webpack.js.org/configuration/performance
+            },
             plugins: this.getWebpackPlugins()
         };
 
-        if (this.flags.sourceMap) {
-            config.devtool = (this.flags.production ? 'source-map' : 'eval-source-map');
+        if (!this.flags.sourceMap) {
+            config.devtool = false;
         }
 
         if (this.flags.watch) {
@@ -271,48 +290,35 @@ export class TypeScriptBuildTool {
     }
 
     /**
-     * Gets webpack stat render options for colored warnings and errors.
+     * Get stat objects required for instapack build logs.
      */
-    get webpackStatsErrorsOnly() {
-        return {
-            colors: true,
-            assets: false,
-            cached: false,
-            children: false,
-            chunks: false,
-            errors: true,
-            hash: false,
-            modules: false,
-            reasons: false,
-            source: false,
-            timings: false,
-            version: false,
-            warnings: true
-        } as webpack.Stats.ToStringOptions;
-    }
-
-    /**
-     * Gets webpack stat extraction options for assets and build time only.  
-     */
-    get webpackStatsJsonMinimal() {
+    get statsSerializeEssentialOption(): webpack.Stats.ToJsonOptions {
         return {
             assets: true,
             cached: false,
+            cachedAssets: false,
             children: false,
+            chunkModules: false,
+            chunkOrigins: false,
             chunks: false,
-            errors: false,
+            depth: false,
+            entrypoints: false,
+            env: false,
+            errors: true,
+            errorDetails: false,
             hash: false,
             modules: false,
+            moduleTrace: true,
+            publicPath: false,
             reasons: false,
             source: false,
             timings: true,
             version: false,
-            warnings: false
-        } as webpack.Stats.ToJsonOptions;
-    }
-
-    get inFolderMessage() {
-        return chalk.grey('in ' + this.settings.outputJsFolder + '/');
+            warnings: true,
+            usedExports: false,
+            performance: false,
+            providedExports: false
+        };
     }
 
     /**
@@ -327,18 +333,37 @@ export class TypeScriptBuildTool {
                 return;
             }
 
-            let o = stats.toJson(this.webpackStatsJsonMinimal);
+            let o = stats.toJson(this.statsSerializeEssentialOption);
+            // console.log(o);
 
-            if (stats.hasErrors() || stats.hasWarnings()) {
-                let buildErrors = '\n' + stats.toString(this.webpackStatsErrorsOnly).trim() + '\n';
-                console.error(buildErrors);
-                Shout.notify('You have one or more JS build errors / warnings!');
+            let errors: string[] = o.errors;
+            if (errors.length) {
+                let errorMessage = '\n' + errors.join('\n\n') + '\n';
+                console.error(chalk.red(errorMessage));
+                if (errors.length === 1) {
+                    Shout.notify(`You have one JS build error!`);
+                } else {
+                    Shout.notify(`You have ${errors.length} JS build errors!`);
+                }
+            }
+
+            let warnings: string[] = o.warnings;
+            if (warnings.length) {
+                let warningMessage = '\n' + warnings.join('\n\n') + '\n';
+                console.warn(chalk.yellow(warningMessage));
+                if (warnings.length === 1) {
+                    Shout.notify(`You have one JS build warning!`);
+                } else {
+                    Shout.notify(`You have ${warnings.length} JS build warnings!`);
+                }
             }
 
             for (let asset of o.assets) {
                 if (asset.emitted) {
                     let kb = prettyBytes(asset.size);
-                    Shout.timed(chalk.blue(asset.name), chalk.magenta(kb), this.inFolderMessage);
+                    Shout.timed(chalk.blue(asset.name), chalk.magenta(kb),
+                        chalk.grey('in ' + this.settings.outputJsFolder + '/')
+                    );
                 }
             }
 

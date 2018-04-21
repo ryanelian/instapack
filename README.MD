@@ -122,7 +122,9 @@ Scaffolds a new instapack project into your existing app folder where the comman
 
 - `react` when you want to develop a web app with React and Semantic UI.
 
-- `inferno` when you want to develop a web app with Inferno.
+- `preact` when you want to develop a web app with Preact. (Fast 3kB alternative to React)
+
+- `inferno` when you want to develop a web app with Inferno. (Insanely fast, React-like library)
 
 - `vue-mobile` when you want to develop a _[Progressive Web Application](https://developers.google.com/web/progressive-web-apps/)_ using Vue.js and Onsen UI! (Cordova-compatible, [read more on FAQ ↓](#how-to-develop-a-cordova-app-using-vue-mobile-template))
 

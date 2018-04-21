@@ -48,13 +48,13 @@ Out of the box, these files will be used as the program entry points:
 
 - `client/js/index.ts` compiled to `wwwroot/js/ipack.js`
 
-  - Include this file in your HTML using `<script>` at the bottom / before `</body>` so the browser can render the page while downloading the script.
+  - Include this file at the bottom of your HTML / before `</body>` using `<script>` so the browser can render the page while downloading the script.
 
   - Anything imported from `node_modules` will be put into `ipack.dll.js`. Please also include this file in your HTML just before `ipack.js`
 
 - `client/css/index.scss` compiled to `wwwroot/css/ipack.css`
 
-  - Include this file in your HTML using `<link>` at the top / before `</head>` so the browser can style and render the page as it loads.
+  - Include this file at the top of your HTML / before `</head>` using `<link>` so the browser can style and render the page as it loads.
 
   - Spiced :hot_pepper: with [AutoPrefixer](https://github.com/postcss/autoprefixer) for applying CSS vendor-prefixes automatically!
 
@@ -323,13 +323,13 @@ export default class Hello extends Vue {
 
 - When using Visual Studio Code with [Vetur](https://marketplace.visualstudio.com/items?itemName=octref.vetur) extension, you will get fabulous intellisense! :star2:
 
-- Please **DO NOT** use the `<style>` tag!
+- Please **DO NOT** use the `<style>` tag.
 
-  - Why: You cannot use Sass. The CSS will not be auto-prefixed and minified. Your CSS will be scattered across obscure files in the JS project. Non-scoped styles will pollute the global CSS namespace. **These WILL make your app less maintainable!**
+  - You cannot use Sass. The CSS will not be auto-prefixed and minified. Your CSS will be scattered across obscure files in the JS project. Non-scoped styles will pollute the global CSS namespace. **These WILL make your app less maintainable!**
 
   - `<style module>` is not supported (for now) because [`css-loader` team are planning to remove `modules` option soon...](https://github.com/webpack-contrib/css-loader/issues/509)
 
-- [A global TypeScript definition file for `*.vue` module](https://github.com/ryanelian/instapack/blob/vue-sfc/templates/vue/client/js/vue-shim.d.ts) is required for importing the `.vue` file using ES Modules syntax from TypeScript.
+- [A global TypeScript definition file for `*.vue` module](https://github.com/ryanelian/instapack/blob/master/templates/vue/client/js/vue-shim.d.ts) is required for importing the `.vue` file using ES Modules syntax from TypeScript.
 
   - This file will be created for you when using the `vue` new project template!
 

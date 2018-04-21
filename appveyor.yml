@@ -29,6 +29,8 @@ test_script:
 
     Remove-Item * -Recurse; ipack new inferno; ipack; ipack -dx
 
+    Remove-Item * -Recurse; ipack new preact; ipack; ipack -dx
+
     Remove-Item * -Recurse; ipack new react; ipack; ipack -dx
 
     Remove-Item * -Recurse; ipack new vue; ipack; ipack -dx

@@ -6,6 +6,7 @@ env:
   - TEMPLATE=angularjs
   - TEMPLATE=empty
   - TEMPLATE=inferno
+  - TEMPLATE=preact
   - TEMPLATE=react
   - TEMPLATE=vue
   - TEMPLATE=vue-mobile

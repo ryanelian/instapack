@@ -12,7 +12,7 @@
     "axios": "^0.18.0",
     "es6-promise": "^4.2.4",
     "linq": "^3.1.0",
-    "luxon": "^1.0.0",
+    "luxon": "^1.1.0",
     "noty": "^3.2.0-beta",
     "preact": "^8.2.7",
     "sweetalert": "^2.1.0",

@@ -12,7 +12,7 @@
     "@types/requirejs": "^2.1.31",
     "es6-promise": "^4.2.4",
     "linq": "^3.1.0",
-    "luxon": "^1.0.0",
+    "luxon": "^1.1.0",
     "mithril": "^1.1.6",
     "noty": "^3.2.0-beta",
     "sweetalert": "^2.1.0",

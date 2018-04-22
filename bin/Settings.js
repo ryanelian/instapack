@@ -48,6 +48,9 @@ class Settings {
     get packageJson() {
         return upath.join(this.root, 'package.json');
     }
+    get babelConfiguration() {
+        return upath.join(this.root, '.babelrc');
+    }
     get tsConfigJson() {
         return upath.join(this.root, 'tsconfig.json');
     }

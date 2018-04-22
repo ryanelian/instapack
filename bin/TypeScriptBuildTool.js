@@ -15,6 +15,7 @@ class TypeScriptBuildTool {
         this.buildTargetWarned = false;
         this.settings = settings;
         this.flags = flags;
+        this.babel = fse.existsSync(this.settings.babelConfiguration);
         this.tsconfigOptions = this.settings.readTsConfig().options;
         this.mergeTypeScriptPathsToWebpackAlias();
     }
@@ -59,19 +60,35 @@ class TypeScriptBuildTool {
             }
         }
     }
+    get jsBabelWebpackRules() {
+        return {
+            test: /\.m?jsx?$/,
+            exclude: /node_modules/,
+            use: {
+                loader: 'babel-loader'
+            }
+        };
+    }
     get typescriptWebpackRules() {
         let options = this.tsconfigOptions;
         options.sourceMap = this.flags.sourceMap;
         options.inlineSources = this.flags.sourceMap;
-        return {
+        let tsRules = {
             test: /\.tsx?$/,
-            use: [{
-                    loader: 'core-typescript-loader',
-                    options: {
-                        compilerOptions: options
-                    }
-                }]
+            use: []
         };
+        if (this.babel) {
+            tsRules.use.push({
+                loader: 'babel-loader'
+            });
+        }
+        tsRules.use.push({
+            loader: 'core-typescript-loader',
+            options: {
+                compilerOptions: options
+            }
+        });
+        return tsRules;
     }
     get vueWebpackRules() {
         return {
@@ -140,7 +157,7 @@ class TypeScriptBuildTool {
             },
             externals: this.settings.externals,
             resolve: {
-                extensions: ['.ts', '.tsx', '.js', '.mjs', '.wasm', '.json', '.vue', '.html'],
+                extensions: ['.ts', '.tsx', '.js', '.jsx', '.mjs', '.wasm', '.json', '.vue', '.html'],
                 alias: this.settings.alias
             },
             resolveLoader: {
@@ -180,6 +197,9 @@ class TypeScriptBuildTool {
             },
             plugins: this.getWebpackPlugins()
         };
+        if (this.babel) {
+            config.module.rules.push(this.jsBabelWebpackRules);
+        }
         if (!this.flags.sourceMap) {
             config.devtool = false;
         }

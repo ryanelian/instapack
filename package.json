@@ -49,6 +49,8 @@
   },
   "dependencies": {
     "autoprefixer": "8.3.0",
+    "babel-core": "6.26.0",
+    "babel-loader": "7.1.4",
     "chalk": "2.4.0",
     "chokidar": "2.0.3",
     "css-loader": "0.28.11",

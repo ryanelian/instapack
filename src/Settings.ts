@@ -137,6 +137,13 @@ export class Settings {
     }
 
     /**
+     * Gets the full path to package.json file.
+     */
+    get babelConfiguration(): string {
+        return upath.join(this.root, '.babelrc');
+    }
+
+    /**
      * Gets the full path to tsconfig.json file.
      */
     get tsConfigJson(): string {

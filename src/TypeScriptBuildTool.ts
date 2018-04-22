@@ -28,6 +28,11 @@ export class TypeScriptBuildTool {
     private readonly flags: ICompilerFlags;
 
     /**
+     * Gets whether babel-loader should be configured.
+     */
+    private readonly babel: boolean;
+
+    /**
      * Gets the TypeScript compiler options. (Read once and cache.)
      */
     private readonly tsconfigOptions: TypeScript.CompilerOptions;
@@ -40,6 +45,7 @@ export class TypeScriptBuildTool {
     constructor(settings: Settings, flags: ICompilerFlags) {
         this.settings = settings
         this.flags = flags;
+        this.babel = fse.existsSync(this.settings.babelConfiguration);
 
         this.tsconfigOptions = this.settings.readTsConfig().options;
         this.mergeTypeScriptPathsToWebpackAlias();
@@ -109,6 +115,19 @@ export class TypeScriptBuildTool {
     }
 
     /**
+     * Gets JS Babel transpile rules for webpack.
+     */
+    get jsBabelWebpackRules() {
+        return {
+            test: /\.m?jsx?$/,
+            exclude: /node_modules/,
+            use: {
+                loader: 'babel-loader'
+            }
+        }
+    }
+
+    /**
      * Gets a configured TypeScript rules for webpack.
      */
     get typescriptWebpackRules() {
@@ -116,15 +135,28 @@ export class TypeScriptBuildTool {
         options.sourceMap = this.flags.sourceMap;
         options.inlineSources = this.flags.sourceMap;
 
-        return {
+        let tsRules = {
             test: /\.tsx?$/,
-            use: [{
-                loader: 'core-typescript-loader',
-                options: {
-                    compilerOptions: options
-                }
-            }]
+            use: []
         };
+
+        // webpack loaders are declared in reverse / right-to-left!
+        // babel(typescript(source_code))
+
+        if (this.babel) {
+            tsRules.use.push({
+                loader: 'babel-loader'
+            })
+        }
+
+        tsRules.use.push({
+            loader: 'core-typescript-loader',
+            options: {
+                compilerOptions: options
+            }
+        });
+
+        return tsRules;
     }
 
     /**
@@ -231,7 +263,7 @@ export class TypeScriptBuildTool {
             },
             externals: this.settings.externals,
             resolve: {
-                extensions: ['.ts', '.tsx', '.js', '.mjs', '.wasm', '.json', '.vue', '.html'],
+                extensions: ['.ts', '.tsx', '.js', '.jsx', '.mjs', '.wasm', '.json', '.vue', '.html'],
                 // .mjs causes runtime error when `module.exports` is being used instead of `export`.
                 // .wasm requires adding `application/wasm` MIME to web server (both IIS and Kestrel).
                 alias: this.settings.alias
@@ -273,6 +305,10 @@ export class TypeScriptBuildTool {
             },
             plugins: this.getWebpackPlugins()
         };
+
+        if (this.babel) {
+            config.module.rules.push(this.jsBabelWebpackRules);
+        }
 
         if (!this.flags.sourceMap) {
             config.devtool = false;

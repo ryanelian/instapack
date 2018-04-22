@@ -262,6 +262,14 @@ so [CDN](https://en.wikipedia.org/wiki/Content_delivery_network) can be used! :t
 }
 ```
 
+## Babel
+
+instapack supports `.babelrc` in the project folder. Here are some use cases where this feature can be useful:
+
+- You may use Babel instead of TypeScript to transpile JS to ES5: set TypeScript `target` to `esnext` then use `@babel/preset-env`
+
+- You may use Babel instead of TypeScript to compile JSX: set TypeScript `jsx` to `preserve` then use the framework-compatible JSX plugin. For example: `babel-plugin-transform-react-jsx`, `babel-plugin-transform-vue-jsx`, `babel-plugin-inferno`
+
 ## Module Systems
 
 ### TypeScript / ES Modules

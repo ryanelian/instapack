@@ -1,0 +1,36 @@
+{
+  "compilerOptions": {
+    "noImplicitAny": false,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+    "strictNullChecks": false,
+    "strictFunctionTypes": false,
+    "strictPropertyInitialization": true,
+    "skipLibCheck": true,
+    
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+
+    "noEmit": true,
+    "target": "es5",
+    "module": "es2015",
+    "moduleResolution": "node",
+    "importHelpers": true,
+    "jsx": "react",
+    "jsxFactory": "m",
+
+    "lib": [
+      "dom",
+      "es5",
+      "es2015.promise"
+    ]
+  },
+  "exclude": [
+    "node_modules"
+  ]
+}

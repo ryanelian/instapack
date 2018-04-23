@@ -6,7 +6,6 @@
     "output": "wwwroot",
     "concat": {
       "vendor": [
-        "es6-promise/dist/es6-promise.auto",
         "jquery/dist/jquery.slim",
         "popper.js",
         "bootstrap"
@@ -26,11 +25,11 @@
     "aspnet-validation": "^0.0.4",
     "axios": "^0.18.0",
     "bootstrap": "^4.1.0",
-    "es6-promise": "^4.2.4",
     "linq": "^3.1.0",
     "luxon": "^1.1.0",
     "noty": "^3.2.0-beta",
     "sweetalert": "^2.1.0",
+    "ts-polyfill": "^0.0.2",
     "tslib": "^1.9.0",
     "vee-validate": "^2.0.6",
     "vue": "^2.5.16",

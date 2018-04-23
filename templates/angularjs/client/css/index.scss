@@ -1,11 +1,17 @@
-﻿@import 'bootstrap-sass';
-@import 'angular-ui-bootstrap/dist/ui-bootstrap-csp';
+﻿@import "bootstrap-sass";
+@import "angular-ui-bootstrap/dist/ui-bootstrap-csp";
 
-@import 'aspnet-validation';
-@import 'angular-custom';
+@import "aspnet-validation";
+@import "angular-custom";
+
+html {
+    height: 100%;
+}
 
 body {
-    min-height: 100vh;
+    min-height: 100%;
+    margin: 0;
+    padding: 0;
 }
 
 .navbar {

@@ -18,7 +18,7 @@
 
     "noEmit": true,
     "target": "es5",
-    "module": "es2015",
+    "module": "esnext",
     "moduleResolution": "node",
     "importHelpers": true,
     "jsx": "preserve",

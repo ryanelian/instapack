@@ -12,7 +12,7 @@ import { SampleService } from './services/SampleService';
 let app = angular.module('aspnet', [uib, animate, touch, messages]);
 
 app.run(['$q', ($q: angular.IQService) => {
-    // Polyfill ES6 Promise using AngularJS implementation, which triggers $scope.$apply()
+    // Polyfill ES2018-compatible Promise using AngularJS implementation, which triggers $scope.$apply()
     window['Promise'] = $q;
 }]);
 

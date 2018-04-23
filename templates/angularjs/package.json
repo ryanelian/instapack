@@ -34,6 +34,7 @@
     "jquery-validation-unobtrusive": "^3.2.9",
     "linq": "^3.1.0",
     "luxon": "^1.1.0",
+    "ts-polyfill": "^0.0.2",
     "tslib": "^1.9.0"
   }
 }

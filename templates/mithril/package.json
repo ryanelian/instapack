@@ -16,7 +16,7 @@
     "noty": "^3.2.0-beta",
     "sweetalert": "^2.1.0",
     "tachyons": "^4.9.1",
-    "ts-polyfill": "^0.0.2",
+    "ts-polyfill": "^0.0.3",
     "tslib": "^1.9.0"
   }
 }

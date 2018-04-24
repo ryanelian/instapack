@@ -19,7 +19,8 @@ const Shout_1 = require("./Shout");
 const PrettyUnits_1 = require("./PrettyUnits");
 let resolver = enhanced_resolve_1.ResolverFactory.createResolver({
     fileSystem: new enhanced_resolve_1.NodeJsInputFileSystem(),
-    extensions: ['.js']
+    extensions: ['.js'],
+    mainFields: ['unpkg', 'browser', 'main']
 });
 class ConcatBuildTool {
     constructor(settings, flags) {

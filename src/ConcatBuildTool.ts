@@ -12,7 +12,8 @@ import { prettyHrTime } from './PrettyUnits';
 
 let resolver = ResolverFactory.createResolver({
     fileSystem: new NodeJsInputFileSystem(),
-    extensions: ['.js']
+    extensions: ['.js'],
+    mainFields: ['unpkg', 'browser', 'main']
 });
 
 /**

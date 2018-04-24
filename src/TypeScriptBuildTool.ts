@@ -278,8 +278,8 @@ export class TypeScriptBuildTool {
             module: {
                 rules: [
                     this.typescriptWebpackRules,
-                    this.templatesWebpackRules,
                     this.vueWebpackRules,
+                    this.templatesWebpackRules,
                     this.cssWebpackRules
                 ]
             },

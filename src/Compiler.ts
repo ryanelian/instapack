@@ -112,7 +112,7 @@ export class Compiler {
     }
 
     /**
-     * Gets the POJO-serializable build worker input payload.
+     * Gets the serializable parameters for build workers.
      */
     get buildCommand(): IBuildCommand {
         return {

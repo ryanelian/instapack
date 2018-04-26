@@ -12,10 +12,10 @@ const fse = require("fs-extra");
 const chalk_1 = require("chalk");
 const WorkerFarm = require("worker-farm");
 const Shout_1 = require("./Shout");
-let TypeScriptBuildWorker = WorkerFarm(require.resolve('./build-workers/TypeScriptBuildWorker'));
-let TypeScriptCheckWorker = WorkerFarm(require.resolve('./build-workers/TypeScriptCheckWorker'));
-let SassBuildWorker = WorkerFarm(require.resolve('./build-workers/SassBuildWorker'));
-let ConcatBuildWorker = WorkerFarm(require.resolve('./build-workers/ConcatBuildWorker'));
+const typeScriptBuildWorkerModulePath = require.resolve('./build-workers/TypeScriptBuildWorker');
+const typeScriptCheckWorkerModulePath = require.resolve('./build-workers/TypeScriptCheckWorker');
+const sassBuildWorkerModulePath = require.resolve('./build-workers/SassBuildWorker');
+const concatBuildWorkerModulePath = require.resolve('./build-workers/ConcatBuildWorker');
 class Compiler {
     constructor(settings, flags) {
         this.settings = settings;
@@ -90,31 +90,34 @@ class Compiler {
                 case 'js':
                     let valid = yield this.validateJsBuildTask();
                     if (valid) {
-                        TypeScriptBuildWorker(this.buildCommand, (error, result) => {
+                        let typescriptBuildWorker = WorkerFarm(typeScriptBuildWorkerModulePath);
+                        typescriptBuildWorker(this.buildCommand, (error, result) => {
                             if (error) {
                                 Shout_1.Shout.fatal(`during JS build:`, error);
                                 Shout_1.Shout.notify(`FATAL ERROR during JS build!`);
                             }
-                            WorkerFarm.end(TypeScriptBuildWorker);
+                            WorkerFarm.end(typescriptBuildWorker);
                         });
-                        TypeScriptCheckWorker(this.buildCommand, (error, result) => {
+                        let typescriptCheckWorker = WorkerFarm(typeScriptCheckWorkerModulePath);
+                        typescriptCheckWorker(this.buildCommand, (error, result) => {
                             if (error) {
                                 Shout_1.Shout.fatal(`during type-checking:`, error);
                                 Shout_1.Shout.notify(`FATAL ERROR during type-checking!`);
                             }
-                            WorkerFarm.end(TypeScriptCheckWorker);
+                            WorkerFarm.end(typescriptCheckWorker);
                         });
                     }
                     return;
                 case 'css': {
                     let valid = yield this.validateCssBuildTask();
                     if (valid) {
-                        SassBuildWorker(this.buildCommand, (error, result) => {
+                        let sassBuildWorker = WorkerFarm(sassBuildWorkerModulePath);
+                        sassBuildWorker(this.buildCommand, (error, result) => {
                             if (error) {
                                 Shout_1.Shout.fatal(`during CSS build:`, error);
                                 Shout_1.Shout.notify(`FATAL ERROR during CSS build!`);
                             }
-                            WorkerFarm.end(SassBuildWorker);
+                            WorkerFarm.end(sassBuildWorker);
                         });
                     }
                     return;
@@ -122,12 +125,13 @@ class Compiler {
                 case 'concat': {
                     let valid = (this.settings.concatCount > 0);
                     if (valid) {
-                        ConcatBuildWorker(this.buildCommand, (error, result) => {
+                        let concatBuildWorker = WorkerFarm(concatBuildWorkerModulePath);
+                        concatBuildWorker(this.buildCommand, (error, result) => {
                             if (error) {
                                 Shout_1.Shout.fatal(`during JS concat:`, error);
                                 Shout_1.Shout.notify(`FATAL ERROR during JS concat!`);
                             }
-                            WorkerFarm.end(ConcatBuildWorker);
+                            WorkerFarm.end(concatBuildWorker);
                         });
                     }
                     return;

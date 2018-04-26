@@ -6,10 +6,10 @@ import * as WorkerFarm from 'worker-farm';
 import { Settings } from './Settings';
 import { Shout } from './Shout';
 
-let TypeScriptBuildWorker = WorkerFarm(require.resolve('./build-workers/TypeScriptBuildWorker'));
-let TypeScriptCheckWorker = WorkerFarm(require.resolve('./build-workers/TypeScriptCheckWorker'));
-let SassBuildWorker = WorkerFarm(require.resolve('./build-workers/SassBuildWorker'));
-let ConcatBuildWorker = WorkerFarm(require.resolve('./build-workers/ConcatBuildWorker'));
+const typeScriptBuildWorkerModulePath = require.resolve('./build-workers/TypeScriptBuildWorker');
+const typeScriptCheckWorkerModulePath = require.resolve('./build-workers/TypeScriptCheckWorker');
+const sassBuildWorkerModulePath = require.resolve('./build-workers/SassBuildWorker');
+const concatBuildWorkerModulePath = require.resolve('./build-workers/ConcatBuildWorker');
 
 /**
  * Contains methods for assembling and invoking the build tasks.
@@ -137,19 +137,21 @@ export class Compiler {
             case 'js':
                 let valid = await this.validateJsBuildTask();
                 if (valid) {
-                    TypeScriptBuildWorker(this.buildCommand, (error, result) => {
+                    let typescriptBuildWorker = WorkerFarm(typeScriptBuildWorkerModulePath);
+                    typescriptBuildWorker(this.buildCommand, (error, result) => {
                         if (error) {
                             Shout.fatal(`during JS build:`, error);
                             Shout.notify(`FATAL ERROR during JS build!`);
                         }
-                        WorkerFarm.end(TypeScriptBuildWorker);
+                        WorkerFarm.end(typescriptBuildWorker);
                     });
-                    TypeScriptCheckWorker(this.buildCommand, (error, result) => {
+                    let typescriptCheckWorker = WorkerFarm(typeScriptCheckWorkerModulePath);
+                    typescriptCheckWorker(this.buildCommand, (error, result) => {
                         if (error) {
                             Shout.fatal(`during type-checking:`, error);
                             Shout.notify(`FATAL ERROR during type-checking!`);
                         }
-                        WorkerFarm.end(TypeScriptCheckWorker);
+                        WorkerFarm.end(typescriptCheckWorker);
                     });
                 }
                 return;
@@ -157,12 +159,13 @@ export class Compiler {
             case 'css': {
                 let valid = await this.validateCssBuildTask();
                 if (valid) {
-                    SassBuildWorker(this.buildCommand, (error, result) => {
+                    let sassBuildWorker = WorkerFarm(sassBuildWorkerModulePath);
+                    sassBuildWorker(this.buildCommand, (error, result) => {
                         if (error) {
                             Shout.fatal(`during CSS build:`, error);
                             Shout.notify(`FATAL ERROR during CSS build!`);
                         }
-                        WorkerFarm.end(SassBuildWorker);
+                        WorkerFarm.end(sassBuildWorker);
                     });
                 }
                 return;
@@ -171,12 +174,13 @@ export class Compiler {
             case 'concat': {
                 let valid = (this.settings.concatCount > 0);
                 if (valid) {
-                    ConcatBuildWorker(this.buildCommand, (error, result) => {
+                    let concatBuildWorker = WorkerFarm(concatBuildWorkerModulePath);
+                    concatBuildWorker(this.buildCommand, (error, result) => {
                         if (error) {
                             Shout.fatal(`during JS concat:`, error);
                             Shout.notify(`FATAL ERROR during JS concat!`);
                         }
-                        WorkerFarm.end(ConcatBuildWorker);
+                        WorkerFarm.end(concatBuildWorker);
                     });
                 }
                 return;

@@ -6,7 +6,6 @@ const chalk_1 = require("chalk");
 const webpack = require("webpack");
 const TypeScript = require("typescript");
 const vue_loader_1 = require("vue-loader");
-const EventHub_1 = require("./EventHub");
 const PrettyUnits_1 = require("./PrettyUnits");
 const TypeScriptBuildWebpackPlugin_1 = require("./TypeScriptBuildWebpackPlugin");
 const Shout_1 = require("./Shout");
@@ -241,48 +240,51 @@ class TypeScriptBuildTool {
         };
     }
     build() {
-        webpack(this.webpackConfiguration, (error, stats) => {
-            if (error) {
-                Shout_1.Shout.fatal('during JS build (tool):', error);
-                Shout_1.Shout.notify('FATAL ERROR during JS build!');
-                EventHub_1.default.buildDone();
-                return;
-            }
-            let o = stats.toJson(this.statsSerializeEssentialOption);
-            let errors = o.errors;
-            if (errors.length) {
-                let errorMessage = '\n' + errors.join('\n\n') + '\n';
-                console.error(chalk_1.default.red(errorMessage));
-                if (errors.length === 1) {
-                    Shout_1.Shout.notify(`You have one JS build error!`);
+        return new Promise((ok, reject) => {
+            webpack(this.webpackConfiguration, (error, stats) => {
+                if (error) {
+                    reject(error);
+                    return;
                 }
-                else {
-                    Shout_1.Shout.notify(`You have ${errors.length} JS build errors!`);
+                let o = stats.toJson(this.statsSerializeEssentialOption);
+                let errors = o.errors;
+                if (errors.length) {
+                    let errorMessage = '\n' + errors.join('\n\n') + '\n';
+                    console.error(chalk_1.default.red(errorMessage));
+                    if (errors.length === 1) {
+                        Shout_1.Shout.notify(`You have one JS build error!`);
+                    }
+                    else {
+                        Shout_1.Shout.notify(`You have ${errors.length} JS build errors!`);
+                    }
                 }
-            }
-            let warnings = o.warnings;
-            if (warnings.length) {
-                let warningMessage = '\n' + warnings.join('\n\n') + '\n';
-                console.warn(chalk_1.default.yellow(warningMessage));
-                if (warnings.length === 1) {
-                    Shout_1.Shout.notify(`You have one JS build warning!`);
+                let warnings = o.warnings;
+                if (warnings.length) {
+                    let warningMessage = '\n' + warnings.join('\n\n') + '\n';
+                    console.warn(chalk_1.default.yellow(warningMessage));
+                    if (warnings.length === 1) {
+                        Shout_1.Shout.notify(`You have one JS build warning!`);
+                    }
+                    else {
+                        Shout_1.Shout.notify(`You have ${warnings.length} JS build warnings!`);
+                    }
                 }
-                else {
-                    Shout_1.Shout.notify(`You have ${warnings.length} JS build warnings!`);
+                for (let asset of o.assets) {
+                    if (asset.emitted) {
+                        let kb = PrettyUnits_1.prettyBytes(asset.size);
+                        Shout_1.Shout.timed(chalk_1.default.blue(asset.name), chalk_1.default.magenta(kb), chalk_1.default.grey('in ' + this.settings.outputJsFolder + '/'));
+                    }
                 }
-            }
-            for (let asset of o.assets) {
-                if (asset.emitted) {
-                    let kb = PrettyUnits_1.prettyBytes(asset.size);
-                    Shout_1.Shout.timed(chalk_1.default.blue(asset.name), chalk_1.default.magenta(kb), chalk_1.default.grey('in ' + this.settings.outputJsFolder + '/'));
+                if (this.flags.stats) {
+                    fse.outputJsonSync(this.settings.statJsonPath, stats.toJson());
                 }
-            }
-            if (this.flags.stats) {
-                fse.outputJsonSync(this.settings.statJsonPath, stats.toJson());
-            }
-            let t = PrettyUnits_1.prettyMilliseconds(o.time);
-            Shout_1.Shout.timed('Finished JS build after', chalk_1.default.green(t));
-            EventHub_1.default.buildDone();
+                let t = PrettyUnits_1.prettyMilliseconds(o.time);
+                Shout_1.Shout.timed('Finished JS build after', chalk_1.default.green(t));
+                if (this.flags.watch) {
+                    return;
+                }
+                ok();
+            });
         });
     }
 }

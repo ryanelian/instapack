@@ -4,7 +4,6 @@ import chalk from 'chalk';
 import { NodeJsInputFileSystem, ResolverFactory } from 'enhanced-resolve';
 import * as UglifyJS from 'uglify-js';
 
-import hub from './EventHub';
 import { Settings } from './Settings';
 import { outputFileThenLog } from './CompilerUtilities';
 import { Shout } from './Shout';
@@ -133,6 +132,8 @@ export class ConcatBuildTool {
      * Returns a Promise which resolves when all concatenation tasks have been completed.
      */
     build() {
+        Shout.timed('Resolving', chalk.green(this.settings.concatCount.toString()), 'concat target(s)...');
+
         let tasks: Promise<void>[] = [];
         let targets = this.settings.concat;
 
@@ -176,7 +177,6 @@ export class ConcatBuildTool {
         finally {
             let time = prettyHrTime(process.hrtime(start));
             Shout.timed('Finished JS concat after', chalk.green(time));
-            hub.buildDone();
         }
     }
 }

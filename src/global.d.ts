@@ -34,7 +34,6 @@ declare interface IBuildFlags {
  * Represents POJO serializable build metadata for child Compiler process.
  */
 declare interface IBuildCommand {
-    build: string;
     root: string;
     settings: ISettingsCore;
     flags: IBuildFlags;

@@ -7,31 +7,9 @@ import * as glob from 'glob';
 import * as templateCompiler from 'vue-template-compiler';
 import { createHash } from 'crypto';
 
-import hub from './EventHub';
 import { Settings } from './Settings';
 import { prettyHrTime } from './PrettyUnits';
 import { Shout } from './Shout';
-
-/**
- * Key-value pair of file name to cached raw file content. Used for caching TypeScript Compiler Host readFile method.
- */
-interface IFileContentCache {
-    [fileName: string]: string;
-}
-
-/**
- * Key-value pair of file name to TypeScript SourceFile. Used for caching TypeScript Compiler Host getSourceFile method.
- */
-interface ISourceCache {
-    [fileName: string]: TypeScript.SourceFile;
-}
-
-/**
- * Key-value pair of file name to a unique hash of its content. Used for detecting whether a file has been changed.
- */
-interface IFileVersions {
-    [fileName: string]: string;
-}
 
 /**
  * Contains methods for static-checking TypeScript projects. 
@@ -45,18 +23,21 @@ export class TypeScriptCheckerTool {
 
     /**
      * Gets the raw files cache.
+     * Key-value pair of file name to cached raw file content. Used for caching TypeScript Compiler Host readFile method.
      */
-    private readonly files: IFileContentCache = {};
+    private readonly files: IMapLike<string> = {};
 
     /**
      * Gets the source files cache.
+     * Key-value pair of file name to TypeScript SourceFile. Used for caching TypeScript Compiler Host getSourceFile method.
      */
-    private readonly sources: ISourceCache = {};
+    private readonly sources: IMapLike<TypeScript.SourceFile> = {};
 
     /**
      * Gets the file versions store.
+     * Key-value pair of file name to a unique hash of its content. Used for detecting whether a file has been changed.
      */
-    private readonly versions: IFileVersions = {};
+    private readonly versions: IMapLike<string> = {};
 
     /**
      * Gets the entry points to the TypeScript Program.
@@ -299,7 +280,6 @@ export class TypeScriptCheckerTool {
         } finally {
             let time = prettyHrTime(process.hrtime(start));
             Shout.timed('Finished type-checking after', chalk.green(time));
-            hub.buildDone();
         }
     }
 

@@ -9,7 +9,6 @@ import * as discardComments from 'postcss-discard-comments';
 import { RawSourceMap } from 'source-map';
 import { NodeJsInputFileSystem, ResolverFactory } from 'enhanced-resolve';
 
-import hub from './EventHub';
 import { Settings } from './Settings';
 import { outputFileThenLog } from './CompilerUtilities';
 import { prettyHrTime } from './PrettyUnits';
@@ -242,7 +241,6 @@ export class SassBuildTool {
         finally {
             let time = prettyHrTime(process.hrtime(start));
             Shout.timed('Finished CSS build after', chalk.green(time));
-            hub.buildDone();
         }
     }
 

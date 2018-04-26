@@ -4235,7 +4235,7 @@ wide-align@^1.1.0:
   dependencies:
     string-width "^1.0.2"
 
-worker-farm@^1.5.2:
+worker-farm@1.6.0, worker-farm@^1.5.2:
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/worker-farm/-/worker-farm-1.6.0.tgz#aecc405976fab5a95526180846f0dba288f3a4a0"
   dependencies:

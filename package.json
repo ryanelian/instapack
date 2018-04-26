@@ -58,7 +58,7 @@
     "html-minifier": "3.5.15",
     "loader-utils": "1.1.0",
     "node-notifier": "5.2.1",
-    "node-sass": "4.8.3",
+    "node-sass": "4.9.0",
     "postcss": "6.0.21",
     "postcss-discard-comments": "2.0.4",
     "source-map": "0.7.2",

@@ -1,35 +1,6 @@
 import * as upath from 'upath';
 import * as fse from 'fs-extra';
-import * as chalk from 'chalk';
 import * as TypeScript from 'typescript';
-
-/**
- * Dictionary<string, List<string>>
- */
-export interface IConcatLookup {
-    [key: string]: string[]
-}
-
-/**
- * Dictionary<string, string>
- */
-export interface IModuleOverrides {
-    [key: string]: string
-}
-
-/**
- * Values required to construct an instapack Settings object.
- */
-export interface ISettingsCore {
-    input: string;
-    output: string;
-    concat: IConcatLookup;
-    alias: IModuleOverrides;
-    externals: IModuleOverrides
-    template: string;
-    jsOut: string;
-    cssOut: string;
-}
 
 /**
  * Contains properties for setting the project builder class.
@@ -53,17 +24,17 @@ export class Settings {
     /**
      * Gets the unresolved concat map.
      */
-    readonly concat: IConcatLookup;
+    readonly concat: IMapLike<string[]>;
 
     /**
      * Replaces dependency imports to another dependency. For example: {'vue': 'vue/dist/vue.common'}
      */
-    readonly alias: IModuleOverrides;
+    readonly alias: IMapLike<string>;
 
     /**
      * Rewrites dependency imports to a window object. For example: {'jquery': '$'}
      */
-    readonly externals: IModuleOverrides;
+    readonly externals: IMapLike<string>;
 
     /**
      * Gets the JS output file name.

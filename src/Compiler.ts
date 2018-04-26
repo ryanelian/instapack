@@ -10,19 +10,8 @@ import { TypeScriptBuildTool } from './TypeScriptBuildTool';
 import { TypeScriptCheckerTool } from './TypeScriptCheckerTool';
 import { SassBuildTool } from './SassBuildTool';
 import { ConcatBuildTool } from './ConcatBuildTool';
-import { Settings, ISettingsCore } from './Settings';
-import { ICompilerFlags } from './CompilerUtilities';
+import { Settings } from './Settings';
 import { Shout } from './Shout';
-
-/**
- * Represents POJO serializable build metadata for child Compiler process.
- */
-interface IBuildCommand {
-    build: string;
-    root: string;
-    settings: ISettingsCore;
-    flags: ICompilerFlags;
-}
 
 /**
  * Contains methods for assembling and invoking the build tasks.
@@ -37,7 +26,7 @@ export class Compiler {
     /**
      * Gets the compiler build flags.
      */
-    private readonly flags: ICompilerFlags;
+    private readonly flags: IBuildFlags;
 
     /**
      * Store all build child processes spawned.
@@ -49,7 +38,7 @@ export class Compiler {
      * @param settings 
      * @param flags 
      */
-    constructor(settings: Settings, flags: ICompilerFlags) {
+    constructor(settings: Settings, flags: IBuildFlags) {
         this.settings = settings;
         this.flags = flags;
     }

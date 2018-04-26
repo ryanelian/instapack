@@ -6,7 +6,6 @@ import * as TypeScript from 'typescript';
 import { VueLoaderPlugin } from 'vue-loader';
 
 import hub from './EventHub';
-import { ICompilerFlags } from './CompilerUtilities';
 import { Settings } from './Settings';
 import { prettyBytes, prettyMilliseconds } from './PrettyUnits';
 import { TypeScriptBuildWebpackPlugin } from './TypeScriptBuildWebpackPlugin';
@@ -25,7 +24,7 @@ export class TypeScriptBuildTool {
     /**
      * Gets the compiler build flags.
      */
-    private readonly flags: ICompilerFlags;
+    private readonly flags: IBuildFlags;
 
     /**
      * Gets whether babel-loader should be configured.
@@ -42,7 +41,7 @@ export class TypeScriptBuildTool {
      * @param settings 
      * @param flags 
      */
-    constructor(settings: Settings, flags: ICompilerFlags) {
+    constructor(settings: Settings, flags: IBuildFlags) {
         this.settings = settings
         this.flags = flags;
         this.babel = fse.existsSync(this.settings.babelConfiguration);

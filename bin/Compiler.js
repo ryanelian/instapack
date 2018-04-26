@@ -69,7 +69,7 @@ class Compiler {
     }
     build(taskName) {
         this.chat();
-        this.__build(taskName);
+        this.runBuildWorkerForTask(taskName);
     }
     get buildCommand() {
         return {
@@ -79,13 +79,13 @@ class Compiler {
         };
     }
     ;
-    __build(taskName) {
+    runBuildWorkerForTask(taskName) {
         return __awaiter(this, void 0, void 0, function* () {
             switch (taskName) {
                 case 'all':
-                    this.__build('js');
-                    this.__build('css');
-                    this.__build('concat');
+                    this.runBuildWorkerForTask('js');
+                    this.runBuildWorkerForTask('css');
+                    this.runBuildWorkerForTask('concat');
                     return;
                 case 'js':
                     let valid = yield this.validateJsBuildTask();

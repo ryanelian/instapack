@@ -104,11 +104,11 @@ export class Compiler {
      */
     build(taskName: string) {
         this.chat();
+        this.runBuildWorkerForTask(taskName);
+
         // if (this.flags.watch) {
         //     this.restartBuildsOnConfigurationChanges(taskName);
         // }
-
-        this.__build(taskName);
     }
 
     /**
@@ -126,12 +126,12 @@ export class Compiler {
      * Run build workers for the input task.
      * @param taskName 
      */
-    private async __build(taskName: string) {
+    private async runBuildWorkerForTask(taskName: string) {
         switch (taskName) {
             case 'all':
-                this.__build('js');
-                this.__build('css');
-                this.__build('concat');
+                this.runBuildWorkerForTask('js');
+                this.runBuildWorkerForTask('css');
+                this.runBuildWorkerForTask('concat');
                 return;
 
             case 'js':

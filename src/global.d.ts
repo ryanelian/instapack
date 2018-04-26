@@ -1,14 +1,14 @@
 /**
  * A simple key-value store.
  */
-declare interface IMapLike<T> {
+interface IMapLike<T> {
     [key: string]: T
 }
 
 /**
  * Values required to construct an instapack Settings object.
  */
-declare interface ISettingsCore {
+interface ISettingsCore {
     input: string;
     output: string;
     concat: IMapLike<string[]>;
@@ -22,7 +22,7 @@ declare interface ISettingsCore {
 /**
  * Defines build flags to be used by Compiler class.
  */
-declare interface IBuildFlags {
+interface IBuildFlags {
     production: boolean;
     watch: boolean;
     sourceMap: boolean;
@@ -33,7 +33,7 @@ declare interface IBuildFlags {
 /**
  * Represents serializable parameters for build workers.
  */
-declare interface IBuildCommand {
+interface IBuildCommand {
     root: string;
     settings: ISettingsCore;
     flags: IBuildFlags;

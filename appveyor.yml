@@ -4,14 +4,11 @@ environment:
   NODEJS_VERSION: 8
 cache:
     - '%APPDATA%\npm-cache'
-    - '%LOCALAPPDATA%\Yarn'
 install:
 - ps: >-
     Install-Product node $env:NODEJS_VERSION
 
     npm link --loglevel error
-
-    yarn install --frozen-lockfile
 
 build_script:
 - ps: >-

@@ -7,18 +7,17 @@
     "concat": {}
   },
   "dependencies": {
-    "@fortawesome/fontawesome": "^1.1.5",
-    "@fortawesome/fontawesome-free-regular": "^5.0.10",
-    "@fortawesome/fontawesome-free-solid": "^5.0.10",
-    "@fortawesome/react-fontawesome": "^0.0.18",
-    "@types/luxon": "^0.5.1",
-    "@types/react": "^16.3.12",
+    "@fortawesome/fontawesome-svg-core": "^1.2.0-11",
+    "@fortawesome/free-regular-svg-icons": "^5.1.0-8",
+    "@fortawesome/free-solid-svg-icons": "^5.1.0-8",
+    "@fortawesome/react-fontawesome": "^0.1.0-9",
+    "@types/luxon": "^0.5.2",
+    "@types/react": "^16.3.13",
     "@types/react-dom": "^16.0.5",
     "@types/requirejs": "^2.1.31",
     "axios": "^0.18.0",
-    "es6-promise": "^4.2.4",
     "linq": "^3.1.0",
-    "luxon": "^1.0.0",
+    "luxon": "^1.2.0",
     "mobx": "^4.2.0",
     "mobx-react": "^5.0.0",
     "noty": "^3.2.0-beta",
@@ -28,6 +27,7 @@
     "semantic-ui-css": "^2.3.1",
     "semantic-ui-react": "^0.79.1",
     "sweetalert": "^2.1.0",
+    "ts-polyfill": "^0.0.3",
     "tslib": "^1.9.0"
   }
 }

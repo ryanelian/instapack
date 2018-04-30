@@ -6,14 +6,15 @@ const chalk_1 = require("chalk");
 const webpack = require("webpack");
 const TypeScript = require("typescript");
 const vue_loader_1 = require("vue-loader");
-const EventHub_1 = require("./EventHub");
 const PrettyUnits_1 = require("./PrettyUnits");
 const TypeScriptBuildWebpackPlugin_1 = require("./TypeScriptBuildWebpackPlugin");
 const Shout_1 = require("./Shout");
 class TypeScriptBuildTool {
     constructor(settings, flags) {
+        this.buildTargetWarned = false;
         this.settings = settings;
         this.flags = flags;
+        this.babel = fse.existsSync(this.settings.babelConfiguration);
         this.tsconfigOptions = this.settings.readTsConfig().options;
         this.mergeTypeScriptPathsToWebpackAlias();
     }
@@ -33,7 +34,7 @@ class TypeScriptBuildTool {
             }
             let values = this.tsconfigOptions.paths[key];
             if (values.length > 1) {
-                Shout_1.Shout.warning(chalk_1.default.cyan('tsconfig.json'), 'paths:', chalk_1.default.yellow(key), 'resolves to more than one path!', chalk_1.default.grey('(Only the first will be honored.)'));
+                Shout_1.Shout.danger(chalk_1.default.cyan('tsconfig.json'), 'paths:', chalk_1.default.yellow(key), 'resolves to more than one path!', chalk_1.default.grey('(Bundler will use the first one.)'));
             }
             let value = values[0];
             if (!value) {
@@ -58,26 +59,35 @@ class TypeScriptBuildTool {
             }
         }
     }
-    get buildTarget() {
-        let t = this.tsconfigOptions.target;
-        if (!t) {
-            t = TypeScript.ScriptTarget.ES5;
-        }
-        return TypeScript.ScriptTarget[t];
+    get jsBabelWebpackRules() {
+        return {
+            test: /\.m?jsx?$/,
+            exclude: /node_modules/,
+            use: {
+                loader: 'babel-loader'
+            }
+        };
     }
     get typescriptWebpackRules() {
         let options = this.tsconfigOptions;
         options.sourceMap = this.flags.sourceMap;
         options.inlineSources = this.flags.sourceMap;
-        return {
+        let tsRules = {
             test: /\.tsx?$/,
-            use: [{
-                    loader: 'core-typescript-loader',
-                    options: {
-                        compilerOptions: options
-                    }
-                }]
+            use: []
         };
+        if (this.babel) {
+            tsRules.use.push({
+                loader: 'babel-loader'
+            });
+        }
+        tsRules.use.push({
+            loader: 'core-typescript-loader',
+            options: {
+                compilerOptions: options
+            }
+        });
+        return tsRules;
     }
     get vueWebpackRules() {
         return {
@@ -92,7 +102,7 @@ class TypeScriptBuildTool {
     }
     get templatesWebpackRules() {
         return {
-            test: /\.html?$/,
+            test: /\.html$/,
             use: [{
                     loader: 'template-loader'
                 }]
@@ -113,28 +123,26 @@ class TypeScriptBuildTool {
             ]
         };
     }
-    getWebpackPlugins() {
+    onBuildStart() {
+        let t = this.tsconfigOptions.target;
+        if (!t) {
+            t = TypeScript.ScriptTarget.ES3;
+        }
+        let buildTarget = TypeScript.ScriptTarget[t].toUpperCase();
+        if (buildTarget !== 'ES5' && !this.buildTargetWarned) {
+            Shout_1.Shout.danger('TypeScript compile target is not', chalk_1.default.yellow('ES5') + '!', chalk_1.default.grey('(tsconfig.json)'));
+            this.buildTargetWarned = true;
+        }
+        Shout_1.Shout.timed('Compiling', chalk_1.default.cyan('index.ts'), '>', chalk_1.default.yellow(buildTarget), chalk_1.default.grey('in ' + this.settings.inputJsFolder + '/'));
+    }
+    get webpackPlugins() {
         let plugins = [];
-        plugins.push(new webpack.NoEmitOnErrorsPlugin());
-        plugins.push(new vue_loader_1.VueLoaderPlugin());
         plugins.push(new TypeScriptBuildWebpackPlugin_1.TypeScriptBuildWebpackPlugin({
-            inputJsFolder: this.settings.inputJsFolder,
-            target: this.buildTarget,
-            production: this.flags.production,
+            onBuildStart: this.onBuildStart.bind(this),
+            minify: this.flags.production,
             sourceMap: this.flags.sourceMap
         }));
-        plugins.push(new webpack.optimize.CommonsChunkPlugin({
-            name: 'DLL',
-            filename: this.settings.jsOutVendorFileName,
-            minChunks: module => module.context && module.context.includes('node_modules')
-        }));
-        if (this.flags.production) {
-            plugins.push(new webpack.DefinePlugin({
-                'process.env': {
-                    'NODE_ENV': JSON.stringify('production')
-                }
-            }));
-        }
+        plugins.push(new vue_loader_1.VueLoaderPlugin());
         return plugins;
     }
     get webpackConfiguration() {
@@ -142,11 +150,13 @@ class TypeScriptBuildTool {
             entry: path.normalize(this.settings.jsEntry),
             output: {
                 filename: this.settings.jsOut,
-                path: path.normalize(this.settings.outputJsFolder)
+                chunkFilename: this.settings.jsChunkFileName,
+                path: path.normalize(this.settings.outputJsFolder),
+                publicPath: 'js/'
             },
             externals: this.settings.externals,
             resolve: {
-                extensions: ['.ts', '.tsx', '.js', '.vue', '.html', '.json'],
+                extensions: ['.ts', '.tsx', '.js', '.jsx', '.mjs', '.vue', '.wasm', '.json', '.html'],
                 alias: this.settings.alias
             },
             resolveLoader: {
@@ -159,15 +169,38 @@ class TypeScriptBuildTool {
             module: {
                 rules: [
                     this.typescriptWebpackRules,
-                    this.templatesWebpackRules,
                     this.vueWebpackRules,
+                    this.templatesWebpackRules,
                     this.cssWebpackRules
                 ]
             },
-            plugins: this.getWebpackPlugins()
+            mode: (this.flags.production ? 'production' : 'development'),
+            devtool: (this.flags.production ? 'source-map' : 'eval-source-map'),
+            optimization: {
+                minimize: false,
+                noEmitOnErrors: true,
+                splitChunks: {
+                    cacheGroups: {
+                        vendors: {
+                            name: 'dll',
+                            test: /[\\/]node_modules[\\/]/,
+                            chunks: 'all',
+                            enforce: true,
+                            priority: -10
+                        }
+                    }
+                }
+            },
+            performance: {
+                hints: false
+            },
+            plugins: this.webpackPlugins
         };
-        if (this.flags.sourceMap) {
-            config.devtool = (this.flags.production ? 'source-map' : 'eval-source-map');
+        if (this.babel) {
+            config.module.rules.push(this.jsBabelWebpackRules);
+        }
+        if (!this.flags.sourceMap) {
+            config.devtool = false;
         }
         if (this.flags.watch) {
             config.watch = true;
@@ -178,68 +211,80 @@ class TypeScriptBuildTool {
         }
         return config;
     }
-    get webpackStatsErrorsOnly() {
-        return {
-            colors: true,
-            assets: false,
-            cached: false,
-            children: false,
-            chunks: false,
-            errors: true,
-            hash: false,
-            modules: false,
-            reasons: false,
-            source: false,
-            timings: false,
-            version: false,
-            warnings: true
-        };
-    }
-    get webpackStatsJsonMinimal() {
+    get statsSerializeEssentialOption() {
         return {
             assets: true,
             cached: false,
+            cachedAssets: false,
             children: false,
+            chunkModules: false,
+            chunkOrigins: false,
             chunks: false,
-            errors: false,
+            depth: false,
+            entrypoints: false,
+            env: false,
+            errors: true,
+            errorDetails: false,
             hash: false,
             modules: false,
+            moduleTrace: true,
+            publicPath: false,
             reasons: false,
             source: false,
             timings: true,
             version: false,
-            warnings: false
+            warnings: true,
+            usedExports: false,
+            performance: false,
+            providedExports: false
         };
     }
-    get inFolderMessage() {
-        return chalk_1.default.grey('in ' + this.settings.outputJsFolder + '/');
-    }
     build() {
-        webpack(this.webpackConfiguration, (error, stats) => {
-            if (error) {
-                Shout_1.Shout.fatal('during JS build (tool):', error);
-                Shout_1.Shout.notify('FATAL ERROR during JS build!');
-                EventHub_1.default.buildDone();
-                return;
-            }
-            let o = stats.toJson(this.webpackStatsJsonMinimal);
-            if (stats.hasErrors() || stats.hasWarnings()) {
-                let buildErrors = '\n' + stats.toString(this.webpackStatsErrorsOnly).trim() + '\n';
-                console.error(buildErrors);
-                Shout_1.Shout.notify('You have one or more JS build errors / warnings!');
-            }
-            for (let asset of o.assets) {
-                if (asset.emitted) {
-                    let kb = PrettyUnits_1.prettyBytes(asset.size);
-                    Shout_1.Shout.timed(chalk_1.default.blue(asset.name), chalk_1.default.magenta(kb), this.inFolderMessage);
+        return new Promise((ok, reject) => {
+            webpack(this.webpackConfiguration, (error, stats) => {
+                if (error) {
+                    reject(error);
+                    return;
                 }
-            }
-            if (this.flags.stats) {
-                fse.outputJsonSync(this.settings.statJsonPath, stats.toJson());
-            }
-            let t = PrettyUnits_1.prettyMilliseconds(o.time);
-            Shout_1.Shout.timed('Finished JS build after', chalk_1.default.green(t));
-            EventHub_1.default.buildDone();
+                let o = stats.toJson(this.statsSerializeEssentialOption);
+                let errors = o.errors;
+                if (errors.length) {
+                    let errorMessage = '\n' + errors.join('\n\n') + '\n';
+                    console.error(chalk_1.default.red(errorMessage));
+                    if (errors.length === 1) {
+                        Shout_1.Shout.notify(`You have one JS build error!`);
+                    }
+                    else {
+                        Shout_1.Shout.notify(`You have ${errors.length} JS build errors!`);
+                    }
+                }
+                let warnings = o.warnings;
+                if (warnings.length) {
+                    let warningMessage = '\n' + warnings.join('\n\n') + '\n';
+                    console.warn(chalk_1.default.yellow(warningMessage));
+                    if (warnings.length === 1) {
+                        Shout_1.Shout.notify(`You have one JS build warning!`);
+                    }
+                    else {
+                        Shout_1.Shout.notify(`You have ${warnings.length} JS build warnings!`);
+                    }
+                }
+                for (let asset of o.assets) {
+                    if (asset.emitted) {
+                        let kb = PrettyUnits_1.prettyBytes(asset.size);
+                        Shout_1.Shout.timed(chalk_1.default.blue(asset.name), chalk_1.default.magenta(kb), chalk_1.default.grey('in ' + this.settings.outputJsFolder + '/'));
+                    }
+                }
+                if (this.flags.stats) {
+                    fse.outputJsonSync(this.settings.statJsonPath, stats.toJson());
+                }
+                let t = PrettyUnits_1.prettyMilliseconds(o.time);
+                Shout_1.Shout.timed('Finished JS build after', chalk_1.default.green(t));
+                if (this.flags.watch) {
+                    return;
+                }
+                ok();
+            });
         });
     }
 }

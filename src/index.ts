@@ -1,5 +1,4 @@
 import { Compiler } from './Compiler';
-import { ICompilerFlags } from './CompilerUtilities';
 import { Settings } from './Settings';
 
 import * as fse from 'fs-extra';
@@ -67,7 +66,7 @@ export = class instapack {
      * @param taskName 
      * @param flags 
      */
-    async build(taskName: string, flags: ICompilerFlags) {
+    async build(taskName: string, flags: IBuildFlags) {
 
         let settings = await Settings.tryReadFromPackageJson(this.projectFolder);
         let compiler = new Compiler(settings, flags);

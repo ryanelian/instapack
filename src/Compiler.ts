@@ -2,27 +2,15 @@ import * as fse from 'fs-extra';
 import chalk from 'chalk';
 import * as chokidar from 'chokidar';
 import * as upath from 'upath';
-import * as assert from 'assert';
-import { fork, ChildProcess } from 'child_process';
 
-import hub from './EventHub';
-import { TypeScriptBuildTool } from './TypeScriptBuildTool';
-import { TypeScriptCheckerTool } from './TypeScriptCheckerTool';
-import { SassBuildTool } from './SassBuildTool';
-import { ConcatBuildTool } from './ConcatBuildTool';
-import { Settings, ISettingsCore } from './Settings';
-import { ICompilerFlags } from './CompilerUtilities';
+import { Settings } from './Settings';
 import { Shout } from './Shout';
+import { runWorkerAsync } from './CompilerUtilities';
 
-/**
- * Represents POJO serializable build metadata for child Compiler process.
- */
-interface IBuildCommand {
-    build: string;
-    root: string;
-    settings: ISettingsCore;
-    flags: ICompilerFlags;
-}
+const typeScriptBuildWorkerModulePath = require.resolve('./build-workers/TypeScriptBuildWorker');
+const typeScriptCheckWorkerModulePath = require.resolve('./build-workers/TypeScriptCheckWorker');
+const sassBuildWorkerModulePath = require.resolve('./build-workers/SassBuildWorker');
+const concatBuildWorkerModulePath = require.resolve('./build-workers/ConcatBuildWorker');
 
 /**
  * Contains methods for assembling and invoking the build tasks.
@@ -37,31 +25,16 @@ export class Compiler {
     /**
      * Gets the compiler build flags.
      */
-    private readonly flags: ICompilerFlags;
-
-    /**
-     * Store all build child processes spawned.
-     */
-    private buildTasks: ChildProcess[] = [];
+    private readonly flags: IBuildFlags;
 
     /**
      * Constructs a new instance of Compiler using the specified settings and build flags. 
      * @param settings 
      * @param flags 
      */
-    constructor(settings: Settings, flags: ICompilerFlags) {
+    constructor(settings: Settings, flags: IBuildFlags) {
         this.settings = settings;
         this.flags = flags;
-    }
-
-    /**
-     * Constructs Compiler instance from child process build command.
-     * @param command 
-     */
-    static fromCommand(command: IBuildCommand) {
-        let settings = new Settings(command.root, command.settings);
-        let compiler = new Compiler(settings, command.flags);
-        return compiler;
     }
 
     /**
@@ -91,257 +64,115 @@ export class Compiler {
     }
 
     /**
-     * Launch Node.js child process using this same Compiler module for building in separate process. 
+     * Checks whether JS build task can be run.
+     * If not, display validation error messages.
+     */
+    private async validateJsBuildTask() {
+        let entry = this.settings.jsEntry;
+        let tsconfig = this.settings.tsConfigJson
+        let checkEntry = fse.pathExists(entry);
+        let checkProject = fse.pathExists(tsconfig);
+
+        if (await checkEntry === false) {
+            Shout.timed('Entry file', chalk.cyan(entry), 'was not found.', chalk.red('Aborting JS build!'));
+            return false;
+        }
+
+        if (await checkProject === false) {
+            Shout.timed('Project file', chalk.cyan(tsconfig), 'was not found.', chalk.red('Aborting JS build!'));
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Checks whether the CSS build task can be run.
+     * If not, display validation error messages.
+     */
+    private async validateCssBuildTask() {
+        let entry = this.settings.cssEntry;
+        let exist = await fse.pathExists(entry);
+        if (!exist) {
+            Shout.timed('Entry file', chalk.cyan(entry), 'was not found.', chalk.red('Aborting CSS build!'));
+        }
+        return exist;
+    }
+
+    /**
+     * Display build information then run relevant build tasks.
      * @param taskName 
      */
-    private async startBackgroundTask(taskName: string) {
-        if (taskName === 'all') {
-            let t1 = this.startBackgroundTask('js');
-            let t2 = this.startBackgroundTask('css');
-            let t3 = this.startBackgroundTask('concat');
-            await Promise.all([t1, t2, t3]);
-            return;
-        }
+    build(taskName: string) {
+        this.chat();
+        this.runBuildWorkerForTask(taskName);
 
-        let valid = await this.validateBackgroundTask(taskName);
-        if (!valid) {
-            return;
-        }
+        // if (this.flags.watch) {
+        //     this.restartBuildsOnConfigurationChanges(taskName);
+        // }
+    }
 
-        let child = fork(__filename);
-        child.send({
-            build: taskName,
+    /**
+     * Gets the serializable parameters for build workers.
+     */
+    get buildCommand(): IBuildCommand {
+        return {
             root: this.settings.root,
             flags: this.flags,
             settings: this.settings.core
-        } as IBuildCommand);
-
-        this.buildTasks.push(child);
-
-        if (taskName === 'js') {
-            await this.startBackgroundTask('type-checker');
         }
-    }
+    };
 
     /**
-     * Checks whether a build task should be run.
+     * Run build workers for the input task.
      * @param taskName 
      */
-    private async validateBackgroundTask(taskName: string) {
+    private async runBuildWorkerForTask(taskName: string) {
         switch (taskName) {
-            case 'js': {
-                let entry = this.settings.jsEntry;
-                let tsconfig = this.settings.tsConfigJson
-                let checkEntry = fse.pathExists(entry);
-                let checkProject = fse.pathExists(tsconfig);
+            case 'all':
+                this.runBuildWorkerForTask('js');
+                this.runBuildWorkerForTask('css');
+                this.runBuildWorkerForTask('concat');
+                return;
 
-                if (await checkEntry === false) {
-                    Shout.timed('Entry file', chalk.cyan(entry), 'was not found.', chalk.red('Aborting JS build!'));
-                    return false;
+            case 'js':
+                let valid = await this.validateJsBuildTask();
+                if (valid) {
+                    runWorkerAsync<void>(typeScriptBuildWorkerModulePath, this.buildCommand).catch(error => {
+                        Shout.fatal(`during JS build:`, error);
+                        Shout.notify(`FATAL ERROR during JS build!`);
+                    });
+                    runWorkerAsync<void>(typeScriptCheckWorkerModulePath, this.buildCommand).catch(error => {
+                        Shout.fatal(`during type-checking:`, error);
+                        Shout.notify(`FATAL ERROR during type-checking!`);
+                    });
                 }
+                return;
 
-                if (await checkProject === false) {
-                    Shout.timed('Project file', chalk.cyan(tsconfig), 'was not found.', chalk.red('Aborting JS build!'));
-                    return false;
-                }
-
-                return true;
-            }
             case 'css': {
-                let entry = this.settings.cssEntry;
-                let exist = await fse.pathExists(entry);
-                if (!exist) {
-                    Shout.timed('Entry file', chalk.cyan(entry), 'was not found.', chalk.red('Aborting CSS build!'));
+                let valid = await this.validateCssBuildTask();
+                if (valid) {
+                    runWorkerAsync<void>(sassBuildWorkerModulePath, this.buildCommand).catch(error => {
+                        Shout.fatal(`during CSS build:`, error);
+                        Shout.notify(`FATAL ERROR during CSS build!`);
+                    });
                 }
-                return exist;
+                return;
             }
+
             case 'concat': {
-                return (this.settings.concatCount > 0);
+                let valid = (this.settings.concatCount > 0);
+                if (valid) {
+                    runWorkerAsync<void>(concatBuildWorkerModulePath, this.buildCommand).catch(error => {
+                        Shout.fatal(`during JS concat:`, error);
+                        Shout.notify(`FATAL ERROR during JS concat!`);
+                    });
+                }
+                return;
             }
-            case 'type-checker': {
-                return true;
-            }
-            default: {
+
+            default:
                 throw Error('Task `' + taskName + '` does not exists!');
-            }
         }
     }
-
-    /**
-     * Kill all build tasks, and then destroy them.
-     */
-    killAllBuilds() {
-        for (let task of this.buildTasks) {
-            task.kill();
-        }
-        this.buildTasks = [];
-    }
-
-    /**
-     * A *slow* but sure implementation of object deep equality comparer using Node assert.
-     * @param a 
-     * @param b 
-     */
-    deepEqual(a, b) {
-        try {
-            assert.deepStrictEqual(a, b);
-            return true;
-        } catch{
-            return false;
-        }
-    }
-
-    /**
-     * Restart invoked build task(s) when package.json and tsconfig.json are edited!
-     */
-    restartBuildsOnConfigurationChanges(taskName: string) {
-
-        let snapshots = {
-            [this.settings.packageJson]: fse.readJsonSync(this.settings.packageJson),
-            [this.settings.tsConfigJson]: fse.readJsonSync(this.settings.tsConfigJson),
-        };
-
-        let debounced: NodeJS.Timer;
-        let debounce = (file: string) => {
-            clearTimeout(debounced);
-            debounced = setTimeout(async () => {
-                let snap = await fse.readJson(file);
-                if (this.deepEqual(snapshots[file], snap)) {
-                    return;
-                }
-
-                snapshots[file] = snap;
-                Shout.timed(chalk.cyan(file), 'was edited. Restarting builds...');
-                this.killAllBuilds();
-
-                this.settings = await Settings.tryReadFromPackageJson(this.settings.root);
-                this.build(taskName, false);
-            }, 500);
-        };
-
-        chokidar.watch([this.settings.packageJson, this.settings.tsConfigJson], {
-            ignoreInitial: true
-        })
-            .on('change', (file: string) => {
-                file = upath.toUnix(file);
-                debounce(file);
-            })
-            .on('unlink', (file: string) => {
-                file = upath.toUnix(file);
-                snapshots[file] = null;
-                Shout.danger(chalk.cyan(file), 'was deleted!'); // "wtf are you doing?"
-            });
-    }
-
-    /**
-     * Runs the selected build task.
-     * @param taskName 
-     */
-    build(taskName: string, initial = true) {
-        if (this.flags.watch) {
-            Shout.enableNotification = this.flags.notification;
-        }
-
-        let task: Promise<void>;
-
-        if (process.send === undefined) {
-            // parent
-            if (initial) {
-                this.chat();
-                if (this.flags.watch) {
-                    this.restartBuildsOnConfigurationChanges(taskName);
-                }
-            }
-
-            task = this.startBackgroundTask(taskName);
-        } else {
-            // child
-            switch (taskName) {
-                case 'js': {
-                    task = this.buildJS();
-                    break;
-                }
-                case 'css': {
-                    task = this.buildCSS();
-                    break;
-                }
-                case 'concat': {
-                    task = this.buildConcat();
-                    break;
-                }
-                case 'type-checker': {
-                    task = this.checkTypeScript();
-                    break;
-                }
-                default: {
-                    throw Error(`Task '${taskName}' does not exists!`);
-                }
-            }
-
-            // console.log(taskName);
-        }
-
-        task.catch(error => {
-            Shout.fatal(`during ${taskName.toUpperCase()} build:`, error);
-            Shout.notify(`FATAL ERROR during ${taskName.toUpperCase()} build!`);
-            hub.buildDone();
-        });
-    }
-
-    /**
-     * Compiles the JavaScript project.
-     */
-    async buildJS() {
-        let tool = new TypeScriptBuildTool(this.settings, this.flags);
-        tool.build();
-    }
-
-    /**
-     * Compiles the CSS project.
-     */
-    async buildCSS() {
-        let tool = new SassBuildTool(this.settings, this.flags);
-        await tool.buildWithStopwatch();
-
-        if (this.flags.watch) {
-            tool.watch();
-        }
-    }
-
-    /**
-     * Concat JavaScript files.
-     */
-    async buildConcat() {
-        Shout.timed('Resolving', chalk.green(this.settings.concatCount.toString()), 'concat target(s)...');
-
-        let tool = new ConcatBuildTool(this.settings, this.flags);
-        await tool.buildWithStopwatch();
-    }
-
-    /**
-     * Static-check the TypeScript project.
-     */
-    async checkTypeScript() {
-        let tool = new TypeScriptCheckerTool(this.settings);
-        await tool.typeCheck();
-
-        if (this.flags.watch) {
-            tool.watch();
-        }
-    }
-}
-
-if (process.send) { // Child Process
-    process.on('message', (command: IBuildCommand) => {
-        // console.log(command);
-        if (!command.build) {
-            return;
-        }
-
-        if (!command.flags.watch || command.build === 'concat') {
-            hub.exitOnBuildDone();
-        }
-
-        Compiler.fromCommand(command).build(command.build);
-    });
 }

@@ -6,37 +6,33 @@
     "output": "wwwroot",
     "concat": {
       "vendor": [
-        "es6-promise/dist/es6-promise.auto",
+        "ts-polyfill",
         "jquery/dist/jquery.slim",
         "popper.js",
         "bootstrap"
       ]
     },
     "alias": {
-      "vue": "vue/dist/vue.common"
+      "vue": "vue/dist/vue.esm"
     }
   },
-  "prettier": {
-    "singleQuote": true,
-    "tabWidth": 4
-  },
   "dependencies": {
-    "@fortawesome/fontawesome": "^1.1.5",
-    "@fortawesome/fontawesome-free-regular": "^5.0.10",
-    "@fortawesome/fontawesome-free-solid": "^5.0.10",
-    "@fortawesome/vue-fontawesome": "^0.0.22",
-    "@types/luxon": "^0.5.1",
+    "@fortawesome/fontawesome-svg-core": "^1.2.0-11",
+    "@fortawesome/free-regular-svg-icons": "^5.1.0-8",
+    "@fortawesome/free-solid-svg-icons": "^5.1.0-8",
+    "@fortawesome/vue-fontawesome": "^0.1.0-4",
+    "@types/luxon": "^0.5.2",
     "@types/requirejs": "^2.1.31",
     "aspnet-validation": "^0.0.4",
     "axios": "^0.18.0",
-    "bootstrap": "^4.1.0",
-    "es6-promise": "^4.2.4",
+    "bootstrap": "^4.1.1",
     "linq": "^3.1.0",
-    "luxon": "^1.0.0",
+    "luxon": "^1.2.0",
     "noty": "^3.2.0-beta",
     "sweetalert": "^2.1.0",
+    "ts-polyfill": "^0.0.3",
     "tslib": "^1.9.0",
-    "vee-validate": "^2.0.6",
+    "vee-validate": "^2.0.8",
     "vue": "^2.5.16",
     "vue-class-component": "^6.2.0"
   },

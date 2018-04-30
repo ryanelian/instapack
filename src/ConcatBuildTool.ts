@@ -4,23 +4,16 @@ import chalk from 'chalk';
 import { NodeJsInputFileSystem, ResolverFactory } from 'enhanced-resolve';
 import * as UglifyJS from 'uglify-js';
 
-import hub from './EventHub';
 import { Settings } from './Settings';
-import { ICompilerFlags, outputFileThenLog } from './CompilerUtilities';
+import { outputFileThenLog } from './CompilerUtilities';
 import { Shout } from './Shout';
 import { prettyHrTime } from './PrettyUnits';
 
 let resolver = ResolverFactory.createResolver({
     fileSystem: new NodeJsInputFileSystem(),
-    extensions: ['.js']
+    extensions: ['.js'],
+    mainFields: ['unpkg', 'browser', 'main']
 });
-
-/**
- * A simple key-value pair for UglifyES code input.
- */
-interface IConcatFiles {
-    [name: string]: string
-}
 
 /**
  * Contains methods for concatenating JS files.
@@ -35,14 +28,14 @@ export class ConcatBuildTool {
     /**
      * Gets the compiler build flags.
      */
-    private readonly flags: ICompilerFlags;
+    private readonly flags: IBuildFlags;
 
     /**
      * Constructs a new instance of ConcatBuildTool using the specified settings and build flags. 
      * @param settings 
      * @param flags 
      */
-    constructor(settings: Settings, flags: ICompilerFlags) {
+    constructor(settings: Settings, flags: IBuildFlags) {
         this.settings = settings
         this.flags = flags;
     }
@@ -74,7 +67,7 @@ export class ConcatBuildTool {
         let p2 = resolutions.map(Q => fse.readFile(Q, 'utf8'));
         let contents = await Promise.all(p2);
 
-        let files: IConcatFiles = {};
+        let files: IMapLike<string> = {};
 
         for (let i = 0; i < resolutions.length; i++) {
             let key = '/' + upath.relative(this.settings.root, resolutions[i]);
@@ -90,7 +83,7 @@ export class ConcatBuildTool {
      * @param target 
      * @param files 
      */
-    concatFilesAsync(target: string, files: IConcatFiles) {
+    concatFilesAsync(target: string, files: IMapLike<string>) {
         let options = {};
         if (!this.flags.production) {
             options['compress'] = false;
@@ -139,6 +132,8 @@ export class ConcatBuildTool {
      * Returns a Promise which resolves when all concatenation tasks have been completed.
      */
     build() {
+        Shout.timed('Resolving', chalk.green(this.settings.concatCount.toString()), 'concat target(s)...');
+
         let tasks: Promise<void>[] = [];
         let targets = this.settings.concat;
 
@@ -182,7 +177,6 @@ export class ConcatBuildTool {
         finally {
             let time = prettyHrTime(process.hrtime(start));
             Shout.timed('Finished JS concat after', chalk.green(time));
-            hub.buildDone();
         }
     }
 }

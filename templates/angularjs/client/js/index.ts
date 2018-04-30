@@ -1,1 +1,5 @@
-﻿import './angular-project';
+﻿import 'ts-polyfill/lib/es2015-core';
+import 'ts-polyfill/lib/es2016-array-include';
+import 'ts-polyfill/lib/es2017-string';
+
+import './angular-project';

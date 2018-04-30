@@ -39,14 +39,17 @@ class Settings {
             output: this.output
         };
     }
-    get jsOutVendorFileName() {
-        return upath.removeExt(this.jsOut, '.js') + '.dll.js';
+    get jsChunkFileName() {
+        return upath.removeExt(this.jsOut, '.js') + '.[name].js';
     }
     get concatCount() {
         return Object.keys(this.concat).length;
     }
     get packageJson() {
         return upath.join(this.root, 'package.json');
+    }
+    get babelConfiguration() {
+        return upath.join(this.root, '.babelrc');
     }
     get tsConfigJson() {
         return upath.join(this.root, 'tsconfig.json');

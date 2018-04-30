@@ -16,7 +16,6 @@ const chokidar = require("chokidar");
 const glob = require("glob");
 const templateCompiler = require("vue-template-compiler");
 const crypto_1 = require("crypto");
-const EventHub_1 = require("./EventHub");
 const PrettyUnits_1 = require("./PrettyUnits");
 const Shout_1 = require("./Shout");
 class TypeScriptCheckerTool {
@@ -165,7 +164,6 @@ class TypeScriptCheckerTool {
             finally {
                 let time = PrettyUnits_1.prettyHrTime(process.hrtime(start));
                 Shout_1.Shout.timed('Finished type-checking after', chalk_1.default.green(time));
-                EventHub_1.default.buildDone();
             }
         });
     }

@@ -9,9 +9,8 @@ import * as discardComments from 'postcss-discard-comments';
 import { RawSourceMap } from 'source-map';
 import { NodeJsInputFileSystem, ResolverFactory } from 'enhanced-resolve';
 
-import hub from './EventHub';
 import { Settings } from './Settings';
-import { ICompilerFlags, outputFileThenLog } from './CompilerUtilities';
+import { outputFileThenLog } from './CompilerUtilities';
 import { prettyHrTime } from './PrettyUnits';
 import { Shout } from './Shout';
 
@@ -34,14 +33,14 @@ export class SassBuildTool {
     /**
      * Gets the compiler build flags.
      */
-    private readonly flags: ICompilerFlags;
+    private readonly flags: IBuildFlags;
 
     /**
      * Constructs a new instance of SassBuildTool using the specified settings and build flags. 
      * @param settings 
      * @param flags 
      */
-    constructor(settings: Settings, flags: ICompilerFlags) {
+    constructor(settings: Settings, flags: IBuildFlags) {
         this.settings = settings
         this.flags = flags;
     }
@@ -242,7 +241,6 @@ export class SassBuildTool {
         finally {
             let time = prettyHrTime(process.hrtime(start));
             Shout.timed('Finished CSS build after', chalk.green(time));
-            hub.buildDone();
         }
     }
 

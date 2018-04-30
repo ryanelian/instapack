@@ -1,35 +1,6 @@
 import * as upath from 'upath';
 import * as fse from 'fs-extra';
-import * as chalk from 'chalk';
 import * as TypeScript from 'typescript';
-
-/**
- * Dictionary<string, List<string>>
- */
-export interface IConcatLookup {
-    [key: string]: string[]
-}
-
-/**
- * Dictionary<string, string>
- */
-export interface IModuleOverrides {
-    [key: string]: string
-}
-
-/**
- * Values required to construct an instapack Settings object.
- */
-export interface ISettingsCore {
-    input: string;
-    output: string;
-    concat: IConcatLookup;
-    alias: IModuleOverrides;
-    externals: IModuleOverrides
-    template: string;
-    jsOut: string;
-    cssOut: string;
-}
 
 /**
  * Contains properties for setting the project builder class.
@@ -53,17 +24,17 @@ export class Settings {
     /**
      * Gets the unresolved concat map.
      */
-    readonly concat: IConcatLookup;
+    readonly concat: IMapLike<string[]>;
 
     /**
      * Replaces dependency imports to another dependency. For example: {'vue': 'vue/dist/vue.common'}
      */
-    readonly alias: IModuleOverrides;
+    readonly alias: IMapLike<string>;
 
     /**
      * Rewrites dependency imports to a window object. For example: {'jquery': '$'}
      */
-    readonly externals: IModuleOverrides;
+    readonly externals: IMapLike<string>;
 
     /**
      * Gets the JS output file name.
@@ -118,8 +89,8 @@ export class Settings {
     * Gets the JS output common / vendored modules chunk file name.
     * For example, ipack.dll.js
     */
-    get jsOutVendorFileName(): string {
-        return upath.removeExt(this.jsOut, '.js') + '.dll.js';
+    get jsChunkFileName(): string {
+        return upath.removeExt(this.jsOut, '.js') + '.[name].js';
     }
 
     /**
@@ -134,6 +105,13 @@ export class Settings {
      */
     get packageJson(): string {
         return upath.join(this.root, 'package.json');
+    }
+
+    /**
+     * Gets the full path to package.json file.
+     */
+    get babelConfiguration(): string {
+        return upath.join(this.root, '.babelrc');
     }
 
     /**

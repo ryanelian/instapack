@@ -48,8 +48,10 @@
     "build": "tsc"
   },
   "dependencies": {
-    "autoprefixer": "8.3.0",
-    "chalk": "2.4.0",
+    "@babel/core": "7.0.0-beta.46",
+    "autoprefixer": "8.4.1",
+    "babel-loader": "8.0.0-beta.2",
+    "chalk": "2.4.1",
     "chokidar": "2.0.3",
     "css-loader": "0.28.11",
     "enhanced-resolve": "4.0.0",
@@ -59,16 +61,17 @@
     "loader-utils": "1.1.0",
     "node-notifier": "5.2.1",
     "node-sass": "4.8.3",
-    "postcss": "6.0.21",
+    "postcss": "6.0.22",
     "postcss-discard-comments": "2.0.4",
     "source-map": "0.7.2",
     "typescript": "2.8.3",
-    "uglify-js": "3.3.21",
-    "upath": "1.0.4",
-    "vue-loader": "15.0.0-rc.2",
+    "uglify-js": "3.3.23",
+    "upath": "1.0.5",
+    "vue-loader": "15.0.4",
     "vue-template-compiler": "2.5.16",
-    "webpack": "3.11.0",
+    "webpack": "4.6.0",
     "webpack-sources": "1.1.0",
+    "worker-farm": "1.6.0",
     "yargs": "11.0.0"
   },
   "devDependencies": {
@@ -80,12 +83,11 @@
     "@types/node": "8",
     "@types/node-sass": "^3.10.32",
     "@types/uglify-js": "^3.0.2",
-    "@types/webpack": "3",
+    "@types/webpack": "^4.1.4",
     "@types/webpack-sources": "^0.1.4",
     "@types/yargs": "^11.0.0"
   },
   "resolutions": {
-    "**/@types/node": "8",
-    "**/@types/webpack": "3"
+    "**/@types/node": "8"
   }
 }

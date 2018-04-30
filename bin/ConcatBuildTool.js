@@ -13,13 +13,13 @@ const upath = require("upath");
 const chalk_1 = require("chalk");
 const enhanced_resolve_1 = require("enhanced-resolve");
 const UglifyJS = require("uglify-js");
-const EventHub_1 = require("./EventHub");
 const CompilerUtilities_1 = require("./CompilerUtilities");
 const Shout_1 = require("./Shout");
 const PrettyUnits_1 = require("./PrettyUnits");
 let resolver = enhanced_resolve_1.ResolverFactory.createResolver({
     fileSystem: new enhanced_resolve_1.NodeJsInputFileSystem(),
-    extensions: ['.js']
+    extensions: ['.js'],
+    mainFields: ['unpkg', 'browser', 'main']
 });
 class ConcatBuildTool {
     constructor(settings, flags) {
@@ -92,6 +92,7 @@ class ConcatBuildTool {
         });
     }
     build() {
+        Shout_1.Shout.timed('Resolving', chalk_1.default.green(this.settings.concatCount.toString()), 'concat target(s)...');
         let tasks = [];
         let targets = this.settings.concat;
         for (let target in targets) {
@@ -124,7 +125,6 @@ class ConcatBuildTool {
             finally {
                 let time = PrettyUnits_1.prettyHrTime(process.hrtime(start));
                 Shout_1.Shout.timed('Finished JS concat after', chalk_1.default.green(time));
-                EventHub_1.default.buildDone();
             }
         });
     }

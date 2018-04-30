@@ -109,16 +109,30 @@ class TypeScriptBuildTool {
         };
     }
     get cssWebpackRules() {
+        let vueStyleLoader = {
+            loader: 'vue-style-loader'
+        };
+        let cssModulesLoader = {
+            loader: 'css-loader',
+            options: {
+                modules: true,
+                url: false
+            }
+        };
+        let cssLoader = {
+            loader: 'css-loader',
+            options: {
+                url: false
+            }
+        };
         return {
             test: /\.css$/,
-            use: [
+            oneOf: [
                 {
-                    loader: 'vue-style-loader'
+                    resourceQuery: /module/,
+                    use: [vueStyleLoader, cssModulesLoader]
                 }, {
-                    loader: 'css-loader',
-                    options: {
-                        url: false
-                    }
+                    use: [vueStyleLoader, cssLoader]
                 }
             ]
         };

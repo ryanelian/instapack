@@ -122,7 +122,7 @@ export class TypeScriptBuildTool {
             use: {
                 loader: 'babel-loader'
             }
-        }
+        } as webpack.Rule;
     }
 
     /**
@@ -154,7 +154,7 @@ export class TypeScriptBuildTool {
             }
         });
 
-        return tsRules;
+        return tsRules as webpack.Rule;
     }
 
     /**
@@ -169,7 +169,7 @@ export class TypeScriptBuildTool {
                     transformAssetUrls: {},     // remove <img> src and SVG <image> xlink:href resolution
                 }
             }]
-        }
+        } as webpack.Rule;
     }
 
     /**
@@ -181,28 +181,40 @@ export class TypeScriptBuildTool {
             use: [{
                 loader: 'template-loader'
             }]
-        };
+        } as webpack.Rule;
     }
 
     /**
      * Gets CSS rules for webpack to prevent explosion during vue compile.
      */
     get cssWebpackRules() {
-        // <style module> IS NOT SUPPORTED BECAUSE css-loader TEAM PLANS TO REMOVE module OPTION!
-        //  https://github.com/webpack-contrib/css-loader/issues/509
+        let vueStyleLoader = {
+            loader: 'vue-style-loader'
+        };
+        let cssModulesLoader = {
+            loader: 'css-loader',
+            options: {
+                modules: true,
+                url: false
+            }
+        };
+        let cssLoader = {
+            loader: 'css-loader',
+            options: {
+                url: false
+            }
+        };
+
         return {
             test: /\.css$/,
-            use: [
-                {
-                    loader: 'vue-style-loader'
-                }, {
-                    loader: 'css-loader',
-                    options: {
-                        url: false
-                    }
-                }
-            ]
-        }
+            oneOf: [
+                { // this matches <style module>
+                    resourceQuery: /module/,
+                    use: [vueStyleLoader, cssModulesLoader]
+                }, { // this matches plain <style> or <style scoped>
+                    use: [vueStyleLoader, cssLoader]
+                }]
+        } as webpack.Rule;
     }
 
     /**

@@ -291,7 +291,7 @@ export class TypeScriptBuildTool {
                         vendors: {
                             name: 'dll',
                             test: /[\\/]node_modules[\\/]/,
-                            chunks: 'all',
+                            chunks: 'initial',
                             enforce: true,
                             priority: -10
                         }

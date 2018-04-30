@@ -17,13 +17,17 @@ function createMinificationInput(asset, fileName, sourceMap) {
     let input;
     if (sourceMap) {
         let o = asset.sourceAndMap();
-        input.fileName = fileName;
-        input.code = o.source;
-        input.map = o.map;
+        input = {
+            fileName: fileName,
+            code: o.source,
+            map: o.map
+        };
     }
     else {
-        input.fileName = fileName;
-        input.code = asset.source();
+        input = {
+            fileName: fileName,
+            code: asset.source()
+        };
     }
     return input;
 }

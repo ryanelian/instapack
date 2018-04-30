@@ -29,12 +29,16 @@ function createMinificationInput(asset: Source, fileName: string, sourceMap: boo
 
     if (sourceMap) {
         let o = asset.sourceAndMap();
-        input.fileName = fileName;
-        input.code = o.source;
-        input.map = o.map as any; // HACK78
+        input = {
+            fileName: fileName,
+            code: o.source,
+            map: o.map as any // HACK78
+        }
     } else {
-        input.fileName = fileName;
-        input.code = asset.source();
+        input = {
+            fileName: fileName,
+            code: asset.source()
+        }
     }
 
     return input;

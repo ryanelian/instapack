@@ -9,13 +9,13 @@
         "output": "www"
     },
     "dependencies": {
-        "@types/luxon": "^0.5.1",
+        "@types/luxon": "^0.5.2",
         "@types/pouchdb-browser": "^6.1.2",
         "@types/requirejs": "^2.1.31",
         "axios": "^0.18.0",
         "fork-awesome": "^1.0.11",
         "linq": "^3.1.0",
-        "luxon": "^1.1.0",
+        "luxon": "^1.2.0",
         "onsenui": "^2.9.2",
         "pouchdb-browser": "^6.4.3",
         "tslib": "^1.9.0",

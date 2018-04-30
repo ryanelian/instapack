@@ -34,7 +34,7 @@ class TypeScriptBuildTool {
             }
             let values = this.tsconfigOptions.paths[key];
             if (values.length > 1) {
-                Shout_1.Shout.warning(chalk_1.default.cyan('tsconfig.json'), 'paths:', chalk_1.default.yellow(key), 'resolves to more than one path!', chalk_1.default.grey('(Only the first will be honored.)'));
+                Shout_1.Shout.danger(chalk_1.default.cyan('tsconfig.json'), 'paths:', chalk_1.default.yellow(key), 'resolves to more than one path!', chalk_1.default.grey('(Bundler will use the first one.)'));
             }
             let value = values[0];
             if (!value) {
@@ -135,7 +135,7 @@ class TypeScriptBuildTool {
         }
         Shout_1.Shout.timed('Compiling', chalk_1.default.cyan('index.ts'), '>', chalk_1.default.yellow(buildTarget), chalk_1.default.grey('in ' + this.settings.inputJsFolder + '/'));
     }
-    getWebpackPlugins() {
+    get webpackPlugins() {
         let plugins = [];
         plugins.push(new TypeScriptBuildWebpackPlugin_1.TypeScriptBuildWebpackPlugin({
             onBuildStart: this.onBuildStart.bind(this),
@@ -156,7 +156,7 @@ class TypeScriptBuildTool {
             },
             externals: this.settings.externals,
             resolve: {
-                extensions: ['.ts', '.tsx', '.js', '.jsx', '.mjs', '.wasm', '.json', '.vue', '.html'],
+                extensions: ['.ts', '.tsx', '.js', '.jsx', '.mjs', '.vue', '.wasm', '.json', '.html'],
                 alias: this.settings.alias
             },
             resolveLoader: {
@@ -194,7 +194,7 @@ class TypeScriptBuildTool {
             performance: {
                 hints: false
             },
-            plugins: this.getWebpackPlugins()
+            plugins: this.webpackPlugins
         };
         if (this.babel) {
             config.module.rules.push(this.jsBabelWebpackRules);

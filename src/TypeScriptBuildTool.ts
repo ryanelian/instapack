@@ -52,7 +52,7 @@ export class TypeScriptBuildTool {
     /**
      * Translates tsconfig.json paths into webpack-compatible aliases!
      */
-    mergeTypeScriptPathsToWebpackAlias() {
+    private mergeTypeScriptPathsToWebpackAlias() {
         if (!this.tsconfigOptions.paths) {
             return;
         }
@@ -74,9 +74,9 @@ export class TypeScriptBuildTool {
             // technical limitation: 1 alias = 1 path, not multiple paths...
             let values = this.tsconfigOptions.paths[key];
             if (values.length > 1) {
-                Shout.warning(chalk.cyan('tsconfig.json'),
+                Shout.danger(chalk.cyan('tsconfig.json'),
                     'paths:', chalk.yellow(key), 'resolves to more than one path!',
-                    chalk.grey('(Only the first will be honored.)')
+                    chalk.grey('(Bundler will use the first one.)')
                 );
             }
 
@@ -208,12 +208,12 @@ export class TypeScriptBuildTool {
     /**
      * A simple flag to prevent instapack screaming about unsupported TypeScript build target twice. 
      */
-    buildTargetWarned = false;
+    private buildTargetWarned = false;
 
     /**
      * Chat to CLI user on build start. 
      */
-    onBuildStart() {
+    private onBuildStart() {
         let t = this.tsconfigOptions.target;
         if (!t) {
             t = TypeScript.ScriptTarget.ES3;
@@ -233,7 +233,7 @@ export class TypeScriptBuildTool {
     /**
      * Returns a configured webpack plugins.
      */
-    getWebpackPlugins() {
+    get webpackPlugins() {
         let plugins = [];
 
         plugins.push(new TypeScriptBuildWebpackPlugin({
@@ -261,7 +261,7 @@ export class TypeScriptBuildTool {
             },
             externals: this.settings.externals,
             resolve: {
-                extensions: ['.ts', '.tsx', '.js', '.jsx', '.mjs', '.wasm', '.json', '.vue', '.html'],
+                extensions: ['.ts', '.tsx', '.js', '.jsx', '.mjs', '.vue', '.wasm', '.json', '.html'],
                 // .mjs causes runtime error when `module.exports` is being used instead of `export`.
                 // .wasm requires adding `application/wasm` MIME to web server (both IIS and Kestrel).
                 alias: this.settings.alias
@@ -301,7 +301,7 @@ export class TypeScriptBuildTool {
             performance: {
                 hints: false    // https://webpack.js.org/configuration/performance
             },
-            plugins: this.getWebpackPlugins()
+            plugins: this.webpackPlugins
         };
 
         if (this.babel) {

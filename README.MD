@@ -288,6 +288,34 @@ import List from 'linq';
 
 > When the imported module does not have any type definitions, it will be imported as `any` data type (no intellisense).
 
+### ES Modules: Dynamic Import
+
+instapack version 6.4.0+ supports code-splitting using ES Modules dynamic `import()` syntax:
+
+```ts
+import('lodash').then( _ => {
+  // similar to: import * as _ from 'lodash'
+});
+```
+
+An excerpt of build log when using dynamic import:
+
+```
+[02:41:10] ipack.0.js 70.1 kB
+[02:41:10] ipack.dll.js 220 kB
+[02:41:10] ipack.js 2.76 kB
+```
+
+- Unlike `ipack.dll.js` which must be referenced explicitly before `ipack.js`, the `lodash` module in `ipack.0.js` **will be automatically downloaded on-demand** to reduce asset size during initial page load.
+
+- The `import()` method returns a `Promise` object which resolves to the downloaded module, which can be `await`-ed in TypeScript!
+
+- The number `0` is an auto-generated chunk name, which can be overridden using the *magic comment* `import(/* webpackChunkName: "lodash" */ 'lodash')` (generates `ipack.lodash.js` instead).
+
+- **This feature will be especially useful when a gigantic library is required in just one or two components, but not the whole app!**
+
+> To use this syntax within TypeScript, `module` compiler option in `tsconfig.json` must be set to `esnext` (instead of the usual `es2015`).
+
 ### CommonJS / Node.js require
 
 - Easily imports ordinary JS modules within the project or from `node_modules`. However, **you will NOT get intellisense!** (Modules will be imported as `any` data type.)
@@ -311,7 +339,7 @@ let template = require('./mytemplate.html') as string;
 
 ### Vue Single-File Components (BETA)
 
-instapack can now compile `.vue` files:
+instapack version 6.4.0+ can compile `.vue` files:
 
 ```vue
 <template>
@@ -335,11 +363,13 @@ export default class Hello extends Vue {
 
 - When using Visual Studio Code with [Vetur](https://marketplace.visualstudio.com/items?itemName=octref.vetur) extension, you will get fabulous intellisense! :star2:
 
-- Please **DO NOT** use the `<style>` tag.
+- Basic `<style>` (or `<style scoped>` or `<style module>`) should work, but should *not* be used. 
 
-  - You cannot use Sass. The CSS will not be auto-prefixed and minified. Your CSS will be scattered across obscure files in the JS project. Non-scoped styles will pollute the global CSS namespace. **These WILL make your app less maintainable!**
+  - **This feature is not supported** [at least until webpack ships built-in CSS modules](https://github.com/webpack/webpack/pull/6448).
 
-  - `<style module>` is not supported (for now) because [`css-loader` team are planning to remove `modules` option soon...](https://github.com/webpack-contrib/css-loader/issues/509)
+  - **Limitations:** You cannot use Sass. The CSS will not be auto-prefixed and minified.
+  
+  - **Reduced project maintainability:** Your CSS will be scattered across obscure files in the JS project. Non-scoped styles will pollute the global CSS namespace.
 
 - [A global TypeScript definition file for `*.vue` module](https://github.com/ryanelian/instapack/blob/master/templates/vue/client/js/vue-shim.d.ts) is required for importing the `.vue` file using ES Modules syntax from TypeScript.
 

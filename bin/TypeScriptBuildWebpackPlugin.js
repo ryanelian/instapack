@@ -14,21 +14,16 @@ const Shout_1 = require("./Shout");
 const CompilerUtilities_1 = require("./CompilerUtilities");
 const jsMinifyWorkerModulePath = require.resolve('./build-workers/JsMinifyWorker');
 function createMinificationInput(asset, fileName, sourceMap) {
-    let input = {
-        payload: {}
-    };
+    let input;
     if (sourceMap) {
         let o = asset.sourceAndMap();
-        input.code = input.payload[fileName] = o.source;
+        input.fileName = fileName;
+        input.code = o.source;
         input.map = o.map;
-        input.options = {
-            sourceMap: {
-                content: o.map,
-            }
-        };
     }
     else {
-        input.payload[fileName] = asset.source();
+        input.fileName = fileName;
+        input.code = asset.source();
     }
     return input;
 }

@@ -1,7 +1,17 @@
 "use strict";
 const UglifyJS = require("uglify-js");
 module.exports = function (input, callback) {
-    let result = UglifyJS.minify(input.payload, input.options);
+    let minifyOptions;
+    if (input.map) {
+        minifyOptions = {
+            sourceMap: {
+                content: input.map
+            }
+        };
+    }
+    let result = UglifyJS.minify({
+        [input.fileName]: input.code
+    }, minifyOptions);
     if (result.error) {
         callback(result.error);
     }

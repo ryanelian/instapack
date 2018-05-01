@@ -11,7 +11,7 @@
     "@types/requirejs": "^2.1.31",
     "linq": "^3.1.0",
     "luxon": "^1.2.0",
-    "ts-polyfill": "^0.0.3",
+    "ts-polyfill": "^0.0.4",
     "tslib": "^1.9.0"
   }
 }

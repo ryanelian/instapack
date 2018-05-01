@@ -1,4 +1,4 @@
-﻿import angular from 'angular';
+import angular from 'angular';
 import animate from 'angular-animate';
 import touch from 'angular-touch';
 import messages from 'angular-messages';

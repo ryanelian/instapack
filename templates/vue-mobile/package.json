@@ -1,27 +1,28 @@
 {
-    "name": "vue-mobile",
-    "displayName": "VueMobile",
-    "version": "1.0.0",
-    "description": "Cordova 8 app written using Vue.js + Onsen UI!",
-    "author": "Ryan Elian",
-    "private": true,
-    "instapack": {
-        "output": "www"
-    },
-    "dependencies": {
-        "@types/luxon": "^0.5.2",
-        "@types/pouchdb-browser": "^6.1.2",
-        "@types/requirejs": "^2.1.31",
-        "axios": "^0.18.0",
-        "fork-awesome": "^1.0.11",
-        "linq": "^3.1.0",
-        "luxon": "^1.2.0",
-        "onsenui": "^2.9.2",
-        "pouchdb-browser": "^6.4.3",
-        "ts-polyfill": "^0.0.4",
-        "tslib": "^1.9.0",
-        "vue": "^2.5.16",
-        "vue-class-component": "^6.2.0",
-        "vue-onsenui": "^2.5.1"
-    }
+  "name": "vue-mobile",
+  "displayName": "VueMobile",
+  "version": "1.0.0",
+  "description": "Cordova 8 app written using Vue.js + Onsen UI!",
+  "author": "Ryan Elian",
+  "private": true,
+  "instapack": {
+    "output": "www",
+    "concat": {}
+  },
+  "dependencies": {
+    "@types/luxon": "^0.5.2",
+    "@types/pouchdb-browser": "^6.1.2",
+    "@types/requirejs": "^2.1.31",
+    "axios": "^0.18.0",
+    "fork-awesome": "^1.0.11",
+    "linq": "^3.1.0",
+    "luxon": "^1.2.0",
+    "onsenui": "^2.9.2",
+    "pouchdb-browser": "^6.4.3",
+    "ts-polyfill": "^0.0.4",
+    "tslib": "^1.9.0",
+    "vue": "^2.5.16",
+    "vue-class-component": "^6.2.0",
+    "vue-onsenui": "^2.5.1"
+  }
 }

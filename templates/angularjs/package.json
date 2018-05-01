@@ -28,13 +28,13 @@
     "angular-messages": "^1.6.10",
     "angular-touch": "^1.6.10",
     "angular-ui-bootstrap": "^2.5.6",
-    "bootbox": "^4.4.0",
     "bootstrap-sass": "^3.3.7",
     "jquery": "^3.3.1",
     "jquery-validation": "^1.17.0",
     "jquery-validation-unobtrusive": "^3.2.9",
     "linq": "^3.1.0",
     "luxon": "^1.2.0",
+    "sweetalert": "^2.1.0",
     "ts-polyfill": "^0.0.4",
     "tslib": "^1.9.0"
   }

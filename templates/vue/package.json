@@ -4,16 +4,10 @@
   "private": true,
   "instapack": {
     "output": "wwwroot",
-    "concat": {
-      "vendor": [
-        "ts-polyfill",
-        "jquery/dist/jquery.slim",
-        "popper.js",
-        "bootstrap"
-      ]
-    },
+    "concat": {},
     "alias": {
-      "vue": "vue/dist/vue.esm"
+      "vue": "vue/dist/vue.esm",
+      "jquery": "jquery/dist/jquery.slim"
     }
   },
   "dependencies": {

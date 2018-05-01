@@ -18,6 +18,7 @@
         "luxon": "^1.2.0",
         "onsenui": "^2.9.2",
         "pouchdb-browser": "^6.4.3",
+        "ts-polyfill": "^0.0.4",
         "tslib": "^1.9.0",
         "vue": "^2.5.16",
         "vue-class-component": "^6.2.0",

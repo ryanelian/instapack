@@ -55,7 +55,7 @@
     "chokidar": "2.0.3",
     "css-loader": "0.28.11",
     "enhanced-resolve": "4.0.0",
-    "fs-extra": "5.0.0",
+    "fs-extra": "6.0.0",
     "glob": "7.1.2",
     "html-minifier": "3.5.15",
     "loader-utils": "1.1.0",

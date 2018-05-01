@@ -1,8 +1,7 @@
-﻿import 'ts-polyfill';
+import 'ts-polyfill';
 import 'bootstrap';
-
-import { ValidationService } from 'aspnet-validation';
 import './icons';
 import './vue-project';
+import { ValidationService } from 'aspnet-validation';
 
 new ValidationService().bootstrap();

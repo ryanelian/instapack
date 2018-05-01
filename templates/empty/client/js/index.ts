@@ -1,1 +1,1 @@
-﻿import 'ts-polyfill';
+import 'ts-polyfill';

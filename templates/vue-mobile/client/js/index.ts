@@ -1,4 +1,4 @@
-﻿import 'ts-polyfill';
+import 'ts-polyfill';
 import ons from 'onsenui';
 
 if (ons.platform.isIPhoneX()) {

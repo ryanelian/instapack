@@ -1,3 +1,2 @@
-﻿import 'ts-polyfill';
-
+import 'ts-polyfill';
 import './preact-project';

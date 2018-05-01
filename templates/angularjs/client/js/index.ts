@@ -1,1 +1,1 @@
-﻿import './angular-project';
+import './angular-project';

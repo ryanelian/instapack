@@ -1,3 +1,1 @@
-﻿import 'ts-polyfill';
-
-import './angular-project';
+﻿import './angular-project';

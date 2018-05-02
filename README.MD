@@ -223,7 +223,7 @@ For example:
 // converts this...
 import jQuery from 'jquery';
 
-// into this...
+// into something similar to this...
 // const jQuery = window["$"];
 ```
 
@@ -264,7 +264,7 @@ so [CDN](https://en.wikipedia.org/wiki/Content_delivery_network) can be used! :t
 }
 ```
 
-## Babel
+## Babel (BETA)
 
 instapack supports `.babelrc` in the project folder. Here are some use cases where this feature can be useful:
 
@@ -293,8 +293,8 @@ import List from 'linq';
 instapack version 6.4.0+ supports code-splitting using ES Modules dynamic `import()` syntax:
 
 ```ts
-import('lodash').then( _ => {
-  // similar to: import * as _ from 'lodash'
+import('lunr').then(lunr => {
+  // similar to: import * as _ from 'lunr'
 });
 ```
 
@@ -306,11 +306,11 @@ An excerpt of build log when using dynamic import:
 [02:41:10] ipack.js 2.76 kB
 ```
 
-- Unlike `ipack.dll.js` which must be referenced explicitly before `ipack.js`, the `lodash` module in `ipack.0.js` **will be automatically downloaded on-demand** to reduce asset size during initial page load.
+- Unlike `ipack.dll.js` which must be referenced explicitly before `ipack.js`, the `lunr` module in `ipack.0.js` **will be automatically downloaded on-demand** to reduce asset size during initial page load.
 
 - The `import()` method returns a `Promise` object which resolves to the downloaded module, which can be `await`-ed in TypeScript!
 
-- The number `0` is an auto-generated chunk name, which can be overridden using the *magic comment* `import(/* webpackChunkName: "lodash" */ 'lodash')` (generates `ipack.lodash.js` instead).
+- The number `0` is an auto-generated chunk name, which can be overridden using the *magic comment* `import(/* webpackChunkName: "lunr" */ 'lunr')` (generates `ipack.lunr.js` instead).
 
 - **This feature will be especially useful when a gigantic library is required in just one or two components, but not the whole app!**
 

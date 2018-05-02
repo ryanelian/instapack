@@ -294,7 +294,7 @@ instapack version 6.4.0+ supports code-splitting using ES Modules dynamic `impor
 
 ```ts
 import('lunr').then(lunr => {
-  // similar to: import * as _ from 'lunr'
+  // similar to: import * as lunr from 'lunr'
 });
 ```
 

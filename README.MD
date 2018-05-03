@@ -264,9 +264,19 @@ so [CDN](https://en.wikipedia.org/wiki/Content_delivery_network) can be used! :t
 }
 ```
 
+## .env
+
+instapack version 6.4.0+ supports `.env` in the project root folder. [Environment variables declared within](https://github.com/motdotla/dotenv) will be used to define `process.env` (using `process.env` in TypeScript requires `@types/node` package installed).
+
+For example: `FOO=bar` will define `process.env.FOO` as `'bar'`
+
+> Unlike configuration using JS modules, variables coming from `process.env` are always strings.
+
+> Due to technical reasons, `.env` file cannot be watched!
+
 ## Babel (BETA)
 
-instapack supports `.babelrc` in the project folder. Here are some use cases where this feature can be useful:
+instapack version 6.4.0+ supports `.babelrc` in the project root folder. Here are some use cases where this feature can be useful:
 
 - You may use Babel instead of TypeScript to transpile JS to ES5: set TypeScript `target` to `esnext` then use `@babel/preset-env`
 
@@ -333,7 +343,7 @@ let settings = require('./settings.json') as ISettings;
 let template = require('./mytemplate.html') as string;
 ```
 
-> CommonJS `require` method in TypeScript is provided through `@types/requirejs` package.
+> CommonJS `require` method in TypeScript is provided through `@types/requirejs` or `@types/node` packages.
 
 > Use `as` type-hint for clarity and convenience.
 

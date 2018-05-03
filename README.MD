@@ -268,9 +268,9 @@ so [CDN](https://en.wikipedia.org/wiki/Content_delivery_network) can be used! :t
 
 instapack version 6.4.0+ supports `.env` in the project root folder. [Environment variables declared within](https://github.com/motdotla/dotenv) will be used to define `process.env` (using `process.env` in TypeScript requires `@types/node` package installed).
 
-For example: `FOO=bar` will define `process.env.FOO` as `'bar'`
+**For example:** `FOO=bar` will define `process.env.FOO` as `'bar'`
 
-> Unlike configuration using JS modules, variables coming from `process.env` are always strings.
+> Unlike app settings using JS modules, variables coming from `process.env` are always strings.
 
 > Due to technical reasons, `.env` file cannot be watched!
 

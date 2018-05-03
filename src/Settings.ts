@@ -122,6 +122,13 @@ export class Settings {
     }
 
     /**
+     * Gets the full path to .env file.
+     */
+    get dotEnv(): string {
+        return upath.join(this.root, '.env');
+    }
+
+    /**
      * Reads the content of tsconfig.json.
      */
     readTsConfig(): TypeScript.ParsedCommandLine {

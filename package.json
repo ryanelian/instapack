@@ -54,6 +54,7 @@
     "chalk": "2.4.1",
     "chokidar": "2.0.3",
     "css-loader": "0.28.11",
+    "dotenv": "5.0.1",
     "enhanced-resolve": "4.0.0",
     "fs-extra": "6.0.0",
     "glob": "7.1.2",
@@ -76,6 +77,7 @@
   },
   "devDependencies": {
     "@types/chokidar": "^1.7.5",
+    "@types/dotenv": "^4.0.3",
     "@types/fs-extra": "^5.0.2",
     "@types/glob": "^5.0.35",
     "@types/html-minifier": "^3.5.2",

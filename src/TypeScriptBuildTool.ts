@@ -4,6 +4,7 @@ import chalk from 'chalk';
 import * as webpack from 'webpack';
 import * as TypeScript from 'typescript';
 import { VueLoaderPlugin } from 'vue-loader';
+import * as dotenv from 'dotenv';
 
 import { Settings } from './Settings';
 import { prettyBytes, prettyMilliseconds } from './PrettyUnits';
@@ -123,6 +124,20 @@ export class TypeScriptBuildTool {
                 loader: 'babel-loader'
             }
         } as webpack.Rule;
+    }
+
+    /**
+     * Attempt to parse .env file in the project root folder!
+     */
+    readEnvFile(): IMapLike<string> {
+        if (fse.pathExistsSync(this.settings.dotEnv) === false) {
+            return {};
+        };
+
+        let dotEnvRaw = fse.readFileSync(this.settings.dotEnv, 'utf8');
+        let env = dotenv.parse(dotEnvRaw);
+        // console.log(env);
+        return env;
     }
 
     /**
@@ -255,6 +270,12 @@ export class TypeScriptBuildTool {
         }));
 
         plugins.push(new VueLoaderPlugin());
+
+        let env = this.readEnvFile();
+        if (Object.keys(env).length > 0) {
+            plugins.push(new webpack.EnvironmentPlugin(env));
+        }
+
         return plugins;
     }
 

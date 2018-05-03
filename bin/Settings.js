@@ -54,6 +54,9 @@ class Settings {
     get tsConfigJson() {
         return upath.join(this.root, 'tsconfig.json');
     }
+    get dotEnv() {
+        return upath.join(this.root, '.env');
+    }
     readTsConfig() {
         let tsconfigJson = TypeScript.readConfigFile(this.tsConfigJson, TypeScript.sys.readFile);
         if (tsconfigJson.error) {

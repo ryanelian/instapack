@@ -270,9 +270,19 @@ instapack version 6.4.0+ supports `.env` in the project root folder. [Environmen
 
 **For example:** `FOO=bar` will define `process.env.FOO` as `'bar'`
 
-> Unlike app settings using JS modules, variables coming from `process.env` are always strings.
+> Due to technical reasons, `.env` file cannot be watched.
 
-> Due to technical reasons, `.env` file cannot be watched!
+### --env
+
+In addition, build flag `--env` accepts object-like notation to be passed as `process.env` variables. 
+
+  - Variables passed using the flag will be merged with variables defined in `.env`
+
+  - Variables passed using the flag takes takes priority / overrides the variables defined in `.env`
+
+**For example:** `ipack --env.FOO=bar --env.HELLO=world`
+
+> Variables coming from `process.env` are always strings.
 
 ## Babel (BETA)
 

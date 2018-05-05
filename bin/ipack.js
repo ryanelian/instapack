@@ -32,17 +32,27 @@ program.command({
         }).option('xdebug', {
             alias: 'x',
             describe: 'Disables source maps, producing undebuggable outputs.'
+        }).option('env', {
+            describe: 'Defines process.env variables to be replaced in TypeScript project build.'
         }).option('stats', {
             describe: 'Generates webpack stats.json next to the TypeScript build outputs for analysis.'
         });
     },
     handler: argv => {
         let subCommand = argv.project || 'all';
+        let cliEnv = {};
+        if (argv.env && typeof argv.env === 'object' && !Array.isArray(argv.env)) {
+            cliEnv = argv.env;
+            for (let key in cliEnv) {
+                cliEnv[key] = cliEnv[key].toString();
+            }
+        }
         echo('build', subCommand);
         app.build(subCommand, {
             production: !Boolean(argv.dev),
             watch: Boolean(argv.watch),
             sourceMap: !Boolean(argv.xdebug),
+            env: cliEnv,
             stats: Boolean(argv.stats)
         });
     }

@@ -70,12 +70,16 @@ class TypeScriptBuildTool {
         };
     }
     readEnvFile() {
-        if (fse.pathExistsSync(this.settings.dotEnv) === false) {
-            return {};
+        let env = {};
+        let dotEnvPath = this.settings.dotEnv;
+        if (fse.pathExistsSync(dotEnvPath) === false) {
+            return env;
         }
         ;
-        let dotEnvRaw = fse.readFileSync(this.settings.dotEnv, 'utf8');
-        let env = dotenv.parse(dotEnvRaw);
+        let dotEnvRaw = fse.readFileSync(dotEnvPath, 'utf8');
+        let parsedEnv = dotenv.parse(dotEnvRaw);
+        Object.assign(env, parsedEnv);
+        Object.assign(env, this.flags.env);
         return env;
     }
     get typescriptWebpackRules() {

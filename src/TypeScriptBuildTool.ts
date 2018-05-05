@@ -130,13 +130,21 @@ export class TypeScriptBuildTool {
      * Attempt to parse .env file in the project root folder!
      */
     readEnvFile(): IMapLike<string> {
-        if (fse.pathExistsSync(this.settings.dotEnv) === false) {
-            return {};
+        let env: IMapLike<string> = {};
+        let dotEnvPath = this.settings.dotEnv;
+
+        if (fse.pathExistsSync(dotEnvPath) === false) {
+            return env;
         };
 
-        let dotEnvRaw = fse.readFileSync(this.settings.dotEnv, 'utf8');
-        let env = dotenv.parse(dotEnvRaw);
+        let dotEnvRaw = fse.readFileSync(dotEnvPath, 'utf8');
+        let parsedEnv = dotenv.parse(dotEnvRaw);
+        // console.log(parsedEnv);
+
+        Object.assign(env, parsedEnv);
+        Object.assign(env, this.flags.env);
         // console.log(env);
+
         return env;
     }
 
@@ -272,6 +280,7 @@ export class TypeScriptBuildTool {
         plugins.push(new VueLoaderPlugin());
 
         let env = this.readEnvFile();
+        // console.log(env);
         if (Object.keys(env).length > 0) {
             plugins.push(new webpack.EnvironmentPlugin(env));
         }

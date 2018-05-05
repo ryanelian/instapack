@@ -27,6 +27,7 @@ interface IBuildFlags {
     watch: boolean;
     sourceMap: boolean;
     stats: boolean;
+    env: IMapLike<string>;
     notification?: boolean;
 }
 

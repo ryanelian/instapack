@@ -537,3 +537,7 @@ concfg import firefly
 ```
 
 For more information, visit http://scoop.sh/ and https://github.com/lukesampson/concfg
+
+## License
+
+[MIT](https://github.com/ryanelian/instapack/blob/master/LICENSE)

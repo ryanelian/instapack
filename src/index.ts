@@ -7,6 +7,7 @@ import chalk from 'chalk';
 import { GlobalSettingsManager } from './GlobalSettingsManager';
 import { PackageManager } from './PackageManager';
 import { Shout } from './Shout';
+import { mergePackageJson } from './CompilerUtilities';
 
 /**
  * Exposes methods for developing a web app client project.
@@ -57,7 +58,7 @@ export = class instapack {
      * Constructs instapack class instance using settings read from project.json. 
      */
     constructor(projectFolder: string) {
-        this.projectFolder = projectFolder;
+        this.projectFolder = upath.normalize(projectFolder);
         this.globalSettingsManager = new GlobalSettingsManager();
     }
 
@@ -109,9 +110,28 @@ export = class instapack {
             return;
         }
 
+        let mergedPackageJson: any;
+        let projectPackageJsonPath = upath.join(this.projectFolder, 'package.json');
+        let templatePackageJsonPath = upath.join(templateFolder, 'package.json');
+        if (await fse.pathExists(projectPackageJsonPath) && await fse.pathExists(templatePackageJsonPath)) {
+            // would override, should merge fields instead: instapack, dependencies, and devDependencies
+            let projectPackageJson = await fse.readJson(projectPackageJsonPath);
+            let templatePackageJson = await fse.readJson(templatePackageJsonPath);
+
+            mergedPackageJson = mergePackageJson(projectPackageJson, templatePackageJson);
+        }
+
         console.log('Initializing new project using template:', chalk.cyan(template));
         console.log('Scaffolding project into your web app...');
         await fse.copy(templateFolder, this.projectFolder);
+
+        if (mergedPackageJson) {
+            console.log(`Merging ${chalk.blue('package.json')}...`);
+            await fse.writeJson(projectPackageJsonPath, mergedPackageJson, {
+                spaces: 2
+            });
+        }
+
         console.log(chalk.green('Scaffold completed.'), 'To build the app, type:', chalk.yellow('ipack'));
     }
 

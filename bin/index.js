@@ -15,6 +15,7 @@ const chalk_1 = require("chalk");
 const GlobalSettingsManager_1 = require("./GlobalSettingsManager");
 const PackageManager_1 = require("./PackageManager");
 const Shout_1 = require("./Shout");
+const CompilerUtilities_1 = require("./CompilerUtilities");
 module.exports = class instapack {
     get availableTasks() {
         return ['all', 'js', 'css', 'concat'];
@@ -32,7 +33,7 @@ module.exports = class instapack {
         return this.globalSettingsManager.availableSettings;
     }
     constructor(projectFolder) {
-        this.projectFolder = projectFolder;
+        this.projectFolder = upath.normalize(projectFolder);
         this.globalSettingsManager = new GlobalSettingsManager_1.GlobalSettingsManager();
     }
     build(taskName, flags) {
@@ -69,9 +70,23 @@ module.exports = class instapack {
                 Shout_1.Shout.error('Unable to find new project template for:', chalk_1.default.cyan(template));
                 return;
             }
+            let mergedPackageJson;
+            let projectPackageJsonPath = upath.join(this.projectFolder, 'package.json');
+            let templatePackageJsonPath = upath.join(templateFolder, 'package.json');
+            if ((yield fse.pathExists(projectPackageJsonPath)) && (yield fse.pathExists(templatePackageJsonPath))) {
+                let projectPackageJson = yield fse.readJson(projectPackageJsonPath);
+                let templatePackageJson = yield fse.readJson(templatePackageJsonPath);
+                mergedPackageJson = CompilerUtilities_1.mergePackageJson(projectPackageJson, templatePackageJson);
+            }
             console.log('Initializing new project using template:', chalk_1.default.cyan(template));
             console.log('Scaffolding project into your web app...');
             yield fse.copy(templateFolder, this.projectFolder);
+            if (mergedPackageJson) {
+                console.log(`Merging ${chalk_1.default.blue('package.json')}...`);
+                yield fse.writeJson(projectPackageJsonPath, mergedPackageJson, {
+                    spaces: 2
+                });
+            }
             console.log(chalk_1.default.green('Scaffold completed.'), 'To build the app, type:', chalk_1.default.yellow('ipack'));
         });
     }

@@ -168,22 +168,16 @@ Remove all files in the output folders.
 
 instapack puts configurations inside `package.json` to reduce project files clutter. For example, this is the included `package.json` with `vue` template:
 
-> `name`, `version`, `private`, and `dependencies` fields were removed for brevity.
+> `name`, `version`, `private`, `dependencies`, and `devDependencies` fields were removed for brevity.
 
 ```json
 {
   "instapack": {
     "output": "wwwroot",
-    "concat": {
-      "vendor": [
-        "es6-promise/dist/es6-promise.auto",
-        "jquery/dist/jquery.slim",
-        "popper.js",
-        "bootstrap"
-      ]
-    },
+    "concat": {},
     "alias": {
-      "vue": "vue/dist/vue.common"
+      "vue": "vue/dist/vue.esm",
+      "jquery": "jquery/dist/jquery.slim"
     }
   }
 }
@@ -249,7 +243,7 @@ so [CDN](https://en.wikipedia.org/wiki/Content_delivery_network) can be used! :t
 
     - Possible but not recommended: reference the library objects directly from the `window` (e.g. `window['$']`).
 
-**Another `concat` configuration example:** (produces `vendor.js` bundle handy for ASP.NET MVC)
+**A `concat` configuration example:** (produces `vendor.js` bundle handy for ASP.NET MVC)
 
 ```json
 {

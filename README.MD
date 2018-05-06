@@ -3,6 +3,7 @@
 > All-in-one TypeScript and Sass compiler for web applications! :package: :rocket:
 
 [![npm](https://img.shields.io/npm/v/instapack.svg)](https://www.npmjs.com/package/instapack) [![Build Status](https://travis-ci.org/ryanelian/instapack.svg?branch=master)](https://travis-ci.org/ryanelian/instapack) [![Build status](https://ci.appveyor.com/api/projects/status/y6v2hde0mhh9o5an/branch/master?svg=true)](https://ci.appveyor.com/project/RyanElian/instapack/branch/master) [![Greenkeeper badge](https://badges.greenkeeper.io/ryanelian/instapack.svg)](https://greenkeeper.io/)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fryanelian%2Finstapack.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fryanelian%2Finstapack?ref=badge_shield)
 
 ![Screenshot](https://raw.githubusercontent.com/ryanelian/instapack/master/img/screenshot.png)
 
@@ -537,3 +538,7 @@ concfg import firefly
 ```
 
 For more information, visit http://scoop.sh/ and https://github.com/lukesampson/concfg
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fryanelian%2Finstapack.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fryanelian%2Finstapack?ref=badge_large)

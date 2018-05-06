@@ -19,10 +19,10 @@
     "client-side",
     "vue",
     "react",
-    "inferno",
     "angularjs",
     "single-page-app",
-    "progressive-web-app"
+    "progressive-web-app",
+    "babel"
   ],
   "homepage": "https://github.com/ryanelian/instapack#readme",
   "bugs": {

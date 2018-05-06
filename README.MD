@@ -126,7 +126,7 @@ Scaffolds a new instapack project into your existing app folder where the comman
 
 - `inferno` when you want to develop a web app with [Inferno](https://infernojs.org/). (Insanely fast, React-like)
 
-- `hyperapp` when you want to develop a web app with [hyperapp](https://github.com/hyperapp/hyperapp). (1kB, with opinionated state management)
+- `hyperapp` when you want to develop a web app with [hyperapp](https://github.com/hyperapp/hyperapp). (1kB, with state management)
 
 - `mithril` when you want to develop a web app with [Mithril](https://mithril.js.org/) and [Tachyons](http://tachyons.io/). (hyperscript, provides routing and XHR)
 

@@ -56,6 +56,10 @@ function minifyChunkAssets(compilation: webpack.compilation.Compilation, chunks:
     Shout.timed('TypeScript compile finished! Minifying bundles...');
     for (let chunk of chunks) {
         for (let fileName of chunk.files as string[]) {
+            if (fileName.endsWith('js') === false) {
+                continue;
+            }
+
             // Shout.timed('Minifying ' + chalk.blue(fileName) + '...');
             let asset = compilation.assets[fileName] as Source;
             let input = createMinificationInput(asset, fileName, sourceMap);

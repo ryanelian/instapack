@@ -36,6 +36,9 @@ function minifyChunkAssets(compilation, chunks, sourceMap) {
     Shout_1.Shout.timed('TypeScript compile finished! Minifying bundles...');
     for (let chunk of chunks) {
         for (let fileName of chunk.files) {
+            if (fileName.endsWith('js') === false) {
+                continue;
+            }
             let asset = compilation.assets[fileName];
             let input = createMinificationInput(asset, fileName, sourceMap);
             let t1 = CompilerUtilities_1.runWorkerAsync(jsMinifyWorkerModulePath, input);

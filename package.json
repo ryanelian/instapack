@@ -69,9 +69,9 @@
     "typescript": "2.8.3",
     "uglify-js": "3.3.24",
     "upath": "1.0.5",
-    "vue-loader": "15.0.9",
+    "vue-loader": "15.0.10",
     "vue-template-compiler": "2.5.16",
-    "webpack": "4.8.1",
+    "webpack": "4.8.2",
     "webpack-sources": "1.1.0",
     "worker-farm": "1.6.0",
     "yargs": "11.0.0"

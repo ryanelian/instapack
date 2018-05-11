@@ -16,6 +16,7 @@ const sass = require("node-sass");
 const postcss = require("postcss");
 const autoprefixer = require("autoprefixer");
 const postcssImport = require("postcss-import");
+let CleanCSS = require('clean-css');
 const enhanced_resolve_1 = require("enhanced-resolve");
 const CompilerUtilities_1 = require("./CompilerUtilities");
 const PrettyUnits_1 = require("./PrettyUnits");
@@ -109,23 +110,49 @@ class SassBuildTool {
                 }
             };
             let sassResult = yield this.compileSassAsync(sassOptions);
-            let cssResult = yield postcss(this.postcssPlugins).process(sassResult.css, this.postcssOptions);
-            let t1 = CompilerUtilities_1.outputFileThenLog(cssOutput, cssResult.css);
-            if (cssResult.map) {
-                let sm = cssResult.map.toJSON();
-                this.fixSourceMap(sm);
-                yield CompilerUtilities_1.outputFileThenLog(cssOutput + '.map', JSON.stringify(sm));
+            let cssResult = yield postcss([
+                autoprefixer(),
+                postcssImport()
+            ]).process(sassResult.css, this.postCssOptions);
+            let css = cssResult.css;
+            let sourceMap = undefined;
+            if (this.flags.sourceMap) {
+                sourceMap = cssResult.map.toJSON();
+            }
+            if (this.flags.production) {
+                let cleanResult = new CleanCSS(this.cleanCssOptions).minify(css, sourceMap);
+                let errors = cleanResult.errors;
+                if (errors.length) {
+                    let errorMessage = "Error when minifying CSS:\n" + errors.map(Q => Q.stack).join("\n\n");
+                    throw new Error(errorMessage);
+                }
+                css = cleanResult.styles;
+                if (this.flags.sourceMap) {
+                    let sourceMapFileName = upath.basename(cssOutput) + '.map';
+                    css += '\n' + `/*# sourceMappingURL=${sourceMapFileName} */`;
+                    sourceMap = cleanResult.sourceMap.toJSON();
+                }
+            }
+            let t1 = CompilerUtilities_1.outputFileThenLog(cssOutput, css);
+            if (this.flags.sourceMap) {
+                this.fixSourceMap(sourceMap);
+                yield CompilerUtilities_1.outputFileThenLog(cssOutput + '.map', JSON.stringify(sourceMap));
             }
             yield t1;
         });
     }
-    get postcssPlugins() {
-        let plugins = [postcssImport(), autoprefixer()];
-        if (this.flags.production) {
-        }
-        return plugins;
+    get cleanCssOptions() {
+        return {
+            level: {
+                1: {
+                    specialComments: false
+                }
+            },
+            sourceMap: this.flags.sourceMap,
+            sourceMapInlineSources: this.flags.sourceMap
+        };
     }
-    get postcssOptions() {
+    get postCssOptions() {
         let cssOutput = this.settings.outputCssFile;
         let options = {
             from: cssOutput,

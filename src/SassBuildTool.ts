@@ -6,6 +6,7 @@ import * as sass from 'node-sass';
 import * as postcss from 'postcss';
 import * as autoprefixer from 'autoprefixer';
 import * as postcssImport from 'postcss-import';
+let CleanCSS = require('clean-css');
 import { RawSourceMap } from 'source-map';
 import { NodeJsInputFileSystem, ResolverFactory } from 'enhanced-resolve';
 
@@ -175,35 +176,62 @@ export class SassBuildTool {
         };
 
         let sassResult = await this.compileSassAsync(sassOptions);
-        let cssResult = await postcss(this.postcssPlugins).process(sassResult.css, this.postcssOptions);
+        let cssResult = await postcss([
+            autoprefixer(),
+            postcssImport()     // will NOT auto-prefix libraries (should be authors' responsibility)
+        ]).process(sassResult.css, this.postCssOptions);
 
-        let t1 = outputFileThenLog(cssOutput, cssResult.css);
-        if (cssResult.map) {
-            let sm = cssResult.map.toJSON();
-            // HACK78
-            this.fixSourceMap(sm as any);
-            await outputFileThenLog(cssOutput + '.map', JSON.stringify(sm));
+        let css = cssResult.css;
+        let sourceMap: RawSourceMap = undefined;
+        if (this.flags.sourceMap) {
+            sourceMap = cssResult.map.toJSON() as any;      // HACK78
+        }
+
+        if (this.flags.production) {
+            let cleanResult = new CleanCSS(this.cleanCssOptions).minify(css, sourceMap);
+
+            let errors: Error[] = cleanResult.errors;
+            if (errors.length) {
+                let errorMessage = "Error when minifying CSS:\n" + errors.map(Q => Q.stack).join("\n\n");
+                throw new Error(errorMessage);
+            }
+
+            css = cleanResult.styles;
+
+            if (this.flags.sourceMap) {
+                let sourceMapFileName = upath.basename(cssOutput) + '.map';
+                css += '\n' + `/*# sourceMappingURL=${sourceMapFileName} */`;
+                sourceMap = cleanResult.sourceMap.toJSON();
+            }
+        }
+
+        let t1 = outputFileThenLog(cssOutput, css);
+        if (this.flags.sourceMap) {
+            this.fixSourceMap(sourceMap as any);        // HACK78
+            await outputFileThenLog(cssOutput + '.map', JSON.stringify(sourceMap));
         }
         await t1;
     }
 
     /**
-     * Gets the PostCSS plugins to be used.
+     * Gets the Clean CSS options using project build flags.
      */
-    get postcssPlugins() {
-        let plugins: any[] = [postcssImport(), autoprefixer()];
-
-        if (this.flags.production) {
-            // minify using PostCSS plugin for clean-css!
-        }
-
-        return plugins;
+    get cleanCssOptions() {
+        return {
+            level: {
+                1: {
+                    specialComments: false
+                }
+            },
+            sourceMap: this.flags.sourceMap,
+            sourceMapInlineSources: this.flags.sourceMap
+        };
     }
 
     /**
-     * Gets the appropriate PostCSS options using project settings and build flags.
+     * Gets the PostCSS options using project settings and build flags.
      */
-    get postcssOptions() {
+    get postCssOptions() {
         let cssOutput = this.settings.outputCssFile;
 
         let options: postcss.ProcessOptions = {

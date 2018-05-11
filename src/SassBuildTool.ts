@@ -5,7 +5,7 @@ import * as chokidar from 'chokidar';
 import * as sass from 'node-sass';
 import * as postcss from 'postcss';
 import * as autoprefixer from 'autoprefixer';
-import * as discardComments from 'postcss-discard-comments';
+import * as postcssImport from 'postcss-import';
 import { RawSourceMap } from 'source-map';
 import { NodeJsInputFileSystem, ResolverFactory } from 'enhanced-resolve';
 
@@ -17,7 +17,8 @@ import { Shout } from './Shout';
 let resolver = ResolverFactory.createResolver({
     fileSystem: new NodeJsInputFileSystem(),
     extensions: ['.scss', '.css'],
-    mainFields: ['style']
+    mainFields: ['style'],
+    mainFiles: ['index', '_index']
 });
 
 /**
@@ -119,11 +120,13 @@ export class SassBuildTool {
         }
 
         // 2: E:/VS/MyProject/client/css/@ryan/something.scss (Standard)
-        // 4: E:/VS/MyProject/client/css/@ryan/something.css (Standard)
-        // 5: E:/VS/MyProject/client/css/@ryan/something/index.scss (Custom)
+        // 5: E:/VS/MyProject/client/css/@ryan/something/index.scss (Standard https://github.com/sass/sass/issues/690) 
+        // 5: E:/VS/MyProject/client/css/@ryan/something/_index.scss (Standard https://github.com/sass/sass/issues/690)
+        // 4: E:/VS/MyProject/client/css/@ryan/something.css (Accidental Standard https://github.com/sass/node-sass/issues/2362)
         // 6: E:/VS/MyProject/client/css/@ryan/something/index.css (Custom)
-        let isRelative = request.startsWith('./') || request.startsWith('../');
-        if (!isRelative) {
+        // 6: E:/VS/MyProject/client/css/@ryan/something/_index.css (Custom)
+        let isRelativeOrAbsolute = request.startsWith('./') || request.startsWith('../') || upath.isAbsolute(request);
+        if (isRelativeOrAbsolute === false) {
             try {
                 return await this.resolveAsync(lookupStartPath, './' + request);
             } catch {
@@ -131,8 +134,12 @@ export class SassBuildTool {
         }
 
         // 7: E:/VS/MyProject/node_modules/@ryan/something.scss (Custom)
+        // 7: E:/VS/MyProject/node_modules/@ryan/something/index.scss (Custom)
+        // 7: E:/VS/MyProject/node_modules/@ryan/something/_index.scss (Custom)
         // 9: E:/VS/MyProject/node_modules/@ryan/something.css (Custom)
-        // 10: E:/VS/MyProject/node_modules/@ryan/something/package.json (Custom)
+        // 9: E:/VS/MyProject/node_modules/@ryan/something/index.css (Custom)
+        // 9: E:/VS/MyProject/node_modules/@ryan/something/_index.css (Custom)
+        // 10: E:/VS/MyProject/node_modules/@ryan/something/package.json:style (Custom)
         return await this.resolveAsync(lookupStartPath, request);
 
         // 8 WILL NO LONGER WORK: E:/VS/MyProject/node_modules/@ryan/_something.scss (Custom)
@@ -151,7 +158,6 @@ export class SassBuildTool {
             outFile: cssOutput,
             data: await fse.readFile(cssInput, 'utf8'),
 
-            outputStyle: (this.flags.production ? 'compressed' : 'expanded'),
             sourceMap: this.flags.sourceMap,
             sourceMapEmbed: this.flags.sourceMap,
             sourceMapContents: this.flags.sourceMap,
@@ -159,9 +165,8 @@ export class SassBuildTool {
             importer: (request, source, done) => {
                 this.sassImport(source, request).then(result => {
                     // console.log(source, '+', request, '=', result); console.log();
-                    // if resulting path's .css extension is not removed, will cause CSS @import...
                     done({
-                        file: upath.removeExt(result, '.css')
+                        file: result
                     });
                 }).catch(error => {
                     done(error);
@@ -186,11 +191,10 @@ export class SassBuildTool {
      * Gets the PostCSS plugins to be used.
      */
     get postcssPlugins() {
-        let plugins: any[] = [autoprefixer];
+        let plugins: any[] = [postcssImport(), autoprefixer()];
+
         if (this.flags.production) {
-            plugins.push(discardComments({
-                removeAll: true
-            }));
+            // minify using PostCSS plugin for clean-css!
         }
 
         return plugins;

@@ -15,7 +15,7 @@ const chokidar = require("chokidar");
 const sass = require("node-sass");
 const postcss = require("postcss");
 const autoprefixer = require("autoprefixer");
-const discardComments = require("postcss-discard-comments");
+const postcssImport = require("postcss-import");
 const enhanced_resolve_1 = require("enhanced-resolve");
 const CompilerUtilities_1 = require("./CompilerUtilities");
 const PrettyUnits_1 = require("./PrettyUnits");
@@ -23,7 +23,8 @@ const Shout_1 = require("./Shout");
 let resolver = enhanced_resolve_1.ResolverFactory.createResolver({
     fileSystem: new enhanced_resolve_1.NodeJsInputFileSystem(),
     extensions: ['.scss', '.css'],
-    mainFields: ['style']
+    mainFields: ['style'],
+    mainFiles: ['index', '_index']
 });
 class SassBuildTool {
     constructor(settings, flags) {
@@ -75,8 +76,8 @@ class SassBuildTool {
                     return partialPath;
                 }
             }
-            let isRelative = request.startsWith('./') || request.startsWith('../');
-            if (!isRelative) {
+            let isRelativeOrAbsolute = request.startsWith('./') || request.startsWith('../') || upath.isAbsolute(request);
+            if (isRelativeOrAbsolute === false) {
                 try {
                     return yield this.resolveAsync(lookupStartPath, './' + request);
                 }
@@ -94,14 +95,13 @@ class SassBuildTool {
                 file: cssInput,
                 outFile: cssOutput,
                 data: yield fse.readFile(cssInput, 'utf8'),
-                outputStyle: (this.flags.production ? 'compressed' : 'expanded'),
                 sourceMap: this.flags.sourceMap,
                 sourceMapEmbed: this.flags.sourceMap,
                 sourceMapContents: this.flags.sourceMap,
                 importer: (request, source, done) => {
                     this.sassImport(source, request).then(result => {
                         done({
-                            file: upath.removeExt(result, '.css')
+                            file: result
                         });
                     }).catch(error => {
                         done(error);
@@ -120,11 +120,8 @@ class SassBuildTool {
         });
     }
     get postcssPlugins() {
-        let plugins = [autoprefixer];
+        let plugins = [postcssImport(), autoprefixer()];
         if (this.flags.production) {
-            plugins.push(discardComments({
-                removeAll: true
-            }));
         }
         return plugins;
     }

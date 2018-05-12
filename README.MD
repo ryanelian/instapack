@@ -397,9 +397,9 @@ instapack also has a custom Node-like but standard-compliant Sass module system 
 
 - Include files relative to the source, which include _partial.scss files. (Standard Sass behavior)
 
-- Include files relative to the source in a named folder, but as `index.scss` or `_index.scss` ([Standard Sass behavior](https://github.com/sass/sass/issues/690)) or `index.css` or `_index.css`
+- Include files relative to the source in a named folder, but as `index.scss` or `_index.scss` ([Standard Sass behavior](https://github.com/sass/sass/issues/690)) or `index.css`
 
-- Include files, resolved from `node_modules`. Also reads `package.json` to locate the file in `style` field!
+- Include files resolved from `node_modules`. Also reads `package.json` to locate **CSS** file in `style` field!
 
 > Unlike Sass which ignores `@import` of files explicitly named with `.css` extension (which often caused confusion), instapack will pick up those files!
 

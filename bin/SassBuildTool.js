@@ -21,12 +21,6 @@ const enhanced_resolve_1 = require("enhanced-resolve");
 const CompilerUtilities_1 = require("./CompilerUtilities");
 const PrettyUnits_1 = require("./PrettyUnits");
 const Shout_1 = require("./Shout");
-let resolver = enhanced_resolve_1.ResolverFactory.createResolver({
-    fileSystem: new enhanced_resolve_1.NodeJsInputFileSystem(),
-    extensions: ['.scss', '.css'],
-    mainFields: ['style'],
-    mainFiles: ['index', '_index']
-});
 class SassBuildTool {
     constructor(settings, flags) {
         this.settings = settings;
@@ -52,9 +46,9 @@ class SassBuildTool {
             return '/' + upath.relative(this.settings.root, absolute);
         });
     }
-    resolveAsync(lookupStartPath, request) {
+    resolveAsync(customResolver, lookupStartPath, request) {
         return new Promise((ok, reject) => {
-            resolver.resolve({}, lookupStartPath, request, {}, (error, result) => {
+            customResolver.resolve({}, lookupStartPath, request, {}, (error, result) => {
                 if (error) {
                     reject(error);
                 }
@@ -68,24 +62,35 @@ class SassBuildTool {
         return __awaiter(this, void 0, void 0, function* () {
             let lookupStartPath = upath.dirname(source);
             let requestFileName = upath.basename(request);
+            let requestDir = upath.dirname(request);
+            let sassResolver = enhanced_resolve_1.ResolverFactory.createResolver({
+                fileSystem: new enhanced_resolve_1.NodeJsInputFileSystem(),
+                extensions: ['.scss'],
+                modules: [lookupStartPath, 'node_modules'],
+                mainFiles: ['index', '_index'],
+                descriptionFiles: [],
+            });
+            let cssResolver = enhanced_resolve_1.ResolverFactory.createResolver({
+                fileSystem: new enhanced_resolve_1.NodeJsInputFileSystem(),
+                extensions: ['.css'],
+                modules: [lookupStartPath, 'node_modules'],
+                mainFields: ['style']
+            });
             if (!requestFileName.startsWith('_')) {
-                let requestDir = upath.dirname(request);
-                let relativeLookupDir = upath.join(lookupStartPath, requestDir);
                 let partialFileName = '_' + upath.addExt(requestFileName, '.scss');
-                let partialPath = upath.resolve(relativeLookupDir, partialFileName);
-                if (yield fse.pathExists(partialPath)) {
-                    return partialPath;
-                }
-            }
-            let isRelativeOrAbsolute = request.startsWith('./') || request.startsWith('../') || upath.isAbsolute(request);
-            if (isRelativeOrAbsolute === false) {
+                let partialRequest = upath.join(requestDir, partialFileName);
                 try {
-                    return yield this.resolveAsync(lookupStartPath, './' + request);
+                    return yield this.resolveAsync(sassResolver, lookupStartPath, partialRequest);
                 }
-                catch (_a) {
+                catch (error) {
                 }
             }
-            return yield this.resolveAsync(lookupStartPath, request);
+            try {
+                return yield this.resolveAsync(sassResolver, lookupStartPath, request);
+            }
+            catch (error) {
+            }
+            return yield this.resolveAsync(cssResolver, lookupStartPath, request);
         });
     }
     build() {

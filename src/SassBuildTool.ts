@@ -15,13 +15,6 @@ import { outputFileThenLog } from './CompilerUtilities';
 import { prettyHrTime } from './PrettyUnits';
 import { Shout } from './Shout';
 
-let resolver = ResolverFactory.createResolver({
-    fileSystem: new NodeJsInputFileSystem(),
-    extensions: ['.scss', '.css'],
-    mainFields: ['style'],
-    mainFiles: ['index', '_index']
-});
-
 /**
  * Contains methods for compiling a Sass project.
  */
@@ -78,13 +71,13 @@ export class SassBuildTool {
     }
 
     /**
-     * Resolves an Sass module import as a Promise.
+     * Invoke enhanced-resolve custom resolver as a Promise.
      * @param lookupStartPath 
      * @param request 
      */
-    resolveAsync(lookupStartPath: string, request: string) {
+    resolveAsync(customResolver, lookupStartPath: string, request: string) {
         return new Promise<string>((ok, reject) => {
-            resolver.resolve({}, lookupStartPath, request, {}, (error: Error, result: string) => {
+            customResolver.resolve({}, lookupStartPath, request, {}, (error: Error, result: string) => {
                 if (error) {
                     reject(error);
                 } else {
@@ -101,50 +94,63 @@ export class SassBuildTool {
      * @param source 
      * @param request 
      */
-    async sassImport(source: string, request: string) {
+    async sassImport(source: string, request: string): Promise<string> {
         // https://github.com/ryanelian/instapack/issues/99
-        // E:/VS/MyProject/client/css/index.scss @import "@ryan/something"
+        // source   :   E:/VS/MyProject/client/css/index.scss
+        // request  :   @import "@ryan/something"
 
-        let lookupStartPath = upath.dirname(source);    // E:/VS/MyProject/client/css/
+        let lookupStartPath = upath.dirname(source);        // E:/VS/MyProject/client/css/
+        let requestFileName = upath.basename(request);      // something
+        let requestDir = upath.dirname(request);            // @ryan/
 
-        // 3: E:/VS/MyProject/client/css/@ryan/_something.scss (Standard)
-        let requestFileName = upath.basename(request);                          // something
+        let sassResolver = ResolverFactory.createResolver({
+            fileSystem: new NodeJsInputFileSystem(),
+            extensions: ['.scss'],
+            modules: [lookupStartPath, 'node_modules'],
+            mainFiles: ['index', '_index'],
+            descriptionFiles: [],
+            // mainFields: ['sass']
+        });
+
+        let cssResolver = ResolverFactory.createResolver({
+            fileSystem: new NodeJsInputFileSystem(),
+            extensions: ['.css'],
+            modules: [lookupStartPath, 'node_modules'],
+            mainFields: ['style']
+        });
+
+        // 3: E:/VS/MyProject/client/css/@ryan/_something.scss      (Standard)
+        // 8: E:/VS/MyProject/node_modules/@ryan/_something.scss    (Standard, when using node-sass includePaths option)
         if (!requestFileName.startsWith('_')) {
-            let requestDir = upath.dirname(request);                            // @ryan/
-            let relativeLookupDir = upath.join(lookupStartPath, requestDir);    // E:/VS/MyProject/client/css/@ryan/
             let partialFileName = '_' + upath.addExt(requestFileName, '.scss');
-            let partialPath = upath.resolve(relativeLookupDir, partialFileName);
-
-            if (await fse.pathExists(partialPath)) {
-                return partialPath;
-            }
-        }
-
-        // 2: E:/VS/MyProject/client/css/@ryan/something.scss (Standard)
-        // 5: E:/VS/MyProject/client/css/@ryan/something/index.scss (Standard https://github.com/sass/sass/issues/690) 
-        // 5: E:/VS/MyProject/client/css/@ryan/something/_index.scss (Standard https://github.com/sass/sass/issues/690)
-        // 4: E:/VS/MyProject/client/css/@ryan/something.css (Accidental Standard https://github.com/sass/node-sass/issues/2362)
-        // 6: E:/VS/MyProject/client/css/@ryan/something/index.css (Custom)
-        // 6: E:/VS/MyProject/client/css/@ryan/something/_index.css (Custom)
-        let isRelativeOrAbsolute = request.startsWith('./') || request.startsWith('../') || upath.isAbsolute(request);
-        if (isRelativeOrAbsolute === false) {
+            let partialRequest = upath.join(requestDir, partialFileName);      // @ryan/_something.scss
             try {
-                return await this.resolveAsync(lookupStartPath, './' + request);
-            } catch {
+                return await this.resolveAsync(sassResolver, lookupStartPath, partialRequest);
+            } catch (error) {
+
             }
         }
 
-        // 7: E:/VS/MyProject/node_modules/@ryan/something.scss (Custom)
-        // 7: E:/VS/MyProject/node_modules/@ryan/something/index.scss (Custom)
-        // 7: E:/VS/MyProject/node_modules/@ryan/something/_index.scss (Custom)
-        // 9: E:/VS/MyProject/node_modules/@ryan/something.css (Custom)
-        // 9: E:/VS/MyProject/node_modules/@ryan/something/index.css (Custom)
-        // 9: E:/VS/MyProject/node_modules/@ryan/something/_index.css (Custom)
-        // 10: E:/VS/MyProject/node_modules/@ryan/something/package.json:style (Custom)
-        return await this.resolveAsync(lookupStartPath, request);
+        // 2: E:/VS/MyProject/client/css/@ryan/something.scss               (Standard)
+        // 5: E:/VS/MyProject/client/css/@ryan/something/index.scss         (Standard https://github.com/sass/sass/issues/690) 
+        // 5: E:/VS/MyProject/client/css/@ryan/something/_index.scss        (Standard https://github.com/sass/sass/issues/690)
+        // 7: E:/VS/MyProject/node_modules/@ryan/something.scss             (Standard*)
+        // 7: E:/VS/MyProject/node_modules/@ryan/something/index.scss       (Standard*)
+        // 7: E:/VS/MyProject/node_modules/@ryan/something/_index.scss      (Standard*)
+        try {
+            return await this.resolveAsync(sassResolver, lookupStartPath, request);
+        } catch (error) {
 
-        // 8 WILL NO LONGER WORK: E:/VS/MyProject/node_modules/@ryan/_something.scss (Custom)
-        // @import against partial files in node_modules MUST BE EXPLICIT!
+        }
+
+        // 4: E:/VS/MyProject/client/css/@ryan/something.css                    (Accidental Standard https://github.com/sass/node-sass/issues/2362)
+        // 6: E:/VS/MyProject/client/css/@ryan/something/index.css              (Standard*)
+        // 9: E:/VS/MyProject/node_modules/@ryan/something.css                  (Standard*)
+        // 9: E:/VS/MyProject/node_modules/@ryan/something/index.css            (Standard*)
+        // 10: E:/VS/MyProject/node_modules/@ryan/something/package.json:style  (Custom, Node-like)
+        return await this.resolveAsync(cssResolver, lookupStartPath, request);
+
+        // Standard*: when using node-sass includePaths option set to the node_modules folder.
     }
 
     /**

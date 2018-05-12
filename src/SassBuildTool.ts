@@ -89,15 +89,15 @@ export class SassBuildTool {
 
     /**
      * Implements a smarter Sass @import logic.
-     * Performs node-like module resolution logic, which includes looking into package.json (for sass and style fields).
+     * Performs node-like module resolution logic, which includes looking into package.json (for style fields).
      * Still supports auto-relatives and (relative) _partials file resolution. 
      * @param source 
      * @param request 
      */
     async sassImport(source: string, request: string): Promise<string> {
         // https://github.com/ryanelian/instapack/issues/99
-        // source   :   E:/VS/MyProject/client/css/index.scss
-        // request  :   @import "@ryan/something"
+        // source               :   "E:/VS/MyProject/client/css/index.scss"
+        // request / @import    :   "@ryan/something"
 
         let lookupStartPath = upath.dirname(source);        // E:/VS/MyProject/client/css/
         let requestFileName = upath.basename(request);      // something
@@ -120,8 +120,10 @@ export class SassBuildTool {
         });
 
         // 3: E:/VS/MyProject/client/css/@ryan/_something.scss      (Standard)
-        // 8: E:/VS/MyProject/node_modules/@ryan/_something.scss    (Standard, when using node-sass includePaths option)
+        // 8: E:/VS/MyProject/node_modules/@ryan/_something.scss    (Standard+)
         if (!requestFileName.startsWith('_')) {
+            // Add extension to file name, to prevent treating the underscored name as folder path!
+            // e.g. @ryan/_something/_index.scss
             let partialFileName = '_' + upath.addExt(requestFileName, '.scss');
             let partialRequest = upath.join(requestDir, partialFileName);      // @ryan/_something.scss
             try {
@@ -134,9 +136,9 @@ export class SassBuildTool {
         // 2: E:/VS/MyProject/client/css/@ryan/something.scss               (Standard)
         // 5: E:/VS/MyProject/client/css/@ryan/something/index.scss         (Standard https://github.com/sass/sass/issues/690) 
         // 5: E:/VS/MyProject/client/css/@ryan/something/_index.scss        (Standard https://github.com/sass/sass/issues/690)
-        // 7: E:/VS/MyProject/node_modules/@ryan/something.scss             (Standard*)
-        // 7: E:/VS/MyProject/node_modules/@ryan/something/index.scss       (Standard*)
-        // 7: E:/VS/MyProject/node_modules/@ryan/something/_index.scss      (Standard*)
+        // 7: E:/VS/MyProject/node_modules/@ryan/something.scss             (Standard+)
+        // 7: E:/VS/MyProject/node_modules/@ryan/something/index.scss       (Standard+)
+        // 7: E:/VS/MyProject/node_modules/@ryan/something/_index.scss      (Standard+)
         try {
             return await this.resolveAsync(sassResolver, lookupStartPath, request);
         } catch (error) {
@@ -144,13 +146,13 @@ export class SassBuildTool {
         }
 
         // 4: E:/VS/MyProject/client/css/@ryan/something.css                    (Accidental Standard https://github.com/sass/node-sass/issues/2362)
-        // 6: E:/VS/MyProject/client/css/@ryan/something/index.css              (Standard*)
-        // 9: E:/VS/MyProject/node_modules/@ryan/something.css                  (Standard*)
-        // 9: E:/VS/MyProject/node_modules/@ryan/something/index.css            (Standard*)
+        // 6: E:/VS/MyProject/client/css/@ryan/something/index.css              (Standard+)
+        // 9: E:/VS/MyProject/node_modules/@ryan/something.css                  (Standard+)
+        // 9: E:/VS/MyProject/node_modules/@ryan/something/index.css            (Standard+)
         // 10: E:/VS/MyProject/node_modules/@ryan/something/package.json:style  (Custom, Node-like)
         return await this.resolveAsync(cssResolver, lookupStartPath, request);
 
-        // Standard*: when using node-sass includePaths option set to the node_modules folder.
+        // Standard+: when using node-sass includePaths option set to the node_modules folder. (Older instapack behavior)
     }
 
     /**

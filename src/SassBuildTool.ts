@@ -89,8 +89,7 @@ export class SassBuildTool {
 
     /**
      * Implements a smarter Sass @import logic.
-     * Performs node-like module resolution logic, which includes looking into package.json (for style fields).
-     * Still supports auto-relatives and (relative) _partials file resolution. 
+     * Performs node-like module resolution logic, which includes looking into package.json for style field.
      * @param source 
      * @param request 
      */

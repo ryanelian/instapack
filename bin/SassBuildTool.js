@@ -63,6 +63,18 @@ class SassBuildTool {
             let lookupStartPath = upath.dirname(source);
             let requestFileName = upath.basename(request);
             let requestDir = upath.dirname(request);
+            if (requestFileName.startsWith('_') === false) {
+                let partialFileName = '_' + upath.addExt(requestFileName, '.scss');
+                let partialRequest = upath.join(requestDir, partialFileName);
+                let relativePartialPath = upath.join(lookupStartPath, partialRequest);
+                if (yield fse.pathExists(relativePartialPath)) {
+                    return relativePartialPath;
+                }
+                let packagePartialPath = upath.join(this.settings.npmFolder, partialRequest);
+                if (yield fse.pathExists(packagePartialPath)) {
+                    return packagePartialPath;
+                }
+            }
             let sassResolver = enhanced_resolve_1.ResolverFactory.createResolver({
                 fileSystem: new enhanced_resolve_1.NodeJsInputFileSystem(),
                 extensions: ['.scss'],
@@ -70,26 +82,17 @@ class SassBuildTool {
                 mainFiles: ['index', '_index'],
                 descriptionFiles: [],
             });
+            try {
+                return yield this.resolveAsync(sassResolver, lookupStartPath, request);
+            }
+            catch (error) {
+            }
             let cssResolver = enhanced_resolve_1.ResolverFactory.createResolver({
                 fileSystem: new enhanced_resolve_1.NodeJsInputFileSystem(),
                 extensions: ['.css'],
                 modules: [lookupStartPath, 'node_modules'],
                 mainFields: ['style']
             });
-            if (!requestFileName.startsWith('_')) {
-                let partialFileName = '_' + upath.addExt(requestFileName, '.scss');
-                let partialRequest = upath.join(requestDir, partialFileName);
-                try {
-                    return yield this.resolveAsync(sassResolver, lookupStartPath, partialRequest);
-                }
-                catch (error) {
-                }
-            }
-            try {
-                return yield this.resolveAsync(sassResolver, lookupStartPath, request);
-            }
-            catch (error) {
-            }
             return yield this.resolveAsync(cssResolver, lookupStartPath, request);
         });
     }

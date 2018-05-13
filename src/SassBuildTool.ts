@@ -102,6 +102,23 @@ export class SassBuildTool {
         let requestFileName = upath.basename(request);      // something
         let requestDir = upath.dirname(request);            // @ryan/
 
+        if (requestFileName.startsWith('_') === false) {
+            let partialFileName = '_' + upath.addExt(requestFileName, '.scss');
+            let partialRequest = upath.join(requestDir, partialFileName);      // @ryan/_something.scss
+
+            // 3: E:/VS/MyProject/client/css/@ryan/_something.scss      (Standard)
+            let relativePartialPath = upath.join(lookupStartPath, partialRequest);
+            if (await fse.pathExists(relativePartialPath)) {
+                return relativePartialPath;
+            }
+
+            // 8: E:/VS/MyProject/node_modules/@ryan/_something.scss    (Standard+)
+            let packagePartialPath = upath.join(this.settings.npmFolder, partialRequest);
+            if (await fse.pathExists(packagePartialPath)) {
+                return packagePartialPath;
+            }
+        }
+
         let sassResolver = ResolverFactory.createResolver({
             fileSystem: new NodeJsInputFileSystem(),
             extensions: ['.scss'],
@@ -110,27 +127,6 @@ export class SassBuildTool {
             descriptionFiles: [],
             // mainFields: ['sass']
         });
-
-        let cssResolver = ResolverFactory.createResolver({
-            fileSystem: new NodeJsInputFileSystem(),
-            extensions: ['.css'],
-            modules: [lookupStartPath, 'node_modules'],
-            mainFields: ['style']
-        });
-
-        // 3: E:/VS/MyProject/client/css/@ryan/_something.scss      (Standard)
-        // 8: E:/VS/MyProject/node_modules/@ryan/_something.scss    (Standard+)
-        if (!requestFileName.startsWith('_')) {
-            // Add extension to file name, to prevent treating the underscored name as folder path!
-            // e.g. @ryan/_something/_index.scss
-            let partialFileName = '_' + upath.addExt(requestFileName, '.scss');
-            let partialRequest = upath.join(requestDir, partialFileName);      // @ryan/_something.scss
-            try {
-                return await this.resolveAsync(sassResolver, lookupStartPath, partialRequest);
-            } catch (error) {
-
-            }
-        }
 
         // 2: E:/VS/MyProject/client/css/@ryan/something.scss               (Standard)
         // 5: E:/VS/MyProject/client/css/@ryan/something/index.scss         (Standard https://github.com/sass/sass/issues/690) 
@@ -143,6 +139,13 @@ export class SassBuildTool {
         } catch (error) {
 
         }
+
+        let cssResolver = ResolverFactory.createResolver({
+            fileSystem: new NodeJsInputFileSystem(),
+            extensions: ['.css'],
+            modules: [lookupStartPath, 'node_modules'],
+            mainFields: ['style']
+        });
 
         // 4: E:/VS/MyProject/client/css/@ryan/something.css                    (Accidental Standard https://github.com/sass/node-sass/issues/2362)
         // 6: E:/VS/MyProject/client/css/@ryan/something/index.css              (Standard+)

@@ -70,7 +70,7 @@
     "upath": "1.0.5",
     "vue-loader": "15.0.10",
     "vue-template-compiler": "2.5.16",
-    "webpack": "4.8.2",
+    "webpack": "4.8.3",
     "webpack-sources": "1.1.0",
     "worker-farm": "1.6.0",
     "yargs": "11.0.0"
@@ -85,7 +85,7 @@
     "@types/node": "8",
     "@types/node-sass": "^3.10.32",
     "@types/uglify-js": "^3.0.2",
-    "@types/webpack": "^4.1.5",
+    "@types/webpack": "^4.1.6",
     "@types/webpack-sources": "^0.1.4",
     "@types/yargs": "^11.0.0"
   },

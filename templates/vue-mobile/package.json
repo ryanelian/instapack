@@ -14,7 +14,7 @@
     "@types/pouchdb-browser": "^6.1.2",
     "@types/requirejs": "^2.1.31",
     "axios": "^0.18.0",
-    "fork-awesome": "^1.0.11",
+    "fork-awesome": "^1.1.0",
     "linq": "^3.1.0",
     "luxon": "^1.2.0",
     "onsenui": "^2.9.2",

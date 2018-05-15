@@ -15,16 +15,12 @@ const chokidar = require("chokidar");
 const sass = require("node-sass");
 const postcss = require("postcss");
 const autoprefixer = require("autoprefixer");
-const discardComments = require("postcss-discard-comments");
+const postcssImport = require("postcss-import");
+let CleanCSS = require('clean-css');
 const enhanced_resolve_1 = require("enhanced-resolve");
 const CompilerUtilities_1 = require("./CompilerUtilities");
 const PrettyUnits_1 = require("./PrettyUnits");
 const Shout_1 = require("./Shout");
-let resolver = enhanced_resolve_1.ResolverFactory.createResolver({
-    fileSystem: new enhanced_resolve_1.NodeJsInputFileSystem(),
-    extensions: ['.scss', '.css'],
-    mainFields: ['style']
-});
 class SassBuildTool {
     constructor(settings, flags) {
         this.settings = settings;
@@ -50,9 +46,9 @@ class SassBuildTool {
             return '/' + upath.relative(this.settings.root, absolute);
         });
     }
-    resolveAsync(lookupStartPath, request) {
+    resolveAsync(customResolver, lookupStartPath, request) {
         return new Promise((ok, reject) => {
-            resolver.resolve({}, lookupStartPath, request, {}, (error, result) => {
+            customResolver.resolve({}, lookupStartPath, request, {}, (error, result) => {
                 if (error) {
                     reject(error);
                 }
@@ -66,24 +62,38 @@ class SassBuildTool {
         return __awaiter(this, void 0, void 0, function* () {
             let lookupStartPath = upath.dirname(source);
             let requestFileName = upath.basename(request);
-            if (!requestFileName.startsWith('_')) {
-                let requestDir = upath.dirname(request);
-                let relativeLookupDir = upath.join(lookupStartPath, requestDir);
+            let requestDir = upath.dirname(request);
+            if (requestFileName.startsWith('_') === false) {
                 let partialFileName = '_' + upath.addExt(requestFileName, '.scss');
-                let partialPath = upath.resolve(relativeLookupDir, partialFileName);
-                if (yield fse.pathExists(partialPath)) {
-                    return partialPath;
+                let partialRequest = upath.join(requestDir, partialFileName);
+                let relativePartialPath = upath.join(lookupStartPath, partialRequest);
+                if (yield fse.pathExists(relativePartialPath)) {
+                    return relativePartialPath;
+                }
+                let packagePartialPath = upath.join(this.settings.npmFolder, partialRequest);
+                if (yield fse.pathExists(packagePartialPath)) {
+                    return packagePartialPath;
                 }
             }
-            let isRelative = request.startsWith('./') || request.startsWith('../');
-            if (!isRelative) {
-                try {
-                    return yield this.resolveAsync(lookupStartPath, './' + request);
-                }
-                catch (_a) {
-                }
+            let sassResolver = enhanced_resolve_1.ResolverFactory.createResolver({
+                fileSystem: new enhanced_resolve_1.NodeJsInputFileSystem(),
+                extensions: ['.scss'],
+                modules: [lookupStartPath, 'node_modules'],
+                mainFiles: ['index', '_index'],
+                descriptionFiles: [],
+            });
+            try {
+                return yield this.resolveAsync(sassResolver, lookupStartPath, request);
             }
-            return yield this.resolveAsync(lookupStartPath, request);
+            catch (error) {
+            }
+            let cssResolver = enhanced_resolve_1.ResolverFactory.createResolver({
+                fileSystem: new enhanced_resolve_1.NodeJsInputFileSystem(),
+                extensions: ['.css'],
+                modules: [lookupStartPath, 'node_modules'],
+                mainFields: ['style']
+            });
+            return yield this.resolveAsync(cssResolver, lookupStartPath, request);
         });
     }
     build() {
@@ -94,14 +104,13 @@ class SassBuildTool {
                 file: cssInput,
                 outFile: cssOutput,
                 data: yield fse.readFile(cssInput, 'utf8'),
-                outputStyle: (this.flags.production ? 'compressed' : 'expanded'),
                 sourceMap: this.flags.sourceMap,
                 sourceMapEmbed: this.flags.sourceMap,
                 sourceMapContents: this.flags.sourceMap,
                 importer: (request, source, done) => {
                     this.sassImport(source, request).then(result => {
                         done({
-                            file: upath.removeExt(result, '.css')
+                            file: result
                         });
                     }).catch(error => {
                         done(error);
@@ -109,26 +118,49 @@ class SassBuildTool {
                 }
             };
             let sassResult = yield this.compileSassAsync(sassOptions);
-            let cssResult = yield postcss(this.postcssPlugins).process(sassResult.css, this.postcssOptions);
-            let t1 = CompilerUtilities_1.outputFileThenLog(cssOutput, cssResult.css);
-            if (cssResult.map) {
-                let sm = cssResult.map.toJSON();
-                this.fixSourceMap(sm);
-                yield CompilerUtilities_1.outputFileThenLog(cssOutput + '.map', JSON.stringify(sm));
+            let cssResult = yield postcss([
+                autoprefixer(),
+                postcssImport()
+            ]).process(sassResult.css, this.postCssOptions);
+            let css = cssResult.css;
+            let sourceMap = undefined;
+            if (this.flags.sourceMap) {
+                sourceMap = cssResult.map.toJSON();
+            }
+            if (this.flags.production) {
+                let cleanResult = new CleanCSS(this.cleanCssOptions).minify(css, sourceMap);
+                let errors = cleanResult.errors;
+                if (errors.length) {
+                    let errorMessage = "Error when minifying CSS:\n" + errors.map(Q => Q.stack).join("\n\n");
+                    throw new Error(errorMessage);
+                }
+                css = cleanResult.styles;
+                if (this.flags.sourceMap) {
+                    let sourceMapFileName = upath.basename(cssOutput) + '.map';
+                    css += '\n' + `/*# sourceMappingURL=${sourceMapFileName} */`;
+                    sourceMap = cleanResult.sourceMap.toJSON();
+                }
+            }
+            let t1 = CompilerUtilities_1.outputFileThenLog(cssOutput, css);
+            if (this.flags.sourceMap) {
+                this.fixSourceMap(sourceMap);
+                yield CompilerUtilities_1.outputFileThenLog(cssOutput + '.map', JSON.stringify(sourceMap));
             }
             yield t1;
         });
     }
-    get postcssPlugins() {
-        let plugins = [autoprefixer];
-        if (this.flags.production) {
-            plugins.push(discardComments({
-                removeAll: true
-            }));
-        }
-        return plugins;
+    get cleanCssOptions() {
+        return {
+            level: {
+                1: {
+                    specialComments: false
+                }
+            },
+            sourceMap: this.flags.sourceMap,
+            sourceMapInlineSources: this.flags.sourceMap
+        };
     }
-    get postcssOptions() {
+    get postCssOptions() {
         let cssOutput = this.settings.outputCssFile;
         let options = {
             from: cssOutput,

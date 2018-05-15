@@ -5,7 +5,8 @@ import * as chokidar from 'chokidar';
 import * as sass from 'node-sass';
 import * as postcss from 'postcss';
 import * as autoprefixer from 'autoprefixer';
-import * as discardComments from 'postcss-discard-comments';
+import * as postcssImport from 'postcss-import';
+let CleanCSS = require('clean-css');
 import { RawSourceMap } from 'source-map';
 import { NodeJsInputFileSystem, ResolverFactory } from 'enhanced-resolve';
 
@@ -13,12 +14,6 @@ import { Settings } from './Settings';
 import { outputFileThenLog } from './CompilerUtilities';
 import { prettyHrTime } from './PrettyUnits';
 import { Shout } from './Shout';
-
-let resolver = ResolverFactory.createResolver({
-    fileSystem: new NodeJsInputFileSystem(),
-    extensions: ['.scss', '.css'],
-    mainFields: ['style']
-});
 
 /**
  * Contains methods for compiling a Sass project.
@@ -76,13 +71,13 @@ export class SassBuildTool {
     }
 
     /**
-     * Resolves an Sass module import as a Promise.
+     * Invoke enhanced-resolve custom resolver as a Promise.
      * @param lookupStartPath 
      * @param request 
      */
-    resolveAsync(lookupStartPath: string, request: string) {
+    resolveAsync(customResolver, lookupStartPath: string, request: string) {
         return new Promise<string>((ok, reject) => {
-            resolver.resolve({}, lookupStartPath, request, {}, (error: Error, result: string) => {
+            customResolver.resolve({}, lookupStartPath, request, {}, (error: Error, result: string) => {
                 if (error) {
                     reject(error);
                 } else {
@@ -94,49 +89,72 @@ export class SassBuildTool {
 
     /**
      * Implements a smarter Sass @import logic.
-     * Performs node-like module resolution logic, which includes looking into package.json (for sass and style fields).
-     * Still supports auto-relatives and (relative) _partials file resolution. 
+     * Performs node-like module resolution logic, which includes looking into package.json for style field.
      * @param source 
      * @param request 
      */
-    async sassImport(source: string, request: string) {
+    async sassImport(source: string, request: string): Promise<string> {
         // https://github.com/ryanelian/instapack/issues/99
-        // E:/VS/MyProject/client/css/index.scss @import "@ryan/something"
+        // source               :   "E:/VS/MyProject/client/css/index.scss"
+        // request / @import    :   "@ryan/something"
 
-        let lookupStartPath = upath.dirname(source);    // E:/VS/MyProject/client/css/
+        let lookupStartPath = upath.dirname(source);        // E:/VS/MyProject/client/css/
+        let requestFileName = upath.basename(request);      // something
+        let requestDir = upath.dirname(request);            // @ryan/
 
-        // 3: E:/VS/MyProject/client/css/@ryan/_something.scss (Standard)
-        let requestFileName = upath.basename(request);                          // something
-        if (!requestFileName.startsWith('_')) {
-            let requestDir = upath.dirname(request);                            // @ryan/
-            let relativeLookupDir = upath.join(lookupStartPath, requestDir);    // E:/VS/MyProject/client/css/@ryan/
+        if (requestFileName.startsWith('_') === false) {
             let partialFileName = '_' + upath.addExt(requestFileName, '.scss');
-            let partialPath = upath.resolve(relativeLookupDir, partialFileName);
+            let partialRequest = upath.join(requestDir, partialFileName);      // @ryan/_something.scss
 
-            if (await fse.pathExists(partialPath)) {
-                return partialPath;
+            // 3: E:/VS/MyProject/client/css/@ryan/_something.scss      (Standard)
+            let relativePartialPath = upath.join(lookupStartPath, partialRequest);
+            if (await fse.pathExists(relativePartialPath)) {
+                return relativePartialPath;
+            }
+
+            // 8: E:/VS/MyProject/node_modules/@ryan/_something.scss    (Standard+)
+            let packagePartialPath = upath.join(this.settings.npmFolder, partialRequest);
+            if (await fse.pathExists(packagePartialPath)) {
+                return packagePartialPath;
             }
         }
 
-        // 2: E:/VS/MyProject/client/css/@ryan/something.scss (Standard)
-        // 4: E:/VS/MyProject/client/css/@ryan/something.css (Standard)
-        // 5: E:/VS/MyProject/client/css/@ryan/something/index.scss (Custom)
-        // 6: E:/VS/MyProject/client/css/@ryan/something/index.css (Custom)
-        let isRelative = request.startsWith('./') || request.startsWith('../');
-        if (!isRelative) {
-            try {
-                return await this.resolveAsync(lookupStartPath, './' + request);
-            } catch {
-            }
+        let sassResolver = ResolverFactory.createResolver({
+            fileSystem: new NodeJsInputFileSystem(),
+            extensions: ['.scss'],
+            modules: [lookupStartPath, 'node_modules'],
+            mainFiles: ['index', '_index'],
+            descriptionFiles: [],
+            // mainFields: ['sass']
+        });
+
+        // 2: E:/VS/MyProject/client/css/@ryan/something.scss               (Standard)
+        // 5: E:/VS/MyProject/client/css/@ryan/something/index.scss         (Standard https://github.com/sass/sass/issues/690) 
+        // 5: E:/VS/MyProject/client/css/@ryan/something/_index.scss        (Standard https://github.com/sass/sass/issues/690)
+        // 7: E:/VS/MyProject/node_modules/@ryan/something.scss             (Standard+)
+        // 7: E:/VS/MyProject/node_modules/@ryan/something/index.scss       (Standard+)
+        // 7: E:/VS/MyProject/node_modules/@ryan/something/_index.scss      (Standard+)
+        try {
+            return await this.resolveAsync(sassResolver, lookupStartPath, request);
+        } catch (error) {
+
         }
 
-        // 7: E:/VS/MyProject/node_modules/@ryan/something.scss (Custom)
-        // 9: E:/VS/MyProject/node_modules/@ryan/something.css (Custom)
-        // 10: E:/VS/MyProject/node_modules/@ryan/something/package.json (Custom)
-        return await this.resolveAsync(lookupStartPath, request);
+        let cssResolver = ResolverFactory.createResolver({
+            fileSystem: new NodeJsInputFileSystem(),
+            extensions: ['.css'],
+            modules: [lookupStartPath, 'node_modules'],
+            mainFields: ['style']
+        });
 
-        // 8 WILL NO LONGER WORK: E:/VS/MyProject/node_modules/@ryan/_something.scss (Custom)
-        // @import against partial files in node_modules MUST BE EXPLICIT!
+        // 4: E:/VS/MyProject/client/css/@ryan/something.css                    (Accidental Standard https://github.com/sass/node-sass/issues/2362)
+        // 6: E:/VS/MyProject/client/css/@ryan/something/index.css              (Standard+)
+        // 9: E:/VS/MyProject/node_modules/@ryan/something.css                  (Standard+)
+        // 9: E:/VS/MyProject/node_modules/@ryan/something/index.css            (Standard+)
+        // 10: E:/VS/MyProject/node_modules/@ryan/something/package.json:style  (Custom, Node-like)
+        return await this.resolveAsync(cssResolver, lookupStartPath, request);
+
+        // Standard+: when using node-sass includePaths option set to the node_modules folder. (Older instapack behavior)
     }
 
     /**
@@ -151,7 +169,6 @@ export class SassBuildTool {
             outFile: cssOutput,
             data: await fse.readFile(cssInput, 'utf8'),
 
-            outputStyle: (this.flags.production ? 'compressed' : 'expanded'),
             sourceMap: this.flags.sourceMap,
             sourceMapEmbed: this.flags.sourceMap,
             sourceMapContents: this.flags.sourceMap,
@@ -159,9 +176,8 @@ export class SassBuildTool {
             importer: (request, source, done) => {
                 this.sassImport(source, request).then(result => {
                     // console.log(source, '+', request, '=', result); console.log();
-                    // if resulting path's .css extension is not removed, will cause CSS @import...
                     done({
-                        file: upath.removeExt(result, '.css')
+                        file: result
                     });
                 }).catch(error => {
                     done(error);
@@ -170,36 +186,62 @@ export class SassBuildTool {
         };
 
         let sassResult = await this.compileSassAsync(sassOptions);
-        let cssResult = await postcss(this.postcssPlugins).process(sassResult.css, this.postcssOptions);
+        let cssResult = await postcss([
+            autoprefixer(),
+            postcssImport()     // will NOT auto-prefix libraries (should be authors' responsibility)
+        ]).process(sassResult.css, this.postCssOptions);
 
-        let t1 = outputFileThenLog(cssOutput, cssResult.css);
-        if (cssResult.map) {
-            let sm = cssResult.map.toJSON();
-            // HACK78
-            this.fixSourceMap(sm as any);
-            await outputFileThenLog(cssOutput + '.map', JSON.stringify(sm));
+        let css = cssResult.css;
+        let sourceMap: RawSourceMap = undefined;
+        if (this.flags.sourceMap) {
+            sourceMap = cssResult.map.toJSON() as any;      // HACK78
+        }
+
+        if (this.flags.production) {
+            let cleanResult = new CleanCSS(this.cleanCssOptions).minify(css, sourceMap);
+
+            let errors: Error[] = cleanResult.errors;
+            if (errors.length) {
+                let errorMessage = "Error when minifying CSS:\n" + errors.map(Q => Q.stack).join("\n\n");
+                throw new Error(errorMessage);
+            }
+
+            css = cleanResult.styles;
+
+            if (this.flags.sourceMap) {
+                let sourceMapFileName = upath.basename(cssOutput) + '.map';
+                css += '\n' + `/*# sourceMappingURL=${sourceMapFileName} */`;
+                sourceMap = cleanResult.sourceMap.toJSON();
+            }
+        }
+
+        let t1 = outputFileThenLog(cssOutput, css);
+        if (this.flags.sourceMap) {
+            this.fixSourceMap(sourceMap as any);        // HACK78
+            await outputFileThenLog(cssOutput + '.map', JSON.stringify(sourceMap));
         }
         await t1;
     }
 
     /**
-     * Gets the PostCSS plugins to be used.
+     * Gets the Clean CSS options using project build flags.
      */
-    get postcssPlugins() {
-        let plugins: any[] = [autoprefixer];
-        if (this.flags.production) {
-            plugins.push(discardComments({
-                removeAll: true
-            }));
-        }
-
-        return plugins;
+    get cleanCssOptions() {
+        return {
+            level: {
+                1: {
+                    specialComments: false
+                }
+            },
+            sourceMap: this.flags.sourceMap,
+            sourceMapInlineSources: this.flags.sourceMap
+        };
     }
 
     /**
-     * Gets the appropriate PostCSS options using project settings and build flags.
+     * Gets the PostCSS options using project settings and build flags.
      */
-    get postcssOptions() {
+    get postCssOptions() {
         let cssOutput = this.settings.outputCssFile;
 
         let options: postcss.ProcessOptions = {

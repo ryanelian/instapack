@@ -68,7 +68,7 @@
     "source-map": "0.7.2",
     "typescript": "2.9.0-dev.20180515",
     "uglify-js": "3.3.25",
-    "upath": "1.0.5",
+    "upath": "1.1.0",
     "vue-loader": "15.0.10",
     "vue-template-compiler": "2.5.16",
     "webpack": "4.8.3",

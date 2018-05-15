@@ -48,7 +48,7 @@
     "build": "tsc"
   },
   "dependencies": {
-    "@babel/core": "7.0.0-beta.46",
+    "@babel/core": "7.0.0-beta.47",
     "autoprefixer": "8.5.0",
     "babel-loader": "8.0.0-beta.2",
     "chalk": "2.4.1",
@@ -66,7 +66,7 @@
     "postcss": "6.0.22",
     "postcss-import": "11.1.0",
     "source-map": "0.7.2",
-    "typescript": "2.8.3",
+    "typescript": "2.9.0-dev.20180515",
     "uglify-js": "3.3.25",
     "upath": "1.0.5",
     "vue-loader": "15.0.10",

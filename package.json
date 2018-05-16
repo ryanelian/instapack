@@ -65,7 +65,7 @@
     "node-sass": "4.9.0",
     "postcss": "6.0.22",
     "postcss-import": "11.1.0",
-    "source-map": "0.7.2",
+    "source-map": "0.7.3",
     "typescript": "2.9.0-dev.20180515",
     "uglify-js": "3.3.25",
     "upath": "1.0.5",

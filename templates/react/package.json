@@ -28,6 +28,6 @@
     "semantic-ui-react": "^0.80.0",
     "sweetalert": "^2.1.0",
     "ts-polyfill": "^0.0.4",
-    "tslib": "^1.9.0"
+    "tslib": "^1.9.1"
   }
 }

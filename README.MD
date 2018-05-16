@@ -114,25 +114,27 @@ You may use `instapack` or `ipack` to invoke the command line interface.
 
 Scaffolds a new instapack project into your existing app folder where the command line is invoked. The following templates are available:
 
-- `empty` when you need a minimal clean slate. (Use this template to author new templates!)
+- `empty` for a minimal clean slate.
 
-- `vue` when you want to develop a web app with [Vue.js](https://vuejs.org/v2/guide/) and [Bootstrap 4](https://getbootstrap.com/). 
+- `vue` for developing a web app using [Vue.js](https://vuejs.org/v2/guide/) and [Bootstrap 4](https://getbootstrap.com/). 
 
   - Includes [aspnet-validation](https://www.npmjs.com/package/aspnet-validation) for ASP.NET MVC client-side validation.
 
-- `react` when you want to develop a web app with [React](https://reactjs.org/) and [Semantic UI](https://semantic-ui.com/).
+- `react` for developing a web app using [React](https://reactjs.org/) and [Semantic UI](https://semantic-ui.com/).
 
-- `preact` when you want to develop a web app with [Preact](https://preactjs.com/). (Fast 3kB alternative to React)
+- `angular` for developing a web app using [the new Angular](https://angular.io/) and [Material Design](https://material.angular.io/).
 
-- `inferno` when you want to develop a web app with [Inferno](https://infernojs.org/). (Insanely fast, React-like)
+- `preact` for developing a web app using [Preact](https://preactjs.com/). (Fast 3kB alternative to React)
 
-- `hyperapp` when you want to develop a web app with [hyperapp](https://github.com/hyperapp/hyperapp). (1kB, with state management)
+- `inferno` for developing a web app using [Inferno](https://infernojs.org/). (Insanely fast, React-like)
 
-- `mithril` when you want to develop a web app with [Mithril](https://mithril.js.org/) and [Tachyons](http://tachyons.io/). (hyperscript, provides routing and XHR)
+- `hyperapp` for developing a web app using [hyperapp](https://github.com/hyperapp/hyperapp). (1kB, with state management)
 
-- `vue-mobile` when you want to develop a _[Progressive Web Application](https://developers.google.com/web/progressive-web-apps/)_ using Vue.js and [Onsen UI](https://onsen.io/vue/)! ([Cordova](https://cordova.apache.org)-compatible, [read more on FAQ ↓](#how-to-develop-a-cordova-app-using-vue-mobile-template))
+- `mithril` for developing a web app using [Mithril](https://mithril.js.org/) and [Tachyons](http://tachyons.io/). (hyperscript, provides routing and XHR)
 
-- `angularjs` when you need to develop a legacy web app with [AngularJS 1.7](https://angularjs.org/) and [Bootstrap 3](http://getbootstrap.com/docs/3.3/).
+- `vue-mobile` for developing a _[Progressive Web Application](https://developers.google.com/web/progressive-web-apps/)_ using Vue.js and [Onsen UI](https://onsen.io/vue/)! ([Cordova](https://cordova.apache.org)-compatible, [read more on FAQ ↓](#how-to-develop-a-cordova-app-using-vue-mobile-template))
+
+- `angularjs` for developing a *legacy* web app using [AngularJS 1.7](https://angularjs.org/) and [Bootstrap 3](http://getbootstrap.com/docs/3.3/).
 
   - Includes [jquery-validation-unobtrusive](https://github.com/aspnet/jquery-validation-unobtrusive) for ASP.NET MVC client-side validation.
 

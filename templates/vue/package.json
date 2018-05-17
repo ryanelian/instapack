@@ -15,23 +15,23 @@
     "@fortawesome/free-regular-svg-icons": "^5.1.0-8",
     "@fortawesome/free-solid-svg-icons": "^5.1.0-8",
     "@fortawesome/vue-fontawesome": "^0.1.0-4",
+    "@types/bootstrap": "^4.1.0",
+    "@types/jquery": "^3.3.2",
     "@types/luxon": "^0.5.2",
     "@types/requirejs": "^2.1.31",
     "aspnet-validation": "^0.0.4",
     "axios": "^0.18.0",
     "bootstrap": "^4.1.1",
+    "jquery": "^3.3.1",
     "linq": "^3.1.0",
     "luxon": "^1.2.0",
     "noty": "^3.2.0-beta",
+    "popper.js": "^1.14.3",
     "sweetalert": "^2.1.0",
     "ts-polyfill": "^0.0.4",
     "tslib": "^1.9.1",
     "vee-validate": "^2.0.9",
     "vue": "^2.5.16",
     "vue-class-component": "^6.2.0"
-  },
-  "devDependencies": {
-    "jquery": "^3.3.1",
-    "popper.js": "^1.14.3"
   }
 }

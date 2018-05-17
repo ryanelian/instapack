@@ -17,12 +17,12 @@
     "fork-awesome": "^1.1.0",
     "linq": "^3.1.0",
     "luxon": "^1.2.0",
-    "onsenui": "^2.9.2",
+    "onsenui": "^2.10.0",
     "pouchdb-browser": "^6.4.3",
     "ts-polyfill": "^0.0.4",
     "tslib": "^1.9.1",
     "vue": "^2.5.16",
     "vue-class-component": "^6.2.0",
-    "vue-onsenui": "^2.5.1"
+    "vue-onsenui": "^2.6.0"
   }
 }

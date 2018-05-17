@@ -19,7 +19,8 @@
   },
   "dependencies": {
     "@types/angular": "^1.6.45",
-    "@types/jquery": "^3.3.1",
+    "@types/bootstrap": "3",
+    "@types/jquery": "^3.3.2",
     "@types/luxon": "^0.5.2",
     "@types/requirejs": "^2.1.31",
     "angular": "^1.7.0",

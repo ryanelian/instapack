@@ -14,15 +14,15 @@
 
 If you encounter [errors](https://github.com/npm/npm/issues/18380) during installation, try:
 
-- Using shell [as Administrator](https://www.howtogeek.com/194041/how-to-open-the-command-prompt-as-administrator-in-windows-8.1/) or elevated privileges (`sudo`), clear the npm cache: `npm cache clean --force` and then: `npm install -g instapack --no-optional`
-
-- Or downgrade to npm 4 to avoid [buggy npm 5](https://github.com/npm/npm/issues/16991): `npm install -g npm@4`
+- Using command prompt [as Administrator](https://www.howtogeek.com/194041/how-to-open-the-command-prompt-as-administrator-in-windows-8.1/) or elevated privileges (`sudo`), update npm: `npm install -g npm`, clear the npm cache: `npm cache clean --force` and then: `npm install -g instapack --no-optional`
 
 - **Or use [Yarn](https://yarnpkg.com/en/docs/install) instead:** `yarn global add instapack`
 
-### Per Project (consistent build)
+### Per-Project (consistent build)
 
-`npm install instapack@[version] -D -E` or `yarn add instapack@[version] -D -E` then modify the project's `package.json`
+`npm install instapack@[version] -D -E` or `yarn add instapack@[version] -D -E` 
+
+- Modify the project `package.json`
 
 ```json
 {
@@ -32,9 +32,9 @@ If you encounter [errors](https://github.com/npm/npm/issues/18380) during instal
 }
 ```
 
-> After that, [`npm run build`](https://docs.npmjs.com/cli/run-script) or [`yarn run build`](https://yarnpkg.com/lang/en/docs/cli/run/)
+- Invoke instapack using [`npm run build`](https://docs.npmjs.com/cli/run-script) or [`yarn run build`](https://yarnpkg.com/lang/en/docs/cli/run/)
 
-> [Programmable Node.js API](https://github.com/ryanelian/instapack/blob/master/src/index.ts) is also provided if you wish to integrate instapack into your own build script.
+- **Alternatively, invoke instapack without modifying `package.json` using:** [`npx ipack` or `npx instapack`](https://medium.com/@maybekatz/introducing-npx-an-npm-package-runner-55f7d4bd282b)
 
 ## Quick Start Guide
 
@@ -112,7 +112,7 @@ You may use `instapack` or `ipack` to invoke the command line interface.
 
 ### new [template]
 
-Scaffolds a new instapack project into your existing app folder where the command line is invoked. The following templates are available:
+Scaffolds a new instapack project into your existing app folder where the command line is invoked. These templates are available:
 
 - `empty` for a minimal clean slate.
 
@@ -262,9 +262,15 @@ so [CDN](https://en.wikipedia.org/wiki/Content_delivery_network) can be used! :t
 }
 ```
 
-## .env
+## Environment Variables
 
-instapack version 6.4.0+ supports `.env` in the project root folder. [Environment variables declared within](https://github.com/motdotla/dotenv) will be used to define `process.env` (using `process.env` in TypeScript requires `@types/node` package installed).
+instapack version 6.4.0+ supports defining variables in `process.env`
+
+> Using `process.env` in your TypeScript project requires `@types/node` package installed.
+
+### .env
+
+The file [`.env`](https://github.com/motdotla/dotenv) in the root project folder will be read and parsed.
 
 **For example:** `FOO=bar` will define `process.env.FOO` as `'bar'`
 
@@ -272,11 +278,11 @@ instapack version 6.4.0+ supports `.env` in the project root folder. [Environmen
 
 ### --env
 
-In addition, build flag `--env` accepts object-like notation to be passed as `process.env` variables. 
+Build flag `--env` accepts object-like notation: 
 
-  - Variables passed using the flag will be merged with variables defined in `.env`
+- Variables passed using the flag will be merged with variables defined in `.env`
 
-  - Variables passed using the flag takes takes priority / overrides the variables defined in `.env`
+- Variables passed using the flag takes takes priority / overrides the variables defined in `.env`
 
 **For example:** `ipack --env.FOO=bar --env.HELLO=world`
 

@@ -14,6 +14,7 @@ const TypeScript = require("typescript");
 class Settings {
     constructor(root, settings) {
         this.root = root || process.cwd();
+        this.root = upath.normalize(this.root);
         this.input = settings.input || 'client';
         this.output = settings.output || 'wwwroot';
         this.concat = settings.concat || {};

@@ -8,7 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 const Settings_1 = require("../Settings");
-const TypeScriptBuildTool_1 = require("../TypeScriptBuildTool");
+const TypeScriptBuildEngine_1 = require("../TypeScriptBuildEngine");
 const Shout_1 = require("../Shout");
 module.exports = function (input, finish) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -16,7 +16,7 @@ module.exports = function (input, finish) {
             Shout_1.Shout.enableNotification = input.flags.notification;
         }
         let settings = new Settings_1.Settings(input.root, input.settings);
-        let tool = new TypeScriptBuildTool_1.TypeScriptBuildTool(settings, input.flags);
+        let tool = new TypeScriptBuildEngine_1.TypeScriptBuildEngine(settings, input.flags);
         try {
             yield tool.build();
             finish(null);

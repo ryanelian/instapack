@@ -1,5 +1,5 @@
 import { Settings } from "../Settings";
-import { TypeScriptBuildTool } from "../TypeScriptBuildTool";
+import { TypeScriptBuildEngine } from "../TypeScriptBuildEngine";
 import { Shout } from "../Shout";
 
 /**
@@ -11,7 +11,7 @@ export = async function (input: IBuildCommand, finish) {
     }
 
     let settings = new Settings(input.root, input.settings);
-    let tool = new TypeScriptBuildTool(settings, input.flags);
+    let tool = new TypeScriptBuildEngine(settings, input.flags);
 
     try {
         await tool.build();

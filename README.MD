@@ -86,19 +86,19 @@ If using [the latest Visual Studio Code](https://code.visualstudio.com/), it sho
 
 - Beginner-friendly: Lower the barrier of entry for developing a modern web app. :balloon:
 
-- Introduce structure to the front-end source code using standard module systems. :office:
+- Introduce structure to the front-end source code using standard module systems. :city_sunrise:
 
 - Improve source code quality and maintainability with type hints and compile-time checks. :eyeglasses:
 
-- Enforce best practices when building apps, which may significantly impact page load time. :airplane: (For example: tree-shaking, bundling, and minification) 
+- Enforce best practices when building apps, which may significantly impact page load time. :hammer_and_wrench: (i.e. tree-shaking, code-splitting, bundling, and minification) 
 
 - Blur the boundary between design-time and coding-time using lightning-fast `watch` + `dev` build mode. :zap:
 
 ## But... Why?
 
-Recently, *every hecking framework on this planet* :earth_asia: has their own CLI; but only few are able to support TypeScript out of the box. Thus, most people gave up on TypeScript right off the bat... :skull:
+Recently, *every hecking framework on this planet* :earth_asia: has their own CLI; but only few are able to support TypeScript as first-class feature. Thus, most people gave up on TypeScript right off the bat... :bat:
 
-instapack is an initiative to develop a command line tool for compiling most apps developed using mainstream JS frameworks, with a :lemon: twist: **It can easily build an app written in TypeScript with minimal or no further configurations!**
+instapack is an initiative to develop a command line tool for compiling most apps developed using mainstream JS frameworks, with a :lemon: twist: **It can easily build an app written in TypeScript with minimal configurations!**
 
 instapack is battle-tested :hocho: and is designed to cover *most normal use cases* when developing a modern web app. Powered by [webpack](https://webpack.js.org), instapack effortlessly devours modules written using modern JS standards (ES Harmony, CommonJS, AMD, UMD) and more (HTML templates, Vue SFC).
 
@@ -140,7 +140,7 @@ If no template parameter is provided, `vue` will be chosen. :vulcan_salute:
 
 ### build [project]
 
-Performs compilation against selected project type. Available projects: `all`, `js`, `css` and `concat`. If no project parameter is provided, `all` will be chosen.
+Performs compilation of selected project type. Available projects: `all`, `js`, `css` and `concat`. If no project parameter is provided, `all` will be chosen.
 
 In addition, build flags are available:
 
@@ -258,7 +258,7 @@ so [CDN](https://en.wikipedia.org/wiki/Content_delivery_network) can be used! :t
 
 ## Environment Variables
 
-instapack version 6.4.0+ supports defining variables in `process.env` global object.
+instapack version 6.4.0+ supports defining variables in `process.env` global object. Variables coming from `process.env` are always strings.
 
 > Using `process.env` in your TypeScript project requires `@types/node` package installed.
 
@@ -279,8 +279,6 @@ Build flag `--env` accepts object-like notation:
 - Variables passed using the flag takes takes priority / overrides the variables defined in `.env`
 
 **For example:** `ipack --env.FOO=bar --env.HELLO=world`
-
-> Variables coming from `process.env` are always strings.
 
 ## Babel (BETA)
 
@@ -395,15 +393,13 @@ export default class Hello extends Vue {
 
 ### Sass @import
 
-instapack also has a custom Node-like but standard-compliant Sass module system using `@import` syntax:
+instapack also has a custom Node-like but standard-compliant Sass module system using `@import` syntax, which picks up CSS files for convenience:
 
 - Include files relative to the source, which include _partial.scss files. (Standard Sass behavior)
 
 - Include files relative to the source in a named folder, but as `index.scss` or `_index.scss` ([Standard Sass behavior](https://github.com/sass/sass/issues/690)) or `index.css`
 
-- Include files resolved from `node_modules`. Also reads `package.json` to locate **CSS** file in `style` field!
-
-> Unlike Sass which ignores `@import` of files explicitly named with `.css` extension (which often caused confusion), instapack will pick up those files!
+- Include files resolved from `node_modules`. Also reads `package.json` to resolve **CSS** file in `style` field!
 
 ## Release Cadence
 

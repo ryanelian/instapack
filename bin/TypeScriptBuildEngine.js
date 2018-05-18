@@ -171,23 +171,27 @@ class TypeScriptBuildEngine {
             ]
         };
     }
+    createOnBuildStartMessageDelegate(tsCompilerOptions) {
+        let buildTargetWarned = false;
+        let compileTarget = tsCompilerOptions.target;
+        if (!compileTarget) {
+            compileTarget = TypeScript.ScriptTarget.ES3;
+        }
+        let t = TypeScript.ScriptTarget[compileTarget].toUpperCase();
+        return () => {
+            if (t !== 'ES5' && !buildTargetWarned) {
+                Shout_1.Shout.danger('TypeScript compile target is not', chalk_1.default.yellow('ES5') + '!', chalk_1.default.grey('(tsconfig.json)'));
+                buildTargetWarned = true;
+            }
+            Shout_1.Shout.timed('Compiling', chalk_1.default.cyan('index.ts'), '>', chalk_1.default.yellow(t), chalk_1.default.grey('in ' + this.settings.inputJsFolder + '/'));
+        };
+    }
     createWebpackPlugins(tsCompilerOptions) {
         return __awaiter(this, void 0, void 0, function* () {
             let plugins = [];
-            let buildTargetWarned = false;
+            let onBuildStart = this.createOnBuildStartMessageDelegate(tsCompilerOptions);
             plugins.push(new TypeScriptBuildWebpackPlugin_1.TypeScriptBuildWebpackPlugin({
-                onBuildStart: () => {
-                    let compileTarget = tsCompilerOptions.target;
-                    if (!compileTarget) {
-                        compileTarget = TypeScript.ScriptTarget.ES3;
-                    }
-                    let t = TypeScript.ScriptTarget[compileTarget].toUpperCase();
-                    if (t !== 'ES5' && !buildTargetWarned) {
-                        Shout_1.Shout.danger('TypeScript compile target is not', chalk_1.default.yellow('ES5') + '!', chalk_1.default.grey('(tsconfig.json)'));
-                        buildTargetWarned = true;
-                    }
-                    Shout_1.Shout.timed('Compiling', chalk_1.default.cyan('index.ts'), '>', chalk_1.default.yellow(t), chalk_1.default.grey('in ' + this.settings.inputJsFolder + '/'));
-                },
+                onBuildStart: onBuildStart,
                 minify: this.flags.production,
                 sourceMap: this.flags.sourceMap
             }));

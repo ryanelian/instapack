@@ -257,29 +257,39 @@ export class TypeScriptBuildEngine {
     }
 
     /**
+     * Returns a delegate which displays message when compile is starting.
+     * Warns user once if target is not ES5, in tsconfig compiler options.  
+     * @param tsCompilerOptions 
+     */
+    createOnBuildStartMessageDelegate(tsCompilerOptions: TypeScript.CompilerOptions) {
+        let buildTargetWarned = false;
+        let compileTarget = tsCompilerOptions.target;
+        if (!compileTarget) {
+            compileTarget = TypeScript.ScriptTarget.ES3;
+        }
+        let t = TypeScript.ScriptTarget[compileTarget].toUpperCase();
+
+        return () => {
+            if (t !== 'ES5' && !buildTargetWarned) {
+                Shout.danger('TypeScript compile target is not', chalk.yellow('ES5') + '!', chalk.grey('(tsconfig.json)'));
+                buildTargetWarned = true;
+            }
+            Shout.timed('Compiling', chalk.cyan('index.ts'),
+                '>', chalk.yellow(t),
+                chalk.grey('in ' + this.settings.inputJsFolder + '/')
+            );
+        };
+    }
+
+    /**
      * Returns webpack plugins array.
      */
     async createWebpackPlugins(tsCompilerOptions: TypeScript.CompilerOptions) {
         let plugins = [];
 
-        let buildTargetWarned = false;
+        let onBuildStart = this.createOnBuildStartMessageDelegate(tsCompilerOptions);
         plugins.push(new TypeScriptBuildWebpackPlugin({
-            onBuildStart: () => {
-                let compileTarget = tsCompilerOptions.target;
-                if (!compileTarget) {
-                    compileTarget = TypeScript.ScriptTarget.ES3;
-                }
-                let t = TypeScript.ScriptTarget[compileTarget].toUpperCase();
-
-                if (t !== 'ES5' && !buildTargetWarned) {
-                    Shout.danger('TypeScript compile target is not', chalk.yellow('ES5') + '!', chalk.grey('(tsconfig.json)'));
-                    buildTargetWarned = true;
-                }
-                Shout.timed('Compiling', chalk.cyan('index.ts'),
-                    '>', chalk.yellow(t),
-                    chalk.grey('in ' + this.settings.inputJsFolder + '/')
-                );
-            },
+            onBuildStart: onBuildStart,
             minify: this.flags.production,
             sourceMap: this.flags.sourceMap
         }));

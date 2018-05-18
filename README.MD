@@ -74,25 +74,23 @@ When using Visual Studio 2015 (Update 3 or above), install [the latest TypeScrip
 
 If using [the latest Visual Studio Code](https://code.visualstudio.com/), it should come with the latest TypeScript support out of the box.
 
-## Features
+## Design Philosophies
 
-- Hyper-opinionated web app client project builder with near-zero configurations. It just works! :sparkling_heart:
+- Zero configurations: Hyper-opinionated front-end project build system. **It just works!** :sparkling_heart:
 
-- Built-in new project scaffold tool. :gift:
+- Unify and standardize team build system across multiple projects, for any JS frameworks. :fist:
+
+- Built-in new project scaffold tool for assorted JS frameworks. :gift:
 
 - Rich debugging experience: set breakpoints, view variables, and step into the TypeScript source code! :mag:
 
-## Design Goals
+- Beginner-friendly: Lower the barrier of entry for developing a modern web app. :balloon:
 
-- Lower the barrier of entry for developing a modern web app. :angel:
-
-- Introduce structure to the app client source code. :office:
+- Introduce structure to the front-end source code. :office:
 
 - Improve source code quality and maintainability with type hints and compile-time checks. :eyeglasses:
 
-- Enforce best practices when building apps, which may significantly impact page load time. (e.g. bundling and minification) :airplane:
-
-- Unify team build system across multiple projects, for any frameworks. :fist:
+- Enforce best practices when building apps, which may significantly impact page load time. (e.g. tree-shaking, bundling, and minification) :airplane:
 
 - Blur the boundary between design time and coding time using lightning fast `watch` + `dev` compilation mode. :zap:
 
@@ -102,7 +100,7 @@ Recently every hecking framework on this planet :earth_asia: has their own CLI, 
 
 instapack is an initiative to develop a command line tool for compiling most apps developed using mainstream JS frameworks, with a :lemon: twist: **It can easily build an app written in TypeScript with minimal or no further configurations!**
 
-Powered by [webpack](https://webpack.js.org), instapack effortlessly devours modules written using modern JS standards (ES Harmony, CommonJS, AMD, UMD) and is capable of importing HTML templates out of the box. instapack is battle-tested :hocho: and is designed to cover *most normal use cases* when developing a modern web app.
+Powered by [webpack](https://webpack.js.org), instapack effortlessly devours modules written using modern JS standards (ES Harmony, CommonJS, AMD, UMD) and more (HTML templates, Vue SFC), out of the box. instapack is battle-tested :hocho: and is designed to cover *most normal use cases* when developing a modern web app.
 
 With this powerful tool, you can save time :watch:, save precious SSD space :space_invader:, and save yourself from the pain of manually maintaining project build scripts! :coffee:
 
@@ -196,12 +194,8 @@ instapack puts configurations inside `package.json` to reduce project files clut
 - `alias` allows overriding module `import` calls from all files, including dependencies. [Read more ↗](https://webpack.js.org/configuration/resolve/)
 
   - [TypeScript `paths` compiler option in `tsconfig.json`](https://www.typescriptlang.org/docs/handbook/module-resolution.html) will be translated into aliases with caveats:
-    
-    - Due to technical limitations, only the first path in the string array will be honored!
-
-    - "All modules" pattern `*` will not be honored because it dirties the packages namespace!
-    
-> Packages are imported without relative paths, therefore `*` path turns all project modules into package imports. This can cause the project to be less maintainable or confusing...
+  
+    - For non-`*` paths: due to technical limitations, only the first path in the string array will be honored.
 
 - `externals` allows rewriting module `import` calls from all files, including dependencies, to globally exposed objects via `window` object. [Read more ↗](https://webpack.js.org/configuration/externals/)
 
@@ -435,7 +429,9 @@ ipack --version
 
 ### Can I use [insert_framework_name_here] ?
 
-Yes, absolutely! **If it worked when using standard JS, it WILL work with instapack!!**
+Yes, absolutely!
+
+**If it worked when using standard JS, it WILL work with instapack.**
 
 Add the packages required for your project using npm / Yarn and then start hacking. We'll take care of the outputs.
 

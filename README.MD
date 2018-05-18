@@ -90,17 +90,17 @@ If using [the latest Visual Studio Code](https://code.visualstudio.com/), it sho
 
 - Improve source code quality and maintainability with type hints and compile-time checks. :eyeglasses:
 
-- Enforce best practices when building apps, which may significantly impact page load time. (e.g. tree-shaking, bundling, and minification) :airplane:
+- Enforce best practices when building apps, which may significantly impact page load time. :airplane: (For example: tree-shaking, bundling, and minification) 
 
-- Blur the boundary between design time and coding time using lightning fast `watch` + `dev` compilation mode. :zap:
+- Blur the boundary between design-time and coding-time using lightning-fast `watch` + `dev` build mode. :zap:
 
 ## But... Why?
 
-Recently every hecking framework on this planet :earth_asia: has their own CLI, but only few are able to support TypeScript out of the box. Hence, most people gave up on TypeScript right off the bat... :broken_heart:
+Recently, *every hecking framework on this planet* :earth_asia: has their own CLI; but only few are able to support TypeScript out of the box. Thus, most people gave up on TypeScript right off the bat... :skull:
 
 instapack is an initiative to develop a command line tool for compiling most apps developed using mainstream JS frameworks, with a :lemon: twist: **It can easily build an app written in TypeScript with minimal or no further configurations!**
 
-Powered by [webpack](https://webpack.js.org), instapack effortlessly devours modules written using modern JS standards (ES Harmony, CommonJS, AMD, UMD) and more (HTML templates, Vue SFC), out of the box. instapack is battle-tested :hocho: and is designed to cover *most normal use cases* when developing a modern web app.
+instapack is battle-tested :hocho: and is designed to cover *most normal use cases* when developing a modern web app. Powered by [webpack](https://webpack.js.org), instapack effortlessly devours modules written using modern JS standards (ES Harmony, CommonJS, AMD, UMD) and more (HTML templates, Vue SFC).
 
 With this powerful tool, you can save time :watch:, save precious SSD space :space_invader:, and save yourself from the pain of manually maintaining project build scripts! :coffee:
 

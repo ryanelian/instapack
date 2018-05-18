@@ -122,7 +122,7 @@ Scaffolds a new instapack project into your existing app folder where the comman
 
 - `react` for developing a web app using [React](https://reactjs.org/) and [Semantic UI](https://semantic-ui.com/).
 
-- `angular` for developing a web app using [the new Angular](https://angular.io/) and [Material Design](https://material.angular.io/).
+- `angular` for developing a web app using [the new Angular](https://angular.io/) and [Material Design](https://material.angular.io/). (Warnings: [1](https://github.com/angular/angular/issues/11580) [2](https://github.com/angular/angular/issues/21560))
 
 - `preact` for developing a web app using [Preact](https://preactjs.com/). (Fast 3kB alternative to React)
 
@@ -264,7 +264,7 @@ so [CDN](https://en.wikipedia.org/wiki/Content_delivery_network) can be used! :t
 
 ## Environment Variables
 
-instapack version 6.4.0+ supports defining variables in `process.env`
+instapack version 6.4.0+ supports defining variables in `process.env` global object.
 
 > Using `process.env` in your TypeScript project requires `@types/node` package installed.
 

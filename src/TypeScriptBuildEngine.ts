@@ -455,7 +455,7 @@ export class TypeScriptBuildEngine {
      * @param webpackConfiguration 
      */
     runWebpackAsync(webpackConfiguration: webpack.Configuration) {
-        return new Promise<void>((ok, reject) => {
+        return new Promise<webpack.Stats>((ok, reject) => {
             webpack(webpackConfiguration, (error, stats) => {
                 if (error) {
                     reject(error);
@@ -496,18 +496,20 @@ export class TypeScriptBuildEngine {
                     }
                 }
 
-                if (this.flags.stats) {
-                    fse.outputJsonSync(this.settings.statJsonPath, stats.toJson());
-                }
-
                 let t = prettyMilliseconds(o.time);
                 Shout.timed('Finished JS build after', chalk.green(t));
 
                 if (this.flags.watch) {
                     return; // do not terminate build worker on watch mode!
                 }
-                ok();
+                ok(stats);
             });
+        }).then(stats => {
+            if (this.flags.stats) {
+                return fse.outputJson(this.settings.statJsonPath, stats.toJson());
+            }
+
+            return Promise.resolve();
         });
     }
 

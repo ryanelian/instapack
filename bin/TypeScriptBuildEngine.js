@@ -354,16 +354,18 @@ class TypeScriptBuildEngine {
                         Shout_1.Shout.timed(chalk_1.default.blue(asset.name), chalk_1.default.magenta(kb), chalk_1.default.grey('in ' + this.settings.outputJsFolder + '/'));
                     }
                 }
-                if (this.flags.stats) {
-                    fse.outputJsonSync(this.settings.statJsonPath, stats.toJson());
-                }
                 let t = PrettyUnits_1.prettyMilliseconds(o.time);
                 Shout_1.Shout.timed('Finished JS build after', chalk_1.default.green(t));
                 if (this.flags.watch) {
                     return;
                 }
-                ok();
+                ok(stats);
             });
+        }).then(stats => {
+            if (this.flags.stats) {
+                return fse.outputJson(this.settings.statJsonPath, stats.toJson());
+            }
+            return Promise.resolve();
         });
     }
     build() {

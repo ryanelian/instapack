@@ -86,7 +86,7 @@ If using [the latest Visual Studio Code](https://code.visualstudio.com/), it sho
 
 - Beginner-friendly: Lower the barrier of entry for developing a modern web app. :balloon:
 
-- Introduce structure to the front-end source code. :office:
+- Introduce structure to the front-end source code using standard module systems. :office:
 
 - Improve source code quality and maintainability with type hints and compile-time checks. :eyeglasses:
 

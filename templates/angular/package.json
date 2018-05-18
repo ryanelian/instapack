@@ -22,10 +22,10 @@
     "@fortawesome/fontawesome-svg-core": "^1.2.0-11",
     "@fortawesome/free-regular-svg-icons": "^5.1.0-8",
     "@fortawesome/free-solid-svg-icons": "^5.1.0-8",
-    "@types/node": "^10.1.0",
+    "@types/node": "^10.1.1",
     "linq": "^3.1.0",
     "rxjs": "^6.1.0",
-    "ts-polyfill": "^0.0.4",
+    "ts-polyfill": "^2.9.0",
     "tslib": "^1.9.1",
     "web-animations-js": "^2.3.1",
     "zone.js": "^0.8.26"

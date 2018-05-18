@@ -15,7 +15,7 @@
     "luxon": "^1.2.0",
     "noty": "^3.2.0-beta",
     "sweetalert": "^2.1.0",
-    "ts-polyfill": "^0.0.4",
+    "ts-polyfill": "^2.9.0",
     "tslib": "^1.9.1"
   }
 }

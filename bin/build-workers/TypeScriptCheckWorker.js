@@ -18,6 +18,7 @@ module.exports = function (input, finish) {
         let settings = new Settings_1.Settings(input.root, input.settings);
         let tool = new TypeScriptCheckerTool_1.TypeScriptCheckerTool(settings);
         try {
+            yield tool.setupCompilerHost();
             yield tool.typeCheck();
             if (input.flags.watch) {
                 tool.watch();

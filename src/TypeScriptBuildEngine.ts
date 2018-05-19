@@ -56,7 +56,7 @@ export class TypeScriptBuildEngine {
      * Translates tsconfig.json paths into webpack-compatible aliases!
      */
     private getWebpackAlias(tsCompilerOptions: TypeScript.CompilerOptions): IMapLike<string> {
-        let alias: IMapLike<string> = JSON.parse(JSON.stringify(this.settings.alias));
+        let alias: IMapLike<string> = Object.assign({}, this.settings.alias);
 
         if (!tsCompilerOptions.paths) {
             return alias;
@@ -330,7 +330,7 @@ export class TypeScriptBuildEngine {
      */
     async createWebpackConfiguration() {
         let useBabel = await fse.pathExists(this.settings.babelConfiguration);
-        let tsconfig = this.settings.readTsConfig();
+        let tsconfig = await this.settings.readTsConfig();
         // console.log(tsconfig.errors);
         let tsCompilerOptions = tsconfig.options;
         tsCompilerOptions.noEmit = false;

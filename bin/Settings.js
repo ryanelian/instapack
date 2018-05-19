@@ -59,15 +59,18 @@ class Settings {
         return upath.join(this.root, '.env');
     }
     readTsConfig() {
-        let tsconfigJson = TypeScript.readConfigFile(this.tsConfigJson, TypeScript.sys.readFile);
-        if (tsconfigJson.error) {
-            throw Error(tsconfigJson.error.messageText.toString());
-        }
-        let tsconfig = TypeScript.parseJsonConfigFileContent(tsconfigJson.config, TypeScript.sys, this.root);
-        if (tsconfig.errors.length) {
-            throw Error(tsconfig.errors[0].messageText.toString());
-        }
-        return tsconfig;
+        return __awaiter(this, void 0, void 0, function* () {
+            let tsconfigRaw = yield fse.readFile(this.tsConfigJson, 'utf8');
+            let tsconfigJson = TypeScript.parseConfigFileTextToJson(this.tsConfigJson, tsconfigRaw);
+            if (tsconfigJson.error) {
+                throw Error(tsconfigJson.error.messageText.toString());
+            }
+            let tsconfig = TypeScript.parseJsonConfigFileContent(tsconfigJson.config, TypeScript.sys, this.root);
+            if (tsconfig.errors.length) {
+                throw Error(tsconfig.errors[0].messageText.toString());
+            }
+            return tsconfig;
+        });
     }
     get npmFolder() {
         return upath.join(this.root, 'node_modules');

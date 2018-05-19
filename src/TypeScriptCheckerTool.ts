@@ -3,13 +3,11 @@ import chalk from 'chalk';
 import * as fse from 'fs-extra';
 import * as upath from 'upath';
 import * as chokidar from 'chokidar';
-import * as glob from 'glob';
-import * as templateCompiler from 'vue-template-compiler';
-import { createHash } from 'crypto';
 
 import { Settings } from './Settings';
 import { prettyHrTime } from './PrettyUnits';
 import { Shout } from './Shout';
+import { VirtualSourceStore } from './VirtualSourceStore';
 
 /**
  * Contains methods for static-checking TypeScript projects. 
@@ -22,42 +20,19 @@ export class TypeScriptCheckerTool {
     private readonly settings: Settings;
 
     /**
-     * Gets the raw files cache.
-     * Key-value pair of file name to cached raw file content. Used for caching TypeScript Compiler Host readFile method.
-     */
-    private readonly files: IMapLike<string> = {};
-
-    /**
-     * Gets the source files cache.
-     * Key-value pair of file name to TypeScript SourceFile. Used for caching TypeScript Compiler Host getSourceFile method.
-     */
-    private readonly sources: IMapLike<TypeScript.SourceFile> = {};
-
-    /**
-     * Gets the file versions store.
-     * Key-value pair of file name to a unique hash of its content. Used for detecting whether a file has been changed.
-     */
-    private readonly versions: IMapLike<string> = {};
-
-    /**
-     * Gets the entry points to the TypeScript Program.
-     */
-    private includeFiles: Set<string>;
-
-    /**
-     * Gets the tracked .vue source code files.
-     */
-    private vueFiles: Set<string>;
-
-    /**
      * Gets the shared TypeScript compiler options.
      */
-    private readonly compilerOptions: TypeScript.CompilerOptions;
+    private compilerOptions: TypeScript.CompilerOptions;
 
     /**
      * Gets the shared TypeScript compiler host.
      */
-    private readonly host: TypeScript.CompilerHost;
+    private host: TypeScript.CompilerHost;
+
+    /**
+     * Gets the TypeScript cache management object.
+     */
+    private virtualSourceStore: VirtualSourceStore;
 
     /**
      * Constructs a new instance of TypeScriptCheckerTool using provided instapack Settings.
@@ -65,187 +40,59 @@ export class TypeScriptCheckerTool {
      */
     constructor(settings: Settings) {
         this.settings = settings;
-        let tsconfig = settings.readTsConfig();
+    }
 
-        let definitions = tsconfig.fileNames.filter(Q => Q.endsWith('.d.ts'));
-        this.includeFiles = new Set<string>(definitions);
-        this.includeFiles.add(this.settings.jsEntry);
-
+    /**
+     * Use project tsconfig.json to setup TypeScript Compiler Host with in-memory caching mechanism.
+     */
+    async setupCompilerHost() {
+        let tsconfig = await this.settings.readTsConfig();
         this.compilerOptions = tsconfig.options;
 
+        this.virtualSourceStore = new VirtualSourceStore(this.compilerOptions);
+        let definitions = tsconfig.fileNames.filter(Q => Q.endsWith('.d.ts'));
+        this.virtualSourceStore.includeFile(this.settings.jsEntry);
+        this.virtualSourceStore.includeFiles(definitions);
+
         this.host = TypeScript.createCompilerHost(tsconfig.options);
+
+        let rawFileCache: IMapLike<string> = {};
         this.host.readFile = (fileName) => {
             // Apparently this is being used by TypeScript to read package.json in node_modules...
             // Probably to find .d.ts files?
 
-            if (this.files[fileName]) {
+            if (rawFileCache[fileName]) {
                 // console.log('READ (cache) ' + fileName);
-                return this.files[fileName];
+                return rawFileCache[fileName];
             }
 
             // package.json in node_modules should never change. Cache the contents once and re-use.
             // console.log('READ ' + fileName);
 
             let fileContent = fse.readFileSync(fileName, 'utf8');
-            this.files[fileName] = fileContent;
-            this.versions[fileName] = this.getFileContentHash(fileContent);
+            rawFileCache[fileName] = fileContent;
             return fileContent;
         }
 
         this.host.getSourceFile = (fileName, languageVersion, onError, shouldCreateNewSourceFile) => {
-            if (this.sources[fileName]) {
-                // console.log('SOURCE (cache) ' + fileName);
-                return this.sources[fileName];
-            }
-
-            // Cache Miss: should only happen during...
-            // 1. first-time check.
-            // 2. importing existing files which were not imported during first-time check.
-            // Subsequent queries SHOULD be cached prior checking by the watch function.
-
-            // console.log('SOURCE ' + fileName);
-            this.addOrUpdateSourceFileCache(fileName);
-            return this.sources[fileName];
+            return this.virtualSourceStore.getSource(fileName);
         }
+
+        // How to add new file format / extension:
+        // 1. add exotic source glob (and watch)
+        // 2. add logic to parseThenStoreSource
+        // 3. add check to delete virtual file path condition
+        await this.virtualSourceStore.addExoticSources(this.settings.vueGlobs);
+        await this.virtualSourceStore.preloadSources();
     }
 
     /**
-     * Reads TypeScript source code from virtual .vue.ts file,
-     * which corresponds to the real .vue file when script language is TypeScript.
-     * @param fileName 
-     */
-    private parseVueSource(fileName: string): string {
-        let redirect = upath.removeExt(fileName, '.ts');
-        let vue = fse.readFileSync(redirect, 'utf8');
-        let parse = templateCompiler.parseComponent(vue);
-
-        if (!parse.script) {
-            return '';
-        }
-
-        if (parse.script.lang !== 'ts') {
-            return '';
-        }
-
-        let charIndex: number = parse.script.start;
-        let newlines = vue.substr(0, charIndex).match(/\r\n|\n|\r/g);
-        let code: string = parse.script.content;
-
-        if (newlines) {
-            for (let newline of newlines) {
-                code = '//' + newline + code;
-            }
-        }
-
-        // console.log(code);
-        return code;
-    }
-
-    /**
-     * Reads the SourceFile from disk then version it.
-     * If the version changes, update the cache and return true.
-     * Otherwise, returns false.
-     * @param fileName 
-     */
-    private addOrUpdateSourceFileCache(fileName: string): boolean {
-        // console.log(fileName);
-
-        if (fileName.endsWith('.d.ts')) {
-            this.includeFiles.add(fileName);
-        }
-
-        // chokidar passes file name with .vue extension...
-        if (fileName.endsWith('.vue')) {
-            this.vueFiles.add(fileName);
-            fileName = fileName + '.ts';
-        }
-
-        let text: string;
-        // TypeScript requires file name with .ts extension!
-        if (fileName.endsWith('.vue.ts')) {
-            text = this.parseVueSource(fileName);
-        } else {
-            text = fse.readFileSync(fileName, 'utf8');
-        }
-
-        let version = this.getFileContentHash(text);
-        let lastVersion = this.versions[fileName];
-
-        if (version === lastVersion) {
-            return false;
-        }
-
-        // https://github.com/Microsoft/TypeScript/blob/master/src/compiler/program.ts
-        this.sources[fileName] = TypeScript.createSourceFile(fileName, text, this.compilerOptions.target);
-        this.versions[fileName] = version;
-        return true;
-    }
-
-    /**
-     * Removes source file from cache.
-     * If file is a TypeScript definition file: put into root included files.
-     * If file is a Vue single-file component: track, then rename extension.
-     * @param fileName 
-     */
-    private tryDeleteSourceFileCache(fileName: string): boolean {
-        if (fileName.endsWith('.d.ts') && this.includeFiles.has(fileName)) {
-            this.includeFiles.delete(fileName);
-        }
-
-        if (fileName.endsWith('.vue') && this.vueFiles.has(fileName)) {
-            this.vueFiles.delete(fileName);
-            fileName = fileName + '.ts';
-        }
-
-        if (this.sources[fileName]) {
-            delete this.sources[fileName];
-            delete this.versions[fileName];
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Versions a text-based file content using fast SHA-512 algorithm.
-     * @param content 
-     */
-    private getFileContentHash(content: string) {
-        let hash = createHash('sha512');
-        hash.update(content);
-        return hash.digest('hex');
-    }
-
-    /**
-     * Performs full static check (semantic and syntactic diagnostics) against the TypeScript project using the project entry file.
+     * Performs full static check (semantic and syntactic diagnostics) against the TypeScript application project.
      */
     async typeCheck() {
-        let rootFiles = Array.from(this.includeFiles);
-
-        // gather all vue files using glob pattern, then append .ts extension to enable type-check!
-        // glob scan happens one-time during initial type-check only, and then cached for performance.
-        // future file addition / deletion should during watch mode should manipulate vueFiles Set.
-        if (this.vueFiles === undefined) {
-            this.vueFiles = new Set<string>();
-            await new Promise((ok, reject) => {
-                glob(this.settings.vueGlobs, (error, files) => {
-                    if (error) {
-                        reject(error);
-                    }
-                    for (let file of files) {
-                        this.vueFiles.add(file);
-                    }
-                    ok();
-                });
-            });
-        }
-
-        for (let file of this.vueFiles) {
-            rootFiles.push(file + '.ts');
-        }
-        // console.log(rootFiles);
-
-        let tsc = TypeScript.createProgram(rootFiles, this.compilerOptions, this.host);
+        let entryPoints = this.virtualSourceStore.entryFilePaths;
+        // console.log(entryPoints);
+        let tsc = TypeScript.createProgram(entryPoints, this.compilerOptions, this.host);
 
         Shout.timed('Type-checking using TypeScript', chalk.yellow(TypeScript.version));
         let start = process.hrtime();
@@ -292,8 +139,9 @@ export class TypeScriptCheckerTool {
             let error = chalk.red('TS' + diagnostic.code) + ' ';
 
             if (diagnostic.file) {
+                let realFileName = this.virtualSourceStore.getRealFilePath(diagnostic.file.fileName);
                 let { line, character } = diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start!);
-                error += chalk.red(diagnostic.file.fileName) + ' ' + chalk.yellow(`(${line + 1},${character + 1})`) + ':\n';
+                error += chalk.red(realFileName) + ' ' + chalk.yellow(`(${line + 1},${character + 1})`) + ':\n';
             }
 
             error += TypeScript.flattenDiagnosticMessageText(diagnostic.messageText, "\n");
@@ -324,23 +172,25 @@ export class TypeScriptCheckerTool {
             .on('add', (file: string) => {
                 file = upath.toUnix(file);
 
-                this.addOrUpdateSourceFileCache(file);
-                Shout.typescript(chalk.grey('tracking new file:', file));
-                debounce();
+                this.virtualSourceStore.addOrUpdateSourceAsync(file).then(changed => {
+                    Shout.typescript(chalk.grey('tracking new file:', file));
+                    debounce();
+                });
             })
             .on('change', (file: string) => {
                 file = upath.toUnix(file);
 
-                let changed = this.addOrUpdateSourceFileCache(file);
-                if (changed) {
-                    Shout.typescript(chalk.grey('updating file:', file));
-                    debounce();
-                }
+                this.virtualSourceStore.addOrUpdateSourceAsync(file).then(changed => {
+                    if (changed) {
+                        Shout.typescript(chalk.grey('updating file:', file));
+                        debounce();
+                    }
+                });
             })
             .on('unlink', (file: string) => {
                 file = upath.toUnix(file);
 
-                let deleted = this.tryDeleteSourceFileCache(file);
+                let deleted = this.virtualSourceStore.tryRemoveSource(file);
                 if (deleted) {
                     Shout.typescript(chalk.grey('removing file:', file));
                     debounce();

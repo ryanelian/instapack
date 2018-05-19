@@ -15,6 +15,7 @@ export = async function (input: IBuildCommand, finish) {
     let tool = new TypeScriptCheckerTool(settings);
 
     try {
+        await tool.setupCompilerHost();
         await tool.typeCheck();
         if (input.flags.watch) {
             tool.watch();

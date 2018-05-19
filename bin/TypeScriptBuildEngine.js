@@ -32,7 +32,7 @@ class TypeScriptBuildEngine {
         return result;
     }
     getWebpackAlias(tsCompilerOptions) {
-        let alias = JSON.parse(JSON.stringify(this.settings.alias));
+        let alias = Object.assign({}, this.settings.alias);
         if (!tsCompilerOptions.paths) {
             return alias;
         }
@@ -218,7 +218,7 @@ class TypeScriptBuildEngine {
     createWebpackConfiguration() {
         return __awaiter(this, void 0, void 0, function* () {
             let useBabel = yield fse.pathExists(this.settings.babelConfiguration);
-            let tsconfig = this.settings.readTsConfig();
+            let tsconfig = yield this.settings.readTsConfig();
             let tsCompilerOptions = tsconfig.options;
             tsCompilerOptions.noEmit = false;
             tsCompilerOptions.sourceMap = this.flags.sourceMap;

@@ -54,7 +54,7 @@ export class Settings {
     constructor(root: string, settings: ISettingsCore) {
         this.root = root || process.cwd();
         this.root = upath.normalize(this.root);
-        
+
         this.input = settings.input || 'client';
         this.output = settings.output || 'wwwroot';
         this.concat = settings.concat || {};
@@ -131,10 +131,14 @@ export class Settings {
     }
 
     /**
-     * Reads the content of tsconfig.json.
+     * Asynchronously reads the content of project tsconfig.json.
      */
-    readTsConfig(): TypeScript.ParsedCommandLine {
-        let tsconfigJson = TypeScript.readConfigFile(this.tsConfigJson, TypeScript.sys.readFile);
+    async readTsConfig(): Promise<TypeScript.ParsedCommandLine> {
+        let tsconfigRaw = await fse.readFile(this.tsConfigJson, 'utf8');
+        // console.log(tsconfigRaw);
+
+        // https://github.com/Microsoft/TypeScript/blob/master/src/compiler/commandLineParser.ts#L992
+        let tsconfigJson = TypeScript.parseConfigFileTextToJson(this.tsConfigJson, tsconfigRaw);
         if (tsconfigJson.error) {
             throw Error(tsconfigJson.error.messageText.toString());
         }

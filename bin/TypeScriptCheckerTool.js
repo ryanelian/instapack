@@ -119,8 +119,9 @@ class TypeScriptCheckerTool {
     }
     renderLintFailure(failure) {
         let { line, character } = failure.getStartPosition().getLineAndCharacter();
+        let realFileName = this.virtualSourceStore.getRealFilePath(failure.getFileName());
         let lintErrorMessage = chalk_1.default.red('TSLINT') + ' '
-            + chalk_1.default.red(failure.getFileName()) + ' '
+            + chalk_1.default.red(realFileName) + ' '
             + chalk_1.default.yellow(`(${line + 1},${character + 1})`) + ':\n'
             + failure.getFailure();
         return lintErrorMessage;

@@ -190,8 +190,10 @@ export class TypeScriptCheckerTool {
      */
     renderLintFailure(failure: tslint.RuleFailure): string {
         let { line, character } = failure.getStartPosition().getLineAndCharacter();
+        let realFileName = this.virtualSourceStore.getRealFilePath(failure.getFileName());
+
         let lintErrorMessage = chalk.red('TSLINT') + ' '
-            + chalk.red(failure.getFileName()) + ' '
+            + chalk.red(realFileName) + ' '
             + chalk.yellow(`(${line + 1},${character + 1})`) + ':\n'
             + failure.getFailure();
 

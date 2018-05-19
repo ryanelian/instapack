@@ -15,6 +15,7 @@ const TypeScript = require("typescript");
 const vueTemplateCompiler = require("vue-template-compiler");
 class VirtualSourceStore {
     constructor(tsCompilerOptions) {
+        this.raw = {};
         this.sources = {};
         this.versions = {};
         this.virtualToRealFilePaths = {};
@@ -104,6 +105,7 @@ class VirtualSourceStore {
         if (version === lastVersion) {
             return false;
         }
+        this.raw[virtualFilePath] = raw;
         this.sources[virtualFilePath] = TypeScript.createSourceFile(virtualFilePath, raw, this.tsCompilerOptions.target);
         this.versions[virtualFilePath] = version;
         return true;
@@ -136,6 +138,7 @@ class VirtualSourceStore {
             delete this.virtualToRealFilePaths[virtualFilePath];
         }
         if (this.sources[virtualFilePath]) {
+            delete this.raw[virtualFilePath];
             delete this.sources[virtualFilePath];
             delete this.versions[virtualFilePath];
             return true;

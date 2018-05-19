@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const TypeScript = require("typescript");
+const tslint = require("tslint");
 const chalk_1 = require("chalk");
 const fse = require("fs-extra");
 const upath = require("upath");
@@ -43,12 +44,21 @@ class TypeScriptCheckerTool {
             };
             yield this.virtualSourceStore.addExoticSources(this.settings.vueGlobs);
             yield this.virtualSourceStore.preloadSources();
+            let tslintFind = tslint.Configuration.findConfiguration(null, this.settings.root);
+            if (tslintFind.path) {
+                Shout_1.Shout.timed('tslint:', chalk_1.default.cyan(tslintFind.path));
+                this.tslintConfiguration = tslintFind.results;
+            }
         });
     }
     typeCheck() {
         return __awaiter(this, void 0, void 0, function* () {
             let entryPoints = this.virtualSourceStore.entryFilePaths;
             let tsc = TypeScript.createProgram(entryPoints, this.compilerOptions, this.host);
+            let doLint = Boolean(this.tslintConfiguration);
+            let linter = new tslint.Linter({
+                fix: false
+            });
             Shout_1.Shout.timed('Type-checking using TypeScript', chalk_1.default.yellow(TypeScript.version));
             let start = process.hrtime();
             try {
@@ -63,11 +73,18 @@ class TypeScriptCheckerTool {
                     for (let error of newErrors) {
                         errors.push(error);
                     }
+                    if (newErrors.length === 0 && doLint) {
+                        linter.lint(source.fileName, this.virtualSourceStore.raw[source.fileName], this.tslintConfiguration);
+                    }
                 }
-                if (!errors.length) {
-                    console.log(chalk_1.default.green('Types OK') + chalk_1.default.grey(': Successfully checked TypeScript project without errors.'));
+                if (doLint) {
+                    let lintResult = linter.getResult();
+                    for (let failure of lintResult.failures) {
+                        let lintErrorMessage = this.renderLintFailure(failure);
+                        errors.push(lintErrorMessage);
+                    }
                 }
-                else {
+                if (errors.length > 0) {
                     if (errors.length === 1) {
                         Shout_1.Shout.notify(`You have one TypeScript check error!`);
                     }
@@ -76,6 +93,9 @@ class TypeScriptCheckerTool {
                     }
                     let errorsOut = '\n' + errors.join('\n\n') + '\n';
                     console.error(errorsOut);
+                }
+                else {
+                    console.log(chalk_1.default.green('Types OK') + chalk_1.default.grey(': Successfully checked TypeScript project without errors.'));
                 }
             }
             finally {
@@ -96,6 +116,14 @@ class TypeScriptCheckerTool {
             return error;
         });
         return errors;
+    }
+    renderLintFailure(failure) {
+        let { line, character } = failure.getStartPosition().getLineAndCharacter();
+        let lintErrorMessage = chalk_1.default.red('TSLINT') + ' '
+            + chalk_1.default.red(failure.getFileName()) + ' '
+            + chalk_1.default.yellow(`(${line + 1},${character + 1})`) + ':\n'
+            + failure.getFailure();
+        return lintErrorMessage;
     }
     watch() {
         let debounced;

@@ -1,4 +1,5 @@
 import * as TypeScript from 'typescript';
+import * as tslint from 'tslint';
 import chalk from 'chalk';
 import * as fse from 'fs-extra';
 import * as upath from 'upath';
@@ -33,6 +34,11 @@ export class TypeScriptCheckerTool {
      * Gets the TypeScript cache management object.
      */
     private virtualSourceStore: VirtualSourceStore;
+
+    /**
+     * Gets tslint Configuration object, if exists.
+     */
+    private tslintConfiguration: tslint.Configuration.IConfigurationFile;
 
     /**
      * Constructs a new instance of TypeScriptCheckerTool using provided instapack Settings.
@@ -84,6 +90,12 @@ export class TypeScriptCheckerTool {
         // 3. add check to delete virtual file path condition
         await this.virtualSourceStore.addExoticSources(this.settings.vueGlobs);
         await this.virtualSourceStore.preloadSources();
+
+        let tslintFind = tslint.Configuration.findConfiguration(null, this.settings.root);
+        if (tslintFind.path) {
+            Shout.timed('tslint:', chalk.cyan(tslintFind.path));
+            this.tslintConfiguration = tslintFind.results;
+        }
     }
 
     /**
@@ -93,6 +105,11 @@ export class TypeScriptCheckerTool {
         let entryPoints = this.virtualSourceStore.entryFilePaths;
         // console.log(entryPoints);
         let tsc = TypeScript.createProgram(entryPoints, this.compilerOptions, this.host);
+
+        let doLint = Boolean(this.tslintConfiguration);
+        let linter = new tslint.Linter({
+            fix: false
+        });
 
         Shout.timed('Type-checking using TypeScript', chalk.yellow(TypeScript.version));
         let start = process.hrtime();
@@ -111,10 +128,24 @@ export class TypeScriptCheckerTool {
                 for (let error of newErrors) {
                     errors.push(error);
                 }
+
+                // https://palantir.github.io/tslint/usage/library/
+                // "Please ensure that the TypeScript source files compile correctly before running the linter."
+                if (newErrors.length === 0 && doLint) {
+                    linter.lint(source.fileName, this.virtualSourceStore.raw[source.fileName], this.tslintConfiguration);
+                }
             }
-            if (!errors.length) {
-                console.log(chalk.green('Types OK') + chalk.grey(': Successfully checked TypeScript project without errors.'));
-            } else {
+
+            if (doLint) {
+                let lintResult = linter.getResult();
+                // console.log(lintResult);
+                for (let failure of lintResult.failures) {
+                    let lintErrorMessage = this.renderLintFailure(failure);
+                    errors.push(lintErrorMessage);
+                }
+            }
+
+            if (errors.length > 0) {
                 if (errors.length === 1) {
                     Shout.notify(`You have one TypeScript check error!`);
                 } else {
@@ -123,6 +154,8 @@ export class TypeScriptCheckerTool {
 
                 let errorsOut = '\n' + errors.join('\n\n') + '\n';
                 console.error(errorsOut);
+            } else {
+                console.log(chalk.green('Types OK') + chalk.grey(': Successfully checked TypeScript project without errors.'));
             }
         } finally {
             let time = prettyHrTime(process.hrtime(start));
@@ -134,7 +167,7 @@ export class TypeScriptCheckerTool {
      * Converts a collection of TypeScript Diagnostic objects to an array of colorful strings.
      * @param diagnostics 
      */
-    renderDiagnostics(diagnostics: TypeScript.Diagnostic[]) {
+    renderDiagnostics(diagnostics: TypeScript.Diagnostic[]): string[] {
         let errors = diagnostics.map(diagnostic => {
             let error = chalk.red('TS' + diagnostic.code) + ' ';
 
@@ -149,6 +182,20 @@ export class TypeScriptCheckerTool {
         });
 
         return errors;
+    }
+
+    /**
+     * Converts tslint failure object to instapack-formatted error message. 
+     * @param failure 
+     */
+    renderLintFailure(failure: tslint.RuleFailure): string {
+        let { line, character } = failure.getStartPosition().getLineAndCharacter();
+        let lintErrorMessage = chalk.red('TSLINT') + ' '
+            + chalk.red(failure.getFileName()) + ' '
+            + chalk.yellow(`(${line + 1},${character + 1})`) + ':\n'
+            + failure.getFailure();
+
+        return lintErrorMessage;
     }
 
     /**

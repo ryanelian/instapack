@@ -132,7 +132,7 @@ export class TypeScriptCheckerTool {
                 // https://palantir.github.io/tslint/usage/library/
                 // "Please ensure that the TypeScript source files compile correctly before running the linter."
                 if (newErrors.length === 0 && doLint) {
-                    linter.lint(source.fileName, this.virtualSourceStore.raw[source.fileName], this.tslintConfiguration);
+                    linter.lint(source.fileName, source.text, this.tslintConfiguration);
                 }
             }
 

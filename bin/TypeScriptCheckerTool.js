@@ -74,7 +74,7 @@ class TypeScriptCheckerTool {
                         errors.push(error);
                     }
                     if (newErrors.length === 0 && doLint) {
-                        linter.lint(source.fileName, this.virtualSourceStore.raw[source.fileName], this.tslintConfiguration);
+                        linter.lint(source.fileName, source.text, this.tslintConfiguration);
                     }
                 }
                 if (doLint) {

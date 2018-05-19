@@ -8,12 +8,6 @@ import * as vueTemplateCompiler from 'vue-template-compiler';
  * Contains virtual and cached source code for TypeScript project.
  */
 export class VirtualSourceStore {
-
-    /**
-     * Gets the lookup from virtual source file path to raw source file content. (For tslint)
-     */
-    readonly raw: IMapLike<string> = {};
-
     /**
      * Gets the lookup from virtual source file path to TypeScript source file.
      */
@@ -190,7 +184,6 @@ export class VirtualSourceStore {
         }
 
         // https://github.com/Microsoft/TypeScript/blob/master/src/compiler/program.ts
-        this.raw[virtualFilePath] = raw;
         this.sources[virtualFilePath] = TypeScript.createSourceFile(virtualFilePath, raw, this.tsCompilerOptions.target);
         this.versions[virtualFilePath] = version;
         return true;
@@ -250,7 +243,6 @@ export class VirtualSourceStore {
         }
 
         if (this.sources[virtualFilePath]) {
-            delete this.raw[virtualFilePath];
             delete this.sources[virtualFilePath];
             delete this.versions[virtualFilePath];
             return true;

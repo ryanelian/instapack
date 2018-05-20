@@ -67,7 +67,7 @@
     "postcss-import": "11.1.0",
     "source-map": "0.7.3",
     "typescript": "2.9.0-rc",
-    "uglify-js": "3.3.25",
+    "uglify-js": "3.3.26",
     "upath": "1.1.0",
     "vue-loader": "15.0.11",
     "vue-template-compiler": "2.5.16",

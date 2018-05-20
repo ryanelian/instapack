@@ -280,7 +280,45 @@ Build flag `--env` accepts object-like notation:
 
 **For example:** `ipack --env.FOO=bar --env.HELLO=world`
 
-## Babel (BETA)
+## TSLint Integration
+
+instapack version 6.5.0+ supports [`tslint.json` / `tslint.yaml`](https://palantir.github.io/tslint/usage/configuration/) in the project root folder. Here are some sensible, useful [rules](https://palantir.github.io/tslint/usage/rule-flags/) which greatly reduce programming blunders:
+
+```json
+{
+  "rules": {
+    "ban-comma-operator": true,
+    "curly": true,
+    "no-conditional-assignment": true,
+    "no-duplicate-super": true,
+    "no-duplicate-switch-case": true,
+    "no-dynamic-delete": true,
+    "no-eval": true,
+    "no-for-in-array": true,
+    "no-object-literal-type-assertion": true,
+    "no-shadowed-variable": true,
+    "no-sparse-arrays": true,
+    "no-string-throw": true,
+    "no-unbound-method": true,
+    "no-unsafe-finally": true,
+    "no-var-keyword": true,
+    "switch-default": true,
+    "triple-equals": true,
+    "use-isnan": true,
+    "class-name": true,
+    "interface-name": true,
+    "variable-name": [
+      true,
+      "check-format",
+      "ban-keywords"
+    ]
+  }
+}
+```
+
+> Source file will be linted only when it can be compiled correctly.
+
+## Babel Integration (BETA)
 
 instapack version 6.4.0+ supports `.babelrc` in the project root folder. Here are some use cases where this feature can be useful:
 

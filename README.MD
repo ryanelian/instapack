@@ -304,14 +304,7 @@ instapack version 6.5.0+ supports [`tslint.json` / `tslint.yaml`](https://palant
     "no-var-keyword": true,
     "switch-default": true,
     "triple-equals": true,
-    "use-isnan": true,
-    "class-name": true,
-    "interface-name": true,
-    "variable-name": [
-      true,
-      "check-format",
-      "ban-keywords"
-    ]
+    "use-isnan": true
   }
 }
 ```

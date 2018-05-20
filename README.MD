@@ -313,9 +313,9 @@ instapack version 6.5.0+ supports [`tslint.json` / `tslint.yaml`](https://palant
 
 ## Babel Integration (BETA)
 
-instapack version 6.4.0+ supports `.babelrc` in the project root folder. Here are some use cases where this feature can be useful:
+instapack version 6.4.0+ supports [`.babelrc`](https://babeljs.io/docs/usage/babelrc/) in the project root folder. Here are some use cases where this feature can be useful:
 
-- You may use Babel instead of TypeScript to transpile JS to ES5: set TypeScript `target` to `esnext` then use `@babel/preset-env`
+- You may use Babel instead of TypeScript to transpile JS to ES5: set TypeScript `target` to `esnext` then use [`@babel/preset-env`](https://github.com/babel/babel/tree/master/packages/babel-preset-env)
 
 - You may use Babel instead of TypeScript to compile JSX: set TypeScript `jsx` to `preserve` then use the framework-compatible JSX plugin. For example: `babel-plugin-transform-react-jsx`, `babel-plugin-transform-vue-jsx`, `babel-plugin-inferno`
 

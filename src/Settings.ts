@@ -75,7 +75,7 @@ export class Settings {
     /**
      * Obtains simple and serializable object for constructing a full Settings object.
      */
-    get core() {
+    get core(): ISettingsCore {
         return {
             alias: this.alias,
             concat: this.concat,
@@ -84,7 +84,7 @@ export class Settings {
             input: this.input,
             jsOut: this.jsOut,
             output: this.output
-        } as ISettingsCore;
+        };
     }
 
     /**

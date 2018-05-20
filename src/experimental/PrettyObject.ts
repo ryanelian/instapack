@@ -61,7 +61,9 @@ export class PrettyObject {
      */
     getPropertySpacer(o) {
         if (this.isObject(o)) {
-            if (Object.keys(o).length === 0) return '';
+            if (Object.keys(o).length === 0) {
+                return '';
+            };
             return '\n';
         } else {
             return ' ';

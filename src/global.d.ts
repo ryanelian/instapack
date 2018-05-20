@@ -13,8 +13,7 @@ interface ISettingsCore {
     output: string;
     concat: IMapLike<string[]>;
     alias: IMapLike<string>;
-    externals: IMapLike<string>
-    template: string;
+    externals: IMapLike<string>;
     jsOut: string;
     cssOut: string;
 }

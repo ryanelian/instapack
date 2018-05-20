@@ -239,12 +239,12 @@ export class VirtualSourceStore {
         let virtualFilePath = realFilePath;
         if (virtualFilePath.endsWith('.vue')) {
             virtualFilePath = virtualFilePath + '.ts';
-            delete this.virtualToRealFilePaths[virtualFilePath];
+            this.virtualToRealFilePaths[virtualFilePath] = undefined;
         }
 
         if (this.sources[virtualFilePath]) {
-            delete this.sources[virtualFilePath];
-            delete this.versions[virtualFilePath];
+            this.sources[virtualFilePath] = undefined;
+            this.versions[virtualFilePath] = undefined;
             return true;
         }
 

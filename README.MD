@@ -282,7 +282,7 @@ Build flag `--env` accepts object-like notation:
 
 ## TSLint Integration
 
-instapack version 6.5.0+ supports [`tslint.json` / `tslint.yaml`](https://palantir.github.io/tslint/usage/configuration/) in the project root folder. Here are some sensible, useful [rules](https://palantir.github.io/tslint/usage/rule-flags/) which greatly reduce programming blunders:
+instapack version 6.5.0+ supports [`tslint.json` / `tslint.yaml`](https://palantir.github.io/tslint/usage/configuration/) in the project root folder. Here are some sensible, useful [rules](https://palantir.github.io/tslint/rules/) which greatly reduce programming blunders:
 
 ```json
 {

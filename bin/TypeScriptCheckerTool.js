@@ -58,7 +58,7 @@ class TypeScriptCheckerTool {
             let doLint = Boolean(this.tslintConfiguration);
             let linter = new tslint.Linter({
                 fix: false
-            });
+            }, tsc);
             Shout_1.Shout.timed('Type-checking using TypeScript', chalk_1.default.yellow(TypeScript.version));
             let start = process.hrtime();
             try {
@@ -100,7 +100,7 @@ class TypeScriptCheckerTool {
             }
             finally {
                 let time = PrettyUnits_1.prettyHrTime(process.hrtime(start));
-                Shout_1.Shout.timed('Finished type-checking after', chalk_1.default.green(time));
+                Shout_1.Shout.timed('Finished type-check after', chalk_1.default.green(time));
             }
         });
     }

@@ -95,6 +95,7 @@ export class TypeScriptCheckerTool {
         if (tslintFind.path) {
             Shout.timed('tslint:', chalk.cyan(tslintFind.path));
             this.tslintConfiguration = tslintFind.results;
+            // console.log(this.tslintConfiguration);
         }
     }
 
@@ -106,10 +107,11 @@ export class TypeScriptCheckerTool {
         // console.log(entryPoints);
         let tsc = TypeScript.createProgram(entryPoints, this.compilerOptions, this.host);
 
+        // https://palantir.github.io/tslint/usage/type-checking/
         let doLint = Boolean(this.tslintConfiguration);
         let linter = new tslint.Linter({
             fix: false
-        });
+        }, tsc);
 
         Shout.timed('Type-checking using TypeScript', chalk.yellow(TypeScript.version));
         let start = process.hrtime();
@@ -159,7 +161,7 @@ export class TypeScriptCheckerTool {
             }
         } finally {
             let time = prettyHrTime(process.hrtime(start));
-            Shout.timed('Finished type-checking after', chalk.green(time));
+            Shout.timed('Finished type-check after', chalk.green(time));
         }
     }
 

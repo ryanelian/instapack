@@ -287,6 +287,7 @@ instapack version 6.5.0+ supports [`tslint.json` / `tslint.yaml`](https://palant
 ```json
 {
   "rules": {
+    "no-non-null-assertion": true,
     "ban-comma-operator": true,
     "curly": true,
     "no-conditional-assignment": true,
@@ -304,7 +305,11 @@ instapack version 6.5.0+ supports [`tslint.json` / `tslint.yaml`](https://palant
     "no-var-keyword": true,
     "switch-default": true,
     "triple-equals": true,
-    "use-isnan": true
+    "use-isnan": true,
+    "new-parens": true,
+    "number-literal-format": true,
+    "return-undefined": true,
+    "type-literal-delimiter": true
   }
 }
 ```

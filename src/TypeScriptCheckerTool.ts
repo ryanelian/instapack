@@ -175,7 +175,7 @@ export class TypeScriptCheckerTool {
 
             if (diagnostic.file) {
                 let realFileName = this.virtualSourceStore.getRealFilePath(diagnostic.file.fileName);
-                let { line, character } = diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start!);
+                let { line, character } = diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start);
                 error += chalk.red(realFileName) + ' ' + chalk.yellow(`(${line + 1},${character + 1})`) + ':\n';
             }
 

@@ -1,5 +1,6 @@
 {
   "rules": {
+    "no-non-null-assertion": true,
     "ban-comma-operator": true,
     "curly": true,
     "no-conditional-assignment": true,
@@ -17,6 +18,10 @@
     "no-var-keyword": true,
     "switch-default": true,
     "triple-equals": true,
-    "use-isnan": true
+    "use-isnan": true,
+    "new-parens": true,
+    "number-literal-format": true,
+    "return-undefined": true,
+    "type-literal-delimiter": true
   }
 }

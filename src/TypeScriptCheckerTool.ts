@@ -196,7 +196,8 @@ export class TypeScriptCheckerTool {
 
         let lintErrorMessage = chalk.red('TSLINT') + ' '
             + chalk.red(realFileName) + ' '
-            + chalk.yellow(`(${line + 1},${character + 1})`) + ':\n'
+            + chalk.yellow(`(${line + 1},${character + 1})`) + ': '
+            + chalk.grey(failure.getRuleName()) + '\n'
             + failure.getFailure();
 
         return lintErrorMessage;

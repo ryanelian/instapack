@@ -102,7 +102,7 @@ export class TypeScriptCheckerTool {
     /**
      * Performs full static check (semantic and syntactic diagnostics) against the TypeScript application project.
      */
-    async typeCheck() {
+    typeCheck() {
         let entryPoints = this.virtualSourceStore.entryFilePaths;
         // console.log(entryPoints);
         let tsc = TypeScript.createProgram(entryPoints, this.compilerOptions, this.host);
@@ -212,9 +212,11 @@ export class TypeScriptCheckerTool {
         let debounce = () => {
             clearTimeout(debounced);
             debounced = setTimeout(() => {
-                this.typeCheck().catch(error => {
+                try {
+                    this.typeCheck();
+                } catch (error) {
                     Shout.fatal('during type-checking!', error);
-                });
+                }
             }, 300);
         };
 

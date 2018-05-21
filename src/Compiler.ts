@@ -135,7 +135,7 @@ export class Compiler {
                 this.runBuildWorkerForTask('concat');
                 return;
 
-            case 'js':
+            case 'js': {
                 let valid = await this.validateJsBuildTask();
                 if (valid) {
                     runWorkerAsync<void>(typeScriptBuildWorkerModulePath, this.buildCommand).catch(error => {
@@ -148,6 +148,7 @@ export class Compiler {
                     });
                 }
                 return;
+            }
 
             case 'css': {
                 let valid = await this.validateCssBuildTask();

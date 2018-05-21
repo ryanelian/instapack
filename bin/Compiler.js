@@ -87,7 +87,7 @@ class Compiler {
                     this.runBuildWorkerForTask('css');
                     this.runBuildWorkerForTask('concat');
                     return;
-                case 'js':
+                case 'js': {
                     let valid = yield this.validateJsBuildTask();
                     if (valid) {
                         CompilerUtilities_1.runWorkerAsync(typeScriptBuildWorkerModulePath, this.buildCommand).catch(error => {
@@ -100,6 +100,7 @@ class Compiler {
                         });
                     }
                     return;
+                }
                 case 'css': {
                     let valid = yield this.validateCssBuildTask();
                     if (valid) {

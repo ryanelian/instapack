@@ -1,0 +1,27 @@
+{
+  "rules": {
+    "no-non-null-assertion": true,
+    "ban-comma-operator": true,
+    "curly": true,
+    "no-conditional-assignment": true,
+    "no-duplicate-super": true,
+    "no-duplicate-switch-case": true,
+    "no-dynamic-delete": true,
+    "no-eval": true,
+    "no-for-in-array": true,
+    "no-object-literal-type-assertion": true,
+    "no-shadowed-variable": true,
+    "no-sparse-arrays": true,
+    "no-string-throw": true,
+    "no-unbound-method": true,
+    "no-unsafe-finally": true,
+    "no-var-keyword": true,
+    "switch-default": true,
+    "triple-equals": true,
+    "use-isnan": true,
+    "new-parens": true,
+    "number-literal-format": true,
+    "return-undefined": true,
+    "type-literal-delimiter": true
+  }
+}

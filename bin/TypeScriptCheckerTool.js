@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const TypeScript = require("typescript");
+const tslint = require("tslint");
 const chalk_1 = require("chalk");
 const fse = require("fs-extra");
 const upath = require("upath");
@@ -43,46 +44,63 @@ class TypeScriptCheckerTool {
             };
             yield this.virtualSourceStore.addExoticSources(this.settings.vueGlobs);
             yield this.virtualSourceStore.preloadSources();
+            let tslintFind = tslint.Configuration.findConfiguration(null, this.settings.root);
+            if (tslintFind.path) {
+                Shout_1.Shout.timed('tslint:', chalk_1.default.cyan(tslintFind.path));
+                this.tslintConfiguration = tslintFind.results;
+            }
         });
     }
     typeCheck() {
-        return __awaiter(this, void 0, void 0, function* () {
-            let entryPoints = this.virtualSourceStore.entryFilePaths;
-            let tsc = TypeScript.createProgram(entryPoints, this.compilerOptions, this.host);
-            Shout_1.Shout.timed('Type-checking using TypeScript', chalk_1.default.yellow(TypeScript.version));
-            let start = process.hrtime();
-            try {
-                let errors = [];
-                for (let source of tsc.getSourceFiles()) {
-                    if (source.fileName.endsWith('.d.ts')) {
-                        continue;
-                    }
-                    let diagnostics = tsc.getSemanticDiagnostics(source)
-                        .concat(tsc.getSyntacticDiagnostics(source));
-                    let newErrors = this.renderDiagnostics(diagnostics);
-                    for (let error of newErrors) {
-                        errors.push(error);
-                    }
+        let entryPoints = this.virtualSourceStore.entryFilePaths;
+        let tsc = TypeScript.createProgram(entryPoints, this.compilerOptions, this.host);
+        let doLint = Boolean(this.tslintConfiguration);
+        let linter = new tslint.Linter({
+            fix: false
+        }, tsc);
+        Shout_1.Shout.timed('Type-checking using TypeScript', chalk_1.default.yellow(TypeScript.version));
+        let start = process.hrtime();
+        try {
+            let errors = [];
+            for (let source of tsc.getSourceFiles()) {
+                if (source.fileName.endsWith('.d.ts')) {
+                    continue;
                 }
-                if (!errors.length) {
-                    console.log(chalk_1.default.green('Types OK') + chalk_1.default.grey(': Successfully checked TypeScript project without errors.'));
+                let diagnostics = tsc.getSemanticDiagnostics(source)
+                    .concat(tsc.getSyntacticDiagnostics(source));
+                let newErrors = this.renderDiagnostics(diagnostics);
+                for (let error of newErrors) {
+                    errors.push(error);
+                }
+                if (newErrors.length === 0 && doLint) {
+                    linter.lint(source.fileName, source.text, this.tslintConfiguration);
+                }
+            }
+            if (doLint) {
+                let lintResult = linter.getResult();
+                for (let failure of lintResult.failures) {
+                    let lintErrorMessage = this.renderLintFailure(failure);
+                    errors.push(lintErrorMessage);
+                }
+            }
+            if (errors.length > 0) {
+                if (errors.length === 1) {
+                    Shout_1.Shout.notify(`You have one TypeScript check error!`);
                 }
                 else {
-                    if (errors.length === 1) {
-                        Shout_1.Shout.notify(`You have one TypeScript check error!`);
-                    }
-                    else {
-                        Shout_1.Shout.notify(`You have ${errors.length} TypeScript check errors!`);
-                    }
-                    let errorsOut = '\n' + errors.join('\n\n') + '\n';
-                    console.error(errorsOut);
+                    Shout_1.Shout.notify(`You have ${errors.length} TypeScript check errors!`);
                 }
+                let errorsOut = '\n' + errors.join('\n\n') + '\n';
+                console.error(errorsOut);
             }
-            finally {
-                let time = PrettyUnits_1.prettyHrTime(process.hrtime(start));
-                Shout_1.Shout.timed('Finished type-checking after', chalk_1.default.green(time));
+            else {
+                console.log(chalk_1.default.green('Types OK') + chalk_1.default.grey(': Successfully checked TypeScript project without errors.'));
             }
-        });
+        }
+        finally {
+            let time = PrettyUnits_1.prettyHrTime(process.hrtime(start));
+            Shout_1.Shout.timed('Finished type-check after', chalk_1.default.green(time));
+        }
     }
     renderDiagnostics(diagnostics) {
         let errors = diagnostics.map(diagnostic => {
@@ -97,14 +115,27 @@ class TypeScriptCheckerTool {
         });
         return errors;
     }
+    renderLintFailure(failure) {
+        let { line, character } = failure.getStartPosition().getLineAndCharacter();
+        let realFileName = this.virtualSourceStore.getRealFilePath(failure.getFileName());
+        let lintErrorMessage = chalk_1.default.red('TSLINT') + ' '
+            + chalk_1.default.red(realFileName) + ' '
+            + chalk_1.default.yellow(`(${line + 1},${character + 1})`) + ': '
+            + chalk_1.default.grey(failure.getRuleName()) + '\n'
+            + failure.getFailure();
+        return lintErrorMessage;
+    }
     watch() {
         let debounced;
         let debounce = () => {
             clearTimeout(debounced);
             debounced = setTimeout(() => {
-                this.typeCheck().catch(error => {
+                try {
+                    this.typeCheck();
+                }
+                catch (error) {
                     Shout_1.Shout.fatal('during type-checking!', error);
-                });
+                }
             }, 300);
         };
         chokidar.watch(this.settings.typeCheckGlobs, {

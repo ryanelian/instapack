@@ -280,11 +280,47 @@ Build flag `--env` accepts object-like notation:
 
 **For example:** `ipack --env.FOO=bar --env.HELLO=world`
 
-## Babel (BETA)
+## TSLint Integration
 
-instapack version 6.4.0+ supports `.babelrc` in the project root folder. Here are some use cases where this feature can be useful:
+instapack version 6.5.0+ supports [`tslint.json` / `tslint.yaml`](https://palantir.github.io/tslint/usage/configuration/) in the project root folder. Here are some sensible, useful [rules](https://palantir.github.io/tslint/rules/) which greatly reduce programming blunders:
 
-- You may use Babel instead of TypeScript to transpile JS to ES5: set TypeScript `target` to `esnext` then use `@babel/preset-env`
+```json
+{
+  "rules": {
+    "no-non-null-assertion": true,
+    "ban-comma-operator": true,
+    "curly": true,
+    "no-conditional-assignment": true,
+    "no-duplicate-super": true,
+    "no-duplicate-switch-case": true,
+    "no-dynamic-delete": true,
+    "no-eval": true,
+    "no-for-in-array": true,
+    "no-object-literal-type-assertion": true,
+    "no-shadowed-variable": true,
+    "no-sparse-arrays": true,
+    "no-string-throw": true,
+    "no-unbound-method": true,
+    "no-unsafe-finally": true,
+    "no-var-keyword": true,
+    "switch-default": true,
+    "triple-equals": true,
+    "use-isnan": true,
+    "new-parens": true,
+    "number-literal-format": true,
+    "return-undefined": true,
+    "type-literal-delimiter": true
+  }
+}
+```
+
+> Source file will be linted only when it can be compiled correctly.
+
+## Babel Integration (BETA)
+
+instapack version 6.4.0+ supports [`.babelrc`](https://babeljs.io/docs/usage/babelrc/) in the project root folder. Here are some use cases where this feature can be useful:
+
+- You may use Babel instead of TypeScript to transpile JS to ES5: set TypeScript `target` to `esnext` then use [`@babel/preset-env`](https://github.com/babel/babel/tree/master/packages/babel-preset-env)
 
 - You may use Babel instead of TypeScript to compile JSX: set TypeScript `jsx` to `preserve` then use the framework-compatible JSX plugin. For example: `babel-plugin-transform-react-jsx`, `babel-plugin-transform-vue-jsx`, `babel-plugin-inferno`
 

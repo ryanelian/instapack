@@ -100,12 +100,10 @@ export class GlobalSettingsManager {
     /**
      * A dictionary of user input setting key against its mapper class.
      */
-    private settingMappers: {
-        [key: string]: ISettingMapper<any>
-    } = {
-            'package-manager': new PackageManagerSettingMapper(),
-            'mute-notification': new NotificationSettingMapper()
-        };
+    private settingMappers: IMapLike<ISettingMapper<any>> = {
+        'package-manager': new PackageManagerSettingMapper(),
+        'mute-notification': new NotificationSettingMapper()
+    };
 
     /**
      * Gets available global settings.

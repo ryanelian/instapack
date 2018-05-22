@@ -70,7 +70,7 @@
     "typescript": "2.9.0-rc",
     "uglify-js": "3.3.26",
     "upath": "1.1.0",
-    "vue-loader": "15.1.0",
+    "vue-loader": "15.2.0",
     "vue-template-compiler": "2.5.16",
     "webpack": "4.8.3",
     "webpack-sources": "1.1.0",

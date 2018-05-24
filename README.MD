@@ -372,22 +372,35 @@ An excerpt of build log when using dynamic import:
 
 - Easily imports ordinary JS modules within the project or from `node_modules`. However, **you will NOT get intellisense!** (Modules will be imported as `any` data type.)
 
-- Imports a static JSON file to be parsed as JS object.
-
 ```js
 let $ = require('jquery');
-let settings = require('./settings.json') as ISettings;
 ```
 
 - Imports an `.html` file to be minified and then stringified. This technique is invaluable for working with frameworks relying on HTML-based templates such as AngularJS, mustache.js / Handlebars.js, and Vue.js:
 
 ```ts
-let template = require('./mytemplate.html') as string;
+let template: string = require('./mytemplate.html');
 ```
 
 > CommonJS `require` method in TypeScript is provided through `@types/requirejs` or `@types/node` packages.
 
-> Use `as` type-hint for clarity and convenience.
+### JSON Module
+
+Enables strongly-typed, static JSON file imports in the TypeScript project when `resolveJsonModule` compiler option in `tsconfig.json` is set to `true`
+
+```json
+{
+  "foo": "bar"
+}
+```
+
+```ts
+import settings from './settings.json';
+
+let s: string = settings.foo;
+```
+
+> `resolveJsonModule` compiler option requires TypeScript 2.9.0 / instapack 6.5.0 or above. Earlier versions supports importing JSON files using `require` syntax instead.
 
 ### Vue Single-File Components (BETA)
 

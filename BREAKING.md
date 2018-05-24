@@ -69,4 +69,4 @@ Node API now requires project folder path (root) as constructor parameter.
 
 - Flag for disabling source map was changed from `-u` (`uncharted`) to `-x` (`xdebug`).
 
-- Sass can no longer `@import` _partial.scss files from `node_modules` implicitly. This was an unfortunate side-effect from adding `node_modules` in Sass included compilation paths. **You need to be explicit in this case.**
+- Sass can no longer `@import` _partial.scss files from `node_modules` implicitly. (Behavior re-implemented in instapack 6.5.0)

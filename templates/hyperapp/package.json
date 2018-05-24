@@ -12,7 +12,7 @@
     "axios": "^0.18.0",
     "hyperapp": "^1.2.5",
     "linq": "^3.1.0",
-    "luxon": "^1.2.0",
+    "luxon": "^1.2.1",
     "noty": "^3.2.0-beta",
     "sweetalert": "^2.1.0",
     "ts-polyfill": "^2.9.0",

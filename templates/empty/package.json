@@ -10,7 +10,7 @@
     "@types/luxon": "^0.5.2",
     "@types/requirejs": "^2.1.31",
     "linq": "^3.1.0",
-    "luxon": "^1.2.0",
+    "luxon": "^1.2.1",
     "ts-polyfill": "^2.9.0",
     "tslib": "^1.9.1"
   }

@@ -384,7 +384,7 @@ let template: string = require('./mytemplate.html');
 
 > CommonJS `require` method in TypeScript is provided through `@types/requirejs` or `@types/node` packages.
 
-### JSON Module
+### JSON Modules
 
 Enables strongly-typed, static JSON file imports in the TypeScript project when `resolveJsonModule` compiler option in `tsconfig.json` is set to `true`
 
@@ -400,7 +400,7 @@ import settings from './settings.json';
 let s: string = settings.foo;
 ```
 
-> `resolveJsonModule` compiler option requires TypeScript 2.9.0 / instapack 6.5.0 or above. Earlier versions supports importing JSON files using `require` syntax instead.
+> Requires TypeScript 2.9.0 / instapack 6.5.0 or above. Earlier versions support importing JSON files using `require` syntax instead.
 
 ### Vue Single-File Components (BETA)
 

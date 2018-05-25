@@ -72,7 +72,7 @@
     "upath": "1.1.0",
     "vue-loader": "15.1.0",
     "vue-template-compiler": "2.5.16",
-    "webpack": "4.8.3",
+    "webpack": "4.9.0",
     "webpack-sources": "1.1.0",
     "worker-farm": "1.6.0",
     "yargs": "11.0.0"

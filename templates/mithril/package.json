@@ -17,6 +17,6 @@
     "sweetalert": "^2.1.0",
     "tachyons": "^4.9.1",
     "ts-polyfill": "^2.9.0",
-    "tslib": "^1.9.1"
+    "tslib": "^1.9.2"
   }
 }

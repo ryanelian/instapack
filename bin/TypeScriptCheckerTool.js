@@ -46,8 +46,11 @@ class TypeScriptCheckerTool {
             yield this.virtualSourceStore.preloadSources();
             let tslintFind = tslint.Configuration.findConfiguration(null, this.settings.root);
             if (tslintFind.path) {
-                Shout_1.Shout.timed('tslint:', chalk_1.default.cyan(tslintFind.path));
-                this.tslintConfiguration = tslintFind.results;
+                let tslintPath = upath.toUnix(tslintFind.path);
+                if (tslintPath === this.settings.tslintJson || tslintPath === this.settings.tslintYaml) {
+                    Shout_1.Shout.timed('tslint:', chalk_1.default.cyan(tslintPath));
+                    this.tslintConfiguration = tslintFind.results;
+                }
             }
         });
     }

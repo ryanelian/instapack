@@ -159,6 +159,20 @@ export class Settings {
     }
 
     /**
+     * Gets the full path to project tslint.json file.
+     */
+    get tslintJson(): string {
+        return upath.join(this.root, 'tslint.json');
+    }
+
+    /**
+     * Gets the full path to project tslint.yaml file.
+     */
+    get tslintYaml(): string {
+        return upath.join(this.root, 'tslint.yaml');
+    }
+
+    /**
      * Gets the full path to the root client project folder.
      */
     get inputFolder(): string {

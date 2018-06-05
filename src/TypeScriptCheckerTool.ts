@@ -93,9 +93,12 @@ export class TypeScriptCheckerTool {
 
         let tslintFind = tslint.Configuration.findConfiguration(null, this.settings.root);
         if (tslintFind.path) {
-            Shout.timed('tslint:', chalk.cyan(tslintFind.path));
-            this.tslintConfiguration = tslintFind.results;
-            // console.log(this.tslintConfiguration);
+            let tslintPath = upath.toUnix(tslintFind.path);
+            if (tslintPath === this.settings.tslintJson || tslintPath === this.settings.tslintYaml) {
+                Shout.timed('tslint:', chalk.cyan(tslintPath));
+                this.tslintConfiguration = tslintFind.results;
+                // console.log(this.tslintConfiguration);
+            }
         }
     }
 

@@ -75,6 +75,12 @@ class Settings {
     get npmFolder() {
         return upath.join(this.root, 'node_modules');
     }
+    get tslintJson() {
+        return upath.join(this.root, 'tslint.json');
+    }
+    get tslintYaml() {
+        return upath.join(this.root, 'tslint.yaml');
+    }
     get inputFolder() {
         return upath.join(this.root, this.input);
     }

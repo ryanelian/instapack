@@ -19,7 +19,7 @@
     "@types/jquery": "^3.3.2",
     "@types/luxon": "^0.5.2",
     "@types/requirejs": "^2.1.31",
-    "aspnet-validation": "^0.0.5",
+    "aspnet-validation": "^0.0.8",
     "axios": "^0.18.0",
     "bootstrap": "^4.1.1",
     "jquery": "^3.3.1",
@@ -30,7 +30,7 @@
     "sweetalert": "^2.1.0",
     "ts-polyfill": "^2.9.0",
     "tslib": "^1.9.2",
-    "vee-validate": "^2.0.9",
+    "vee-validate": "^2.1.0-beta.1",
     "vue": "^2.5.16",
     "vue-class-component": "^6.2.0"
   }

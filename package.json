@@ -1,6 +1,6 @@
 {
   "name": "instapack",
-  "version": "6.5.2-beta2",
+  "version": "6.5.2",
   "description": "All-in-one TypeScript and Sass compiler for web applications!",
   "keywords": [
     "typescript",
@@ -67,7 +67,7 @@
     "postcss-import": "11.1.0",
     "source-map": "0.7.3",
     "tslint": "5.10.0",
-    "typescript": "2.9.1",
+    "typescript": "2.9.2",
     "uglify-js": "3.4.0",
     "upath": "1.1.0",
     "vue-loader": "15.2.4",

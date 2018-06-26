@@ -578,7 +578,7 @@ For this very reason, it is highly recommended to:
 Set-ExecutionPolicy RemoteSigned -scope CurrentUser
 iex (new-object net.webclient).downloadstring('https://get.scoop.sh')
 scoop install concfg
-concfg import firefly
+concfg import https://raw.githubusercontent.com/ryanelian/instapack/master/concfg/firefly.json
 ```
 
 For more information, visit http://scoop.sh/ and https://github.com/lukesampson/concfg

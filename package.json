@@ -62,7 +62,7 @@
     "html-minifier": "3.5.17",
     "loader-utils": "1.1.0",
     "node-notifier": "5.2.1",
-    "node-sass": "4.9.0",
+    "node-sass": "4.9.1",
     "postcss": "6.0.23",
     "postcss-import": "11.1.0",
     "source-map": "0.7.3",

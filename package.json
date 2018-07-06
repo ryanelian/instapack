@@ -48,7 +48,7 @@
     "build": "tsc && tslint -p ."
   },
   "dependencies": {
-    "@babel/core": "7.0.0-beta.51",
+    "@babel/core": "7.0.0-beta.52",
     "autoprefixer": "8.6.4",
     "babel-loader": "8.0.0-beta.3",
     "chalk": "2.4.1",

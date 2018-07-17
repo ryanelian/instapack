@@ -172,6 +172,10 @@
   version "8.10.21"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-8.10.21.tgz#12b3f2359b27aa05a45d886c8ba1eb8d1a77e285"
 
+"@types/node@^9.6.6":
+  version "9.6.6"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-9.6.6.tgz#439b91f9caf3983cad2eef1e11f6bedcbf9431d2"
+
 "@types/relateurl@*":
   version "0.2.28"
   resolved "https://registry.yarnpkg.com/@types/relateurl/-/relateurl-0.2.28.tgz#6bda7db8653fa62643f5ee69e9f69c11a392e3a6"

@@ -1,7 +1,9 @@
 version: 1.0.{build}
 image: Visual Studio 2017
 environment:
-  NODEJS_VERSION: 8
+    matrix:
+        - nodejs_version: "8"
+        - nodejs_version: "10"
 cache:
     - '%APPDATA%\npm-cache'
 install:
@@ -20,10 +22,6 @@ test_script:
 
     cd demo
 
-    Remove-Item * -Recurse; ipack new angularjs; ipack; ipack -dx
-
-    Remove-Item * -Recurse; ipack new empty; ipack; ipack -dx
-
     Remove-Item * -Recurse; ipack new inferno; ipack; ipack -dx
 
     Remove-Item * -Recurse; ipack new preact; ipack; ipack -dx
@@ -31,5 +29,3 @@ test_script:
     Remove-Item * -Recurse; ipack new react; ipack; ipack -dx
 
     Remove-Item * -Recurse; ipack new vue; ipack; ipack -dx
-
-    Remove-Item * -Recurse; ipack new vue-mobile; ipack; ipack -dx

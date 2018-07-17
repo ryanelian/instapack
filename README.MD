@@ -66,7 +66,7 @@ Practical guides can be read in the [books](https://github.com/ryanelian/instapa
 
 ## System Requirements
 
-Currently supported Node.js is [the latest version 8 LTS](https://nodejs.org/en/download/).
+Currently supported Node.js is [the latest version 8 or 10 LTS](https://nodejs.org/en/download/).
 
 When using [Visual Studio 2017 (Update 2 or above)](https://www.visualstudio.com/downloads/), install [the latest TypeScript SDK for Visual Studio 2017](https://www.microsoft.com/en-us/download/details.aspx?id=55258).
 

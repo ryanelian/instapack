@@ -7,9 +7,9 @@
     "concat": {}
   },
   "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "^1.2.0",
-    "@fortawesome/free-regular-svg-icons": "^5.1.0",
-    "@fortawesome/free-solid-svg-icons": "^5.1.0",
+    "@fortawesome/fontawesome-svg-core": "^1.2.1",
+    "@fortawesome/free-regular-svg-icons": "^5.1.1",
+    "@fortawesome/free-solid-svg-icons": "^5.1.1",
     "@fortawesome/react-fontawesome": "^0.1.0",
     "@types/luxon": "^1.2.1",
     "@types/react": "^16.4.6",
@@ -17,7 +17,7 @@
     "@types/requirejs": "^2.1.31",
     "axios": "^0.18.0",
     "linq": "^3.1.0",
-    "luxon": "^1.3.1",
+    "luxon": "^1.3.2",
     "mobx": "4",
     "mobx-react": "^5.2.3",
     "noty": "^3.2.0-beta",

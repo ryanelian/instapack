@@ -86,7 +86,7 @@ If using [the latest Visual Studio Code](https://code.visualstudio.com/), it sho
 
 - Beginner-friendly: Lower the barrier of entry for developing a modern web app. :balloon:
 
-- Introduce structure to the front-end source code using standard module systems. :city_sunrise:
+- Introduce structures to the front-end source code using standard module systems. :building_construction:
 
 - Improve source code quality and maintainability with type hints and compile-time checks. :eyeglasses:
 
@@ -424,21 +424,21 @@ export default class Hello extends Vue {
 </script>
 ```
 
+> Enhance development experience using fabulous :star2: intellisense with Visual Studio 2017 [15.8 improved Vue.js support](https://blogs.msdn.microsoft.com/visualstudio/2018/06/26/visual-studio-2017-version-15-8-preview-3/#jsts) or [Vetur](https://marketplace.visualstudio.com/items?itemName=octref.vetur) extension for Visual Studio Code!
+
 - The HTML `<template>` will be compiled Ahead-of-Time (AoT) for greater app startup performance!
 
-- When using Visual Studio Code with [Vetur](https://marketplace.visualstudio.com/items?itemName=octref.vetur) extension, you will get fabulous intellisense! :star2:
+- [A global TypeScript definition file for `*.vue` module](https://github.com/ryanelian/instapack/blob/master/templates/vue/client/js/vue-shim.d.ts) is required for importing the `.vue` file using ES Modules syntax from TypeScript.
 
-- Basic `<style>` (or `<style scoped>` or `<style module>`) should work, but should *not* be used. 
+  - This file will be created for you when using the `vue` new project template!
+
+- Notice that basic `<style>` (or `<style scoped>` or `<style module>`) should work, but should *not* be used. 
 
   - **This feature is not supported** [at least until webpack ships built-in CSS modules](https://github.com/webpack/webpack/pull/6448).
 
   - **Limitations:** You cannot use Sass. The CSS will not be auto-prefixed and minified.
   
-  - **Reduced project maintainability:** Your CSS will be scattered across obscure files in the JS project. Non-scoped styles will pollute the global CSS namespace.
-
-- [A global TypeScript definition file for `*.vue` module](https://github.com/ryanelian/instapack/blob/master/templates/vue/client/js/vue-shim.d.ts) is required for importing the `.vue` file using ES Modules syntax from TypeScript.
-
-  - This file will be created for you when using the `vue` new project template!
+  - **Reduced project maintainability:** Your CSS will be scattered across obscure files in the JS project, [similar to inline CSS](https://www.lifewire.com/avoid-inline-styles-for-css-3466846).
 
 ### Sass @import
 

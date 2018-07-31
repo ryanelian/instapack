@@ -70,3 +70,7 @@ Node API now requires project folder path (root) as constructor parameter.
 - Flag for disabling source map was changed from `-u` (`uncharted`) to `-x` (`xdebug`).
 
 - Sass can no longer `@import` _partial.scss files from `node_modules` implicitly. (Behavior re-implemented in instapack 6.5.0)
+
+## 6.6.0
+
+- TypeScript 3.0.1: `unknown` is a reserved type name now. https://blogs.msdn.microsoft.com/typescript/2018/07/30/announcing-typescript-3-0/#unknown-is-a-reserved-type-name

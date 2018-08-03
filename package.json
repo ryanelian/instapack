@@ -1,6 +1,6 @@
 {
   "name": "instapack",
-  "version": "6.6.0",
+  "version": "6.6.1-beta1",
   "description": "All-in-one TypeScript and Sass compiler for web applications!",
   "keywords": [
     "typescript",
@@ -49,11 +49,11 @@
   },
   "dependencies": {
     "@babel/core": "7.0.0-beta.55",
-    "autoprefixer": "9.0.2",
+    "autoprefixer": "9.1.0",
     "babel-loader": "8.0.0-beta.3",
     "chalk": "2.4.1",
     "chokidar": "2.0.4",
-    "clean-css": "4.1.11",
+    "clean-css": "4.2.0",
     "css-loader": "1.0.0",
     "dotenv": "6.0.0",
     "enhanced-resolve": "4.1.0",
@@ -71,8 +71,8 @@
     "uglify-js": "3.4.6",
     "upath": "1.1.0",
     "vue-loader": "15.2.6",
-    "vue-template-compiler": "2.5.16",
-    "webpack": "4.16.3",
+    "vue-template-compiler": "2.5.17",
+    "webpack": "4.16.4",
     "webpack-sources": "1.1.0",
     "worker-farm": "1.6.0",
     "yargs": "12.0.1"
@@ -87,7 +87,7 @@
     "@types/node": "8",
     "@types/node-sass": "^3.10.32",
     "@types/uglify-js": "^3.0.3",
-    "@types/webpack": "^4.4.8",
+    "@types/webpack": "^4.4.9",
     "@types/webpack-sources": "^0.1.5",
     "@types/yargs": "^11.1.1"
   },

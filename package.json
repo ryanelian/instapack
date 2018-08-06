@@ -48,7 +48,7 @@
     "build": "tsc && tslint -p ."
   },
   "dependencies": {
-    "@babel/core": "7.0.0-beta.55",
+    "@babel/core": "7.0.0-beta.56",
     "autoprefixer": "9.1.0",
     "babel-loader": "8.0.0-beta.3",
     "chalk": "2.4.1",
@@ -64,7 +64,7 @@
     "node-notifier": "5.2.1",
     "node-sass": "4.9.2",
     "postcss": "7.0.2",
-    "postcss-import": "11.1.0",
+    "postcss-import": "12.0.0",
     "source-map": "0.7.3",
     "tslint": "5.11.0",
     "typescript": "3.0.1",

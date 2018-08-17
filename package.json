@@ -87,7 +87,7 @@
     "@types/node": "8",
     "@types/node-sass": "^3.10.32",
     "@types/uglify-js": "^3.0.3",
-    "@types/webpack": "^4.4.9",
+    "@types/webpack": "^4.4.10",
     "@types/webpack-sources": "^0.1.5",
     "@types/yargs": "^11.1.1"
   },

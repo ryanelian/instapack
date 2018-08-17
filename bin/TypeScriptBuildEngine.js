@@ -325,37 +325,7 @@ class TypeScriptBuildEngine {
                     reject(error);
                     return;
                 }
-                let o = stats.toJson(this.statsSerializeEssentialOption);
-                let errors = o.errors;
-                if (errors.length) {
-                    let errorMessage = '\n' + errors.join('\n\n') + '\n';
-                    console.error(chalk_1.default.red(errorMessage));
-                    if (errors.length === 1) {
-                        Shout_1.Shout.notify(`You have one JS build error!`);
-                    }
-                    else {
-                        Shout_1.Shout.notify(`You have ${errors.length} JS build errors!`);
-                    }
-                }
-                let warnings = o.warnings;
-                if (warnings.length) {
-                    let warningMessage = '\n' + warnings.join('\n\n') + '\n';
-                    console.warn(chalk_1.default.yellow(warningMessage));
-                    if (warnings.length === 1) {
-                        Shout_1.Shout.notify(`You have one JS build warning!`);
-                    }
-                    else {
-                        Shout_1.Shout.notify(`You have ${warnings.length} JS build warnings!`);
-                    }
-                }
-                for (let asset of o.assets) {
-                    if (asset.emitted) {
-                        let kb = PrettyUnits_1.prettyBytes(asset.size);
-                        Shout_1.Shout.timed(chalk_1.default.blue(asset.name), chalk_1.default.magenta(kb), chalk_1.default.grey('in ' + this.settings.outputJsFolder + '/'));
-                    }
-                }
-                let t = PrettyUnits_1.prettyMilliseconds(o.time);
-                Shout_1.Shout.timed('Finished JS build after', chalk_1.default.green(t));
+                this.displayCompileResult(stats);
                 if (this.flags.watch) {
                     return;
                 }
@@ -367,6 +337,39 @@ class TypeScriptBuildEngine {
             }
             return Promise.resolve();
         });
+    }
+    displayCompileResult(stats) {
+        let o = stats.toJson(this.statsSerializeEssentialOption);
+        let errors = o.errors;
+        if (errors.length) {
+            let errorMessage = '\n' + errors.join('\n\n') + '\n';
+            console.error(chalk_1.default.red(errorMessage));
+            if (errors.length === 1) {
+                Shout_1.Shout.notify(`You have one JS build error!`);
+            }
+            else {
+                Shout_1.Shout.notify(`You have ${errors.length} JS build errors!`);
+            }
+        }
+        let warnings = o.warnings;
+        if (warnings.length) {
+            let warningMessage = '\n' + warnings.join('\n\n') + '\n';
+            console.warn(chalk_1.default.yellow(warningMessage));
+            if (warnings.length === 1) {
+                Shout_1.Shout.notify(`You have one JS build warning!`);
+            }
+            else {
+                Shout_1.Shout.notify(`You have ${warnings.length} JS build warnings!`);
+            }
+        }
+        for (let asset of o.assets) {
+            if (asset.emitted) {
+                let kb = PrettyUnits_1.prettyBytes(asset.size);
+                Shout_1.Shout.timed(chalk_1.default.blue(asset.name), chalk_1.default.magenta(kb), chalk_1.default.grey('in ' + this.settings.outputJsFolder + '/'));
+            }
+        }
+        let t = PrettyUnits_1.prettyMilliseconds(o.time);
+        Shout_1.Shout.timed('Finished JS build after', chalk_1.default.green(t));
     }
     build() {
         return __awaiter(this, void 0, void 0, function* () {

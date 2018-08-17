@@ -462,42 +462,7 @@ export class TypeScriptBuildEngine {
                     return;
                 }
 
-                let o = stats.toJson(this.statsSerializeEssentialOption);
-                // console.log(o);
-
-                let errors: string[] = o.errors;
-                if (errors.length) {
-                    let errorMessage = '\n' + errors.join('\n\n') + '\n';
-                    console.error(chalk.red(errorMessage));
-                    if (errors.length === 1) {
-                        Shout.notify(`You have one JS build error!`);
-                    } else {
-                        Shout.notify(`You have ${errors.length} JS build errors!`);
-                    }
-                }
-
-                let warnings: string[] = o.warnings;
-                if (warnings.length) {
-                    let warningMessage = '\n' + warnings.join('\n\n') + '\n';
-                    console.warn(chalk.yellow(warningMessage));
-                    if (warnings.length === 1) {
-                        Shout.notify(`You have one JS build warning!`);
-                    } else {
-                        Shout.notify(`You have ${warnings.length} JS build warnings!`);
-                    }
-                }
-
-                for (let asset of o.assets) {
-                    if (asset.emitted) {
-                        let kb = prettyBytes(asset.size);
-                        Shout.timed(chalk.blue(asset.name), chalk.magenta(kb),
-                            chalk.grey('in ' + this.settings.outputJsFolder + '/')
-                        );
-                    }
-                }
-
-                let t = prettyMilliseconds(o.time);
-                Shout.timed('Finished JS build after', chalk.green(t));
+                this.displayCompileResult(stats);
 
                 if (this.flags.watch) {
                     return; // do not terminate build worker on watch mode!
@@ -511,6 +476,49 @@ export class TypeScriptBuildEngine {
 
             return Promise.resolve();
         });
+    }
+
+    /**
+     * Interact with user via CLI output when TypeScript build is finished.
+     * @param stats 
+     */
+    displayCompileResult(stats: webpack.Stats): void {
+        let o = stats.toJson(this.statsSerializeEssentialOption);
+        // console.log(o);
+
+        let errors: string[] = o.errors;
+        if (errors.length) {
+            let errorMessage = '\n' + errors.join('\n\n') + '\n';
+            console.error(chalk.red(errorMessage));
+            if (errors.length === 1) {
+                Shout.notify(`You have one JS build error!`);
+            } else {
+                Shout.notify(`You have ${errors.length} JS build errors!`);
+            }
+        }
+
+        let warnings: string[] = o.warnings;
+        if (warnings.length) {
+            let warningMessage = '\n' + warnings.join('\n\n') + '\n';
+            console.warn(chalk.yellow(warningMessage));
+            if (warnings.length === 1) {
+                Shout.notify(`You have one JS build warning!`);
+            } else {
+                Shout.notify(`You have ${warnings.length} JS build warnings!`);
+            }
+        }
+
+        for (let asset of o.assets) {
+            if (asset.emitted) {
+                let kb = prettyBytes(asset.size);
+                Shout.timed(chalk.blue(asset.name), chalk.magenta(kb),
+                    chalk.grey('in ' + this.settings.outputJsFolder + '/')
+                );
+            }
+        }
+
+        let t = prettyMilliseconds(o.time);
+        Shout.timed('Finished JS build after', chalk.green(t));
     }
 
     /**

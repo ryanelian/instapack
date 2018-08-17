@@ -39,7 +39,8 @@ If you encounter [errors](https://github.com/npm/npm/issues/18380) during instal
 ## Quick Start Guide
 
 ```powershell
-cd E:\VS\MyWebApp
+mkdir MyWebApp
+cd MyWebApp
 ipack new empty
 ipack
 ```

@@ -47,6 +47,11 @@ export class Settings {
     readonly cssOut: string;
 
     /**
+     * Gets the Hot Server port.
+     */
+    readonly port: number;
+
+    /**
      * Constructs a new instance of Settings using a root folder and an setting object parsed from package.json.
      * @param root 
      * @param settings 
@@ -60,6 +65,11 @@ export class Settings {
         this.concat = settings.concat || {};
         this.alias = settings.alias || {};
         this.externals = settings.externals || {};
+
+        // port number must be an integer!
+        if (typeof settings.port === 'number' && (settings.port % 1 === 0)) {
+            this.port = settings.port || null;
+        }
 
         this.jsOut = settings.jsOut || 'ipack.js';
         if (this.jsOut.endsWith('.js') === false) {
@@ -83,7 +93,8 @@ export class Settings {
             externals: this.externals,
             input: this.input,
             jsOut: this.jsOut,
-            output: this.output
+            output: this.output,
+            port: this.port
         };
     }
 
@@ -270,6 +281,20 @@ export class Settings {
      */
     get outputCssFile(): string {
         return upath.join(this.outputCssFolder, this.cssOut);
+    }
+
+    /**
+     * Gets the base URI for the hot reload server. 
+     */
+    get outputHotBaseUri(): string {
+        return `http://localhost:${this.port}/`;
+    }
+
+    /**
+     * Gets the URI to JS folder in the hot reload server.
+     */
+    get outputHotJsFolderUri(): string {
+        return this.outputHotBaseUri + 'js/';
     }
 
     /**

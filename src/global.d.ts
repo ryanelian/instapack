@@ -16,6 +16,7 @@ interface ISettingsCore {
     externals: IMapLike<string>;
     jsOut: string;
     cssOut: string;
+    port: number;
 }
 
 /**
@@ -28,6 +29,7 @@ interface IBuildFlags {
     stats: boolean;
     env: IMapLike<string>;
     notification?: boolean;
+    hot: boolean;
 }
 
 /**

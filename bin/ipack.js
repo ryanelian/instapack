@@ -36,6 +36,9 @@ program.command({
             describe: 'Defines process.env variables to be replaced in TypeScript project build.'
         }).option('stats', {
             describe: 'Generates webpack stats.json next to the TypeScript build outputs for analysis.'
+        }).option('h', {
+            alias: 'hot',
+            describe: 'Enables hot reload development mode using a build server. (Requires port setting.)'
         });
     },
     handler: argv => {
@@ -53,7 +56,8 @@ program.command({
             watch: Boolean(argv.watch),
             sourceMap: !Boolean(argv.xdebug),
             env: cliEnv,
-            stats: Boolean(argv.stats)
+            stats: Boolean(argv.stats),
+            hot: Boolean(argv.hot)
         });
     }
 });

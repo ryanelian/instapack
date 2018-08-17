@@ -22,6 +22,12 @@ class Compiler {
         this.flags = flags;
     }
     chat() {
+        if (this.flags.hot) {
+            this.flags.production = false;
+            this.flags.watch = true;
+            let devServerUri = `http://localhost:${this.settings.port}`;
+            Shout_1.Shout.timed(chalk_1.default.yellow("Hot Reload"), "Mode: " + chalk_1.default.cyan(devServerUri));
+        }
         if (this.flags.watch) {
             Shout_1.Shout.timed(chalk_1.default.yellow("Watch"), "Mode: Source code will be automatically compiled on changes.");
         }
@@ -68,6 +74,10 @@ class Compiler {
         });
     }
     build(taskName) {
+        if (this.flags.hot && !this.settings.port) {
+            Shout_1.Shout.error(`Cannot use ${chalk_1.default.yellow('Hot Reload')} flag: ${chalk_1.default.green('port')} number is not set in ${chalk_1.default.cyan('package.json:instapack')}!`);
+            return;
+        }
         this.chat();
         this.runBuildWorkerForTask(taskName);
     }

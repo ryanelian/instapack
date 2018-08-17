@@ -13,6 +13,7 @@ const path = require("path");
 const fse = require("fs-extra");
 const chalk_1 = require("chalk");
 const webpack = require("webpack");
+const serve = require("webpack-serve");
 const TypeScript = require("typescript");
 const vue_loader_1 = require("vue-loader");
 const dotenv = require("dotenv");
@@ -33,6 +34,10 @@ class TypeScriptBuildEngine {
     }
     getWebpackAlias(tsCompilerOptions) {
         let alias = Object.assign({}, this.settings.alias);
+        if (this.flags.hot) {
+            let hotClient = require.resolve('webpack-hot-client/client');
+            alias['webpack-hot-client/client'] = hotClient;
+        }
         if (!tsCompilerOptions.paths) {
             return alias;
         }
@@ -287,6 +292,9 @@ class TypeScriptBuildEngine {
                     aggregateTimeout: 300
                 };
             }
+            if (this.flags.hot) {
+                config.output.publicPath = this.settings.outputHotJsFolderUri;
+            }
             return config;
         });
     }
@@ -362,19 +370,57 @@ class TypeScriptBuildEngine {
                 Shout_1.Shout.notify(`You have ${warnings.length} JS build warnings!`);
             }
         }
+        let jsOutputPath;
+        if (this.flags.hot) {
+            jsOutputPath = this.settings.outputHotJsFolderUri;
+        }
+        else {
+            jsOutputPath = this.settings.outputJsFolder + '/';
+        }
         for (let asset of o.assets) {
             if (asset.emitted) {
                 let kb = PrettyUnits_1.prettyBytes(asset.size);
-                Shout_1.Shout.timed(chalk_1.default.blue(asset.name), chalk_1.default.magenta(kb), chalk_1.default.grey('in ' + this.settings.outputJsFolder + '/'));
+                Shout_1.Shout.timed(chalk_1.default.blue(asset.name), chalk_1.default.magenta(kb), chalk_1.default.grey('in ' + jsOutputPath));
             }
         }
         let t = PrettyUnits_1.prettyMilliseconds(o.time);
         Shout_1.Shout.timed('Finished JS build after', chalk_1.default.green(t));
     }
+    runDevServer(webpackConfiguration) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const logLevel = 'warn';
+            let devServer = yield serve({}, {
+                config: webpackConfiguration,
+                port: this.settings.port,
+                content: path.resolve(this.settings.outputFolder),
+                hotClient: {
+                    port: this.settings.port + 1,
+                    logLevel: logLevel
+                },
+                logLevel: logLevel,
+                devMiddleware: {
+                    publicPath: webpackConfiguration.output.publicPath,
+                    headers: {
+                        'Access-Control-Allow-Origin': '*'
+                    },
+                    logLevel: logLevel
+                }
+            });
+            devServer.on('build-finished', args => {
+                this.displayCompileResult(args.stats);
+            });
+            yield new Promise((ok, reject) => { });
+        });
+    }
     build() {
         return __awaiter(this, void 0, void 0, function* () {
             let webpackConfiguration = yield this.createWebpackConfiguration();
-            yield this.runWebpackAsync(webpackConfiguration);
+            if (this.flags.hot) {
+                yield this.runDevServer(webpackConfiguration);
+            }
+            else {
+                yield this.runWebpackAsync(webpackConfiguration);
+            }
         });
     }
 }

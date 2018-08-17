@@ -73,6 +73,7 @@
     "vue-loader": "15.3.0",
     "vue-template-compiler": "2.5.17",
     "webpack": "4.16.5",
+    "webpack-serve": "2.0.2",
     "webpack-sources": "1.1.0",
     "worker-farm": "1.6.0",
     "yargs": "12.0.1"
@@ -88,6 +89,7 @@
     "@types/node-sass": "^3.10.32",
     "@types/uglify-js": "^3.0.3",
     "@types/webpack": "^4.4.10",
+    "@types/webpack-serve": "^2.0.0",
     "@types/webpack-sources": "^0.1.5",
     "@types/yargs": "^11.1.1"
   },

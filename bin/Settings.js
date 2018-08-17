@@ -20,6 +20,9 @@ class Settings {
         this.concat = settings.concat || {};
         this.alias = settings.alias || {};
         this.externals = settings.externals || {};
+        if (typeof settings.port === 'number' && (settings.port % 1 === 0)) {
+            this.port = settings.port || null;
+        }
         this.jsOut = settings.jsOut || 'ipack.js';
         if (this.jsOut.endsWith('.js') === false) {
             this.jsOut += '.js';
@@ -37,7 +40,8 @@ class Settings {
             externals: this.externals,
             input: this.input,
             jsOut: this.jsOut,
-            output: this.output
+            output: this.output,
+            port: this.port
         };
     }
     get jsChunkFileName() {
@@ -124,6 +128,12 @@ class Settings {
     }
     get outputCssFile() {
         return upath.join(this.outputCssFolder, this.cssOut);
+    }
+    get outputHotBaseUri() {
+        return `http://localhost:${this.port}/`;
+    }
+    get outputHotJsFolderUri() {
+        return this.outputHotBaseUri + 'js/';
     }
     static tryReadFromPackageJson(root) {
         return __awaiter(this, void 0, void 0, function* () {

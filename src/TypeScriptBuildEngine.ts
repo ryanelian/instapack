@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as fse from 'fs-extra';
 import chalk from 'chalk';
 import * as webpack from 'webpack';
+import * as serve from 'webpack-serve';
 import * as TypeScript from 'typescript';
 import { VueLoaderPlugin } from 'vue-loader';
 import * as dotenv from 'dotenv';
@@ -57,6 +58,12 @@ export class TypeScriptBuildEngine {
      */
     private getWebpackAlias(tsCompilerOptions: TypeScript.CompilerOptions): IMapLike<string> {
         let alias: IMapLike<string> = Object.assign({}, this.settings.alias);
+
+        if (this.flags.hot) {
+            let hotClient = require.resolve('webpack-hot-client/client');
+            alias['webpack-hot-client/client'] = hotClient;
+            // console.log(hotClient);
+        }
 
         if (!tsCompilerOptions.paths) {
             return alias;
@@ -414,6 +421,10 @@ export class TypeScriptBuildEngine {
             };
         }
 
+        if (this.flags.hot) {
+            config.output.publicPath = this.settings.outputHotJsFolderUri;
+        }
+
         return config;
     }
 
@@ -508,11 +519,18 @@ export class TypeScriptBuildEngine {
             }
         }
 
+        let jsOutputPath;
+        if (this.flags.hot) {
+            jsOutputPath = this.settings.outputHotJsFolderUri;
+        } else {
+            jsOutputPath = this.settings.outputJsFolder + '/';
+        }
+
         for (let asset of o.assets) {
             if (asset.emitted) {
                 let kb = prettyBytes(asset.size);
                 Shout.timed(chalk.blue(asset.name), chalk.magenta(kb),
-                    chalk.grey('in ' + this.settings.outputJsFolder + '/')
+                    chalk.grey('in ' + jsOutputPath)
                 );
             }
         }
@@ -522,10 +540,48 @@ export class TypeScriptBuildEngine {
     }
 
     /**
+     * Runs the hot reload server using provided webpack configuration. 
+     * Promise will also never resolve unless errored.
+     * @param webpackConfiguration 
+     */
+    async runDevServer(webpackConfiguration: webpack.Configuration) {
+        const logLevel = 'warn';
+
+        let devServer = await serve({}, {
+            config: webpackConfiguration,
+            port: this.settings.port,
+            content: path.resolve(this.settings.outputFolder),
+            hotClient: {
+                port: this.settings.port + 1,
+                logLevel: logLevel
+            },
+            logLevel: logLevel,
+            devMiddleware: {
+                publicPath: webpackConfiguration.output.publicPath,
+                headers: {
+                    'Access-Control-Allow-Origin': '*'
+                },
+                logLevel: logLevel
+            }
+        });
+
+        devServer.on('build-finished', args => {
+            this.displayCompileResult(args.stats);
+        });
+
+        await new Promise((ok, reject) => { });
+    }
+
+    /**
      * Runs the TypeScript build engine.
      */
     async build() {
         let webpackConfiguration = await this.createWebpackConfiguration();
-        await this.runWebpackAsync(webpackConfiguration);
+
+        if (this.flags.hot) {
+            await this.runDevServer(webpackConfiguration);
+        } else {
+            await this.runWebpackAsync(webpackConfiguration);
+        }
     }
 }

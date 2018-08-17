@@ -1,7 +1,5 @@
 import * as fse from 'fs-extra';
 import chalk from 'chalk';
-import * as chokidar from 'chokidar';
-import * as upath from 'upath';
 
 import { Settings } from './Settings';
 import { Shout } from './Shout';
@@ -41,6 +39,13 @@ export class Compiler {
      * Displays information about currently used build flags.
      */
     private chat() {
+        if (this.flags.hot) {
+            this.flags.production = false;
+            this.flags.watch = true;
+            let devServerUri = `http://localhost:${this.settings.port}`;
+            Shout.timed(chalk.yellow("Hot Reload"), "Mode: " + chalk.cyan(devServerUri));
+        }
+
         if (this.flags.watch) {
             Shout.timed(chalk.yellow("Watch"), "Mode: Source code will be automatically compiled on changes.");
         }
@@ -104,6 +109,12 @@ export class Compiler {
      * @param taskName 
      */
     build(taskName: string) {
+
+        if (this.flags.hot && !this.settings.port) {
+            Shout.error(`Cannot use ${ chalk.yellow('Hot Reload') } flag: ${ chalk.green('port') } number is not set in ${ chalk.cyan('package.json:instapack') }!`);
+            return;
+        }
+
         this.chat();
         this.runBuildWorkerForTask(taskName);
 

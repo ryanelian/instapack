@@ -93,7 +93,7 @@ If using [the latest Visual Studio Code](https://code.visualstudio.com/), it sho
 
 - Enforce best practices when building apps, which may significantly impact page load time. :hammer_and_wrench: (i.e. tree-shaking, code-splitting, bundling, and minification) 
 
-- Blur the boundary between design-time and coding-time using lightning-fast `watch` + `dev` build mode. :zap:
+- Blur the boundary between design-time and coding-time using lightning-fast `watch` + `dev` / `hot` build mode. :zap:
 
 ## But... Why?
 
@@ -148,6 +148,10 @@ In addition, build flags are available:
 - `--watch` or `-w` enables automatic incremental build on source code changes. :robot:
 
 - `--dev` or `-d` disables build outputs optimization and minification for **FAST build!** :fire:
+
+- `--hot` or `-h` enables Hot Reload development mode using a build server. (Requires port setting.) :volcano:
+
+  - Toggling this flag will also enable `watch` and `dev` mode implicitly. Read more below.
 
 - `--xdebug` or `-x` disables source maps, producing undebuggable outputs. (Slightly improves build speed)
 
@@ -256,6 +260,40 @@ so [CDN](https://en.wikipedia.org/wiki/Content_delivery_network) can be used! :t
   }
 }
 ```
+
+- `port` is required for enabling Hot Reload Mode. Read more below.
+
+  - Enter a non-zero port number to be used by the build server. For example: `9001`
+  
+  - A second WebSocket server will also be operational on the said port number +1. For example: `9002`
+
+## Hot Reload Development Mode (BETA)
+
+instapack version 6.7.0+ supports Hot Reload development mode for popular JS frameworks by using `--hot` or `-h` flags. To enable this mode, the `port` number in the `package.json` configuration must be supplied.
+
+Compiling a JS project using this mode will redirect the output to the build server instead to the usual JS output folder:
+
+```
+[06:44:32] Compiling index.ts > ES5 in C:/VS/MyWebApp/client/js/
+[06:44:33] ipack.dll.js 5.00 MB in http://localhost:9001/js/
+[06:44:33] ipack.js 57.0 kB in http://localhost:9001/js/
+[06:44:33] Finished JS build after 1.25 s
+```
+
+Like usual, refer those files from the HTML file in the project:
+
+```html
+<script src="http://localhost:9001/js/ipack.dll.js"></script>
+<script src="http://localhost:9001/js/ipack.js"></script>
+```
+
+### Vue.js
+
+Hot Reload for Vue.js project using Single-File Components format (`.vue`) has been enabled out of the box. (No further configurations necessary!)
+
+### React / Preact
+
+> TODO
 
 ## Environment Variables
 

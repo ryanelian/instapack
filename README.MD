@@ -151,7 +151,7 @@ In addition, build flags are available:
 
 - `--hot` or `-h` enables Hot Reload development mode using a build server. (Requires port setting.) :volcano:
 
-  - Toggling this flag will also enable `watch` and `dev` mode implicitly. Read more below.
+  - Toggling this flag will also enable `watch` and `dev` mode implicitly. [Read more ↓](#hot-reload-development-mode-beta)
 
 - `--xdebug` or `-x` disables source maps, producing undebuggable outputs. (Slightly improves build speed)
 
@@ -261,11 +261,19 @@ so [CDN](https://en.wikipedia.org/wiki/Content_delivery_network) can be used! :t
 }
 ```
 
-- `port` is required for enabling Hot Reload Mode. Read more below.
+- `port` is required for enabling Hot Reload Mode. [Read more ↓](#hot-reload-development-mode-beta)
 
   - Enter a non-zero port number to be used by the build server. For example: `9001`
   
   - A second WebSocket server will also be operational on the said port number +1. For example: `9002`
+
+## Babel Integration (BETA)
+
+instapack version 6.4.0+ supports [`.babelrc`](https://babeljs.io/docs/usage/babelrc/) in the project root folder. **Babel will be run AFTER TypeScript compilation.** Here are some use cases where this feature can be useful:
+
+- You may use Babel instead of TypeScript to transpile JS to ES5: set TypeScript `target` to `esnext` then use [`@babel/preset-env`](https://github.com/babel/babel/tree/master/packages/babel-preset-env)
+
+- You may use Babel instead of TypeScript to compile JSX: set TypeScript `jsx` to `preserve` then use the framework-compatible JSX plugin. For example: `@babel/plugin-transform-react-jsx`, `babel-plugin-transform-vue-jsx`, `babel-plugin-inferno`
 
 ## Hot Reload Development Mode (BETA)
 
@@ -287,37 +295,54 @@ Like usual, refer those files from the HTML file in the project:
 <script src="http://localhost:9001/js/ipack.js"></script>
 ```
 
+> Alternatively, refer different (development or production) build scripts with the same URI by using a reverse proxy.
+
 ### Vue.js
 
 Hot Reload for Vue.js project using Single-File Components format (`.vue`) has been enabled out of the box. (No further configurations necessary!)
 
-### React / Preact
+### React
 
-> TODO
+Install packages: https://github.com/gaearon/react-hot-loader
 
-## Environment Variables
+```
+yarn add react-hot-loader/babel -D
+```
 
-instapack version 6.4.0+ supports defining variables in `process.env` global object. Variables coming from `process.env` are always strings.
+Create a `.babelrc` in the project root folder:
 
-> Using `process.env` in your TypeScript project requires `@types/node` package installed.
+```json
+{
+    "plugins": [
+        "react-hot-loader/babel"
+    ]
+}
+```
 
-### .env
+Refactor your root component as a *hot-exported* module:
 
-The file [`.env`](https://github.com/motdotla/dotenv) in the root project folder will be read and parsed.
+```tsx
+// client/js/components/App.tsx
+import React from 'react';
+import { hot } from "react-hot-loader"
+import { Hello } from "./Hello";
 
-**For example:** `FOO=bar` will define `process.env.FOO` as `'bar'`
+let app = () => <Hello compiler="instapack" framework="React" />;
+export default hot(module)(app);
+```
 
-> Due to technical reasons, `.env` file cannot be watched.
+Import that module, then render:
 
-### --env
+```tsx
+import React from 'react';
+import ReactDOM from 'react-dom';
+import App from './components/App';
 
-Build flag `--env` accepts object-like notation: 
-
-- Variables passed using the flag will be merged with variables defined in `.env`
-
-- Variables passed using the flag takes takes priority / overrides the variables defined in `.env`
-
-**For example:** `ipack --env.FOO=bar --env.HELLO=world`
+ReactDOM.render(
+    <App />,
+    document.getElementById('app')
+);
+```
 
 ## TSLint Integration
 
@@ -354,14 +379,6 @@ instapack version 6.5.0+ supports [`tslint.json` / `tslint.yaml`](https://palant
 ```
 
 > Source file will be linted only when it can be compiled correctly.
-
-## Babel Integration (BETA)
-
-instapack version 6.4.0+ supports [`.babelrc`](https://babeljs.io/docs/usage/babelrc/) in the project root folder. Here are some use cases where this feature can be useful:
-
-- You may use Babel instead of TypeScript to transpile JS to ES5: set TypeScript `target` to `esnext` then use [`@babel/preset-env`](https://github.com/babel/babel/tree/master/packages/babel-preset-env)
-
-- You may use Babel instead of TypeScript to compile JSX: set TypeScript `jsx` to `preserve` then use the framework-compatible JSX plugin. For example: `babel-plugin-transform-react-jsx`, `babel-plugin-transform-vue-jsx`, `babel-plugin-inferno`
 
 ## Module Systems
 
@@ -488,6 +505,30 @@ instapack also has a custom Node-like but standard-compliant Sass module system 
 - Include files relative to the source in a named folder, but as `index.scss` or `_index.scss` ([Standard Sass behavior](https://github.com/sass/sass/issues/690)) or `index.css`
 
 - Include files resolved from `node_modules`. Also reads `package.json` to resolve `.css` file in the `style` field!
+
+## Environment Variables
+
+instapack version 6.4.0+ supports defining variables in `process.env` global object. Variables coming from `process.env` are always strings.
+
+> Using `process.env` in your TypeScript project requires `@types/node` package installed.
+
+### .env
+
+The file [`.env`](https://github.com/motdotla/dotenv) in the root project folder will be read and parsed.
+
+**For example:** `FOO=bar` will define `process.env.FOO` as `'bar'`
+
+> Due to technical reasons, `.env` file cannot be watched.
+
+### --env
+
+Build flag `--env` accepts object-like notation: 
+
+- Variables passed using the flag will be merged with variables defined in `.env`
+
+- Variables passed using the flag takes takes priority / overrides the variables defined in `.env`
+
+**For example:** `ipack --env.FOO=bar --env.HELLO=world`
 
 ## Release Cadence
 

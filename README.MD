@@ -277,7 +277,7 @@ instapack version 6.4.0+ supports [`.babelrc`](https://babeljs.io/docs/usage/bab
 
 Hot Reload development mode allows a developer to update an application code while preserving runtime state, without triggering browser refresh if not needed.
 
-instapack version 6.7.0+ supports Hot Reload development mode for popular JS frameworks by using `--hot` or `-h` flags, which also enable `watch` and `dev` modes automatically. To enable this mode, the `port` number in the `package.json` configuration must be supplied.
+instapack version 6.7.0+ supports Hot Reload development mode for popular JS frameworks by using `--hot` or `-h` flags, which also enable `watch` and `dev` modes automatically. **To enable this mode, the `port` number in the `package.json` configuration must be supplied.**
 
 Compiling a JS project using this mode will redirect the output to the build server instead to the usual JS output folder:
 

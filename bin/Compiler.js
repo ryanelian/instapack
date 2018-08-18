@@ -26,7 +26,8 @@ class Compiler {
             this.flags.production = false;
             this.flags.watch = true;
             let devServerUri = `http://localhost:${this.settings.port}`;
-            Shout_1.Shout.timed(chalk_1.default.yellow("Hot Reload"), "Mode: " + chalk_1.default.cyan(devServerUri));
+            let wsPortNumber = (this.settings.port + 1).toString();
+            Shout_1.Shout.timed(chalk_1.default.yellow("Hot Reload"), "Mode: " + chalk_1.default.cyan(devServerUri), chalk_1.default.grey('(WebSocket port: ') + chalk_1.default.green(wsPortNumber) + chalk_1.default.grey(')'));
         }
         if (this.flags.watch) {
             Shout_1.Shout.timed(chalk_1.default.yellow("Watch"), "Mode: Source code will be automatically compiled on changes.");

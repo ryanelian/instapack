@@ -61,7 +61,7 @@ class TypeScriptCheckerTool {
         let linter = new tslint.Linter({
             fix: false
         }, tsc);
-        Shout_1.Shout.timed('Type-checking using TypeScript', chalk_1.default.yellow(TypeScript.version));
+        Shout_1.Shout.timed('Type-checking using TypeScript', chalk_1.default.green(TypeScript.version));
         let start = process.hrtime();
         try {
             let errors = [];

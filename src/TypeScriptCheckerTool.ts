@@ -116,7 +116,7 @@ export class TypeScriptCheckerTool {
             fix: false
         }, tsc);
 
-        Shout.timed('Type-checking using TypeScript', chalk.yellow(TypeScript.version));
+        Shout.timed('Type-checking using TypeScript', chalk.green(TypeScript.version));
         let start = process.hrtime();
 
         try {

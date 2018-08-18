@@ -149,9 +149,7 @@ In addition, build flags are available:
 
 - `--dev` or `-d` disables build outputs optimization and minification for **FAST build!** :fire:
 
-- `--hot` or `-h` enables Hot Reload development mode using a build server. (Requires port setting.) :volcano:
-
-  - Toggling this flag will also enable `watch` and `dev` mode implicitly. [Read more ↓](#hot-reload-development-mode-beta)
+- `--hot` or `-h` enables Hot Reload development mode using a build server. (Requires port setting.) :volcano: [Read more ↓](#hot-reload-development-mode-beta)
 
 - `--xdebug` or `-x` disables source maps, producing undebuggable outputs. (Slightly improves build speed)
 
@@ -277,7 +275,9 @@ instapack version 6.4.0+ supports [`.babelrc`](https://babeljs.io/docs/usage/bab
 
 ## Hot Reload Development Mode (BETA)
 
-instapack version 6.7.0+ supports Hot Reload development mode for popular JS frameworks by using `--hot` or `-h` flags. To enable this mode, the `port` number in the `package.json` configuration must be supplied.
+Hot Reload development mode allows a developer to update an application code while preserving runtime state, without triggering browser refresh if not needed.
+
+instapack version 6.7.0+ supports Hot Reload development mode for popular JS frameworks by using `--hot` or `-h` flags, which also enable `watch` and `dev` modes automatically. To enable this mode, the `port` number in the `package.json` configuration must be supplied.
 
 Compiling a JS project using this mode will redirect the output to the build server instead to the usual JS output folder:
 
@@ -288,7 +288,7 @@ Compiling a JS project using this mode will redirect the output to the build ser
 [06:44:33] Finished JS build after 1.25 s
 ```
 
-Like usual, refer those files from the HTML file in the project:
+Like normally, refer those files from the HTML file in the project:
 
 ```html
 <script src="http://localhost:9001/js/ipack.dll.js"></script>

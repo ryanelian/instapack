@@ -481,7 +481,7 @@ export default class Hello extends Vue {
 </script>
 ```
 
-> Enhance development experience using fabulous :star2: intellisense with Visual Studio 2017 [15.8 improved Vue.js support](https://blogs.msdn.microsoft.com/visualstudio/2018/06/26/visual-studio-2017-version-15-8-preview-3/#jsts) or [Vetur](https://marketplace.visualstudio.com/items?itemName=octref.vetur) extension for Visual Studio Code!
+> Enhance development experience using fabulous :star2: intellisense with Visual Studio 2017 [15.8 improved Vue.js support](https://blogs.msdn.microsoft.com/visualstudio/2018/08/14/visual-studio-2017-version-15-8/) or [Vetur](https://marketplace.visualstudio.com/items?itemName=octref.vetur) extension for Visual Studio Code!
 
 - The HTML `<template>` will be compiled Ahead-of-Time (AoT) for greater app startup performance!
 

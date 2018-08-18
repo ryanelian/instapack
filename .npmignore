@@ -1,0 +1,10 @@
+src/
+.vscode/
+tsconfig.json
+tslint.json
+img/screenshot.png
+.travis.yml
+appveyor.yml
+build.ps1
+link.ps1
+templates/update.ps1

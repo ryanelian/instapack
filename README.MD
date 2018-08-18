@@ -303,10 +303,10 @@ Hot Reload for Vue.js project using Single-File Components format (`.vue`) has b
 
 ### React
 
-Install packages: https://github.com/gaearon/react-hot-loader
+Install package: https://github.com/gaearon/react-hot-loader
 
 ```
-yarn add react-hot-loader/babel -D
+yarn add react-hot-loader -D
 ```
 
 Create a `.babelrc` in the project root folder:

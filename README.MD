@@ -282,6 +282,7 @@ instapack version 6.7.0+ supports Hot Reload development mode for popular JS fra
 Compiling a JS project using this mode will redirect the output to the build server instead to the usual JS output folder:
 
 ```
+[06:44:30] Hot Reload Mode: http://localhost:9001 (WebSocket port: 9002)
 [06:44:32] Compiling index.ts > ES5 in C:/VS/MyWebApp/client/js/
 [06:44:33] ipack.dll.js 5.00 MB in http://localhost:9001/js/
 [06:44:33] ipack.js 57.0 kB in http://localhost:9001/js/

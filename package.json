@@ -59,7 +59,7 @@
     "enhanced-resolve": "4.1.0",
     "fs-extra": "7.0.0",
     "glob": "7.1.2",
-    "html-minifier": "3.5.19",
+    "html-minifier": "3.5.20",
     "loader-utils": "1.1.0",
     "node-notifier": "5.2.1",
     "node-sass": "4.9.3",

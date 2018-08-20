@@ -333,6 +333,26 @@ export class TypeScriptBuildEngine {
     }
 
     /**
+     * Get the suitable webpack configuration dev tool for the job, according to instapack settings.
+     */
+    get webpackConfigurationDevTool() {
+        if (this.flags.sourceMap === false) {
+            return false;
+        }
+
+        if (this.flags.production) {
+            return 'source-map';
+        }
+
+        // dev mode, faster build only during incremental compilation
+        if (this.flags.watch === false) {
+            return 'source-map';
+        }
+
+        return 'eval-source-map';
+    }
+
+    /**
      * Returns webpack configuration from blended instapack settings and build flags.
      */
     async createWebpackConfiguration() {
@@ -383,7 +403,7 @@ export class TypeScriptBuildEngine {
                 rules: rules
             },
             mode: (this.flags.production ? 'production' : 'development'),
-            devtool: (this.flags.production ? 'source-map' : 'eval-source-map'),
+            devtool: this.webpackConfigurationDevTool,
             optimization: {
                 minimize: false,        // https://medium.com/webpack/webpack-4-mode-and-optimization-5423a6bc597a
                 noEmitOnErrors: true,   // https://dev.to/flexdinesh/upgrade-to-webpack-4---5bc5
@@ -407,10 +427,6 @@ export class TypeScriptBuildEngine {
 
         if (wildcards) {
             config.resolve.modules = wildcards;
-        }
-
-        if (this.flags.sourceMap === false) {
-            config.devtool = false;
         }
 
         if (this.flags.watch) {

@@ -220,6 +220,18 @@ class TypeScriptBuildEngine {
         }
         return rules;
     }
+    get webpackConfigurationDevTool() {
+        if (this.flags.sourceMap === false) {
+            return false;
+        }
+        if (this.flags.production) {
+            return 'source-map';
+        }
+        if (this.flags.watch === false) {
+            return 'source-map';
+        }
+        return 'eval-source-map';
+    }
     createWebpackConfiguration() {
         return __awaiter(this, void 0, void 0, function* () {
             let useBabel = yield fse.pathExists(this.settings.babelConfiguration);
@@ -258,7 +270,7 @@ class TypeScriptBuildEngine {
                     rules: rules
                 },
                 mode: (this.flags.production ? 'production' : 'development'),
-                devtool: (this.flags.production ? 'source-map' : 'eval-source-map'),
+                devtool: this.webpackConfigurationDevTool,
                 optimization: {
                     minimize: false,
                     noEmitOnErrors: true,
@@ -281,9 +293,6 @@ class TypeScriptBuildEngine {
             };
             if (wildcards) {
                 config.resolve.modules = wildcards;
-            }
-            if (this.flags.sourceMap === false) {
-                config.devtool = false;
             }
             if (this.flags.watch) {
                 config.watch = true;

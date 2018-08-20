@@ -18,9 +18,9 @@
     }
   },
   "dependencies": {
-    "@types/angular": "^1.6.49",
+    "@types/angular": "^1.6.50",
     "@types/bootstrap": "3",
-    "@types/jquery": "^3.3.5",
+    "@types/jquery": "^3.3.6",
     "@types/luxon": "^1.2.2",
     "@types/requirejs": "^2.1.31",
     "angular": "^1.7.3",

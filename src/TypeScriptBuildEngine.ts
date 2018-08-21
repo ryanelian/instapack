@@ -30,9 +30,20 @@ export class TypeScriptBuildEngine {
      */
     private readonly flags: IBuildFlags;
 
-    port1: number;
-    port2: number;
-    wormholes: Set<string> = new Set<string>();
+    /** 
+     * Port number to be used by the Hot Reload server for delivering built assets.
+     */
+    private port1: number;
+
+    /**
+     * Port number to be used by the Hot Reload server for broadcasting changes using WebSocket.
+     */
+    private port2: number;
+    
+    /**
+     * Keep track of Hot Reload wormhole file names already created.
+     */
+    private readonly wormholes: Set<string> = new Set<string>();
 
     /**
      * Constructs a new instance of TypeScriptBuildTool using the specified settings and build flags. 
@@ -274,7 +285,7 @@ export class TypeScriptBuildEngine {
      * @param portNumber 
      */
     createWormholeToHotScript(uri: string): string {
-        return `// instapack: automatically reference the real hot-reloading script
+        return `// instapack wormhole: automagically reference the real hot-reloading script
 function inject() {
     let body = document.getElementsByTagName('body')[0];
 

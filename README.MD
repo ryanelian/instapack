@@ -259,9 +259,9 @@ so [CDN](https://en.wikipedia.org/wiki/Content_delivery_network) can be used! :t
 }
 ```
 
-- `port1` can be set for declaring a static port number to be used by the Hot Reload build server / asset server. If not set, server port number will be randomized. [Read more ↓](#hot-reload-development-mode-beta)
+- `port1` can be set for declaring a static port number to be used by the Hot Reload server for delivering built assets. If not set, the port number will be randomized. [Read more ↓](#hot-reload-development-mode-beta)
 
-- `port2` can be set for declaring a static port number to be used by the Hot Reload broadcasting server / WebSocket server. If not set, server port number will be randomized. [Read more ↓](#hot-reload-development-mode-beta)
+- `port2` can be set for declaring a static port number to be used by the Hot Reload server for broadcasting changes using WebSocket. If not set, the port number will be randomized. [Read more ↓](#hot-reload-development-mode-beta)
 
 ## Babel Integration (BETA)
 
@@ -273,15 +273,15 @@ instapack version 6.4.0+ supports [`.babelrc`](https://babeljs.io/docs/usage/bab
 
 ## Hot Reload Development Mode (BETA)
 
-Hot Reload development mode allows a developer to update application code while preserving runtime state, without triggering browser refresh if not needed.
+Hot Reload development mode allows a developer to update application code while preserving runtime state, without triggering browser refresh when not needed.
 
 instapack version 6.7.0+ supports Hot Reload for popular JS frameworks by using `--hot` or `-h` flags, which also enable `watch` and `dev` modes automatically. **Hot Reload requires browsers with [WebSocket](https://caniuse.com/#feat=websockets) feature.**
 
 Compiling a JS project using this mode will:
 
-- Redirect the JS output to the build server (instead of the physical JS output folder).
+- Redirect the JS outputs to the build server (instead of the physical JS output folder).
 
-- Create a wormhole (script injection) from the usual JS output file to the script on the build server. 
+- Create wormholes (script injections) in place of the usual JS output files, directed to the respective scripts on the build server.
 
 ```
 [17:14:25] Hot Reload Server running on ports: 22001, 22002

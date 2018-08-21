@@ -47,12 +47,12 @@ export class Settings {
     readonly cssOut: string;
 
     /**
-     * Gets the Hot Server port.
+     * Gets the static port number to be used by the Hot Reload server for delivering built assets.
      */
     readonly port1: number;
 
     /**
-     * Gets the Hot Server WebSocket port.
+     * Gets the static port number to be used by the Hot Reload server for broadcasting changes using WebSocket.
      */
     readonly port2: number;
 

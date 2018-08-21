@@ -180,7 +180,7 @@ class TypeScriptBuildEngine {
         };
     }
     createWormholeToHotScript(uri) {
-        return `// instapack: automatically reference the real hot-reloading script
+        return `// instapack wormhole: automagically reference the real hot-reloading script
 function inject() {
     let body = document.getElementsByTagName('body')[0];
 

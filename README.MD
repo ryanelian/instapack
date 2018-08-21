@@ -149,7 +149,7 @@ In addition, build flags are available:
 
 - `--dev` or `-d` disables build outputs optimization and minification for **FAST build!** :fire:
 
-- `--hot` or `-h` enables Hot Reload development mode using dedicated build servers. :volcano: [Read more ↓](#hot-reload-development-mode-beta)
+- `--hot` or `-h` enables Hot Reload development mode using dedicated build servers. :rotating_light: [Read more ↓](#hot-reload-development-mode-beta)
 
 - `--xdebug` or `-x` disables source maps, producing undebuggable outputs. (Slightly improves build speed)
 
@@ -273,7 +273,7 @@ instapack version 6.4.0+ supports [`.babelrc`](https://babeljs.io/docs/usage/bab
 
 ## Hot Reload Development Mode (BETA)
 
-Hot Reload development mode allows a developer to update application code while preserving runtime state, without triggering browser refresh when not needed.
+Hot Reload development mode allows a developer to update application code while preserving runtime states, without triggering browser refresh when not needed.
 
 instapack version 6.7.0+ supports Hot Reload for popular JS frameworks by using `--hot` or `-h` flags, which also enable `watch` and `dev` modes automatically. **Hot Reload requires browsers with [WebSocket](https://caniuse.com/#feat=websockets) feature.**
 

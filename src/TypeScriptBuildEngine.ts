@@ -7,6 +7,7 @@ import * as serve from 'webpack-serve';
 import * as TypeScript from 'typescript';
 import { VueLoaderPlugin } from 'vue-loader';
 import * as dotenv from 'dotenv';
+import * as url from 'url';
 
 import { Settings } from './Settings';
 import { prettyBytes, prettyMilliseconds } from './PrettyUnits';
@@ -267,17 +268,17 @@ export class TypeScriptBuildEngine {
      * Create a fake physical source code for importing the real hot-reloading source code.
      * @param portNumber 
      */
-    createWormholeToHotScript(portNumber: number): string {
+    createWormholeToHotScript(uri: string): string {
         return `// instapack: automatically reference the real hot-reloading script
-async function bootstrap() {
-    await import('http://localhost:${portNumber}/js/ipack.dll.js');
-    await import('http://localhost:${portNumber}/js/ipack.js');
+function inject() {
+    let body = document.getElementsByTagName('body')[0];
+
+    let target = document.createElement('script');
+    target.src = '${uri}';
+    body.appendChild(target);
 }
 
-bootstrap().catch(err => {
-    console.error(new Error('instapack wormhole: Failed to load Hot-Reload Source Code'));
-    console.error(err);
-});
+inject();
 `;
     }
 
@@ -576,14 +577,14 @@ bootstrap().catch(err => {
     /**
      * Create physical wormhole script in place of output JS file and dll file.
      */
-    async putWormhole() {
-        let proxySource = this.createWormholeToHotScript(this.settings.port);
-        let dllFileName = this.settings.jsChunkFileName.replace('[name]', 'dll');
-        let dllFilePath = upath.join(this.settings.outputJsFolder, dllFileName);
-
-        Shout.timed(`Creating wormhole: ${chalk.cyan(this.settings.outputJsFile)}`);
-        await fse.outputFile(this.settings.outputJsFile, proxySource);
-        await fse.outputFile(dllFilePath, '// instapack: this script is intentionally left blank\n');
+    async putWormhole(fileNames: string[]) {
+        for (let fileName of fileNames) {
+            let physicalFilePath = upath.join(this.settings.outputJsFolder, fileName);
+            let hotUri = url.resolve(this.settings.outputHotJsFolderUri, fileName);
+            Shout.timed(`Creating wormhole: ${chalk.cyan(physicalFilePath)} --> ${chalk.cyan(hotUri)}`);
+            let hotProxy = this.createWormholeToHotScript(hotUri);
+            await fse.outputFile(physicalFilePath, hotProxy);
+        }
     }
 
     /**
@@ -594,7 +595,8 @@ bootstrap().catch(err => {
     async runDevServer(webpackConfiguration: webpack.Configuration) {
         const logLevel = 'warn';
 
-        await this.putWormhole();
+        let dllFileName = this.settings.jsChunkFileName.replace('[name]', 'dll');
+        await this.putWormhole([this.settings.jsOut, dllFileName]);
 
         let devServer = await serve({}, {
             config: webpackConfiguration,

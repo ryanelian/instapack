@@ -275,32 +275,33 @@ instapack version 6.4.0+ supports [`.babelrc`](https://babeljs.io/docs/usage/bab
 
 ## Hot Reload Development Mode (BETA)
 
-Hot Reload development mode allows a developer to update an application code while preserving runtime state, without triggering browser refresh if not needed.
+Hot Reload development mode allows a developer to update application code while preserving runtime state, without triggering browser refresh if not needed. **Hot Reload requires browsers with [WebSocket](https://caniuse.com/#feat=websockets) feature.**
 
-instapack version 6.7.0+ supports Hot Reload development mode for popular JS frameworks by using `--hot` or `-h` flags, which also enable `watch` and `dev` modes automatically. **To enable this mode, the `port` number in the `package.json` configuration must be supplied.**
+instapack version 6.7.0+ supports Hot Reload for popular JS frameworks by using `--hot` or `-h` flags, which also enable `watch` and `dev` modes automatically. **To enable this mode, the `port` number in the `package.json` configuration must be supplied.**
 
-Compiling a JS project using this mode will redirect the output to the build server instead to the usual JS output folder:
+Compiling a JS project using this mode will:
+
+- Redirect the JS output to the build server (instead of the physical JS output folder).
+
+- Create a wormhole (script proxy) from the usual JS output file to the script on the build server. 
 
 ```
 [06:44:30] Hot Reload Mode: http://localhost:9001 (WebSocket port: 9002)
+[06:44:31] Creating wormhole: C:/VS/MyWebApp/wwwroot/js/ipack.js --> http://localhost:9001/js/ipack.js
+[06:44:31] Creating wormhole: C:/VS/MyWebApp/wwwroot/js/ipack.dll.js --> http://localhost:9001/js/ipack.dll.js
 [06:44:32] Compiling index.ts > ES5 in C:/VS/MyWebApp/client/js/
 [06:44:33] ipack.dll.js 5.00 MB in http://localhost:9001/js/
 [06:44:33] ipack.js 57.0 kB in http://localhost:9001/js/
 [06:44:33] Finished JS build after 1.25 s
 ```
 
-Like normally, refer those files from the HTML file in the project:
-
-```html
-<script src="http://localhost:9001/js/ipack.dll.js"></script>
-<script src="http://localhost:9001/js/ipack.js"></script>
-```
-
-> Alternatively, refer different (development or production) build scripts with the same URI by using a reverse proxy.
+> No changes should be required for the `<script src="...">` in the app itself!
 
 ### Vue.js
 
-Hot Reload for Vue.js project using Single-File Components format (`.vue`) has been enabled out of the box. (No further configurations necessary!)
+Hot Reload for Vue.js project using Single-File Components format (`.vue`) has been enabled out of the box.
+
+> No further configurations necessary!
 
 ### React
 

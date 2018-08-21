@@ -176,6 +176,19 @@ class TypeScriptBuildEngine {
             ]
         };
     }
+    createWormholeToHotScript(portNumber) {
+        return `// instapack: automatically reference the real hot-reloading script
+async function bootstrap() {
+    await import('http://localhost:${portNumber}/js/ipack.dll.js');
+    await import('http://localhost:${portNumber}/js/ipack.js');
+}
+
+bootstrap().catch(err => {
+    console.error(new Error('instapack wormhole: Failed to load Hot-Reload Source Code'));
+    console.error(err);
+});
+`;
+    }
     createOnBuildStartMessageDelegate(tsCompilerOptions) {
         let buildTargetWarned = false;
         let compileTarget = tsCompilerOptions.target;
@@ -395,9 +408,20 @@ class TypeScriptBuildEngine {
         let t = PrettyUnits_1.prettyMilliseconds(o.time);
         Shout_1.Shout.timed('Finished JS build after', chalk_1.default.green(t));
     }
+    putWormhole() {
+        return __awaiter(this, void 0, void 0, function* () {
+            let proxySource = this.createWormholeToHotScript(this.settings.port);
+            let dllFileName = this.settings.jsChunkFileName.replace('[name]', 'dll');
+            let dllFilePath = upath.join(this.settings.outputJsFolder, dllFileName);
+            Shout_1.Shout.timed(`Creating wormhole: ${chalk_1.default.cyan(this.settings.outputJsFile)}`);
+            yield fse.outputFile(this.settings.outputJsFile, proxySource);
+            yield fse.outputFile(dllFilePath, '// instapack: this script is intentionally left blank\n');
+        });
+    }
     runDevServer(webpackConfiguration) {
         return __awaiter(this, void 0, void 0, function* () {
             const logLevel = 'warn';
+            yield this.putWormhole();
             let devServer = yield serve({}, {
                 config: webpackConfiguration,
                 port: this.settings.port,

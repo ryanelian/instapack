@@ -264,6 +264,24 @@ export class TypeScriptBuildEngine {
     }
 
     /**
+     * Create a fake physical source code for importing the real hot-reloading source code.
+     * @param portNumber 
+     */
+    createWormholeToHotScript(portNumber: number): string {
+        return `// instapack: automatically reference the real hot-reloading script
+async function bootstrap() {
+    await import('http://localhost:${portNumber}/js/ipack.dll.js');
+    await import('http://localhost:${portNumber}/js/ipack.js');
+}
+
+bootstrap().catch(err => {
+    console.error(new Error('instapack wormhole: Failed to load Hot-Reload Source Code'));
+    console.error(err);
+});
+`;
+    }
+
+    /**
      * Returns a delegate which displays message when compile is starting.
      * Warns user once if target is not ES5, in tsconfig compiler options.  
      * @param tsCompilerOptions 
@@ -556,12 +574,27 @@ export class TypeScriptBuildEngine {
     }
 
     /**
+     * Create physical wormhole script in place of output JS file and dll file.
+     */
+    async putWormhole() {
+        let proxySource = this.createWormholeToHotScript(this.settings.port);
+        let dllFileName = this.settings.jsChunkFileName.replace('[name]', 'dll');
+        let dllFilePath = upath.join(this.settings.outputJsFolder, dllFileName);
+
+        Shout.timed(`Creating wormhole: ${chalk.cyan(this.settings.outputJsFile)}`);
+        await fse.outputFile(this.settings.outputJsFile, proxySource);
+        await fse.outputFile(dllFilePath, '// instapack: this script is intentionally left blank\n');
+    }
+
+    /**
      * Runs the hot reload server using provided webpack configuration. 
      * Promise will also never resolve unless errored.
      * @param webpackConfiguration 
      */
     async runDevServer(webpackConfiguration: webpack.Configuration) {
         const logLevel = 'warn';
+
+        await this.putWormhole();
 
         let devServer = await serve({}, {
             config: webpackConfiguration,

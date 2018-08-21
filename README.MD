@@ -285,11 +285,11 @@ Compiling a JS project using this mode will:
 
 ```
 [17:14:25] Hot Reload Server running on ports: 22001, 22002
-[17:14:25] Compiling index.ts > ES5 in C:/VS/MyWebApp/MyWebApp/client/js/
+[17:14:25] Compiling index.ts > ES5 in C:/VS/MyWebApp/client/js/
 [17:14:26] ipack.dll.js 5.00 MB in http://localhost:22001/js/
 [17:14:26] ipack.js 58.0 kB in http://localhost:22001/js/
-[17:14:26] Creating wormhole: C:/VS/MyWebApp/MyWebApp/wwwroot/js/ipack.dll.js --> http://localhost:22001/js/ipack.dll.js
-[17:14:26] Creating wormhole: C:/VS/MyWebApp/MyWebApp/wwwroot/js/ipack.js --> http://localhost:22001/js/ipack.js
+[17:14:26] Creating wormhole: C:/VS/MyWebApp/wwwroot/js/ipack.dll.js --> http://localhost:22001/js/ipack.dll.js
+[17:14:26] Creating wormhole: C:/VS/MyWebApp/wwwroot/js/ipack.js --> http://localhost:22001/js/ipack.js
 [17:14:26] Finished JS build after 1.22 s
 ```
 

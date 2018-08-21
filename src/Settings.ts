@@ -49,7 +49,12 @@ export class Settings {
     /**
      * Gets the Hot Server port.
      */
-    readonly port: number;
+    readonly port1: number;
+
+    /**
+     * Gets the Hot Server WebSocket port.
+     */
+    readonly port2: number;
 
     /**
      * Constructs a new instance of Settings using a root folder and an setting object parsed from package.json.
@@ -66,9 +71,11 @@ export class Settings {
         this.alias = settings.alias || {};
         this.externals = settings.externals || {};
 
-        // port number must be an integer!
-        if (typeof settings.port === 'number' && (settings.port % 1 === 0)) {
-            this.port = settings.port || null;
+        if (this.isInteger(settings.port1)) {
+            this.port1 = settings.port1;
+        }
+        if (this.isInteger(settings.port2)) {
+            this.port2 = settings.port2;
         }
 
         this.jsOut = settings.jsOut || 'ipack.js';
@@ -80,6 +87,10 @@ export class Settings {
         if (this.cssOut.endsWith('.css') === false) {
             this.cssOut += '.css';
         }
+    }
+
+    private isInteger(x) {
+        return (typeof x === 'number') && (x % 1 === 0);
     }
 
     /**
@@ -94,7 +105,8 @@ export class Settings {
             input: this.input,
             jsOut: this.jsOut,
             output: this.output,
-            port: this.port
+            port1: this.port1,
+            port2: this.port2
         };
     }
 

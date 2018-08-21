@@ -42,12 +42,6 @@ export class Compiler {
         if (this.flags.hot) {
             this.flags.production = false;
             this.flags.watch = true;
-            let devServerUri = `http://localhost:${this.settings.port}`;
-            let wsPortNumber = (this.settings.port + 1).toString();
-            Shout.timed(chalk.yellow("Hot Reload"),
-                "Mode: " + chalk.cyan(devServerUri),
-                chalk.grey('(WebSocket port: ') + chalk.green(wsPortNumber) + chalk.grey(')')
-            );
         }
 
         if (this.flags.watch) {
@@ -113,12 +107,6 @@ export class Compiler {
      * @param taskName 
      */
     build(taskName: string) {
-
-        if (this.flags.hot && !this.settings.port) {
-            Shout.error(`Cannot use ${chalk.yellow('Hot Reload')} flag: ${chalk.green('port')} number is not set in ${chalk.cyan('package.json:instapack')}!`);
-            return;
-        }
-
         this.chat();
         this.runBuildWorkerForTask(taskName);
 

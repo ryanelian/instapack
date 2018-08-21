@@ -38,7 +38,7 @@ program.command({
             describe: 'Generates webpack stats.json next to the TypeScript build outputs for analysis.'
         }).option('h', {
             alias: 'hot',
-            describe: 'Enables Hot Reload development mode using a build server. (Requires port setting.)'
+            describe: 'Enables Hot Reload development mode using dedicated build servers.'
         });
     },
     handler: argv => {

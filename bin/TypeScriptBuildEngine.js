@@ -21,6 +21,7 @@ const url = require("url");
 const PrettyUnits_1 = require("./PrettyUnits");
 const TypeScriptBuildWebpackPlugin_1 = require("./TypeScriptBuildWebpackPlugin");
 const Shout_1 = require("./Shout");
+const CompilerUtilities_1 = require("./CompilerUtilities");
 class TypeScriptBuildEngine {
     constructor(settings, flags) {
         this.settings = settings;
@@ -423,7 +424,7 @@ inject();
         });
     }
     get outputHotJsFolderUri() {
-        return `http://localhost:${this.settings.port}/js/`;
+        return `http://localhost:${this.port1}/js/`;
     }
     runDevServer(webpackConfiguration) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -431,10 +432,10 @@ inject();
             yield this.putWormhole();
             let devServer = yield serve({}, {
                 config: webpackConfiguration,
-                port: this.settings.port,
+                port: this.port1,
                 content: path.resolve(this.settings.outputFolder),
                 hotClient: {
-                    port: this.settings.port + 1,
+                    port: this.port2,
                     logLevel: logLevel
                 },
                 logLevel: logLevel,
@@ -452,8 +453,43 @@ inject();
             yield new Promise((ok, reject) => { });
         });
     }
+    setDevServerPorts() {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (this.settings.port1) {
+                if (yield CompilerUtilities_1.isPortAvailable(this.settings.port1)) {
+                    this.port1 = this.settings.port1;
+                }
+                else {
+                    Shout_1.Shout.error('Configuration Error: Port 1 is not available. Randomizing Port 1...');
+                }
+            }
+            if (!this.port1) {
+                this.port1 = yield CompilerUtilities_1.getAvailablePort(22001);
+            }
+            if (this.settings.port2) {
+                if (this.port1 === this.settings.port2) {
+                    Shout_1.Shout.error('Configuration Error: Port 2 is equal to Port 1. Randomizing Port 2...');
+                }
+                else if (yield CompilerUtilities_1.isPortAvailable(this.settings.port2)) {
+                    this.port2 = this.settings.port2;
+                }
+                else {
+                    Shout_1.Shout.error('Configuration Error: Port 2 is not available. Randomizing Port 2...');
+                }
+            }
+            if (!this.port2) {
+                this.port2 = yield CompilerUtilities_1.getAvailablePort(this.port1 + 1);
+            }
+            let p1 = chalk_1.default.green(this.port1.toString());
+            let p2 = chalk_1.default.green(this.port2.toString());
+            Shout_1.Shout.timed(chalk_1.default.yellow('Hot Reload'), `Server running on ports: ${p1}, ${p2}`);
+        });
+    }
     build() {
         return __awaiter(this, void 0, void 0, function* () {
+            if (this.flags.hot) {
+                yield this.setDevServerPorts();
+            }
             let webpackConfiguration = yield this.createWebpackConfiguration();
             if (this.flags.hot) {
                 yield this.runDevServer(webpackConfiguration);

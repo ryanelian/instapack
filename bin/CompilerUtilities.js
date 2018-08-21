@@ -12,6 +12,7 @@ const chalk_1 = require("chalk");
 const upath = require("upath");
 const fse = require("fs-extra");
 const WorkerFarm = require("worker-farm");
+const net = require("net");
 const PrettyUnits_1 = require("./PrettyUnits");
 const Shout_1 = require("./Shout");
 function outputFileThenLog(filePath, content) {
@@ -89,3 +90,36 @@ function mergePackageJson(projectPackageJson, templatePackageJson) {
     return packageJson;
 }
 exports.mergePackageJson = mergePackageJson;
+function isPortAvailable(port) {
+    return new Promise((ok, reject) => {
+        var tester = net
+            .createServer()
+            .once('error', function (err) {
+            ok(false);
+        })
+            .once('listening', function () {
+            tester.once('close', function () {
+                ok(true);
+            }).close();
+        })
+            .listen({
+            host: 'localhost',
+            port: port,
+            exclusive: true
+        });
+    });
+}
+exports.isPortAvailable = isPortAvailable;
+function getAvailablePort(startFrom) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let i = startFrom;
+        while ((yield isPortAvailable(i)) === false) {
+            i++;
+            if (i > 49151) {
+                throw new Error('Cannot find an open port!');
+            }
+        }
+        return i;
+    });
+}
+exports.getAvailablePort = getAvailablePort;

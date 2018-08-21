@@ -20,8 +20,11 @@ class Settings {
         this.concat = settings.concat || {};
         this.alias = settings.alias || {};
         this.externals = settings.externals || {};
-        if (typeof settings.port === 'number' && (settings.port % 1 === 0)) {
-            this.port = settings.port || null;
+        if (this.isInteger(settings.port1)) {
+            this.port1 = settings.port1;
+        }
+        if (this.isInteger(settings.port2)) {
+            this.port2 = settings.port2;
         }
         this.jsOut = settings.jsOut || 'ipack.js';
         if (this.jsOut.endsWith('.js') === false) {
@@ -32,6 +35,9 @@ class Settings {
             this.cssOut += '.css';
         }
     }
+    isInteger(x) {
+        return (typeof x === 'number') && (x % 1 === 0);
+    }
     get core() {
         return {
             alias: this.alias,
@@ -41,7 +47,8 @@ class Settings {
             input: this.input,
             jsOut: this.jsOut,
             output: this.output,
-            port: this.port
+            port1: this.port1,
+            port2: this.port2
         };
     }
     get jsChunkFileName() {

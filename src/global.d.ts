@@ -16,7 +16,8 @@ interface ISettingsCore {
     externals: IMapLike<string>;
     jsOut: string;
     cssOut: string;
-    port: number;
+    port1: number;
+    port2: number;
 }
 
 /**

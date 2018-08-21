@@ -13,6 +13,7 @@ import { Settings } from './Settings';
 import { prettyBytes, prettyMilliseconds } from './PrettyUnits';
 import { TypeScriptBuildWebpackPlugin } from './TypeScriptBuildWebpackPlugin';
 import { Shout } from './Shout';
+import { getAvailablePort, isPortAvailable } from './CompilerUtilities';
 
 /**
  * Contains methods for compiling a TypeScript project.
@@ -28,6 +29,9 @@ export class TypeScriptBuildEngine {
      * Gets the compiler build flags.
      */
     private readonly flags: IBuildFlags;
+
+    port1: number;
+    port2: number;
 
     /**
      * Constructs a new instance of TypeScriptBuildTool using the specified settings and build flags. 
@@ -594,7 +598,7 @@ inject();
      * Gets the URI to JS folder in the hot reload server.
      */
     get outputHotJsFolderUri(): string {
-        return `http://localhost:${this.settings.port}/js/`;
+        return `http://localhost:${this.port1}/js/`;
     }
 
     /**
@@ -609,10 +613,10 @@ inject();
 
         let devServer = await serve({}, {
             config: webpackConfiguration,
-            port: this.settings.port,
+            port: this.port1,
             content: path.resolve(this.settings.outputFolder),
             hotClient: {
-                port: this.settings.port + 1,
+                port: this.port2,
                 logLevel: logLevel
             },
             logLevel: logLevel,
@@ -633,9 +637,48 @@ inject();
     }
 
     /**
+     * Gets host system's two open ports for Hot Reload Server then declare to UI.
+     */
+    async setDevServerPorts() {
+        if (this.settings.port1) {
+            if (await isPortAvailable(this.settings.port1)) {
+                this.port1 = this.settings.port1;
+            } else {
+                Shout.error('Configuration Error: Port 1 is not available. Randomizing Port 1...');
+            }
+        }
+
+        if (!this.port1) {
+            this.port1 = await getAvailablePort(22001);
+        }
+
+        if (this.settings.port2) {
+            if (this.port1 === this.settings.port2) {
+                Shout.error('Configuration Error: Port 2 is equal to Port 1. Randomizing Port 2...');
+            } else if (await isPortAvailable(this.settings.port2)) {
+                this.port2 = this.settings.port2;
+            } else {
+                Shout.error('Configuration Error: Port 2 is not available. Randomizing Port 2...');
+            }
+        }
+
+        if (!this.port2) {
+            this.port2 = await getAvailablePort(this.port1 + 1);
+        }
+
+        let p1 = chalk.green(this.port1.toString());
+        let p2 = chalk.green(this.port2.toString());
+        Shout.timed(chalk.yellow('Hot Reload'), `Server running on ports: ${p1}, ${p2}`);
+    }
+
+    /**
      * Runs the TypeScript build engine.
      */
     async build() {
+        if (this.flags.hot) {
+            await this.setDevServerPorts();
+        }
+
         let webpackConfiguration = await this.createWebpackConfiguration();
 
         if (this.flags.hot) {

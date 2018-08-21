@@ -149,7 +149,7 @@ In addition, build flags are available:
 
 - `--dev` or `-d` disables build outputs optimization and minification for **FAST build!** :fire:
 
-- `--hot` or `-h` enables Hot Reload development mode using a build server. (Requires port setting.) :volcano: [Read more ↓](#hot-reload-development-mode-beta)
+- `--hot` or `-h` enables Hot Reload development mode using dedicated build servers. :volcano: [Read more ↓](#hot-reload-development-mode-beta)
 
 - `--xdebug` or `-x` disables source maps, producing undebuggable outputs. (Slightly improves build speed)
 
@@ -259,11 +259,9 @@ so [CDN](https://en.wikipedia.org/wiki/Content_delivery_network) can be used! :t
 }
 ```
 
-- `port` is required for enabling Hot Reload Mode. [Read more ↓](#hot-reload-development-mode-beta)
+- `port1` can be set for declaring a static port number to be used by the Hot Reload build server / asset server. If not set, server port number will be randomized. [Read more ↓](#hot-reload-development-mode-beta)
 
-  - Enter a non-zero port number to be used by the build server. For example: `9001`
-  
-  - A second WebSocket server will also be operational on the said port number +1. For example: `9002`
+- `port2` can be set for declaring a static port number to be used by the Hot Reload broadcasting server / WebSocket server. If not set, server port number will be randomized. [Read more ↓](#hot-reload-development-mode-beta)
 
 ## Babel Integration (BETA)
 
@@ -275,9 +273,9 @@ instapack version 6.4.0+ supports [`.babelrc`](https://babeljs.io/docs/usage/bab
 
 ## Hot Reload Development Mode (BETA)
 
-Hot Reload development mode allows a developer to update application code while preserving runtime state, without triggering browser refresh if not needed. **Hot Reload requires browsers with [WebSocket](https://caniuse.com/#feat=websockets) feature.**
+Hot Reload development mode allows a developer to update application code while preserving runtime state, without triggering browser refresh if not needed.
 
-instapack version 6.7.0+ supports Hot Reload for popular JS frameworks by using `--hot` or `-h` flags, which also enable `watch` and `dev` modes automatically. **To enable this mode, the `port` number in the `package.json` configuration must be supplied.**
+instapack version 6.7.0+ supports Hot Reload for popular JS frameworks by using `--hot` or `-h` flags, which also enable `watch` and `dev` modes automatically. **Hot Reload requires browsers with [WebSocket](https://caniuse.com/#feat=websockets) feature.**
 
 Compiling a JS project using this mode will:
 

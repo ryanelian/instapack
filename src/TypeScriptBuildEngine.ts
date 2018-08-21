@@ -457,7 +457,7 @@ inject();
         }
 
         if (this.flags.hot) {
-            config.output.publicPath = this.settings.outputHotJsFolderUri;
+            config.output.publicPath = this.outputHotJsFolderUri;
         }
 
         return config;
@@ -556,7 +556,7 @@ inject();
 
         let jsOutputPath;
         if (this.flags.hot) {
-            jsOutputPath = this.settings.outputHotJsFolderUri;
+            jsOutputPath = this.outputHotJsFolderUri;
         } else {
             jsOutputPath = this.settings.outputJsFolder + '/';
         }
@@ -577,14 +577,24 @@ inject();
     /**
      * Create physical wormhole script in place of output JS file and dll file.
      */
-    async putWormhole(fileNames: string[]) {
+    async putWormhole() {
+        let dllFileName = this.settings.jsChunkFileName.replace('[name]', 'dll');
+        let fileNames: string[] = [this.settings.jsOut, dllFileName];
+
         for (let fileName of fileNames) {
             let physicalFilePath = upath.join(this.settings.outputJsFolder, fileName);
-            let hotUri = url.resolve(this.settings.outputHotJsFolderUri, fileName);
+            let hotUri = url.resolve(this.outputHotJsFolderUri, fileName);
             Shout.timed(`Creating wormhole: ${chalk.cyan(physicalFilePath)} --> ${chalk.cyan(hotUri)}`);
             let hotProxy = this.createWormholeToHotScript(hotUri);
             await fse.outputFile(physicalFilePath, hotProxy);
         }
+    }
+
+    /**
+     * Gets the URI to JS folder in the hot reload server.
+     */
+    get outputHotJsFolderUri(): string {
+        return `http://localhost:${this.settings.port}/js/`;
     }
 
     /**
@@ -595,8 +605,7 @@ inject();
     async runDevServer(webpackConfiguration: webpack.Configuration) {
         const logLevel = 'warn';
 
-        let dllFileName = this.settings.jsChunkFileName.replace('[name]', 'dll');
-        await this.putWormhole([this.settings.jsOut, dllFileName]);
+        await this.putWormhole();
 
         let devServer = await serve({}, {
             config: webpackConfiguration,

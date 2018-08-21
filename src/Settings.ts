@@ -284,20 +284,6 @@ export class Settings {
     }
 
     /**
-     * Gets the base URI for the hot reload server. 
-     */
-    get outputHotBaseUri(): string {
-        return `http://localhost:${this.port}/`;
-    }
-
-    /**
-     * Gets the URI to JS folder in the hot reload server.
-     */
-    get outputHotJsFolderUri(): string {
-        return this.outputHotBaseUri + 'js/';
-    }
-
-    /**
      * Attempts to read the settings from package.json in the same folder where the command line is invoked at.
      */
     static async tryReadFromPackageJson(root: string): Promise<Settings> {

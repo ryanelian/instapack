@@ -316,7 +316,7 @@ inject();
                 };
             }
             if (this.flags.hot) {
-                config.output.publicPath = this.settings.outputHotJsFolderUri;
+                config.output.publicPath = this.outputHotJsFolderUri;
             }
             return config;
         });
@@ -395,7 +395,7 @@ inject();
         }
         let jsOutputPath;
         if (this.flags.hot) {
-            jsOutputPath = this.settings.outputHotJsFolderUri;
+            jsOutputPath = this.outputHotJsFolderUri;
         }
         else {
             jsOutputPath = this.settings.outputJsFolder + '/';
@@ -409,22 +409,26 @@ inject();
         let t = PrettyUnits_1.prettyMilliseconds(o.time);
         Shout_1.Shout.timed('Finished JS build after', chalk_1.default.green(t));
     }
-    putWormhole(fileNames) {
+    putWormhole() {
         return __awaiter(this, void 0, void 0, function* () {
+            let dllFileName = this.settings.jsChunkFileName.replace('[name]', 'dll');
+            let fileNames = [this.settings.jsOut, dllFileName];
             for (let fileName of fileNames) {
                 let physicalFilePath = upath.join(this.settings.outputJsFolder, fileName);
-                let hotUri = url.resolve(this.settings.outputHotJsFolderUri, fileName);
+                let hotUri = url.resolve(this.outputHotJsFolderUri, fileName);
                 Shout_1.Shout.timed(`Creating wormhole: ${chalk_1.default.cyan(physicalFilePath)} --> ${chalk_1.default.cyan(hotUri)}`);
                 let hotProxy = this.createWormholeToHotScript(hotUri);
                 yield fse.outputFile(physicalFilePath, hotProxy);
             }
         });
     }
+    get outputHotJsFolderUri() {
+        return `http://localhost:${this.settings.port}/js/`;
+    }
     runDevServer(webpackConfiguration) {
         return __awaiter(this, void 0, void 0, function* () {
             const logLevel = 'warn';
-            let dllFileName = this.settings.jsChunkFileName.replace('[name]', 'dll');
-            yield this.putWormhole([this.settings.jsOut, dllFileName]);
+            yield this.putWormhole();
             let devServer = yield serve({}, {
                 config: webpackConfiguration,
                 port: this.settings.port,

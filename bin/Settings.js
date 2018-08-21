@@ -129,12 +129,6 @@ class Settings {
     get outputCssFile() {
         return upath.join(this.outputCssFolder, this.cssOut);
     }
-    get outputHotBaseUri() {
-        return `http://localhost:${this.port}/`;
-    }
-    get outputHotJsFolderUri() {
-        return this.outputHotBaseUri + 'js/';
-    }
     static tryReadFromPackageJson(root) {
         return __awaiter(this, void 0, void 0, function* () {
             let parse;

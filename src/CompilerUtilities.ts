@@ -114,7 +114,7 @@ export function mergePackageJson(projectPackageJson, templatePackageJson) {
  */
 export function isPortAvailable(port: number) {
     return new Promise<boolean>((ok, reject) => {
-        var tester = net
+        let tester = net
             .createServer()
             .once('error', function (err) {
                 // console.log(`Port ${port} is not available!`);

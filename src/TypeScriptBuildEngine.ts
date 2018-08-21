@@ -32,6 +32,7 @@ export class TypeScriptBuildEngine {
 
     port1: number;
     port2: number;
+    wormholes: Set<string> = new Set<string>();
 
     /**
      * Constructs a new instance of TypeScriptBuildTool using the specified settings and build flags. 
@@ -478,7 +479,7 @@ inject();
             children: false,
             chunkModules: false,
             chunkOrigins: false,
-            chunks: false,
+            chunks: this.flags.hot,
             depth: false,
             entrypoints: false,
             env: false,
@@ -574,24 +575,55 @@ inject();
             }
         }
 
+        if (this.flags.hot && o.chunks) {
+            for (let chunk of o.chunks) {
+                if (chunk.initial === false) {
+                    continue;
+                }
+
+                this.putWormholes(chunk.files);
+            }
+        }
+
         let t = prettyMilliseconds(o.time);
         Shout.timed('Finished JS build after', chalk.green(t));
     }
 
     /**
-     * Create physical wormhole script in place of output JS file and dll file.
+     * Create physical wormhole scripts for initial chunk files, once each. 
+     * @param fileNames 
      */
-    async putWormhole() {
-        let dllFileName = this.settings.jsChunkFileName.replace('[name]', 'dll');
-        let fileNames: string[] = [this.settings.jsOut, dllFileName];
-
-        for (let fileName of fileNames) {
-            let physicalFilePath = upath.join(this.settings.outputJsFolder, fileName);
-            let hotUri = url.resolve(this.outputHotJsFolderUri, fileName);
-            Shout.timed(`Creating wormhole: ${chalk.cyan(physicalFilePath)} --> ${chalk.cyan(hotUri)}`);
-            let hotProxy = this.createWormholeToHotScript(hotUri);
-            await fse.outputFile(physicalFilePath, hotProxy);
+    putWormholes(fileNames: string[]) {
+        if (!fileNames) {
+            return;
         }
+
+        for (let file of fileNames) {
+            if (file.includes('.hot-update.js')) {
+                continue;
+            }
+
+            if (this.wormholes.has(file)) {
+                continue;
+            }
+
+            this.putWormhole(file).then(() => {
+                this.wormholes.add(file);
+            }).catch(err => {
+                Shout.error(err);
+            });
+        }
+    }
+
+    /**
+     * Create physical wormhole script in place of output file.
+     */
+    putWormhole(fileName: string) {
+        let physicalFilePath = upath.join(this.settings.outputJsFolder, fileName);
+        let hotUri = url.resolve(this.outputHotJsFolderUri, fileName);
+        Shout.timed(`Creating wormhole: ${chalk.cyan(physicalFilePath)} --> ${chalk.cyan(hotUri)}`);
+        let hotProxy = this.createWormholeToHotScript(hotUri);
+        return fse.outputFile(physicalFilePath, hotProxy);
     }
 
     /**
@@ -608,8 +640,6 @@ inject();
      */
     async runDevServer(webpackConfiguration: webpack.Configuration) {
         const logLevel = 'warn';
-
-        await this.putWormhole();
 
         let devServer = await serve({}, {
             config: webpackConfiguration,

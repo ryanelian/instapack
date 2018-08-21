@@ -1,6 +1,6 @@
 {
   "name": "instapack",
-  "version": "6.7.0-beta2",
+  "version": "6.7.0-beta3",
   "description": "All-in-one TypeScript and Sass compiler for web applications!",
   "keywords": [
     "typescript",
@@ -72,7 +72,7 @@
     "upath": "1.1.0",
     "vue-loader": "15.4.0",
     "vue-template-compiler": "2.5.17",
-    "webpack": "4.16.5",
+    "webpack": "4.17.0",
     "webpack-serve": "2.0.2",
     "webpack-sources": "1.1.0",
     "worker-farm": "1.6.0",

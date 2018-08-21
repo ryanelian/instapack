@@ -281,16 +281,16 @@ Compiling a JS project using this mode will:
 
 - Redirect the JS output to the build server (instead of the physical JS output folder).
 
-- Create a wormhole (script proxy) from the usual JS output file to the script on the build server. 
+- Create a wormhole (script injection) from the usual JS output file to the script on the build server. 
 
 ```
-[06:44:30] Hot Reload Mode: http://localhost:9001 (WebSocket port: 9002)
-[06:44:31] Creating wormhole: C:/VS/MyWebApp/wwwroot/js/ipack.js --> http://localhost:9001/js/ipack.js
-[06:44:31] Creating wormhole: C:/VS/MyWebApp/wwwroot/js/ipack.dll.js --> http://localhost:9001/js/ipack.dll.js
-[06:44:32] Compiling index.ts > ES5 in C:/VS/MyWebApp/client/js/
-[06:44:33] ipack.dll.js 5.00 MB in http://localhost:9001/js/
-[06:44:33] ipack.js 57.0 kB in http://localhost:9001/js/
-[06:44:33] Finished JS build after 1.25 s
+[17:14:25] Hot Reload Server running on ports: 22001, 22002
+[17:14:25] Compiling index.ts > ES5 in C:/VS/MyWebApp/MyWebApp/client/js/
+[17:14:26] ipack.dll.js 5.00 MB in http://localhost:22001/js/
+[17:14:26] ipack.js 58.0 kB in http://localhost:22001/js/
+[17:14:26] Creating wormhole: C:/VS/MyWebApp/MyWebApp/wwwroot/js/ipack.dll.js --> http://localhost:22001/js/ipack.dll.js
+[17:14:26] Creating wormhole: C:/VS/MyWebApp/MyWebApp/wwwroot/js/ipack.js --> http://localhost:22001/js/ipack.js
+[17:14:26] Finished JS build after 1.22 s
 ```
 
 > No changes should be required for the `<script src="...">` in the app itself!

@@ -92,7 +92,7 @@ function mergePackageJson(projectPackageJson, templatePackageJson) {
 exports.mergePackageJson = mergePackageJson;
 function isPortAvailable(port) {
     return new Promise((ok, reject) => {
-        var tester = net
+        let tester = net
             .createServer()
             .once('error', function (err) {
             ok(false);

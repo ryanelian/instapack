@@ -37,6 +37,9 @@ program.command({
             }).option('dev', {
                 alias: 'd',
                 describe: 'Disables build outputs optimization and minification.'
+            }).option('hot', {
+                alias: 'h',
+                describe: 'Enables Hot Reload development mode using dedicated build servers.'
             }).option('xdebug', {
                 alias: 'x',
                 describe: 'Disables source maps, producing undebuggable outputs.'
@@ -44,9 +47,6 @@ program.command({
                 describe: 'Defines process.env variables to be replaced in TypeScript project build.'
             }).option('stats', {
                 describe: 'Generates webpack stats.json next to the TypeScript build outputs for analysis.'
-            }).option('h', {
-                alias: 'hot',
-                describe: 'Enables Hot Reload development mode using dedicated build servers.'
             })/*.option('v', {
                 alias: 'verbose',
                 describe: 'Trace diagnostic outputs for debugging instapack.'

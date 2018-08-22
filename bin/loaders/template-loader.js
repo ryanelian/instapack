@@ -2,6 +2,7 @@
 const html_minifier_1 = require("html-minifier");
 const vue_template_compiler_1 = require("vue-template-compiler");
 const source_map_1 = require("source-map");
+const Shout_1 = require("../Shout");
 let minifierOptions = {
     caseSensitive: false,
     collapseBooleanAttributes: true,
@@ -39,10 +40,15 @@ function functionArrayWrap(ar) {
     let result = ar.map(s => functionWrap(s)).join(',');
     return '[' + result + ']';
 }
+let deprecateVueHtmlWarned = false;
 module.exports = function (html) {
     let template = html_minifier_1.minify(html, minifierOptions).trim();
     let fileName = this.resourcePath.toLowerCase();
     if (fileName.endsWith('.vue.html')) {
+        if (deprecateVueHtmlWarned === false) {
+            Shout_1.Shout.warning('Importing .vue.html module is deprecated in favor of .vue Single-File Components (which supports Hot Reload Development Mode) and will be removed in future instapack version 7.0.0!');
+            deprecateVueHtmlWarned = true;
+        }
         let vueResult = vue_template_compiler_1.compile(template);
         let error = vueResult.errors[0];
         if (error) {

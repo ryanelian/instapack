@@ -48,8 +48,8 @@
     "build": "tsc && tslint -p ."
   },
   "dependencies": {
-    "@babel/core": "7.0.0-rc.1",
-    "autoprefixer": "9.1.2",
+    "@babel/core": "7.0.0-rc.2",
+    "autoprefixer": "9.1.3",
     "babel-loader": "8.0.0-beta.3",
     "chalk": "2.4.1",
     "chokidar": "2.0.4",
@@ -72,7 +72,7 @@
     "upath": "1.1.0",
     "vue-loader": "15.4.0",
     "vue-template-compiler": "2.5.17",
-    "webpack": "4.17.0",
+    "webpack": "4.17.1",
     "webpack-serve": "2.0.2",
     "webpack-sources": "1.1.0",
     "worker-farm": "1.6.0",

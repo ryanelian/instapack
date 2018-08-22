@@ -263,7 +263,7 @@ so [CDN](https://en.wikipedia.org/wiki/Content_delivery_network) can be used! :t
 
 - `port2` can be set for declaring a static port number to be used by the Hot Reload server for broadcasting changes using WebSocket. If not set, the port number will be randomized. [Read more ↓](#hot-reload-development-mode-beta)
 
-## Babel Integration (BETA)
+## Babel Integration (RC)
 
 instapack version 6.4.0+ supports [`.babelrc`](https://babeljs.io/docs/usage/babelrc/) in the project root folder. **Babel will be run AFTER TypeScript compilation.** Here are some use cases where this feature can be useful:
 
@@ -271,7 +271,7 @@ instapack version 6.4.0+ supports [`.babelrc`](https://babeljs.io/docs/usage/bab
 
 - You may use Babel instead of TypeScript to compile JSX: set TypeScript `jsx` to `preserve` then use the framework-compatible JSX plugin. For example: `@babel/plugin-transform-react-jsx`, `babel-plugin-transform-vue-jsx`, `babel-plugin-inferno`
 
-## Hot Reload Development Mode (BETA)
+## Hot Reload Development Mode (PREVIEW)
 
 Hot Reload development mode allows a developer to update application code while preserving runtime states, without triggering browser refresh when not needed.
 
@@ -458,7 +458,7 @@ let foo: string = settings.foo;
 
 > TypeScript 2.9.0 supports strongly-typed import when `resolveJsonModule` compiler option in `tsconfig.json` is set to `true` ([but not 3.0.0 due to regression...](https://github.com/Microsoft/TypeScript/issues/26020))
 
-### Vue Single-File Components (BETA)
+### Vue Single-File Components
 
 instapack version 6.4.0+ can compile `.vue` files:
 
@@ -490,7 +490,7 @@ export default class Hello extends Vue {
 
 - Notice that basic `<style>` (or `<style scoped>` or `<style module>`) should work, but should *not* be used. 
 
-  - **This feature is not supported** [at least until webpack ships built-in CSS modules](https://github.com/webpack/webpack/pull/6448).
+  - **This particular feature is in PREVIEW state / not supported** [at least until webpack ships built-in CSS modules](https://github.com/webpack/webpack/pull/6448).
 
   - **Limitations:** You cannot use Sass. The CSS will not be auto-prefixed and minified.
   

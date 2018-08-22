@@ -281,7 +281,7 @@ Compiling a JS project using this mode will:
 
 - Redirect the JS outputs to the build server (instead of the physical JS output folder).
 
-- Create wormholes (script injections) in place of the usual JS output files, directed to the respective scripts on the build server.
+- Create wormholes (script injections) in place of the usual JS output files, directed to respective scripts on the build server.
 
 ```
 [17:14:25] Hot Reload Server running on ports: 22001, 22002
@@ -442,7 +442,7 @@ let template: string = require('./mytemplate.html');
 
 ### JSON Modules
 
-Enables strongly-typed, static JSON file imports in the TypeScript project when `resolveJsonModule` compiler option in `tsconfig.json` is set to `true`
+Enables static JSON file imports in the TypeScript project using `require` syntax:
 
 ```json
 {
@@ -451,12 +451,12 @@ Enables strongly-typed, static JSON file imports in the TypeScript project when 
 ```
 
 ```ts
-import settings from './settings.json';
+let settings = require('./settings.json');
 
-let s: string = settings.foo;
+let foo: string = settings.foo;
 ```
 
-> Requires TypeScript 2.9.0 / instapack 6.5.0 or above. Earlier versions support importing JSON files using `require` syntax instead.
+> TypeScript 2.9.0 supports strongly-typed import when `resolveJsonModule` compiler option in `tsconfig.json` is set to `true` ([but not 3.0.0 due to regression...](https://github.com/Microsoft/TypeScript/issues/26020))
 
 ### Vue Single-File Components (BETA)
 

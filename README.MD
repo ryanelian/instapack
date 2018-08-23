@@ -327,8 +327,8 @@ import React from 'react';
 import { hot } from "react-hot-loader"
 import { Hello } from "./Hello";
 
-let app = () => <Hello compiler="instapack" framework="React" />;
-export default hot(module)(app);
+export let App = () => <Hello compiler="instapack" framework="React" />;
+export let HotApp = hot(module)(App);
 ```
 
 Import that module, then render:
@@ -336,10 +336,10 @@ Import that module, then render:
 ```tsx
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './components/App';
+import { HotApp } from './components/App';
 
 ReactDOM.render(
-    <App />,
+    <HotApp />,
     document.getElementById('app')
 );
 ```

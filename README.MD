@@ -121,8 +121,6 @@ Scaffolds a new instapack project into your existing app folder where the comman
 
 - `react` for developing a web app using [React](https://reactjs.org/) and [Semantic UI](https://semantic-ui.com/).
 
-- `angular` for developing a web app using [the new Angular](https://angular.io/) and [Material Design](https://material.angular.io/). (Warnings: [1](https://github.com/angular/angular/issues/11580) [2](https://github.com/angular/angular/issues/21560))
-
 - `preact` for developing a web app using [Preact](https://preactjs.com/). (Fast 3kB alternative to React)
 
 - `inferno` for developing a web app using [Inferno](https://infernojs.org/). (Insanely fast, React-like)
@@ -136,6 +134,8 @@ Scaffolds a new instapack project into your existing app folder where the comman
 - `angularjs` for developing a *legacy* web app using [AngularJS 1.7](https://angularjs.org/) and [Bootstrap 3](http://getbootstrap.com/docs/3.3/).
 
   - Includes [jquery-validation-unobtrusive](https://github.com/aspnet/jquery-validation-unobtrusive) for ASP.NET MVC client-side validation.
+
+- (PREVIEW) `angular` for developing a web app using [the new Angular](https://angular.io/) and [Material Design](https://material.angular.io/). (Warnings: [1](https://github.com/angular/angular/issues/11580) [2](https://github.com/angular/angular/issues/21560))
 
 If no template parameter is provided, `vue` will be chosen. :vulcan_salute:
 

@@ -25,7 +25,7 @@
     "react": "^16.4.2",
     "react-dom": "^16.4.2",
     "semantic-ui-css": "^2.3.3",
-    "semantic-ui-react": "^0.82.2",
+    "semantic-ui-react": "^0.82.3",
     "sweetalert": "^2.1.0",
     "ts-polyfill": "^3.0.1",
     "tslib": "^1.9.3"

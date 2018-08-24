@@ -1,6 +1,6 @@
 {
   "name": "instapack",
-  "version": "6.7.0-beta4",
+  "version": "6.7.0-rc1",
   "description": "All-in-one TypeScript and Sass compiler for web applications!",
   "keywords": [
     "typescript",
@@ -68,7 +68,7 @@
     "source-map": "0.7.3",
     "tslint": "5.11.0",
     "typescript": "3.0.1",
-    "uglify-js": "3.4.7",
+    "uglify-js": "3.4.8",
     "upath": "1.1.0",
     "vue-loader": "15.4.0",
     "vue-template-compiler": "2.5.17",
@@ -88,7 +88,7 @@
     "@types/node": "8",
     "@types/node-sass": "^3.10.32",
     "@types/uglify-js": "^3.0.3",
-    "@types/webpack": "^4.4.10",
+    "@types/webpack": "^4.4.11",
     "@types/webpack-serve": "^2.0.0",
     "@types/webpack-sources": "^0.1.5",
     "@types/yargs": "^11.1.1"

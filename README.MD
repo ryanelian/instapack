@@ -263,7 +263,7 @@ so [CDN](https://en.wikipedia.org/wiki/Content_delivery_network) can be used! :t
 
 - `port2` can be set for declaring a static port number to be used by the Hot Reload server for broadcasting changes using WebSocket. If not set, the port number will be randomized. [Read more ↓](#hot-reload-development-mode-beta)
 
-## Babel Integration (RC)
+## Babel Integration
 
 instapack version 6.4.0+ supports [`.babelrc`](https://babeljs.io/docs/usage/babelrc/) in the project root folder. **Babel will be run AFTER TypeScript compilation.** Here are some use cases where this feature can be useful:
 

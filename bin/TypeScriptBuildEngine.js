@@ -440,7 +440,7 @@ inject();
     putWormhole(fileName) {
         let physicalFilePath = upath.join(this.settings.outputJsFolder, fileName);
         let hotUri = url.resolve(this.outputHotJsFolderUri, fileName);
-        Shout_1.Shout.timed(`Creating wormhole: ${chalk_1.default.cyan(physicalFilePath)} --> ${chalk_1.default.cyan(hotUri)}`);
+        Shout_1.Shout.timed(`+wormhole: ${chalk_1.default.cyan(physicalFilePath)} --> ${chalk_1.default.cyan(hotUri)}`);
         let hotProxy = this.createWormholeToHotScript(hotUri);
         return fse.outputFile(physicalFilePath, hotProxy);
     }

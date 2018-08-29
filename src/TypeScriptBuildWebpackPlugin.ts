@@ -1,7 +1,6 @@
 import chalk from 'chalk';
 import * as webpack from 'webpack';
 import { Source, SourceMapSource, RawSource } from 'webpack-sources';
-import { RawSourceMap } from 'source-map';
 import { MinifyOutput } from 'uglify-js';
 
 import { Shout } from './Shout';

@@ -1,7 +1,5 @@
 import * as cp from 'child_process';
-import chalk from 'chalk';
 import { platform } from 'process';
-import { GlobalSettingsManager } from './GlobalSettingsManager';
 
 /**
  * Contains methods responsible for restoring user packages.

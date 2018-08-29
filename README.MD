@@ -119,7 +119,7 @@ Scaffolds a new instapack project into your existing app folder where the comman
 
   - Includes [aspnet-validation](https://www.npmjs.com/package/aspnet-validation) for ASP.NET MVC client-side validation.
 
-- `react` for developing a web app using [React](https://reactjs.org/) and [Semantic UI](https://semantic-ui.com/).
+- `react` for developing a web app using [React](https://reactjs.org/) and [MobX](https://github.com/mobxjs/mobx) and [Semantic UI](https://semantic-ui.com/).
 
 - `preact` for developing a web app using [Preact](https://preactjs.com/). (Fast 3kB alternative to React)
 
@@ -138,6 +138,14 @@ Scaffolds a new instapack project into your existing app folder where the comman
 - (PREVIEW) `angular` for developing a web app using [the new Angular](https://angular.io/) and [Material Design](https://material.angular.io/). (Warnings: [1](https://github.com/angular/angular/issues/11580) [2](https://github.com/angular/angular/issues/21560))
 
 If no template parameter is provided, `vue` will be chosen. :vulcan_salute:
+
+Templates shipped by instapack have these common traits:
+
+- Compiled down to [ES5](http://kangax.github.io/compat-table/es5/) and armed with [ts-polyfill](https://github.com/ryanelian/ts-polyfill), which ensures compatibility to browsers as early as Internet Explorer 9.
+
+- Equipped with essential packages: LINQ, [Luxon](https://moment.github.io/luxon/) (DateTime library)
+
+- Frameworks without AJAX / XHR utility are equipped with [axios](https://github.com/axios/axios/) (Promise-based HTTP client).
 
 ### build [project]
 
@@ -288,8 +296,8 @@ Compiling a JS project using this mode will:
 [17:14:25] Compiling index.ts > ES5 in C:/VS/MyWebApp/client/js/
 [17:14:26] ipack.dll.js 5.00 MB in http://localhost:22001/js/
 [17:14:26] ipack.js 58.0 kB in http://localhost:22001/js/
-[17:14:26] Creating wormhole: C:/VS/MyWebApp/wwwroot/js/ipack.dll.js --> http://localhost:22001/js/ipack.dll.js
-[17:14:26] Creating wormhole: C:/VS/MyWebApp/wwwroot/js/ipack.js --> http://localhost:22001/js/ipack.js
+[17:14:26] +wormhole: C:/VS/MyWebApp/wwwroot/js/ipack.dll.js --> http://localhost:22001/js/ipack.dll.js
+[17:14:26] +wormhole: C:/VS/MyWebApp/wwwroot/js/ipack.js --> http://localhost:22001/js/ipack.js
 [17:14:26] Finished JS build after 1.22 s
 ```
 

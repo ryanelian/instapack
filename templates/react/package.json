@@ -12,7 +12,7 @@
     "@fortawesome/free-solid-svg-icons": "^5.3.1",
     "@fortawesome/react-fontawesome": "^0.1.2",
     "@types/luxon": "^1.2.2",
-    "@types/react": "^16.4.12",
+    "@types/react": "^16.4.13",
     "@types/react-dom": "^16.0.7",
     "@types/requirejs": "^2.1.31",
     "axios": "^0.18.0",

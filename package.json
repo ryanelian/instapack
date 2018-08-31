@@ -68,7 +68,7 @@
     "source-map": "0.7.3",
     "tslint": "5.11.0",
     "typescript": "3.0.1",
-    "uglify-js": "3.4.8",
+    "uglify-js": "3.4.9",
     "upath": "1.1.0",
     "vue-loader": "15.4.1",
     "vue-template-compiler": "2.5.17",

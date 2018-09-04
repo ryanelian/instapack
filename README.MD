@@ -506,7 +506,9 @@ export default class Hello extends Vue {
 
 ### Sass @import
 
-instapack also has a custom Node-like but standard-compliant Sass module system using `@import` syntax, which picks up CSS files for convenience:
+instapack also has a custom Node-like but standard-compliant Sass module system using `@import` syntax. 
+
+- In accordance to [the official Sass CSS Imports specification](https://github.com/sass/language/blob/master/accepted/css-imports.md): **`@import` against `url()`, or paths beginning with `http://` or `https://`, or paths ending with `.css`, or with media / support queries will be treated as _plain CSS `@import` rule_** instead of file inclusion. (Omit `.css` extension to include the file!)
 
 - Include files relative to the source, including _partial.scss files. ([Standard Sass behavior](https://jonathantneal.github.io/sass-import-resolve/))
 

@@ -510,11 +510,11 @@ instapack also has a custom Node-like but standard-compliant Sass module system 
 
 - In accordance to [the official Sass CSS Imports specification](https://github.com/sass/language/blob/master/accepted/css-imports.md), these imports will be treated as plain CSS `@import` rule instead of being included in the compiled CSS:
 
-  - The imported URL begins with `http://` or `https://`
+  - The imported URL / query path begins with `http://` or `https://`
 
-  - The imported URL ends with `.css` **(omit `.css` extension to include the file!)**
+  - The query path ends with `.css` **(omit `.css` extension to include the file!)**
 
-  - The imported URL is syntactically defined as a `url()`
+  - The query path is syntactically defined as a `url()`
 
   - The argument has a [media query](https://developer.mozilla.org/en-US/docs/Web/CSS/Media_Queries/Using_media_queries) and/or a [supports query](https://developer.mozilla.org/en-US/docs/Web/CSS/@supports).
 

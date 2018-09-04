@@ -10,21 +10,21 @@ Here are the list of breaking changes when upgrading between instapack major (or
 
 - TypeScript 3.0.1 notable breaking changes: 
 
-  - `unknown` is a reserved type name now. https://blogs.msdn.microsoft.com/typescript/2018/07/30/announcing-typescript-3-0/#unknown-is-a-reserved-type-name
+  - [`unknown` is a reserved type name now.](https://blogs.msdn.microsoft.com/typescript/2018/07/30/announcing-typescript-3-0/#unknown-is-a-reserved-type-name)
 
-  - `resolveJsonModule` regression: [only works in when targeting AMD `module`](https://github.com/Microsoft/TypeScript/issues/25755), to be fixed in TypeScript 3.1!
+  - `resolveJsonModule` regression: [only works in when targeting AMD `module`](https://github.com/Microsoft/TypeScript/issues/25755) (to be fixed in TypeScript 3.1!)
 
-## 6.1.0 to 6.2.0
+## 6.2.0
 
 - Flag for disabling source map was changed from `-u` (`uncharted`) to `-x` (`xdebug`).
 
 - Sass can no longer `@import` _partial.scss files from `node_modules` implicitly. *(Behavior re-implemented in instapack 6.5.0)*
 
-## 6.0.0 to 6.1.0
+## 6.1.0
 
-Node API now requires project folder path (root) as constructor parameter.
+- Node API now requires project folder path (root) as constructor parameter.
 
-## 5 to 6
+## 5 to 6.0.0
 
 Modules imported from `node_modules` will now be split automatically to `[jsOut].dll.js`, for example: `ipack.dll.js`
 

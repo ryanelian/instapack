@@ -508,7 +508,7 @@ export default class Hello extends Vue {
 
 instapack also has a custom Node-like but standard-compliant Sass module system using `@import` syntax. 
 
-- In accordance to [the official Sass CSS Imports specification](https://github.com/sass/language/blob/master/accepted/css-imports.md), these imports will be treated as plain CSS `@import` rule instead of being included in the compiled CSS:
+- Alligned with [the official Sass CSS Imports specification](https://github.com/sass/language/blob/master/accepted/css-imports.md), these imports will be treated as plain CSS `@import` rule instead of being included in the compiled CSS:
 
   - The imported URL / query path begins with `http://` or `https://`
 
@@ -520,7 +520,7 @@ instapack also has a custom Node-like but standard-compliant Sass module system 
 
 - Includes `.scss` and `.css` files relative to the source. ([Standard Sass behavior](https://jonathantneal.github.io/sass-import-resolve/))
 
-  - Includes _partial.scss files But not _partial.css files!
+  - Includes _partial.scss files, but not _partial.css files!
 
 - Includes files relative to the source in a named folder, but as `index.scss` or `_index.scss` ([Standard Sass behavior](https://github.com/sass/sass/issues/690)) or `index.css`
 

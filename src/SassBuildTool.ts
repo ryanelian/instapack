@@ -1,13 +1,13 @@
 import * as fse from 'fs-extra';
 import * as upath from 'upath';
 import chalk from 'chalk';
+import * as sass from 'sass';
 import * as chokidar from 'chokidar';
-import * as sass from 'node-sass';
 import * as postcss from 'postcss';
 import * as autoprefixer from 'autoprefixer';
-import * as postcssImport from 'postcss-import';
-import * as cssnano from 'cssnano';
+const CleanCSS = require('clean-css');
 import { RawSourceMap } from 'source-map';
+import * as mergeSourceMap from 'merge-source-map';
 import { NodeJsInputFileSystem, ResolverFactory } from 'enhanced-resolve';
 
 import { Settings } from './Settings';
@@ -57,33 +57,29 @@ export class SassBuildTool {
     }
 
     /**
-     * Gets the folder path of the virtual Sass-Compiled CSS file. 
+     * Gets the full file path of the virtual Sass-Compiled CSS file. 
      */
-    get virtualSassCompiledCssFolderPath() {
-        return upath.join(this.settings.root, '(sass)');
+    get virtualSassOutputFilePath() {
+        return upath.join(this.settings.root, '(intermediate)', '(sass-output).css');
     }
 
     /**
      * Gets the full file path of the virtual Sass-Compiled CSS file. 
      */
-    get virtualSassCompiledCssFilePath() {
-        return upath.join(this.virtualSassCompiledCssFolderPath, '(compiled).css');
+    get virtualPostcssOutputFilePath() {
+        return upath.join(this.settings.root, '(intermediate)', '(postcss-output).css');
     }
 
     /**
      * Normalize `sources` paths of a Sass-compiled source map.
      * @param sm 
      */
-    fixSourceMap(sm: RawSourceMap) {
-        sm.sourceRoot = 'instapack://';
-
-        // console.log(sm.sources);        
-        let cssProjectFolder = this.settings.outputCssFolder;
+    fixSassGeneratedSourceMap(sm: RawSourceMap) {
+        let folder = upath.basename(this.virtualSassOutputFilePath);
         sm.sources = sm.sources.map(s => {
-            let absolute = upath.join(cssProjectFolder, s);
+            let absolute = upath.join(folder, s);
             return '/' + upath.relative(this.settings.root, absolute);
         });
-        // console.log(sm.sources);
     }
 
     /**
@@ -163,8 +159,9 @@ export class SassBuildTool {
             mainFields: ['style']
         });
 
-        // 4: E:/VS/MyProject/client/css/@ryan/something.css                    (Accidental Standard https://github.com/sass/node-sass/issues/2362)
-        // 6: E:/VS/MyProject/client/css/@ryan/something/index.css              (Standard+)
+        // http://sass.logdown.com/posts/7807041-feature-watchcss-imports-and-css-compatibility
+        // 4: E:/VS/MyProject/client/css/@ryan/something.css                    (Standard)
+        // 6: E:/VS/MyProject/client/css/@ryan/something/index.css              (Standard)
         // 9: E:/VS/MyProject/node_modules/@ryan/something.css                  (Standard+)
         // 9: E:/VS/MyProject/node_modules/@ryan/something/index.css            (Standard+)
         // 10: E:/VS/MyProject/node_modules/@ryan/something/package.json:style  (Custom, Node-like)
@@ -174,18 +171,22 @@ export class SassBuildTool {
     }
 
     /**
-     * Builds CSS project asynchronously.
+     * Builds the CSS project asynchronously.
      */
     async build() {
         let cssInput = this.settings.cssEntry;
-        let virtualCssOutput = this.virtualSassCompiledCssFilePath;
         let cssOutput = this.settings.outputCssFile;
+
+        let sassOutput = this.virtualSassOutputFilePath;
+        let postcssOutput = cssOutput;
+        if (this.flags.production) {
+            postcssOutput = this.virtualPostcssOutputFilePath;
+        }
 
         let sassOptions: sass.Options = {
             file: cssInput,
-            outFile: virtualCssOutput,
+            outFile: sassOutput,
             data: await fse.readFile(cssInput, 'utf8'),
-            outputStyle: 'compressed',
 
             sourceMap: this.flags.sourceMap,
             sourceMapContents: this.flags.sourceMap,
@@ -205,55 +206,100 @@ export class SassBuildTool {
         let sassResult = await this.compileSassAsync(sassOptions);
 
         let postcssOptions: postcss.ProcessOptions = {
-            from: virtualCssOutput,
-            to: cssOutput
+            from: sassOutput,
+            to: postcssOutput
         };
 
-        if (this.flags.sourceMap && sassResult.map) {
-            let sassMapString: string = sassResult.map.toString('utf8');
-            let sassMap: RawSourceMap = JSON.parse(sassMapString);
-
+        if (this.flags.sourceMap) {
             postcssOptions.map = {
                 inline: false,
-                prev: sassMap
+                prev: false
             };
         }
 
-        let cssResult = await postcss(this.postcssPlugins).process(sassResult.css, postcssOptions);
-        let cssOutputTask = outputFileThenLog(cssOutput, cssResult.css);
+        // dart-sass broke source-map by only prepending the CSS without fixing the source-map!
+        // https://github.com/sass/dart-sass/blob/3b6730369bdff9bb7859411c82e4b21f194d2514/lib/src/visitor/serialize.dart#L73
+        let postcssInput: string = sassResult.css.toString('utf8');
+        let charsetHeader = '@charset "UTF-8";\n';
+        if (postcssInput.startsWith(charsetHeader)) {
+            postcssInput = postcssInput.substring(charsetHeader.length);
+        }
 
-        if (this.flags.sourceMap && cssResult.map) {
-            let sourceMapLegacyType: any = cssResult.map.toJSON(); // HACK78
-            let sourceMap: RawSourceMap = sourceMapLegacyType;
+        let cssResult = await postcss([
+            autoprefixer()
+        ]).process(postcssInput, postcssOptions);
 
-            this.fixSourceMap(sourceMap);
-            await outputFileThenLog(cssOutput + '.map', JSON.stringify(sourceMap));
+        let css = cssResult.css;
+        let sm: RawSourceMap;
+
+        if (this.flags.sourceMap && sassResult.map && cssResult.map) {
+            let sms1: string = sassResult.map.toString('utf8');
+            let sm1: RawSourceMap = JSON.parse(sms1);
+            this.fixSassGeneratedSourceMap(sm1);
+
+            // console.log(sm1.sources);
+            // console.log(sm1.file);
+
+            let sm2 = cssResult.map.toJSON();
+            let abs = upath.resolve(upath.dirname(postcssOutput), sm2.sources[0]);
+            // console.log(abs);
+            sm2.sources[0] = '/' + upath.relative(this.settings.root, abs);
+
+            // console.log(sm2.sources);
+            // console.log(sm2.file);
+
+            sm = mergeSourceMap(sm1, sm2);
+            /*
+            => Found "merge-source-map@1.1.0"
+            info Reasons this module exists
+            - Hoisted from "vue-loader#@vue#component-compiler-utils#merge-source-map"
+            */
+        }
+
+        if (this.flags.production) {
+            let cleanCssOptions = {
+                level: {
+                    1: {
+                        specialComments: false
+                    }
+                },
+                sourceMap: this.flags.sourceMap,
+                sourceMapInlineSources: this.flags.sourceMap
+            };
+
+            let cleanResult = new CleanCSS(cleanCssOptions).minify(css);
+            let errors: Error[] = cleanResult.errors;
+            if (errors.length) {
+                let errorMessage = "Error when minifying CSS:\n" + errors.map(Q => Q.stack).join("\n\n");
+                throw new Error(errorMessage);
+            }
+
+            css = cleanResult.styles;
+            if (this.flags.sourceMap && sm && cleanResult.sourceMap) {
+                let sm3: RawSourceMap = cleanResult.sourceMap.toJSON();
+                sm3.sources[0] = '/(intermediate)/(postcss-output).css';
+                sm3.file = upath.basename(cssOutput);
+
+                // console.log(sm3.sources);
+                // console.log(sm3.file);
+
+                sm = mergeSourceMap(sm, sm3);
+                // console.log(sm.sources);
+                // console.log(sm.file);
+
+                let sourceMapFileName = upath.basename(cssOutput) + '.map';
+                css += '\n' + `/*# sourceMappingURL=${sourceMapFileName} */`;
+            }
+        }
+
+        let cssOutputTask = outputFileThenLog(cssOutput, css);
+
+        if (sm) {
+            sm.sourceRoot = 'instapack://';
+            await outputFileThenLog(cssOutput + '.map', JSON.stringify(sm));
         }
 
         await cssOutputTask;
-    }
-
-    /**
-     * Returns configured postcss plugins according to build settings.
-     */
-    get postcssPlugins() {
-        let postcssPlugins = [
-            autoprefixer(),
-            postcssImport()     // will NOT auto-prefix libraries (should be authors' responsibility)
-        ];
-
-        if (this.flags.production) {
-            postcssPlugins.push(cssnano({
-                preset: ['default', {
-                    cssDeclarationSorter: false,
-                    discardComments: {
-                        removeAll: true,
-                    }
-                }]
-            }));
-        }
-
-        return postcssPlugins;
     }
 
     /**

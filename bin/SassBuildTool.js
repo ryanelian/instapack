@@ -11,12 +11,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const fse = require("fs-extra");
 const upath = require("upath");
 const chalk_1 = require("chalk");
+const sass = require("sass");
 const chokidar = require("chokidar");
-const sass = require("node-sass");
 const postcss = require("postcss");
 const autoprefixer = require("autoprefixer");
-const postcssImport = require("postcss-import");
-const cssnano = require("cssnano");
+const CleanCSS = require('clean-css');
+const mergeSourceMap = require("merge-source-map");
 const enhanced_resolve_1 = require("enhanced-resolve");
 const CompilerUtilities_1 = require("./CompilerUtilities");
 const PrettyUnits_1 = require("./PrettyUnits");
@@ -38,17 +38,16 @@ class SassBuildTool {
             });
         });
     }
-    get virtualSassCompiledCssFolderPath() {
-        return upath.join(this.settings.root, '(sass)');
+    get virtualSassOutputFilePath() {
+        return upath.join(this.settings.root, '(intermediate)', '(sass-output).css');
     }
-    get virtualSassCompiledCssFilePath() {
-        return upath.join(this.virtualSassCompiledCssFolderPath, '(compiled).css');
+    get virtualPostcssOutputFilePath() {
+        return upath.join(this.settings.root, '(intermediate)', '(postcss-output).css');
     }
-    fixSourceMap(sm) {
-        sm.sourceRoot = 'instapack://';
-        let cssProjectFolder = this.settings.outputCssFolder;
+    fixSassGeneratedSourceMap(sm) {
+        let folder = upath.basename(this.virtualSassOutputFilePath);
         sm.sources = sm.sources.map(s => {
-            let absolute = upath.join(cssProjectFolder, s);
+            let absolute = upath.join(folder, s);
             return '/' + upath.relative(this.settings.root, absolute);
         });
     }
@@ -105,13 +104,16 @@ class SassBuildTool {
     build() {
         return __awaiter(this, void 0, void 0, function* () {
             let cssInput = this.settings.cssEntry;
-            let virtualCssOutput = this.virtualSassCompiledCssFilePath;
             let cssOutput = this.settings.outputCssFile;
+            let sassOutput = this.virtualSassOutputFilePath;
+            let postcssOutput = cssOutput;
+            if (this.flags.production) {
+                postcssOutput = this.virtualPostcssOutputFilePath;
+            }
             let sassOptions = {
                 file: cssInput,
-                outFile: virtualCssOutput,
+                outFile: sassOutput,
                 data: yield fse.readFile(cssInput, 'utf8'),
-                outputStyle: 'compressed',
                 sourceMap: this.flags.sourceMap,
                 sourceMapContents: this.flags.sourceMap,
                 importer: (request, source, done) => {
@@ -126,44 +128,67 @@ class SassBuildTool {
             };
             let sassResult = yield this.compileSassAsync(sassOptions);
             let postcssOptions = {
-                from: virtualCssOutput,
-                to: cssOutput
+                from: sassOutput,
+                to: postcssOutput
             };
-            if (this.flags.sourceMap && sassResult.map) {
-                let sassMapString = sassResult.map.toString('utf8');
-                let sassMap = JSON.parse(sassMapString);
+            if (this.flags.sourceMap) {
                 postcssOptions.map = {
                     inline: false,
-                    prev: sassMap
+                    prev: false
                 };
             }
-            let cssResult = yield postcss(this.postcssPlugins).process(sassResult.css, postcssOptions);
-            let cssOutputTask = CompilerUtilities_1.outputFileThenLog(cssOutput, cssResult.css);
-            if (this.flags.sourceMap && cssResult.map) {
-                let sourceMapLegacyType = cssResult.map.toJSON();
-                let sourceMap = sourceMapLegacyType;
-                this.fixSourceMap(sourceMap);
-                yield CompilerUtilities_1.outputFileThenLog(cssOutput + '.map', JSON.stringify(sourceMap));
+            let postcssInput = sassResult.css.toString('utf8');
+            let charsetHeader = '@charset "UTF-8";\n';
+            if (postcssInput.startsWith(charsetHeader)) {
+                postcssInput = postcssInput.substring(charsetHeader.length);
+            }
+            let cssResult = yield postcss([
+                autoprefixer()
+            ]).process(postcssInput, postcssOptions);
+            let css = cssResult.css;
+            let sm;
+            if (this.flags.sourceMap && sassResult.map && cssResult.map) {
+                let sms1 = sassResult.map.toString('utf8');
+                let sm1 = JSON.parse(sms1);
+                this.fixSassGeneratedSourceMap(sm1);
+                let sm2 = cssResult.map.toJSON();
+                let abs = upath.resolve(upath.dirname(postcssOutput), sm2.sources[0]);
+                sm2.sources[0] = '/' + upath.relative(this.settings.root, abs);
+                sm = mergeSourceMap(sm1, sm2);
+            }
+            if (this.flags.production) {
+                let cleanCssOptions = {
+                    level: {
+                        1: {
+                            specialComments: false
+                        }
+                    },
+                    sourceMap: this.flags.sourceMap,
+                    sourceMapInlineSources: this.flags.sourceMap
+                };
+                let cleanResult = new CleanCSS(cleanCssOptions).minify(css);
+                let errors = cleanResult.errors;
+                if (errors.length) {
+                    let errorMessage = "Error when minifying CSS:\n" + errors.map(Q => Q.stack).join("\n\n");
+                    throw new Error(errorMessage);
+                }
+                css = cleanResult.styles;
+                if (this.flags.sourceMap && sm && cleanResult.sourceMap) {
+                    let sm3 = cleanResult.sourceMap.toJSON();
+                    sm3.sources[0] = '/(intermediate)/(postcss-output).css';
+                    sm3.file = upath.basename(cssOutput);
+                    sm = mergeSourceMap(sm, sm3);
+                    let sourceMapFileName = upath.basename(cssOutput) + '.map';
+                    css += '\n' + `/*# sourceMappingURL=${sourceMapFileName} */`;
+                }
+            }
+            let cssOutputTask = CompilerUtilities_1.outputFileThenLog(cssOutput, css);
+            if (sm) {
+                sm.sourceRoot = 'instapack://';
+                yield CompilerUtilities_1.outputFileThenLog(cssOutput + '.map', JSON.stringify(sm));
             }
             yield cssOutputTask;
         });
-    }
-    get postcssPlugins() {
-        let postcssPlugins = [
-            autoprefixer(),
-            postcssImport()
-        ];
-        if (this.flags.production) {
-            postcssPlugins.push(cssnano({
-                preset: ['default', {
-                        cssDeclarationSorter: false,
-                        discardComments: {
-                            removeAll: true,
-                        }
-                    }]
-            }));
-        }
-        return postcssPlugins;
     }
     buildWithStopwatch() {
         return __awaiter(this, void 0, void 0, function* () {

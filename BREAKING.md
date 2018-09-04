@@ -2,6 +2,56 @@
 
 Here are the list of breaking changes when upgrading between instapack major (or minor) versions.
 
+## 6.7.0
+
+- Importing `.vue.html` module is deprecated in favor of **`.vue` Single-File Components (which supports Hot Reload Development Mode)** and will be removed in future instapack version 7.0.0!
+
+## 6.6.0
+
+- TypeScript 3.0.1 notable breaking changes: 
+
+  - [`unknown` is a reserved type name now.](https://blogs.msdn.microsoft.com/typescript/2018/07/30/announcing-typescript-3-0/#unknown-is-a-reserved-type-name)
+
+  - `resolveJsonModule` regression: [only works in when targeting AMD `module`](https://github.com/Microsoft/TypeScript/issues/25755) (to be fixed in TypeScript 3.1!)
+
+## 6.2.0
+
+- Flag for disabling source map was changed from `-u` (`uncharted`) to `-x` (`xdebug`).
+
+- Sass can no longer `@import` _partial.scss files from `node_modules` implicitly. *(Behavior re-implemented in instapack 6.5.0)*
+
+## 6.1.0
+
+- Node API now requires project folder path (root) as constructor parameter.
+
+## 5 to 6.0.0
+
+Modules imported from `node_modules` will now be split automatically to `[jsOut].dll.js`, for example: `ipack.dll.js`
+
+- **This file must be included using `<script>` tag BEFORE the main app file `ipack.js`**
+
+- Build speed should be improved, hopefully. ([Trying to keep entry chunk size small...](https://webpack.js.org/guides/build-performance/))
+
+HTML template compilation mode in `package.json` (`string` vs `vue`) has been removed in favor of special extension `.vue.html` to:
+
+- Allow a project to have both stringified HTML and pre-compiled Vue.js HTML.
+
+- Simplify instapack, to make it more beginner-friendly by reducing the number of obscure options and templates...
+
+In light of [the final version of AngularJS 1.7 LTS](https://blog.angular.io/stable-angularjs-and-long-term-support-7e077635ee9c), it is recommended for newer projects to use Vue.js / React / Inferno instead.
+
+- Therefore, `angular-material` template has been removed and `angular-bootstrap` template has been renamed to `angularjs`
+
+- jQuery has been re-added into `angularjs` template to improve compatibility with legacy browsers, especially with Bootstrap 3.
+
+Unfortunately, the enterprise world is not ready for JavaScript running natively in ES2015 and beyond...
+
+The [no-longer-maintained](https://github.com/mishoo/UglifyJS2/pull/2897) UglifyES has been dropped in exchange for the hopefully-more-stable UglifyJS 3. This change imposes stricter build requirements:
+
+- Only `es5` build `target` (set in `tsconfig.json`) is currently supported. **Setting ES2015+ as build target WILL cause build error!**
+
+- **Attempting to import a non-TypeScript ES2015+ module will fail the build!** This downgrade guards the project against ninja browser incompatibilities.
+
 ## 4 to 5
 
 - Our supported Node.js runtime is now the latest version 8 LTS.
@@ -32,45 +82,3 @@ Here are the list of breaking changes when upgrading between instapack major (or
   }
 }
 ```
-
-## 5 to 6
-
-Modules imported from `node_modules` will now be split automatically to `[jsOut].dll.js`, for example: `ipack.dll.js`
-
-- **This file must be included using `<script>` tag BEFORE the main app file `ipack.js`**
-
-- Build speed should be improved, hopefully. ([Trying to keep entry chunk size small...](https://webpack.js.org/guides/build-performance/))
-
-HTML template compilation mode in `package.json` (`string` vs `vue`) has been removed in favor of special extension `.vue.html` to:
-
-- Allow a project to have both stringified HTML and pre-compiled Vue.js HTML.
-
-- Simplify instapack, to make it more beginner-friendly by reducing the number of obscure options and templates...
-
-In light of [the final version of AngularJS 1.7 LTS](https://blog.angular.io/stable-angularjs-and-long-term-support-7e077635ee9c), it is recommended for newer projects to use Vue.js / React / Inferno instead.
-
-- Therefore, `angular-material` template has been removed and `angular-bootstrap` template has been renamed to `angularjs`
-
-- jQuery has been re-added into `angularjs` template to improve compatibility with legacy browsers, especially with Bootstrap 3.
-
-Unfortunately, the enterprise world is not ready for JavaScript running natively in ES2015 and beyond...
-
-The [no-longer-maintained](https://github.com/mishoo/UglifyJS2/pull/2897) UglifyES has been dropped in exchange for the hopefully-more-stable UglifyJS 3. This change imposes stricter build requirements:
-
-- Only `es5` build `target` (set in `tsconfig.json`) is currently supported. **Setting ES2015+ as build target WILL cause build error!**
-
-- **Attempting to import a non-TypeScript ES2015+ module will fail the build!** This downgrade guards the project against ninja browser incompatibilities.
-
-## 6.0.0 to 6.1.0
-
-Node API now requires project folder path (root) as constructor parameter.
-
-## 6.1.0 to 6.2.0
-
-- Flag for disabling source map was changed from `-u` (`uncharted`) to `-x` (`xdebug`).
-
-- Sass can no longer `@import` _partial.scss files from `node_modules` implicitly. (Behavior re-implemented in instapack 6.5.0)
-
-## 6.6.0
-
-- TypeScript 3.0.1: `unknown` is a reserved type name now. https://blogs.msdn.microsoft.com/typescript/2018/07/30/announcing-typescript-3-0/#unknown-is-a-reserved-type-name

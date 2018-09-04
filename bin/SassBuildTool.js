@@ -16,7 +16,7 @@ const sass = require("node-sass");
 const postcss = require("postcss");
 const autoprefixer = require("autoprefixer");
 const postcssImport = require("postcss-import");
-let CleanCSS = require('clean-css');
+const cssnano = require("cssnano");
 const enhanced_resolve_1 = require("enhanced-resolve");
 const CompilerUtilities_1 = require("./CompilerUtilities");
 const PrettyUnits_1 = require("./PrettyUnits");
@@ -38,9 +38,15 @@ class SassBuildTool {
             });
         });
     }
+    get virtualSassCompiledCssFolderPath() {
+        return upath.join(this.settings.root, '(sass)');
+    }
+    get virtualSassCompiledCssFilePath() {
+        return upath.join(this.virtualSassCompiledCssFolderPath, '(compiled).css');
+    }
     fixSourceMap(sm) {
         sm.sourceRoot = 'instapack://';
-        let cssProjectFolder = this.settings.inputCssFolder;
+        let cssProjectFolder = this.settings.outputCssFolder;
         sm.sources = sm.sources.map(s => {
             let absolute = upath.join(cssProjectFolder, s);
             return '/' + upath.relative(this.settings.root, absolute);
@@ -99,13 +105,14 @@ class SassBuildTool {
     build() {
         return __awaiter(this, void 0, void 0, function* () {
             let cssInput = this.settings.cssEntry;
+            let virtualCssOutput = this.virtualSassCompiledCssFilePath;
             let cssOutput = this.settings.outputCssFile;
             let sassOptions = {
                 file: cssInput,
-                outFile: cssOutput,
+                outFile: virtualCssOutput,
                 data: yield fse.readFile(cssInput, 'utf8'),
+                outputStyle: 'compressed',
                 sourceMap: this.flags.sourceMap,
-                sourceMapEmbed: this.flags.sourceMap,
                 sourceMapContents: this.flags.sourceMap,
                 importer: (request, source, done) => {
                     this.sassImport(source, request).then(result => {
@@ -118,60 +125,45 @@ class SassBuildTool {
                 }
             };
             let sassResult = yield this.compileSassAsync(sassOptions);
-            let cssResult = yield postcss([
-                autoprefixer(),
-                postcssImport()
-            ]).process(sassResult.css, this.postCssOptions);
-            let css = cssResult.css;
-            let sourceMap = undefined;
-            if (this.flags.sourceMap) {
-                sourceMap = cssResult.map.toJSON();
+            let postcssOptions = {
+                from: virtualCssOutput,
+                to: cssOutput
+            };
+            if (this.flags.sourceMap && sassResult.map) {
+                let sassMapString = sassResult.map.toString('utf8');
+                let sassMap = JSON.parse(sassMapString);
+                postcssOptions.map = {
+                    inline: false,
+                    prev: sassMap
+                };
             }
-            if (this.flags.production) {
-                let cleanResult = new CleanCSS(this.cleanCssOptions).minify(css, sourceMap);
-                let errors = cleanResult.errors;
-                if (errors.length) {
-                    let errorMessage = "Error when minifying CSS:\n" + errors.map(Q => Q.stack).join("\n\n");
-                    throw new Error(errorMessage);
-                }
-                css = cleanResult.styles;
-                if (this.flags.sourceMap) {
-                    let sourceMapFileName = upath.basename(cssOutput) + '.map';
-                    css += '\n' + `/*# sourceMappingURL=${sourceMapFileName} */`;
-                    sourceMap = cleanResult.sourceMap.toJSON();
-                }
-            }
-            let t1 = CompilerUtilities_1.outputFileThenLog(cssOutput, css);
-            if (this.flags.sourceMap) {
+            let cssResult = yield postcss(this.postcssPlugins).process(sassResult.css, postcssOptions);
+            let cssOutputTask = CompilerUtilities_1.outputFileThenLog(cssOutput, cssResult.css);
+            if (this.flags.sourceMap && cssResult.map) {
+                let sourceMapLegacyType = cssResult.map.toJSON();
+                let sourceMap = sourceMapLegacyType;
                 this.fixSourceMap(sourceMap);
                 yield CompilerUtilities_1.outputFileThenLog(cssOutput + '.map', JSON.stringify(sourceMap));
             }
-            yield t1;
+            yield cssOutputTask;
         });
     }
-    get cleanCssOptions() {
-        return {
-            level: {
-                1: {
-                    specialComments: false
-                }
-            },
-            sourceMap: this.flags.sourceMap,
-            sourceMapInlineSources: this.flags.sourceMap
-        };
-    }
-    get postCssOptions() {
-        let cssOutput = this.settings.outputCssFile;
-        let options = {
-            from: cssOutput,
-            to: cssOutput
-        };
-        if (this.flags.sourceMap) {
-            options.map = {
-                inline: false
-            };
+    get postcssPlugins() {
+        let postcssPlugins = [
+            autoprefixer(),
+            postcssImport()
+        ];
+        if (this.flags.production) {
+            postcssPlugins.push(cssnano({
+                preset: ['default', {
+                        cssDeclarationSorter: false,
+                        discardComments: {
+                            removeAll: true,
+                        }
+                    }]
+            }));
         }
-        return options;
+        return postcssPlugins;
     }
     buildWithStopwatch() {
         return __awaiter(this, void 0, void 0, function* () {

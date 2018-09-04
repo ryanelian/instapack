@@ -508,13 +508,25 @@ export default class Hello extends Vue {
 
 instapack also has a custom Node-like but standard-compliant Sass module system using `@import` syntax. 
 
-- In accordance to [the official Sass CSS Imports specification](https://github.com/sass/language/blob/master/accepted/css-imports.md): **`@import` against `url()`, or paths beginning with `http://` or `https://`, or paths ending with `.css`, or with media / support queries will be treated as _plain CSS `@import` rule_** instead of file inclusion. (Omit `.css` extension to include the file!)
+- In accordance to [the official Sass CSS Imports specification](https://github.com/sass/language/blob/master/accepted/css-imports.md), these imports will be treated as plain CSS `@import` rule instead of being included in the compiled CSS:
 
-- Include files relative to the source, including _partial.scss files. ([Standard Sass behavior](https://jonathantneal.github.io/sass-import-resolve/))
+  - The imported URL begins with `http://` or `https://`
+
+  - The imported URL ends with `.css` **(omit `.css` extension to include the file!)**
+
+  - The imported URL is syntactically defined as a `url()`
+
+  - The argument has a [media query](https://developer.mozilla.org/en-US/docs/Web/CSS/Media_Queries/Using_media_queries) and/or a [supports query](https://developer.mozilla.org/en-US/docs/Web/CSS/@supports).
+
+- Include `.scss` and `.css` files relative to the source, including _partial.scss files. ([Standard Sass behavior](https://jonathantneal.github.io/sass-import-resolve/))
+
+  - But not _partial.css files!
 
 - Include files relative to the source in a named folder, but as `index.scss` or `_index.scss` ([Standard Sass behavior](https://github.com/sass/sass/issues/690)) or `index.css`
 
-- Include files resolved from `node_modules`. Also reads `package.json` to resolve `.css` file in the `style` field!
+- Include files resolved from `node_modules` 
+
+  - Also reads `package.json` to resolve `.css` file in the `style` field!
 
 ## Environment Variables
 

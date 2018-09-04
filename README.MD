@@ -518,13 +518,13 @@ instapack also has a custom Node-like but standard-compliant Sass module system 
 
   - The argument has a [media query](https://developer.mozilla.org/en-US/docs/Web/CSS/Media_Queries/Using_media_queries) and/or a [supports query](https://developer.mozilla.org/en-US/docs/Web/CSS/@supports).
 
-- Include `.scss` and `.css` files relative to the source, including _partial.scss files. ([Standard Sass behavior](https://jonathantneal.github.io/sass-import-resolve/))
+- Includes `.scss` and `.css` files relative to the source. ([Standard Sass behavior](https://jonathantneal.github.io/sass-import-resolve/))
 
-  - But not _partial.css files!
+  - Includes _partial.scss files But not _partial.css files!
 
-- Include files relative to the source in a named folder, but as `index.scss` or `_index.scss` ([Standard Sass behavior](https://github.com/sass/sass/issues/690)) or `index.css`
+- Includes files relative to the source in a named folder, but as `index.scss` or `_index.scss` ([Standard Sass behavior](https://github.com/sass/sass/issues/690)) or `index.css`
 
-- Include files resolved from `node_modules` 
+- Includes files resolved from `node_modules` 
 
   - Also reads `package.json` to resolve `.css` file in the `style` field!
 

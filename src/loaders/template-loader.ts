@@ -1,8 +1,6 @@
 import { loader } from 'webpack';
 import { minify } from 'html-minifier';
-import { compile } from 'vue-template-compiler';
 import { SourceMapGenerator } from 'source-map';
-import { Shout } from '../Shout';
 
 let minifierOptions = {
     caseSensitive: false,
@@ -35,44 +33,15 @@ let minifierOptions = {
     useShortDoctype: false
 };
 
-function functionWrap(s: string) {
-    return 'function(){' + s + '}';
-}
-
-function functionArrayWrap(ar: string[]) {
-    let result = ar.map(s => functionWrap(s)).join(',');
-    return '[' + result + ']';
-}
-
-let deprecateVueHtmlWarned = false;
-
 export = function (this: loader.LoaderContext, html: string) {
     let template = minify(html, minifierOptions).trim();
 
     let fileName = this.resourcePath.toLowerCase();
     if (fileName.endsWith('.vue.html')) {
-        // console.log(deprecateVueHtmlWarned);
-        if (deprecateVueHtmlWarned === false) {
-            Shout.warning('Importing .vue.html module is deprecated in favor of .vue Single-File Components (which supports Hot Reload Development Mode) and will be removed in future instapack version 7.0.0!');
-            deprecateVueHtmlWarned = true;
-        }
-
-        let vueResult = compile(template);
-        // console.log(vueResult);
-
-        let error = vueResult.errors[0];
-        if (error) {
-            this.callback(Error(error));
-            return;
-        }
-
-        template = '{render:' + functionWrap(vueResult.render)
-            + ',staticRenderFns:' + functionArrayWrap(vueResult.staticRenderFns)
-            + '}';
-    } else {
-        template = JSON.stringify(template);
+        this.emitWarning('HTML was imported as plain string: Importing .vue.html module has been obsoleted due to improved .vue Single-File Components tooling!');
     }
 
+    template = JSON.stringify(template);
     template = 'module.exports = ' + template;
     // console.log("Template compiled: " + fileName + "\n" + template);
 
@@ -94,9 +63,8 @@ export = function (this: loader.LoaderContext, html: string) {
         });
 
         gen.setSourceContent(this.resourcePath, html);
-        let sm = gen.toJSON();
-        // HACK78
-        this.callback(null, template, sm as any);
+        let sm: any = gen.toJSON(); // HACK78
+        this.callback(null, template, sm);
     } else {
         this.callback(null, template);
     }

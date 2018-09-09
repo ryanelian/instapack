@@ -7,12 +7,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const fse = require("fs-extra");
-const glob = require("glob");
+const fs_extra_1 = __importDefault(require("fs-extra"));
+const glob_1 = __importDefault(require("glob"));
 const crypto_1 = require("crypto");
-const TypeScript = require("typescript");
-const vueTemplateCompiler = require("vue-template-compiler");
+const typescript_1 = __importDefault(require("typescript"));
+const vue_template_compiler_1 = require("vue-template-compiler");
 class VirtualSourceStore {
     constructor(tsCompilerOptions) {
         this.sources = {};
@@ -33,7 +36,7 @@ class VirtualSourceStore {
     }
     addExoticSources(globPattern) {
         return new Promise((ok, reject) => {
-            glob(globPattern, (error, files) => {
+            glob_1.default(globPattern, (error, files) => {
                 if (error) {
                     reject(error);
                 }
@@ -52,14 +55,18 @@ class VirtualSourceStore {
             }
             for (let virtualFilePath in this.virtualToRealFilePaths) {
                 let realFilePath = this.virtualToRealFilePaths[virtualFilePath];
+                if (!realFilePath) {
+                    throw new Error('Unexpected undefined value when iterating virtual-to-real file paths!');
+                }
                 tasks.push(this.addOrUpdateSourceAsync(realFilePath));
             }
             yield Promise.all(tasks);
         });
     }
     getRealFilePath(virtualFilePath) {
-        if (this.virtualToRealFilePaths[virtualFilePath]) {
-            return this.virtualToRealFilePaths[virtualFilePath];
+        let p = this.virtualToRealFilePaths[virtualFilePath];
+        if (p) {
+            return p;
         }
         return virtualFilePath;
     }
@@ -72,7 +79,7 @@ class VirtualSourceStore {
         }
     }
     parseVueFile(raw) {
-        let parse = vueTemplateCompiler.parseComponent(raw);
+        let parse = vue_template_compiler_1.parseComponent(raw);
         if (!parse.script) {
             return '';
         }
@@ -104,27 +111,33 @@ class VirtualSourceStore {
         if (version === lastVersion) {
             return false;
         }
-        this.sources[virtualFilePath] = TypeScript.createSourceFile(virtualFilePath, raw, this.tsCompilerOptions.target);
+        let target = this.tsCompilerOptions.target || typescript_1.default.ScriptTarget.ES5;
+        this.sources[virtualFilePath] = typescript_1.default.createSourceFile(virtualFilePath, raw, target);
         this.versions[virtualFilePath] = version;
         return true;
     }
     addOrUpdateSource(realFilePath) {
-        let raw = fse.readFileSync(realFilePath, 'utf8');
+        let raw = fs_extra_1.default.readFileSync(realFilePath, 'utf8');
         return this.parseThenStoreSource(realFilePath, raw);
     }
     addOrUpdateSourceAsync(realFilePath) {
         return __awaiter(this, void 0, void 0, function* () {
-            let raw = yield fse.readFile(realFilePath, 'utf8');
+            let raw = yield fs_extra_1.default.readFile(realFilePath, 'utf8');
             return this.parseThenStoreSource(realFilePath, raw);
         });
     }
     getSource(virtualFilePath) {
-        if (this.sources[virtualFilePath]) {
-            return this.sources[virtualFilePath];
+        let s = this.sources[virtualFilePath];
+        if (s) {
+            return s;
         }
         let realFilePath = this.getRealFilePath(virtualFilePath);
         this.addOrUpdateSource(realFilePath);
-        return this.sources[virtualFilePath];
+        s = this.sources[virtualFilePath];
+        if (!s) {
+            throw new Error(`Source ${virtualFilePath} was updated but is undefined!`);
+        }
+        return s;
     }
     tryRemoveSource(realFilePath) {
         if (realFilePath.endsWith('.d.ts') && this.includedFilePaths.has(realFilePath)) {

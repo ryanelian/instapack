@@ -1,5 +1,5 @@
 import { loader } from 'webpack';
-import * as TypeScript from 'typescript';
+import TypeScript from 'typescript';
 import { getOptions } from 'loader-utils';
 import { RawSourceMap } from 'source-map';
 
@@ -15,15 +15,15 @@ export = function (this: loader.LoaderContext, source: string) {
         fileName: this.resourcePath
     });
 
-    if (result.diagnostics.length) {
+    if (result.diagnostics && result.diagnostics[0]) {
         let error = Error(result.diagnostics[0].messageText.toString());
         this.callback(error);
         return;
     }
 
-    if (this.sourceMap) {
+    if (this.sourceMap && result.sourceMapText) {
         // console.log(this.resourcePath);
-        let sm = JSON.parse(result.sourceMapText) as RawSourceMap;
+        let sm: RawSourceMap = JSON.parse(result.sourceMapText);
         sm.sources = [this.resourcePath];
         // HACK78
         this.callback(null, result.outputText, sm as any);

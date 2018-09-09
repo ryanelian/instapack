@@ -24,10 +24,10 @@ test_script:
 
     ipack set package-manager npm # prevents DeprecationWarning on AppVeyor Yarn 1.5.1
 
-    Remove-Item * -Recurse; ipack new inferno; ipack; ipack -dx
+    Remove-Item * -Recurse; ipack new inferno; ipack -m; ipack -d
 
-    Remove-Item * -Recurse; ipack new preact; ipack; ipack -dx
+    Remove-Item * -Recurse; ipack new preact; ipack -m; ipack -d
 
-    Remove-Item * -Recurse; ipack new react; ipack; ipack -dx
+    Remove-Item * -Recurse; ipack new react; ipack -m; ipack -d
 
-    Remove-Item * -Recurse; ipack new vue; ipack; ipack -dx
+    Remove-Item * -Recurse; ipack new vue; ipack -m; ipack -d

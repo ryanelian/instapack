@@ -7,12 +7,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const chalk_1 = require("chalk");
+const chalk_1 = __importDefault(require("chalk"));
 const webpack_sources_1 = require("webpack-sources");
 const Shout_1 = require("./Shout");
-const CompilerUtilities_1 = require("./CompilerUtilities");
-const jsMinifyWorkerModulePath = require.resolve('./build-workers/JsMinifyWorker');
+const WorkerRunner_1 = require("./WorkerRunner");
 function createMinificationInput(asset, fileName, sourceMap) {
     let input;
     if (sourceMap) {
@@ -41,7 +43,7 @@ function minifyChunkAssets(compilation, chunks, sourceMap) {
             }
             let asset = compilation.assets[fileName];
             let input = createMinificationInput(asset, fileName, sourceMap);
-            let t1 = CompilerUtilities_1.runWorkerAsync(jsMinifyWorkerModulePath, input);
+            let t1 = WorkerRunner_1.runMinifyWorkerAsync(input);
             let t2 = t1.then(minified => {
                 let output;
                 if (sourceMap) {

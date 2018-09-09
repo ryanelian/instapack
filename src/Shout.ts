@@ -1,6 +1,8 @@
 import chalk from 'chalk';
-import * as notifier from 'node-notifier';
-import * as upath from 'upath';
+import notifier from 'node-notifier';
+import upath from 'upath';
+import fse from 'fs-extra';
+import { prettyBytes } from './PrettyUnits';
 
 /**
  * Converts a number into a string. If the number is less than 10, adds 0 as prefix.
@@ -27,11 +29,11 @@ function concatenateTokens(tokens: any[]) {
     let message = '';
     for (let token of tokens) {
         if (token instanceof Error) {
-            message += '\n' + chalk.red(token.stack);
-            // render = chalk.bgRed(error.name) + ' ' + error.message;
-            // for (let frame of StackFrame.parseErrorStack(error.stack)) {
-            //     render += '\n' + frame.render();
-            // }
+            if (token.stack) {
+                message += '\n' + chalk.red(token.stack);
+            } else {
+                message += '\n' + chalk.red(token.toString());
+            }
         } else {
             message += ' ' + token;
         }
@@ -83,7 +85,9 @@ export let Shout = {
         console.log(output);
     },
 
-    enableNotification: false,
+    enableNotification: true,
+
+    displayVerboseOutput: false,
 
     notify: function (...tokens) {
         if (!this.enableNotification) {
@@ -102,5 +106,19 @@ export let Shout = {
             icon,
             sound: false
         });
+    },
+
+    /**
+     * Logs file output and writes to output directory as a UTF-8 encoded string.
+     * @param filePath 
+     * @param content 
+     */
+    fileOutput(filePath: string, content: string) {
+        let bundle = Buffer.from(content, 'utf8');
+        let info = upath.parse(filePath);
+        let size = prettyBytes(bundle.byteLength);
+
+        Shout.timed(chalk.blue(info.base), chalk.magenta(size), chalk.grey('in ' + info.dir + '/'));
+        return fse.outputFile(filePath, bundle);
     }
 };

@@ -1,33 +1,34 @@
-import { Compiler } from './Compiler';
-import { Settings } from './Settings';
-
-import * as fse from 'fs-extra';
-import * as upath from 'upath';
+import fse from 'fs-extra';
+import upath from 'upath';
 import chalk from 'chalk';
-import { GlobalSettingsManager } from './GlobalSettingsManager';
+
+import { ICommandLineFlags } from "./interfaces/ICommandLineFlags";
+import { VariablesFactory } from "./VariablesFactory";
+import { UserSettingsManager } from './UserSettingsManager';
+import { PathFinder } from './PathFinder';
 import { PackageManager } from './PackageManager';
 import { Shout } from './Shout';
-import { mergePackageJson } from './CompilerUtilities';
+import { ToolOrchestrator } from './ToolOrchestrator';
 
 /**
  * Exposes methods for developing a web app client project.
  */
 export = class instapack {
-    /**
-     * Gets the project folder path. (Known as root in Settings.)
-     */
-    private readonly projectFolder: string;
+
+    readonly projectFolder: string;
 
     /**
-     * Gets the object responsible for reading and writing the instapack global settings.
+     * Constructs instapack class instance using settings read from project.json. 
      */
-    readonly globalSettingsManager: GlobalSettingsManager;
+    constructor(projectFolder: string) {
+        this.projectFolder = upath.normalize(projectFolder);
+    }
 
     /**
      * Gets a list of string which contains tasks available for the build method.
      */
-    get availableTasks() {
-        return ['all', 'js', 'css', 'concat'];
+    get availableBuildTasks() {
+        return ['all', 'js', 'css'];
     }
 
     /**
@@ -51,15 +52,7 @@ export = class instapack {
      * Gets all available keys for `instapack set` command.
      */
     get availableSettings() {
-        return this.globalSettingsManager.availableSettings;
-    }
-
-    /**
-     * Constructs instapack class instance using settings read from project.json. 
-     */
-    constructor(projectFolder: string) {
-        this.projectFolder = upath.normalize(projectFolder);
-        this.globalSettingsManager = new GlobalSettingsManager();
+        return new UserSettingsManager().availableSettings;
     }
 
     /**
@@ -67,34 +60,45 @@ export = class instapack {
      * @param taskName 
      * @param flags 
      */
-    async build(taskName: string, flags: IBuildFlags) {
+    async build(taskName: string, flags: ICommandLineFlags) {
 
-        let settings = await Settings.tryReadFromPackageJson(this.projectFolder);
-        let compiler = new Compiler(settings, flags);
+        let userMan = new UserSettingsManager();
+        let v = new VariablesFactory();
 
-        let globalSettings = await this.globalSettingsManager.tryRead();
-        let packageManager = new PackageManager();
-
-        if (flags.notification === undefined) {
-            flags.notification = !globalSettings.muteNotification;
+        if (flags.verbose) {
+            Shout.displayVerboseOutput = true;
         }
 
-        // Shout.notify('Build start!');
+        // parallel IO
+        let projectSettings = v.readProjectSettingsFrom(this.projectFolder);
+        let dotEnv = v.readDotEnvFrom(this.projectFolder);
+        let userSettings = userMan.readUserSettingsFrom(userMan.userSettingsFilePath);
 
-        if (globalSettings.packageManager !== 'disabled') {
-            let packageJsonExists = await fse.pathExists(settings.packageJson);
+        let variables = v.compile(flags, await projectSettings, await userSettings, await dotEnv);
+
+        if (variables.muteNotification) {
+            Shout.enableNotification = false;
+        }
+
+        if (variables.packageManager !== 'disabled') {
+            let finder = new PathFinder(variables);
+            let packageJsonPath = finder.packageJson;
+            let packageJsonExists = await fse.pathExists(packageJsonPath);
             if (packageJsonExists) {
                 try {
-                    await packageManager.restore(globalSettings.packageManager);
+                    let pm = new PackageManager();
+                    await pm.restore(variables.packageManager);
                 } catch (error) {
                     Shout.error('when restoring package:', error);
                 }
             } else {
-                Shout.warning('unable to find', chalk.cyan(settings.packageJson), chalk.grey('skipping package restore...'));
+                Shout.warning('unable to find', chalk.cyan(packageJsonPath), chalk.grey('skipping package restore...'));
             }
         }
 
-        compiler.build(taskName);
+        let tm = new ToolOrchestrator(variables);
+        tm.outputBuildInformation();
+        tm.build(taskName);
     }
 
     /**
@@ -136,35 +140,88 @@ export = class instapack {
     }
 
     /**
-     * Cleans the JavaScript and CSS output folder and the temporary cache folder.
-     */
-    async clean() {
-        let settings = await Settings.tryReadFromPackageJson(this.projectFolder);
-        let cleanCSS = fse.emptyDir(settings.outputCssFolder);
-        let cleanJS = fse.emptyDir(settings.outputJsFolder);
-
-        await cleanJS;
-        console.log('Clean successful: ' + settings.outputJsFolder);
-        await cleanCSS;
-        console.log('Clean successful: ' + settings.outputCssFolder);
-    }
-
-    /**
-     * Change an instapack global setting.
+     * Change an instapack user global setting.
      * @param key 
      * @param value 
      */
-    async changeGlobalSetting(key: string, value: string) {
-        let valid = this.globalSettingsManager.validate(key, value);
+    async changeUserSettings(key: string, value: string) {
+        let man = new UserSettingsManager();
+        let valid = man.validate(key, value);
         if (!valid) {
             Shout.error('invalid setting! Please consult README.')
             return;
         }
 
         try {
-            await this.globalSettingsManager.set(key, value);
+            let file = man.userSettingsFilePath
+            let settings = await man.readUserSettingsFrom(file);
+            man.set(settings, key, value);
+            await fse.outputJson(file, settings);
         } catch (error) {
             Shout.error('when saving new settings:', error);
         }
     }
+}
+
+/**
+ * Sort an map-like object by its keys.
+ * @param input 
+ */
+function objectSortByKeys(input) {
+    let output: any = {};
+
+    let keys = Object.keys(input).sort();
+    for (let key of keys) {
+        output[key] = input[key];
+    }
+
+    return output;
+}
+
+/**
+ * Merge existing project package.json with incoming template package.json 
+ * by overriding instapack setting and package versions. (Keep the rest intact)
+ * @param projectPackageJson 
+ * @param templatePackageJson 
+ */
+function mergePackageJson(projectPackageJson, templatePackageJson) {
+    let packageJson = JSON.parse(JSON.stringify(projectPackageJson));
+
+    if (templatePackageJson.instapack) {
+        packageJson.instapack = templatePackageJson.instapack;
+    }
+
+    if (!packageJson.dependencies) {
+        packageJson.dependencies = {};
+    }
+
+    if (!packageJson.devDependencies) {
+        packageJson.devDependencies = {};
+    }
+
+    if (templatePackageJson.dependencies) {
+        for (let packageName in templatePackageJson.dependencies) {
+            if (packageJson.devDependencies[packageName]) {
+                // override version of existing package in dev dependencies
+                packageJson.devDependencies[packageName] = templatePackageJson.dependencies[packageName];
+            } else {
+                packageJson.dependencies[packageName] = templatePackageJson.dependencies[packageName];
+            }
+        }
+    }
+
+    if (templatePackageJson.devDependencies) {
+        for (let packageName in templatePackageJson.devDependencies) {
+            if (packageJson.dependencies[packageName]) {
+                // override version of existing package in normal dependencies
+                packageJson.dependencies[packageName] = templatePackageJson.devDependencies[packageName];
+            } else {
+                packageJson.devDependencies[packageName] = templatePackageJson.devDependencies[packageName];
+            }
+        }
+    }
+
+    packageJson.dependencies = objectSortByKeys(packageJson.dependencies);
+    packageJson.devDependencies = objectSortByKeys(packageJson.devDependencies);
+    return packageJson;
 }

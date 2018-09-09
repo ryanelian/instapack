@@ -26,5 +26,5 @@ script:
 - mkdir demo
 - cd demo
 - ipack new $TEMPLATE
-- ipack
-- ipack -dx
+- ipack -m
+- ipack -d

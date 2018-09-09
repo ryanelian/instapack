@@ -1,0 +1,19 @@
+{
+    "instapack": {
+        "input": 0,
+        "output": 0,
+        "jsOut": 0,
+        "cssOut": 0,
+        "alias": {
+            "jquery": 0
+        },
+        "externals": {
+            "lodash": 0,
+            "linq": [
+                0
+            ]
+        },
+        "port1": false,
+        "port2": false
+    }
+}

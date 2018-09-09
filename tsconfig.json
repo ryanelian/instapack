@@ -3,9 +3,9 @@
     "noImplicitAny": false,
     "noImplicitThis": true,
     "alwaysStrict": true,
-    "strictNullChecks": false,
+    "strictNullChecks": true,
     "strictFunctionTypes": true,
-    "strictPropertyInitialization": false,
+    "strictPropertyInitialization": true,
     "skipLibCheck": true,
 
     "noUnusedLocals": false,
@@ -16,6 +16,7 @@
     "target": "es2016",
     "module": "commonjs",
     "moduleResolution": "node",
+    "esModuleInterop": true,
     "removeComments": true,
 
     "outDir": "bin",

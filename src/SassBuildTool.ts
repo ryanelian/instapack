@@ -1,19 +1,19 @@
-import * as fse from 'fs-extra';
-import * as upath from 'upath';
+import fse from 'fs-extra';
+import upath from 'upath';
 import chalk from 'chalk';
-import * as sass from 'sass';
-import * as chokidar from 'chokidar';
-import * as postcss from 'postcss';
-import * as autoprefixer from 'autoprefixer';
+import sass from 'sass';
+import chokidar from 'chokidar';
+import postcss from 'postcss';
+import autoprefixer from 'autoprefixer';
 const CleanCSS = require('clean-css');
 import { RawSourceMap } from 'source-map';
-import * as mergeSourceMap from 'merge-source-map';
+import mergeSourceMap from 'merge-source-map';
 import { NodeJsInputFileSystem, ResolverFactory } from 'enhanced-resolve';
 
-import { Settings } from './Settings';
-import { outputFileThenLog } from './CompilerUtilities';
 import { prettyHrTime } from './PrettyUnits';
 import { Shout } from './Shout';
+import { IVariables } from './interfaces/IVariables';
+import { PathFinder } from './PathFinder';
 
 /**
  * Contains items returned by a CSS build sub-process.
@@ -28,24 +28,17 @@ interface CssBuildResult {
  */
 export class SassBuildTool {
 
-    /**
-     * Gets the project settings.
-     */
-    private readonly settings: Settings;
-
-    /**
-     * Gets the compiler build flags.
-     */
-    private readonly flags: IBuildFlags;
+    variables: IVariables;
+    finder: PathFinder;
 
     /**
      * Constructs a new instance of SassBuildTool using the specified settings and build flags. 
      * @param settings 
      * @param flags 
      */
-    constructor(settings: Settings, flags: IBuildFlags) {
-        this.settings = settings
-        this.flags = flags;
+    constructor(variables: IVariables) {
+        this.variables = variables;
+        this.finder = new PathFinder(variables);
     }
 
     /**
@@ -68,14 +61,14 @@ export class SassBuildTool {
      * Gets the full file path of the virtual Sass-Compiled CSS file. 
      */
     get virtualSassOutputFilePath() {
-        return upath.join(this.settings.root, '(intermediate)', '(sass-output).css');
+        return upath.join(this.finder.root, '(intermediate)', '(sass-output).css');
     }
 
     /**
      * Gets the full file path of the virtual Sass-Compiled CSS file. 
      */
     get virtualPostcssOutputFilePath() {
-        return upath.join(this.settings.root, '(intermediate)', '(postcss-output).css');
+        return upath.join(this.finder.root, '(intermediate)', '(postcss-output).css');
     }
 
     /**
@@ -86,7 +79,7 @@ export class SassBuildTool {
         let folder = upath.basename(this.virtualSassOutputFilePath);
         sm.sources = sm.sources.map(s => {
             let absolute = upath.join(folder, s);
-            return '/' + upath.relative(this.settings.root, absolute);
+            return '/' + upath.relative(this.finder.root, absolute);
         });
     }
 
@@ -133,7 +126,7 @@ export class SassBuildTool {
             }
 
             // 8: E:/VS/MyProject/node_modules/@ryan/_something.scss    (Standard+)
-            let packagePartialPath = upath.join(this.settings.npmFolder, partialRequest);
+            let packagePartialPath = upath.join(this.finder.npmFolder, partialRequest);
             if (await fse.pathExists(packagePartialPath)) {
                 return packagePartialPath;
             }
@@ -184,15 +177,15 @@ export class SassBuildTool {
      * @param virtualSassOutputPath 
      */
     async compileSassProject(virtualSassOutputPath: string) {
-        let cssInput = this.settings.cssEntry;
+        let cssInput = this.finder.cssEntry;
 
         let sassOptions: sass.Options = {
             file: cssInput,
             outFile: virtualSassOutputPath,
             data: await fse.readFile(cssInput, 'utf8'),
 
-            sourceMap: this.flags.sourceMap,
-            sourceMapContents: this.flags.sourceMap,
+            sourceMap: this.variables.sourceMap,
+            sourceMapContents: this.variables.sourceMap,
 
             importer: (request, source, done) => {
                 this.sassImport(source, request).then(resolution => {
@@ -220,7 +213,7 @@ export class SassBuildTool {
             css: css
         };
 
-        if (this.flags.sourceMap && sassResult.map) {
+        if (this.variables.sourceMap && sassResult.map) {
             let sms: string = sassResult.map.toString('utf8');
             let sm1: RawSourceMap = JSON.parse(sms);
             this.fixSassGeneratedSourceMap(sm1);
@@ -248,7 +241,7 @@ export class SassBuildTool {
             to: virtualPostcssOutputPath
         };
 
-        if (this.flags.sourceMap) {
+        if (this.variables.sourceMap) {
             postcssOptions.map = {
                 inline: false,
                 prev: false
@@ -263,12 +256,12 @@ export class SassBuildTool {
             css: postcssResult.css
         };
 
-        if (this.flags.sourceMap && sassResult.map && postcssResult.map) {
+        if (this.variables.sourceMap && sassResult.map && postcssResult.map) {
             let sm2 = postcssResult.map.toJSON();
             let abs = upath.resolve(upath.dirname(virtualPostcssOutputPath), sm2.sources[0]);
             // console.log(abs);
 
-            sm2.sources[0] = '/' + upath.relative(this.settings.root, abs);
+            sm2.sources[0] = '/' + upath.relative(this.variables.root, abs);
             // console.log(sm2.sources);
             // console.log(sm2.file);
 
@@ -296,8 +289,8 @@ export class SassBuildTool {
                     specialComments: false
                 }
             },
-            sourceMap: this.flags.sourceMap,
-            sourceMapInlineSources: this.flags.sourceMap
+            sourceMap: this.variables.sourceMap,
+            sourceMapInlineSources: this.variables.sourceMap
         };
 
         let cleanResult = new CleanCSS(cleanCssOptions).minify(postcssResult.css);
@@ -311,7 +304,7 @@ export class SassBuildTool {
             css: cleanResult.styles
         };
 
-        if (this.flags.sourceMap && postcssResult.map && cleanResult.sourceMap) {
+        if (this.variables.sourceMap && postcssResult.map && cleanResult.sourceMap) {
             let sm3: RawSourceMap = cleanResult.sourceMap.toJSON();
             sm3.sources[0] = '/(intermediate)/(postcss-output).css';
             sm3.file = upath.basename(cssOutputPath);
@@ -337,24 +330,24 @@ export class SassBuildTool {
         let sassOutputPath = this.virtualSassOutputFilePath;
         let sassResult = await this.compileSassProject(sassOutputPath);
 
-        let cssOutputPath = this.settings.outputCssFile;
+        let cssOutputPath = this.finder.cssOutputFilePath;
         let postcssOutputPath = cssOutputPath;
-        if (this.flags.production) {
+        if (this.variables.production) {
             postcssOutputPath = this.virtualPostcssOutputFilePath;
         }
 
         let cssResult = await this.runPostCSS(sassOutputPath, postcssOutputPath, sassResult);
 
-        if (this.flags.production) {
+        if (this.variables.production) {
             cssResult = this.runCleanCSS(cssOutputPath, cssResult);
         }
 
-        let cssOutputTask = outputFileThenLog(cssOutputPath, cssResult.css);
+        let cssOutputTask = Shout.fileOutput(cssOutputPath, cssResult.css);
 
         if (cssResult.map) {
             cssResult.map.sourceRoot = 'instapack://';
             let s = JSON.stringify(cssResult.map);
-            await outputFileThenLog(cssOutputPath + '.map', s);
+            await Shout.fileOutput(cssOutputPath + '.map', s);
         }
 
         await cssOutputTask;
@@ -364,7 +357,7 @@ export class SassBuildTool {
      * Executes build method with a formatted error and stopwatch wrapper. 
      */
     async buildWithStopwatch() {
-        Shout.timed('Compiling', chalk.cyan('index.scss'), chalk.grey('in ' + this.settings.inputCssFolder + '/'));
+        Shout.timed('Compiling', chalk.cyan('index.scss'), chalk.grey('in ' + this.finder.cssInputFolder + '/'));
         let start = process.hrtime();
         try {
             await this.build();
@@ -400,7 +393,7 @@ export class SassBuildTool {
             }, 300);
         };
 
-        chokidar.watch(this.settings.scssGlob, {
+        chokidar.watch(this.finder.scssGlob, {
             ignoreInitial: true
         })
             .on('add', file => {

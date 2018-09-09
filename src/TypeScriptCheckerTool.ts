@@ -1,67 +1,67 @@
-import * as TypeScript from 'typescript';
-import * as tslint from 'tslint';
+import TypeScript from 'typescript';
+import tslint from 'tslint';
 import chalk from 'chalk';
-import * as fse from 'fs-extra';
-import * as upath from 'upath';
-import * as chokidar from 'chokidar';
+import fse from 'fs-extra';
+import upath from 'upath';
+import chokidar from 'chokidar';
 
-import { Settings } from './Settings';
 import { prettyHrTime } from './PrettyUnits';
 import { Shout } from './Shout';
 import { VirtualSourceStore } from './VirtualSourceStore';
+import { IVariables } from './interfaces/IVariables';
+import { PathFinder } from './PathFinder';
+import { IMapLike } from './interfaces/IMapLike';
 
 /**
  * Contains methods for static-checking TypeScript projects. 
  */
 export class TypeScriptCheckerTool {
-
-    /**
-     * Gets the instapack Settings object.
-     */
-    private readonly settings: Settings;
-
     /**
      * Gets the shared TypeScript compiler options.
      */
-    private compilerOptions: TypeScript.CompilerOptions;
+    private readonly compilerOptions: TypeScript.CompilerOptions;
 
     /**
      * Gets the shared TypeScript compiler host.
      */
-    private host: TypeScript.CompilerHost;
+    private readonly host: TypeScript.CompilerHost;
 
     /**
      * Gets the TypeScript cache management object.
      */
-    private virtualSourceStore: VirtualSourceStore;
+    private readonly virtualSourceStore: VirtualSourceStore;
 
     /**
      * Gets tslint Configuration object, if exists.
      */
-    private tslintConfiguration: tslint.Configuration.IConfigurationFile;
+    private readonly tslintConfiguration: tslint.Configuration.IConfigurationFile | undefined;
+
+    private readonly variables: IVariables;
+    private readonly finder: PathFinder;
 
     /**
      * Constructs a new instance of TypeScriptCheckerTool using provided instapack Settings.
      * @param settings 
      */
-    constructor(settings: Settings) {
-        this.settings = settings;
+    private constructor(
+        variables: IVariables,
+        compilerOptions: TypeScript.CompilerOptions,
+        host: TypeScript.CompilerHost,
+        virtualSourceStore: VirtualSourceStore,
+        tslintConfiguration: tslint.Configuration.IConfigurationFile | undefined) {
+
+        this.variables = variables;
+        this.finder = new PathFinder(variables);
+
+        this.compilerOptions = compilerOptions;
+        this.host = host;
+        this.patchCompilerHost();
+        this.virtualSourceStore = virtualSourceStore;
+
+        this.tslintConfiguration = tslintConfiguration;
     }
 
-    /**
-     * Use project tsconfig.json to setup TypeScript Compiler Host with in-memory caching mechanism.
-     */
-    async setupCompilerHost() {
-        let tsconfig = await this.settings.readTsConfig();
-        this.compilerOptions = tsconfig.options;
-
-        this.virtualSourceStore = new VirtualSourceStore(this.compilerOptions);
-        let definitions = tsconfig.fileNames.filter(Q => Q.endsWith('.d.ts'));
-        this.virtualSourceStore.includeFile(this.settings.jsEntry);
-        this.virtualSourceStore.includeFiles(definitions);
-
-        this.host = TypeScript.createCompilerHost(tsconfig.options);
-
+    patchCompilerHost() {
         let rawFileCache: IMapLike<string> = {};
         this.host.readFile = (fileName) => {
             // Apparently this is being used by TypeScript to read package.json in node_modules...
@@ -83,23 +83,37 @@ export class TypeScriptCheckerTool {
         this.host.getSourceFile = (fileName, languageVersion, onError, shouldCreateNewSourceFile) => {
             return this.virtualSourceStore.getSource(fileName);
         }
+    }
+
+    static async createToolAsync(variables: IVariables): Promise<TypeScriptCheckerTool> {
+        let finder = new PathFinder(variables);
+        let tsconfig = await finder.readTsConfig();
+
+        let compilerOptions = tsconfig.options;
+        let definitions = tsconfig.fileNames.filter(Q => Q.endsWith('.d.ts'));
+
+        let virtualSourceStore = new VirtualSourceStore(compilerOptions);
+        virtualSourceStore.includeFile(finder.jsEntry);
+        virtualSourceStore.includeFiles(definitions);
+
+        let host = TypeScript.createCompilerHost(compilerOptions);
+
+        let tslintConfiguration: tslint.Configuration.IConfigurationFile | undefined = undefined;
+        let tslintFind = finder.findTslintConfiguration();
+        if (tslintFind) {
+            tslintConfiguration = tslintFind.results;
+            Shout.timed('tslint:', chalk.cyan(tslintFind.path));
+        }
 
         // How to add new file format / extension:
         // 1. add exotic source glob (and watch)
         // 2. add logic to parseThenStoreSource
         // 3. add check to delete virtual file path condition
-        await this.virtualSourceStore.addExoticSources(this.settings.vueGlobs);
-        await this.virtualSourceStore.preloadSources();
+        await virtualSourceStore.addExoticSources(finder.vueGlobs);
+        await virtualSourceStore.preloadSources();
 
-        let tslintFind = tslint.Configuration.findConfiguration(null, this.settings.root);
-        if (tslintFind.path) {
-            let tslintPath = upath.toUnix(tslintFind.path);
-            if (tslintPath === this.settings.tslintJson || tslintPath === this.settings.tslintYaml) {
-                Shout.timed('tslint:', chalk.cyan(tslintPath));
-                this.tslintConfiguration = tslintFind.results;
-                // console.log(this.tslintConfiguration);
-            }
-        }
+        let tool = new TypeScriptCheckerTool(variables, compilerOptions, host, virtualSourceStore, tslintConfiguration);
+        return tool;
     }
 
     /**
@@ -111,10 +125,12 @@ export class TypeScriptCheckerTool {
         let tsc = TypeScript.createProgram(entryPoints, this.compilerOptions, this.host);
 
         // https://palantir.github.io/tslint/usage/type-checking/
-        let doLint = Boolean(this.tslintConfiguration);
-        let linter = new tslint.Linter({
-            fix: false
-        }, tsc);
+        let linter: tslint.Linter | undefined = undefined;
+        if (this.tslintConfiguration) {
+            linter = new tslint.Linter({
+                fix: false
+            }, tsc);
+        }
 
         Shout.timed('Type-checking using TypeScript', chalk.green(TypeScript.version));
         let start = process.hrtime();
@@ -136,12 +152,12 @@ export class TypeScriptCheckerTool {
 
                 // https://palantir.github.io/tslint/usage/library/
                 // "Please ensure that the TypeScript source files compile correctly before running the linter."
-                if (newErrors.length === 0 && doLint) {
+                if (newErrors.length === 0 && linter) {
                     linter.lint(source.fileName, source.text, this.tslintConfiguration);
                 }
             }
 
-            if (doLint) {
+            if (linter) {
                 let lintResult = linter.getResult();
                 // console.log(lintResult);
                 for (let failure of lintResult.failures) {
@@ -176,7 +192,7 @@ export class TypeScriptCheckerTool {
         let errors = diagnostics.map(diagnostic => {
             let error = chalk.red('TS' + diagnostic.code) + ' ';
 
-            if (diagnostic.file) {
+            if (diagnostic.file && diagnostic.start) {
                 let realFileName = this.virtualSourceStore.getRealFilePath(diagnostic.file.fileName);
                 let { line, character } = diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start);
                 error += chalk.red(realFileName) + ' ' + chalk.yellow(`(${line + 1},${character + 1})`) + ':\n';
@@ -223,7 +239,7 @@ export class TypeScriptCheckerTool {
             }, 300);
         };
 
-        chokidar.watch(this.settings.typeCheckGlobs, {
+        chokidar.watch(this.finder.typeCheckGlobs, {
             ignoreInitial: true
         })
             .on('add', (file: string) => {

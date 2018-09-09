@@ -1,8 +1,13 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const chalk_1 = require("chalk");
-const notifier = require("node-notifier");
-const upath = require("upath");
+const chalk_1 = __importDefault(require("chalk"));
+const node_notifier_1 = __importDefault(require("node-notifier"));
+const upath_1 = __importDefault(require("upath"));
+const fs_extra_1 = __importDefault(require("fs-extra"));
+const PrettyUnits_1 = require("./PrettyUnits");
 function padZeroToDoubleDigits(x) {
     let s = '';
     if (x < 10) {
@@ -19,7 +24,12 @@ function concatenateTokens(tokens) {
     let message = '';
     for (let token of tokens) {
         if (token instanceof Error) {
-            message += '\n' + chalk_1.default.red(token.stack);
+            if (token.stack) {
+                message += '\n' + chalk_1.default.red(token.stack);
+            }
+            else {
+                message += '\n' + chalk_1.default.red(token.toString());
+            }
         }
         else {
             message += ' ' + token;
@@ -63,21 +73,29 @@ exports.Shout = {
         let output = chalk_1.default.magenta('Sass') + message;
         console.log(output);
     },
-    enableNotification: false,
+    enableNotification: true,
+    displayVerboseOutput: false,
     notify: function (...tokens) {
         if (!this.enableNotification) {
             return;
         }
         let message = '...';
-        let icon = upath.join(__dirname, '../img/madobe.png');
+        let icon = upath_1.default.join(__dirname, '../img/madobe.png');
         if (tokens && tokens.length) {
             message = concatenateTokens(tokens);
         }
-        notifier.notify({
+        node_notifier_1.default.notify({
             title: 'instapack',
             message,
             icon,
             sound: false
         });
+    },
+    fileOutput(filePath, content) {
+        let bundle = Buffer.from(content, 'utf8');
+        let info = upath_1.default.parse(filePath);
+        let size = PrettyUnits_1.prettyBytes(bundle.byteLength);
+        exports.Shout.timed(chalk_1.default.blue(info.base), chalk_1.default.magenta(size), chalk_1.default.grey('in ' + info.dir + '/'));
+        return fs_extra_1.default.outputFile(filePath, bundle);
     }
 };

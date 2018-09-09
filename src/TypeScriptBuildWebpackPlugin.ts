@@ -1,13 +1,10 @@
 import chalk from 'chalk';
-import * as webpack from 'webpack';
+import webpack from 'webpack';
 import { Source, SourceMapSource, RawSource } from 'webpack-sources';
-import { MinifyOutput } from 'uglify-js';
 
 import { Shout } from './Shout';
-import { IMinifyInputs } from './IMinifyInputs';
-import { runWorkerAsync } from './CompilerUtilities';
-
-const jsMinifyWorkerModulePath = require.resolve('./build-workers/JsMinifyWorker');
+import { IMinifyInputs } from './interfaces/IMinifyInputs';
+import { runMinifyWorkerAsync } from './WorkerRunner';
 
 /**
  * Options required for TypeScriptBuildWebpackPlugin to function, collected from Settings and ICompilerFlags.
@@ -63,7 +60,7 @@ function minifyChunkAssets(compilation: webpack.compilation.Compilation, chunks:
             let asset = compilation.assets[fileName] as Source;
             let input = createMinificationInput(asset, fileName, sourceMap);
 
-            let t1 = runWorkerAsync<MinifyOutput>(jsMinifyWorkerModulePath, input);
+            let t1 = runMinifyWorkerAsync(input);
             let t2 = t1.then(minified => {
                 let output: Source;
                 if (sourceMap) {

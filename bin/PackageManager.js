@@ -7,8 +7,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const cp = require("child_process");
+const child_process_1 = __importDefault(require("child_process"));
 const process_1 = require("process");
 class PackageManager {
     get isWindows() {
@@ -29,13 +32,13 @@ class PackageManager {
         }
     }
     runWithOutputs(command) {
-        return cp.execSync(command, {
+        return child_process_1.default.execSync(command, {
             stdio: [0, 1, 2]
         });
     }
     doesToolExists(tool) {
         return new Promise((ok, reject) => {
-            cp.exec(this.toolExistCheckerCommand(tool), (error, stdout, stderr) => {
+            child_process_1.default.exec(this.toolExistCheckerCommand(tool), (error, stdout, stderr) => {
                 if (error) {
                     ok(false);
                 }

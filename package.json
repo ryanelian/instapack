@@ -45,7 +45,10 @@
     "url": "https://github.com/ryanelian/instapack.git"
   },
   "scripts": {
-    "build": "tsc && tslint -p ."
+    "compile": "tsc",
+    "lint": "tslint -p .",
+    "test": "ava",
+    "build": "npm run compile && npm run lint && npm run test"
   },
   "dependencies": {
     "@babel/core": "7.0.0",
@@ -90,7 +93,8 @@
     "@types/webpack": "^4.4.11",
     "@types/webpack-serve": "^2.0.0",
     "@types/webpack-sources": "^0.1.5",
-    "@types/yargs": "^11.1.1"
+    "@types/yargs": "^11.1.1",
+    "ava": "1.0.0-beta.8"
   },
   "resolutions": {
     "**/@types/node": "8"

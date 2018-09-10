@@ -164,6 +164,8 @@ export class VariablesFactory {
     }
 
     parseCliEnv(yargsEnv: any): any {
+        // console.log(yargsEnv);
+
         let env: IMapLike<string> = {};
         if (yargsEnv && typeof yargsEnv === 'object' && Array.isArray(yargsEnv) === false) {
             for (let key in yargsEnv) {

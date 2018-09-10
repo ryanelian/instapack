@@ -118,10 +118,11 @@ test('Read .env File: Valid', async t => {
     let folder = upath.join(fixtures, 'DotEnvValid');
     let r = await v.readDotEnvFrom(folder);
     t.deepEqual(r, {
-        foo: 'bar',
-        number: '222',
-        nil: '',
-        magic: 'true'
+        foo: 'undefined',
+        bar: 'null',
+        magic: 'true',
+        x: '777',
+        nil: ''
     });
 });
 
@@ -135,5 +136,43 @@ test('Read .env File: Not Found', async t => {
     let folder = upath.join(fixtures, 'DotEnvNotFound');
     let r = await v.readDotEnvFrom(folder);
 
+    t.deepEqual(r, {});
+});
+
+test('Parse CLI env: Valid', t => {
+    let r = v.parseCliEnv({
+        foo: 'bar',
+        x: 777,
+        magic: true
+    });
+
+    t.deepEqual(r, {
+        foo: 'bar',
+        x: '777',
+        magic: 'true'
+    })
+});
+
+test('Parse CLI env: Invalid String', t => {
+    // --env=true
+    let r = v.parseCliEnv('true');
+    t.deepEqual(r, {});
+});
+
+test('Parse CLI env: Invalid Boolean', t => {
+    // --env
+    let r = v.parseCliEnv(true);
+    t.deepEqual(r, {});
+});
+
+test('Parse CLI env: Invalid Number', t => {
+    // --env=9999
+    let r = v.parseCliEnv(9999);
+    t.deepEqual(r, {});
+});
+
+test('Parse CLI env: Invalid Array', t => {
+    // --env=a --env=b --env=c
+    let r = v.parseCliEnv(['a', 'b', 'c']);
     t.deepEqual(r, {});
 });

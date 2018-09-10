@@ -111,10 +111,11 @@ ava_1.default('Read .env File: Valid', (t) => __awaiter(this, void 0, void 0, fu
     let folder = upath_1.default.join(fixtures, 'DotEnvValid');
     let r = yield v.readDotEnvFrom(folder);
     t.deepEqual(r, {
-        foo: 'bar',
-        number: '222',
-        nil: '',
-        magic: 'true'
+        foo: 'undefined',
+        bar: 'null',
+        magic: 'true',
+        x: '777',
+        nil: ''
     });
 }));
 ava_1.default('Read .env File: Invalid', (t) => __awaiter(this, void 0, void 0, function* () {
@@ -127,3 +128,31 @@ ava_1.default('Read .env File: Not Found', (t) => __awaiter(this, void 0, void 0
     let r = yield v.readDotEnvFrom(folder);
     t.deepEqual(r, {});
 }));
+ava_1.default('Parse CLI env: Valid', t => {
+    let r = v.parseCliEnv({
+        foo: 'bar',
+        x: 777,
+        magic: true
+    });
+    t.deepEqual(r, {
+        foo: 'bar',
+        x: '777',
+        magic: 'true'
+    });
+});
+ava_1.default('Parse CLI env: Invalid String', t => {
+    let r = v.parseCliEnv('true');
+    t.deepEqual(r, {});
+});
+ava_1.default('Parse CLI env: Invalid Boolean', t => {
+    let r = v.parseCliEnv(true);
+    t.deepEqual(r, {});
+});
+ava_1.default('Parse CLI env: Invalid Number', t => {
+    let r = v.parseCliEnv(9999);
+    t.deepEqual(r, {});
+});
+ava_1.default('Parse CLI env: Invalid Array', t => {
+    let r = v.parseCliEnv(['a', 'b', 'c']);
+    t.deepEqual(r, {});
+});

@@ -27,7 +27,9 @@ steps:
     versionSpec: $(node_version)
   displayName: 'Install Node.js'
 
-- script: npm link --loglevel error; npm run build
+- script: |
+    npm link --loglevel error
+    npm run build
   displayName: 'Build'
 
 - script: npm install -g rimraf; mkdir demo; cd demo

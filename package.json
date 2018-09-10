@@ -47,7 +47,7 @@
   "scripts": {
     "compile": "tsc",
     "lint": "tslint -p .",
-    "test": "ava",
+    "test": "ava --verbose",
     "build": "npm run compile && npm run lint && npm run test"
   },
   "dependencies": {

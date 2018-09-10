@@ -13,14 +13,53 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const ava_1 = __importDefault(require("ava"));
 const WorkerRunner_1 = require("./WorkerRunner");
+const source_map_1 = require("source-map");
 ava_1.default('Run Minify Worker Async', (t) => __awaiter(this, void 0, void 0, function* () {
-    let input = {
-        code: `
-function foo(bar) {
+    let hellojs = `function hello(world) {
+    return world + 1;
+}
+`;
+    let foojs = `function foo(bar) {
     return bar * 2;
-}`,
-        fileName: 'test.js'
+}
+`;
+    let concat = hellojs + '\n' + foojs;
+    let smgen = new source_map_1.SourceMapGenerator();
+    smgen.addMapping({
+        source: 'hello.js',
+        original: {
+            column: 0,
+            line: 1
+        },
+        generated: {
+            column: 0,
+            line: 1
+        }
+    });
+    smgen.addMapping({
+        source: 'foo.js',
+        original: {
+            column: 0,
+            line: 1
+        },
+        generated: {
+            column: 0,
+            line: 5
+        }
+    });
+    smgen.setSourceContent('hello.js', hellojs);
+    smgen.setSourceContent('foo.js', foojs);
+    let input = {
+        code: concat,
+        fileName: 'test.js',
+        map: smgen.toJSON()
     };
     let result = yield WorkerRunner_1.runMinifyWorkerAsync(input);
-    t.true(result.code.length < input.code.length);
+    let minifed = (typeof result.code === 'string') && (result.code.length < input.code.length);
+    let rawSM = JSON.parse(result.map);
+    let mapped = Boolean(rawSM.version === 3
+        && Array.isArray(rawSM.sources)
+        && typeof rawSM.mappings === 'string'
+        && rawSM.sources.includes('hello.js') && rawSM.sources.includes('foo.js'));
+    t.true(minifed && mapped);
 }));

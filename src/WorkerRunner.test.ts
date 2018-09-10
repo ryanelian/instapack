@@ -1,17 +1,65 @@
 import test from 'ava';
 import { runMinifyWorkerAsync } from './WorkerRunner';
 import { IMinifyInputs } from './interfaces/IMinifyInputs';
+import { SourceMapGenerator, RawSourceMap } from 'source-map';
 
 test('Run Minify Worker Async', async t => {
-    let input: IMinifyInputs = {
-        code: `
-function foo(bar) {
+    let hellojs = `function hello(world) {
+    return world + 1;
+}
+`;
+
+    let foojs = `function foo(bar) {
     return bar * 2;
-}`,
-        fileName: 'test.js'
+}
+`;
+
+    let concat = hellojs + '\n' + foojs;
+
+    let smgen = new SourceMapGenerator();
+    smgen.addMapping({
+        source: 'hello.js',
+        original: {
+            column: 0,
+            line: 1
+        },
+        generated: {
+            column: 0,
+            line: 1
+        }
+    });
+    smgen.addMapping({
+        source: 'foo.js',
+        original: {
+            column: 0,
+            line: 1
+        },
+        generated: {
+            column: 0,
+            line: 5
+        }
+    });
+    smgen.setSourceContent('hello.js', hellojs);
+    smgen.setSourceContent('foo.js', foojs);
+
+    // console.log(concat);
+
+    let input: IMinifyInputs = {
+        code: concat,
+        fileName: 'test.js',
+        map: smgen.toJSON()
     };
 
     let result = await runMinifyWorkerAsync(input);
 
-    t.true(result.code.length < input.code.length);
+    let minifed = (typeof result.code === 'string') && (result.code.length < input.code.length);
+    let rawSM: RawSourceMap = JSON.parse(result.map);
+    let mapped = Boolean(rawSM.version === 3
+        && Array.isArray(rawSM.sources)
+        && typeof rawSM.mappings === 'string'
+        && rawSM.sources.includes('hello.js') && rawSM.sources.includes('foo.js')
+    );
+
+    // console.log(result.map);
+    t.true(minifed && mapped);
 });

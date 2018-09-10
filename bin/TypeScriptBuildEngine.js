@@ -25,15 +25,13 @@ const TypeScriptBuildWebpackPlugin_1 = require("./TypeScriptBuildWebpackPlugin")
 const Shout_1 = require("./Shout");
 const PortScanner_1 = require("./PortScanner");
 const PathFinder_1 = require("./PathFinder");
+const loaders_1 = require("./loaders");
 class TypeScriptBuildEngine {
     constructor(variables) {
         this.wormholes = new Set();
         this.variables = variables;
         this.finder = new PathFinder_1.PathFinder(variables);
         this.outputPublicPath = 'js/';
-        if (this.variables.hot) {
-            this.outputPublicPath = this.outputHotJsFolderUri;
-        }
     }
     convertTypeScriptPathToWebpackAliasPath(baseUrl, value) {
         let result = upath_1.default.join(baseUrl, value);
@@ -106,7 +104,7 @@ class TypeScriptBuildEngine {
             test: /\.m?jsx?$/,
             exclude: /node_modules/,
             use: {
-                loader: 'babel-loader'
+                loader: loaders_1.loaders.babel
             }
         };
     }
@@ -117,11 +115,11 @@ class TypeScriptBuildEngine {
         };
         if (useBabel) {
             tsRules.use.push({
-                loader: 'babel-loader'
+                loader: loaders_1.loaders.babel
             });
         }
         tsRules.use.push({
-            loader: 'core-typescript-loader',
+            loader: loaders_1.loaders.typescript,
             options: {
                 compilerOptions: tsCompilerOptions
             }
@@ -132,7 +130,7 @@ class TypeScriptBuildEngine {
         return {
             test: /\.vue$/,
             use: [{
-                    loader: 'vue-loader',
+                    loader: loaders_1.loaders.vue,
                     options: {
                         transformAssetUrls: {},
                     }
@@ -143,23 +141,23 @@ class TypeScriptBuildEngine {
         return {
             test: /\.html$/,
             use: [{
-                    loader: 'template-loader'
+                    loader: loaders_1.loaders.template
                 }]
         };
     }
     get cssWebpackRules() {
         let vueStyleLoader = {
-            loader: 'vue-style-loader'
+            loader: loaders_1.loaders.vueStyle
         };
         let cssModulesLoader = {
-            loader: 'css-loader',
+            loader: loaders_1.loaders.css,
             options: {
                 modules: true,
                 url: false
             }
         };
         let cssLoader = {
-            loader: 'css-loader',
+            loader: loaders_1.loaders.css,
             options: {
                 url: false
             }
@@ -270,13 +268,6 @@ inject();
                 resolve: {
                     extensions: ['.ts', '.tsx', '.js', '.jsx', '.mjs', '.vue', '.wasm', '.json', '.html'],
                     alias: alias
-                },
-                resolveLoader: {
-                    modules: [
-                        path_1.default.resolve(__dirname, 'loaders'),
-                        path_1.default.resolve(__dirname, '../node_modules'),
-                        path_1.default.resolve(__dirname, '..', '..'),
-                    ]
                 },
                 module: {
                     rules: rules
@@ -497,6 +488,9 @@ inject();
             let p1 = chalk_1.default.green(this.variables.port1.toString());
             let p2 = chalk_1.default.green(this.variables.port2.toString());
             Shout_1.Shout.timed(chalk_1.default.yellow('Hot Reload'), `Server running on ports: ${p1}, ${p2}`);
+            if (this.variables.hot) {
+                this.outputPublicPath = this.outputHotJsFolderUri;
+            }
         });
     }
     build() {

@@ -15,6 +15,7 @@ import { getAvailablePort, isPortAvailable } from './PortScanner';
 import { IVariables } from './interfaces/IVariables';
 import { IMapLike } from './interfaces/IMapLike';
 import { PathFinder } from './PathFinder';
+import { loaders } from './loaders';
 
 /**
  * Contains methods for compiling a TypeScript project.
@@ -25,7 +26,7 @@ export class TypeScriptBuildEngine {
 
     private readonly finder: PathFinder;
 
-    private readonly outputPublicPath: string;
+    private outputPublicPath: string;
 
     /**
      * Keep track of Hot Reload wormhole file names already created.
@@ -43,9 +44,6 @@ export class TypeScriptBuildEngine {
 
         // yay for using "js" folder in output!
         this.outputPublicPath = 'js/';
-        if (this.variables.hot) {
-            this.outputPublicPath = this.outputHotJsFolderUri;
-        }
     }
 
     /**
@@ -164,12 +162,10 @@ export class TypeScriptBuildEngine {
             test: /\.m?jsx?$/,
             exclude: /node_modules/,
             use: {
-                loader: 'babel-loader'
+                loader: loaders.babel
             }
         };
     }
-
-
 
     /**
      * Gets a configured TypeScript rules for webpack.
@@ -185,12 +181,12 @@ export class TypeScriptBuildEngine {
 
         if (useBabel) {
             tsRules.use.push({
-                loader: 'babel-loader'
+                loader: loaders.babel
             })
         }
 
         tsRules.use.push({
-            loader: 'core-typescript-loader',
+            loader: loaders.typescript,
             options: {
                 compilerOptions: tsCompilerOptions
             }
@@ -206,7 +202,7 @@ export class TypeScriptBuildEngine {
         return {
             test: /\.vue$/,
             use: [{
-                loader: 'vue-loader',
+                loader: loaders.vue,
                 options: {
                     transformAssetUrls: {},     // remove <img> src and SVG <image> xlink:href resolution
                 }
@@ -221,7 +217,7 @@ export class TypeScriptBuildEngine {
         return {
             test: /\.html$/,
             use: [{
-                loader: 'template-loader'
+                loader: loaders.template
             }]
         };
     }
@@ -231,17 +227,17 @@ export class TypeScriptBuildEngine {
      */
     get cssWebpackRules(): webpack.Rule {
         let vueStyleLoader = {
-            loader: 'vue-style-loader'
+            loader: loaders.vueStyle
         };
         let cssModulesLoader = {
-            loader: 'css-loader',
+            loader: loaders.css,
             options: {
                 modules: true,
                 url: false
             }
         };
         let cssLoader = {
-            loader: 'css-loader',
+            loader: loaders.css,
             options: {
                 url: false
             }
@@ -403,13 +399,6 @@ inject();
                 // .mjs causes runtime error when `module.exports` is being used instead of `export`.
                 // .wasm requires adding `application/wasm` MIME to web server (both IIS and Kestrel).
                 alias: alias
-            },
-            resolveLoader: {
-                modules: [
-                    path.resolve(__dirname, 'loaders'),             // custom internal loaders
-                    path.resolve(__dirname, '../node_modules'),     // local node_modules
-                    path.resolve(__dirname, '..', '..'),            // yarn's flat global node_modules
-                ]
             },
             module: {
                 rules: rules
@@ -686,6 +675,10 @@ inject();
         let p1 = chalk.green(this.variables.port1.toString());
         let p2 = chalk.green(this.variables.port2.toString());
         Shout.timed(chalk.yellow('Hot Reload'), `Server running on ports: ${p1}, ${p2}`);
+
+        if (this.variables.hot) {
+            this.outputPublicPath = this.outputHotJsFolderUri;
+        }
     }
 
     /**

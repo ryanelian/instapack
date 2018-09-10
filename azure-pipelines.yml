@@ -3,24 +3,23 @@
 # Add steps that analyze code, save build artifacts, deploy, and more:
 # https://docs.microsoft.com/vsts/pipelines/languages/javascript
 
-jobs:
-- job: Linux
-  pool:
-    vmImage: 'ubuntu-16.04'
-  steps:
-  - script: echo hello from Linux
-- job: Windows
-  pool:
-    vmImage: 'vs2017-win2017'
-  steps:
-  - script: echo hello from Windows
-
 strategy:
   matrix:
-    node_8_x:
+    windows_node_8_x:
+      vmImage: 'vs2017-win2017'
       node_version: 8.x
-    node_10_x:
+    windows_node_10_x:
+      vmImage: 'vs2017-win2017'
       node_version: 10.x
+    linux_node_8_x:
+      vmImage: 'ubuntu-16.04'
+      node_version: 8.x
+    linux_node_10_x:
+      vmImage: 'ubuntu-16.04'
+      node_version: 10.x
+
+pool:
+  vmImage: $(vmImage)
 
 steps:
 - task: NodeTool@0

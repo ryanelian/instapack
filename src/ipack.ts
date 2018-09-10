@@ -40,9 +40,9 @@ program.command({
             }).option('hot', {
                 alias: 'h',
                 describe: 'Enables Hot Reload development mode using dedicated build servers.'
-            }).option('map', {
-                alias: 'm',
-                describe: 'Enables source maps, producing browser-debuggable outputs.'
+            }).option('xdebug', {
+                alias: 'x',
+                describe: 'Disables source maps, producing undebuggable outputs.'
             }).option('env', {
                 describe: 'Defines process.env variables to be replaced in TypeScript project build.'
             }).option('stats', {
@@ -59,7 +59,7 @@ program.command({
         ipack.build(subCommand, {
             production: !Boolean(argv.dev),
             watch: Boolean(argv.watch),
-            sourceMap: Boolean(argv.map),
+            sourceMap: !Boolean(argv.xdebug),
             env: new VariablesFactory().parseCliEnv(argv.env),
             stats: Boolean(argv.stats),
             hot: Boolean(argv.hot),

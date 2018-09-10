@@ -2,7 +2,9 @@
 
 > All-in-one TypeScript and Sass compiler for web applications! :package: :rocket:
 
-[![npm](https://badge.fury.io/js/instapack.svg)](https://www.npmjs.com/package/instapack) [![Build Status](https://travis-ci.org/ryanelian/instapack.svg?branch=master)](https://travis-ci.org/ryanelian/instapack) [![Build status](https://ci.appveyor.com/api/projects/status/y6v2hde0mhh9o5an/branch/master?svg=true)](https://ci.appveyor.com/project/RyanElian/instapack/branch/master) [![Greenkeeper badge](https://badges.greenkeeper.io/ryanelian/instapack.svg)](https://greenkeeper.io/)
+[![npm](https://badge.fury.io/js/instapack.svg)](https://www.npmjs.com/package/instapack) 
+[![Build Status](https://ryanelian.visualstudio.com/instapack/_apis/build/status/ryanelian.instapack)](https://ryanelian.visualstudio.com/instapack/_build/latest?definitionId=1)
+[![Greenkeeper badge](https://badges.greenkeeper.io/ryanelian/instapack.svg)](https://greenkeeper.io/)
 
 ![Screenshot](https://raw.githubusercontent.com/ryanelian/instapack/master/img/screenshot.png)
 

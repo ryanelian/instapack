@@ -5,16 +5,16 @@
 
 strategy:
   matrix:
-    windows_node_8_x:
+    win_node_8:
       vmImage: 'vs2017-win2017'
       node_version: 8.x
-    windows_node_10_x:
+    win_node_10:
       vmImage: 'vs2017-win2017'
       node_version: 10.x
-    linux_node_8_x:
+    linux_node_8:
       vmImage: 'ubuntu-16.04'
       node_version: 8.x
-    linux_node_10_x:
+    linux_node_10:
       vmImage: 'ubuntu-16.04'
       node_version: 10.x
 
@@ -31,23 +31,56 @@ steps:
     npm link 
   displayName: 'Restore Packages'
 
-- script: npm run build
+- script: |
+    npm run build
   displayName: 'Build & Unit Test'
 
-- script: npm install -g rimraf && ipack set package-manager npm
+- script: |
+    npm install -g rimraf
+    ipack set package-manager npm
   displayName: 'Prepare Full-Cycle Test'
     
-- script: rimraf ./demo && mkdir demo && cd demo && ipack new vue && ipack && ipack -dx
+- script: |
+    rimraf ./demo
+    mkdir demo
+    cd demo
+    ipack new vue
+    ipack
+    ipack -dx
   displayName: 'Full-Cycle Test: vue'
 
-- script: rimraf ./demo && mkdir demo && cd demo && ipack new react && ipack && ipack -dx
+- script: |
+    rimraf ./demo
+    mkdir demo
+    cd demo
+    ipack new react
+    ipack
+    ipack -dx
   displayName: 'Full-Cycle Test: react'
 
-- script: rimraf ./demo && mkdir demo && cd demo && ipack new preact && ipack && ipack -dx
+- script: |
+    rimraf ./demo
+    mkdir demo
+    cd demo
+    ipack new preact
+    ipack
+    ipack -dx
   displayName: 'Full-Cycle Test: preact'
 
-- script: rimraf ./demo && mkdir demo && cd demo && ipack new inferno && ipack && ipack -dx
+- script: |
+    rimraf ./demo
+    mkdir demo
+    cd demo
+    ipack new inferno
+    ipack
+    ipack -dx
   displayName: 'Full-Cycle Test: inferno'
 
-- script: rimraf ./demo && mkdir demo && cd demo && ipack new hyperapp && ipack && ipack -dx
+- script: |
+    rimraf ./demo
+    mkdir demo
+    cd demo
+    ipack new hyperapp
+    ipack
+    ipack -dx
   displayName: 'Full-Cycle Test: hyperapp'

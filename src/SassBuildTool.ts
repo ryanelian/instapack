@@ -6,7 +6,7 @@ import * as sass from 'node-sass';
 import * as postcss from 'postcss';
 import * as autoprefixer from 'autoprefixer';
 import * as postcssImport from 'postcss-import';
-let CleanCSS = require('clean-css');
+import * as cssnano from 'cssnano';
 import { RawSourceMap } from 'source-map';
 import { NodeJsInputFileSystem, ResolverFactory } from 'enhanced-resolve';
 
@@ -57,17 +57,33 @@ export class SassBuildTool {
     }
 
     /**
+     * Gets the folder path of the virtual Sass-Compiled CSS file. 
+     */
+    get virtualSassCompiledCssFolderPath() {
+        return upath.join(this.settings.root, '(sass)');
+    }
+
+    /**
+     * Gets the full file path of the virtual Sass-Compiled CSS file. 
+     */
+    get virtualSassCompiledCssFilePath() {
+        return upath.join(this.virtualSassCompiledCssFolderPath, '(compiled).css');
+    }
+
+    /**
      * Normalize `sources` paths of a Sass-compiled source map.
      * @param sm 
      */
     fixSourceMap(sm: RawSourceMap) {
         sm.sourceRoot = 'instapack://';
 
-        let cssProjectFolder = this.settings.inputCssFolder;
+        // console.log(sm.sources);        
+        let cssProjectFolder = this.settings.outputCssFolder;
         sm.sources = sm.sources.map(s => {
             let absolute = upath.join(cssProjectFolder, s);
             return '/' + upath.relative(this.settings.root, absolute);
         });
+        // console.log(sm.sources);
     }
 
     /**
@@ -162,15 +178,16 @@ export class SassBuildTool {
      */
     async build() {
         let cssInput = this.settings.cssEntry;
+        let virtualCssOutput = this.virtualSassCompiledCssFilePath;
         let cssOutput = this.settings.outputCssFile;
 
         let sassOptions: sass.Options = {
             file: cssInput,
-            outFile: cssOutput,
+            outFile: virtualCssOutput,
             data: await fse.readFile(cssInput, 'utf8'),
+            outputStyle: 'compressed',
 
             sourceMap: this.flags.sourceMap,
-            sourceMapEmbed: this.flags.sourceMap,
             sourceMapContents: this.flags.sourceMap,
 
             importer: (request, source, done) => {
@@ -186,76 +203,57 @@ export class SassBuildTool {
         };
 
         let sassResult = await this.compileSassAsync(sassOptions);
-        let cssResult = await postcss([
-            autoprefixer(),
-            postcssImport()     // will NOT auto-prefix libraries (should be authors' responsibility)
-        ]).process(sassResult.css, this.postCssOptions);
 
-        let css = cssResult.css;
-        let sourceMap: RawSourceMap = undefined;
-        if (this.flags.sourceMap) {
-            sourceMap = cssResult.map.toJSON() as any;      // HACK78
-        }
-
-        if (this.flags.production) {
-            let cleanResult = new CleanCSS(this.cleanCssOptions).minify(css, sourceMap);
-
-            let errors: Error[] = cleanResult.errors;
-            if (errors.length) {
-                let errorMessage = "Error when minifying CSS:\n" + errors.map(Q => Q.stack).join("\n\n");
-                throw new Error(errorMessage);
-            }
-
-            css = cleanResult.styles;
-
-            if (this.flags.sourceMap) {
-                let sourceMapFileName = upath.basename(cssOutput) + '.map';
-                css += '\n' + `/*# sourceMappingURL=${sourceMapFileName} */`;
-                sourceMap = cleanResult.sourceMap.toJSON();
-            }
-        }
-
-        let t1 = outputFileThenLog(cssOutput, css);
-        if (this.flags.sourceMap) {
-            this.fixSourceMap(sourceMap as any);        // HACK78
-            await outputFileThenLog(cssOutput + '.map', JSON.stringify(sourceMap));
-        }
-        await t1;
-    }
-
-    /**
-     * Gets the Clean CSS options using project build flags.
-     */
-    get cleanCssOptions() {
-        return {
-            level: {
-                1: {
-                    specialComments: false
-                }
-            },
-            sourceMap: this.flags.sourceMap,
-            sourceMapInlineSources: this.flags.sourceMap
-        };
-    }
-
-    /**
-     * Gets the PostCSS options using project settings and build flags.
-     */
-    get postCssOptions() {
-        let cssOutput = this.settings.outputCssFile;
-
-        let options: postcss.ProcessOptions = {
-            from: cssOutput,
+        let postcssOptions: postcss.ProcessOptions = {
+            from: virtualCssOutput,
             to: cssOutput
         };
 
-        if (this.flags.sourceMap) {
-            options.map = {
-                inline: false
+        if (this.flags.sourceMap && sassResult.map) {
+            let sassMapString: string = sassResult.map.toString('utf8');
+            let sassMap: RawSourceMap = JSON.parse(sassMapString);
+
+            postcssOptions.map = {
+                inline: false,
+                prev: sassMap
             };
         }
 
-        return options;
+        let cssResult = await postcss(this.postcssPlugins).process(sassResult.css, postcssOptions);
+        let cssOutputTask = outputFileThenLog(cssOutput, cssResult.css);
+
+        if (this.flags.sourceMap && cssResult.map) {
+            let sourceMapLegacyType: any = cssResult.map.toJSON(); // HACK78
+            let sourceMap: RawSourceMap = sourceMapLegacyType;
+
+            this.fixSourceMap(sourceMap);
+            await outputFileThenLog(cssOutput + '.map', JSON.stringify(sourceMap));
+        }
+
+        await cssOutputTask;
+    }
+
+    /**
+     * Returns configured postcss plugins according to build settings.
+     */
+    get postcssPlugins() {
+        let postcssPlugins = [
+            autoprefixer(),
+            postcssImport()     // will NOT auto-prefix libraries (should be authors' responsibility)
+        ];
+
+        if (this.flags.production) {
+            postcssPlugins.push(cssnano({
+                preset: ['default', {
+                    cssDeclarationSorter: false,
+                    discardComments: {
+                        removeAll: true,
+                    }
+                }]
+            }));
+        }
+
+        return postcssPlugins;
     }
 
     /**

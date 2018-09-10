@@ -27,32 +27,23 @@ steps:
     version: $(node_version)
   displayName: 'Install Node.js'
 
-- script: >-
-    npm link --loglevel error
+- script: npm link --loglevel error; npm run build
+  displayName: 'Build'
 
-    npm run build
-
-- script: >-
-    npm install -g rimraf
-
-    cd demo
-
-    mkdir demo
+- script: npm install -g rimraf; cd demo; mkdir demo
+  displayName: 'Setup Full-Cycle Test'
     
-    ipack new vue; ipack; ipack -dx
+- script: ipack new vue; ipack; ipack -dx
+  displayName: 'Full-Cycle Test: vue'
 
-    rimraf ./*
+- script: rimraf ./*; ipack new react; ipack; ipack -dx
+  displayName: 'Full-Cycle Test: react'
 
-    ipack new react; ipack; ipack -dx
+- script: rimraf ./*; ipack new preact; ipack; ipack -dx
+  displayName: 'Full-Cycle Test: preact'
 
-    rimraf ./*
+- script: rimraf ./*; ipack new inferno; ipack; ipack -dx
+  displayName: 'Full-Cycle Test: inferno'
 
-    ipack new preact; ipack; ipack -dx
-
-    rimraf ./*
-
-    ipack new inferno; ipack; ipack -dx
-
-    rimraf ./*
-    
-    ipack new hyperapp; ipack; ipack -dx
+- script: rimraf ./*; ipack new hyperapp; ipack; ipack -dx
+  displayName: 'Full-Cycle Test: hyperapp'

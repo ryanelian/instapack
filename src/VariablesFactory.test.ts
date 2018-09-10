@@ -113,3 +113,27 @@ test('Valid Externals: Object', t => {
     });
     t.is(a, true);
 });
+
+test('Read .env File: Valid', async t => {
+    let folder = upath.join(fixtures, 'DotEnvValid');
+    let r = await v.readDotEnvFrom(folder);
+    t.deepEqual(r, {
+        foo: 'bar',
+        number: '222',
+        nil: '',
+        magic: 'true'
+    });
+});
+
+test('Read .env File: Invalid', async t => {
+    let folder = upath.join(fixtures, 'DotEnvInvalid');
+    let r = await v.readDotEnvFrom(folder);
+    t.deepEqual(r, {});
+});
+
+test('Read .env File: Not Found', async t => {
+    let folder = upath.join(fixtures, 'DotEnvNotFound');
+    let r = await v.readDotEnvFrom(folder);
+
+    t.deepEqual(r, {});
+});

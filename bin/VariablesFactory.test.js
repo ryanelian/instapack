@@ -107,3 +107,23 @@ ava_1.default('Valid Externals: Object', t => {
     });
     t.is(a, true);
 });
+ava_1.default('Read .env File: Valid', (t) => __awaiter(this, void 0, void 0, function* () {
+    let folder = upath_1.default.join(fixtures, 'DotEnvValid');
+    let r = yield v.readDotEnvFrom(folder);
+    t.deepEqual(r, {
+        foo: 'bar',
+        number: '222',
+        nil: '',
+        magic: 'true'
+    });
+}));
+ava_1.default('Read .env File: Invalid', (t) => __awaiter(this, void 0, void 0, function* () {
+    let folder = upath_1.default.join(fixtures, 'DotEnvInvalid');
+    let r = yield v.readDotEnvFrom(folder);
+    t.deepEqual(r, {});
+}));
+ava_1.default('Read .env File: Not Found', (t) => __awaiter(this, void 0, void 0, function* () {
+    let folder = upath_1.default.join(fixtures, 'DotEnvNotFound');
+    let r = yield v.readDotEnvFrom(folder);
+    t.deepEqual(r, {});
+}));

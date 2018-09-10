@@ -8,3 +8,5 @@ appveyor.yml
 build.ps1
 link.ps1
 templates/update.ps1
+fixtures/
+bin/**/*.test.js

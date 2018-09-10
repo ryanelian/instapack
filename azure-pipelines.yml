@@ -33,9 +33,16 @@ steps:
   displayName: 'npm link then build'
 
 - script: |
-    function fct() { rm -rf ./*; ipack new $1; ipack; ipack -dx }
-    fct vue
-    fct react
-    fct preact
-    fct inferno
-  displayName: 'run full cycle tests'
+    npm install -g rimraf
+    cd demo
+    mkdir demo
+    ipack new vue; ipack; ipack -dx
+    rimraf ./*
+    ipack new react; ipack; ipack -dx
+    rimraf ./*
+    ipack new preact; ipack; ipack -dx
+    rimraf ./*
+    ipack new inferno; ipack; ipack -dx
+    rimraf ./*
+    ipack new hyperapp; ipack; ipack -dx
+  displayName: 'Run Full Cycle Tests'

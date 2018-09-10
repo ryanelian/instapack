@@ -4,11 +4,16 @@ import { getOptions } from 'loader-utils';
 import { RawSourceMap } from 'source-map';
 
 interface ICoreTypeScriptLoaderOptions {
-    compilerOptions: TypeScript.CompilerOptions;
+    compilerOptions?: TypeScript.CompilerOptions;
 }
 
 export = function (this: loader.LoaderContext, source: string) {
-    let options = getOptions(this) as ICoreTypeScriptLoaderOptions;
+    let options: ICoreTypeScriptLoaderOptions = getOptions(this);
+
+    if (!options.compilerOptions) {
+        this.emitError(new Error('TypeScript compiler options was not provided to Core TypeScript Loader!'));
+        return;
+    }
 
     let result = TypeScript.transpileModule(source, {
         compilerOptions: options.compilerOptions,

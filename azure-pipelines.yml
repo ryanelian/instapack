@@ -1,0 +1,42 @@
+# Node.js
+# Build a general Node.js application with npm.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/vsts/pipelines/languages/javascript
+
+jobs:
+- job: Linux
+  pool:
+    vmImage: 'ubuntu-16.04'
+  steps:
+  - script: echo hello from Linux
+- job: Windows
+  pool:
+    vmImage: 'vs2017-win2017'
+  steps:
+  - script: echo hello from Windows
+
+strategy:
+  matrix:
+    node_8_x:
+      node_version: 8.x
+    node_10_x:
+      node_version: 10.x
+
+steps:
+- task: NodeTool@0
+  inputs:
+    version: $(node_version)
+  displayName: 'Install Node.js'
+
+- script: |
+    npm link --loglevel error
+    npm run build
+  displayName: 'npm link then build'
+
+- script: |
+    function fct() { rm -rf ./*; ipack new $1; ipack; ipack -dx }
+    fct vue
+    fct react
+    fct preact
+    fct inferno
+  displayName: 'run full cycle tests'

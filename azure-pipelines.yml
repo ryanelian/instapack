@@ -28,24 +28,27 @@ steps:
   displayName: 'Install Node.js'
 
 - script: |
-    npm link --loglevel error
+    npm link
+  displayName: 'Restore Packages'
+
+- script: |
     npm run build
   displayName: 'Build'
 
-- script: npm install -g rimraf; mkdir demo; cd demo
+- script: npm install -g rimraf && mkdir demo && cd demo
   displayName: 'Setup Full-Cycle Test'
     
-- script: ipack new vue; ipack; ipack -dx
+- script: ipack new vue && ipack && ipack -dx
   displayName: 'Full-Cycle Test: vue'
 
-- script: rimraf ./*; ipack new react; ipack; ipack -dx
+- script: rimraf ./* && ipack new react && ipack && ipack -dx
   displayName: 'Full-Cycle Test: react'
 
-- script: rimraf ./*; ipack new preact; ipack; ipack -dx
+- script: rimraf ./* && ipack new preact && ipack && ipack -dx
   displayName: 'Full-Cycle Test: preact'
 
-- script: rimraf ./*; ipack new inferno; ipack; ipack -dx
+- script: rimraf ./* && ipack new inferno && ipack && ipack -dx
   displayName: 'Full-Cycle Test: inferno'
 
-- script: rimraf ./*; ipack new hyperapp; ipack; ipack -dx
+- script: rimraf ./* && ipack new hyperapp && ipack && ipack -dx
   displayName: 'Full-Cycle Test: hyperapp'

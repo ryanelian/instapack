@@ -33,8 +33,7 @@ let minifierOptions = {
 };
 module.exports = function (html) {
     let template = html_minifier_1.minify(html, minifierOptions).trim();
-    let fileName = this.resourcePath.toLowerCase();
-    if (fileName.endsWith('.vue.html')) {
+    if (this.resourcePath.toLowerCase().endsWith('.vue.html')) {
         this.emitWarning('HTML was imported as plain string: Importing .vue.html module has been obsoleted due to improved .vue Single-File Components tooling!');
     }
     template = JSON.stringify(template);

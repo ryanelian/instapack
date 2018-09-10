@@ -36,14 +36,13 @@ let minifierOptions = {
 export = function (this: loader.LoaderContext, html: string) {
     let template = minify(html, minifierOptions).trim();
 
-    let fileName = this.resourcePath.toLowerCase();
-    if (fileName.endsWith('.vue.html')) {
+    if (this.resourcePath.toLowerCase().endsWith('.vue.html')) {
         this.emitWarning('HTML was imported as plain string: Importing .vue.html module has been obsoleted due to improved .vue Single-File Components tooling!');
     }
 
     template = JSON.stringify(template);
     template = 'module.exports = ' + template;
-    // console.log("Template compiled: " + fileName + "\n" + template);
+    // console.log("Template compiled: " + this.resourcePath + "\n" + template);
 
     if (this.sourceMap) {
         let gen = new SourceMapGenerator({

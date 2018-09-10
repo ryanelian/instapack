@@ -62,14 +62,15 @@ export class TypeScriptCheckerTool {
     }
 
     patchCompilerHost() {
-        let rawFileCache: IMapLike<string> = {};
+        let rawFileCache: IMapLike<string | undefined> = {};
         this.host.readFile = (fileName) => {
             // Apparently this is being used by TypeScript to read package.json in node_modules...
             // Probably to find .d.ts files?
 
-            if (rawFileCache[fileName]) {
+            let s = rawFileCache[fileName];
+            if (s) {
                 // console.log('READ (cache) ' + fileName);
-                return rawFileCache[fileName];
+                return s;
             }
 
             // package.json in node_modules should never change. Cache the contents once and re-use.

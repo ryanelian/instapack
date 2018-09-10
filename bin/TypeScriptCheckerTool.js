@@ -34,8 +34,9 @@ class TypeScriptCheckerTool {
     patchCompilerHost() {
         let rawFileCache = {};
         this.host.readFile = (fileName) => {
-            if (rawFileCache[fileName]) {
-                return rawFileCache[fileName];
+            let s = rawFileCache[fileName];
+            if (s) {
+                return s;
             }
             let fileContent = fs_extra_1.default.readFileSync(fileName, 'utf8');
             rawFileCache[fileName] = fileContent;

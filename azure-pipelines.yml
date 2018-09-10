@@ -27,13 +27,12 @@ steps:
     versionSpec: $(node_version)
   displayName: 'Install Node.js'
 
-- script: |
-    npm link
+- script: | # for some reason, npm link fails when script is single-line?!
+    npm link 
   displayName: 'Restore Packages'
 
-- script: |
-    npm run build
-  displayName: 'Build & Test'
+- script: npm run build
+  displayName: 'Build & Unit Test'
 
 - script: npm install -g rimraf && ipack set package-manager npm
   displayName: 'Prepare Full-Cycle Test'

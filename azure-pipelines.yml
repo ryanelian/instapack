@@ -27,22 +27,32 @@ steps:
     version: $(node_version)
   displayName: 'Install Node.js'
 
-- script: |
+- script: >-
     npm link --loglevel error
-    npm run build
-  displayName: 'npm link then build'
 
-- script: |
+    npm run build
+
+- script: >-
     npm install -g rimraf
+
     cd demo
+
     mkdir demo
+    
     ipack new vue; ipack; ipack -dx
+
     rimraf ./*
+
     ipack new react; ipack; ipack -dx
+
     rimraf ./*
+
     ipack new preact; ipack; ipack -dx
+
     rimraf ./*
+
     ipack new inferno; ipack; ipack -dx
+
     rimraf ./*
+    
     ipack new hyperapp; ipack; ipack -dx
-  displayName: 'Run Full Cycle Tests'

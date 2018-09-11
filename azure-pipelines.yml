@@ -11,14 +11,14 @@ jobs:
     vmImage: 'ubuntu-16.04'
     node_version: 10.x
 
-# - template: azure-pipelines.template.yml
-#   parameters:
-#     name: win_node_8
-#     vmImage: 'vs2017-win2016'
-#     node_version: 8.x
+- template: azure-pipelines.template.yml
+  parameters:
+    name: win_node_8
+    vmImage: 'vs2017-win2016'
+    node_version: 8.x
 
-# - template: azure-pipelines.template.yml
-#   parameters:
-#     name: win_node_10
-#     vmImage: 'vs2017-win2016'
-#     node_version: 10.x
+- template: azure-pipelines.template.yml
+  parameters:
+    name: win_node_10
+    vmImage: 'vs2017-win2016'
+    node_version: 10.x

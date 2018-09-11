@@ -73,7 +73,7 @@ When using Visual Studio 2015 (Update 3 or above), install [the latest TypeScrip
 
 If using [the latest Visual Studio Code](https://code.visualstudio.com/), it should come with the latest TypeScript support out of the box.
 
-TypeScript project targeting `es5` is supported, which guarantees the JS output to be [runnable on browsers as early as Internet Explorer 9](http://kangax.github.io/compat-table/es5/) when armed with [polyfills](https://www.npmjs.com/package/ts-polyfill). That said, you are advised NOT to develop solutions for [obsoleted browsers](https://www.microsoft.com/en-us/windowsforbusiness/end-of-ie-support)!
+TypeScript project targeting `es5` is supported, which guarantees the JS output to be [runnable on browsers as early as Internet Explorer 9](http://kangax.github.io/compat-table/es5/) when armed with [polyfills](https://www.npmjs.com/package/ts-polyfill). (That said, you are advised NOT to develop solutions for [obsoleted browsers](https://www.microsoft.com/en-us/windowsforbusiness/end-of-ie-support)!)
 
 ## Design Philosophies
 
@@ -167,7 +167,7 @@ In addition, build flags are available:
 
 instapack puts configurations inside `package.json` to reduce project files clutter. For example, this is the included `package.json` with `vue` template:
 
-> `name`, `version`, `private`, `dependencies`, and `devDependencies` fields were removed for brevity.
+> `name`, `version`, `private`, and `dependencies` fields were removed for brevity.
 
 ```json
 {

@@ -27,60 +27,60 @@ steps:
     versionSpec: $(node_version)
   displayName: 'Install Node.js'
 
-- script: | # for some reason, npm link fails when script is single-line?!
+- script: > # for some reason, npm link fails when script is single-line?!
     npm link 
   displayName: 'Restore Packages'
 
-- script: |
+- script: >
     npm run build
   displayName: 'Build & Unit Test'
 
-- script: |
-    npm install -g rimraf
+- script: >
+    npm install -g rimraf &&
     ipack set package-manager npm
   displayName: 'Prepare Full-Cycle Test'
     
-- script: |
-    rimraf ./demo
-    mkdir demo
-    cd demo
-    ipack new vue
-    ipack
+- script: >
+    rimraf ./demo &&
+    mkdir demo &&
+    cd demo &&
+    ipack new vue &&
+    ipack &&
     ipack -dx
   displayName: 'Full-Cycle Test: vue'
 
-- script: |
-    rimraf ./demo
-    mkdir demo
-    cd demo
-    ipack new react
-    ipack
+- script: >
+    rimraf ./demo &&
+    mkdir demo &&
+    cd demo &&
+    ipack new react &&
+    ipack &&
     ipack -dx
   displayName: 'Full-Cycle Test: react'
 
-- script: |
-    rimraf ./demo
-    mkdir demo
-    cd demo
-    ipack new preact
-    ipack
+- script: >
+    rimraf ./demo &&
+    mkdir demo &&
+    cd demo &&
+    ipack new preact &&
+    ipack &&
     ipack -dx
   displayName: 'Full-Cycle Test: preact'
 
-- script: |
-    rimraf ./demo
-    mkdir demo
-    cd demo
-    ipack new inferno
-    ipack
+- script: >
+    rimraf ./demo &&
+    mkdir demo &&
+    cd demo &&
+    ipack new inferno &&
+    ipack &&
     ipack -dx
   displayName: 'Full-Cycle Test: inferno'
 
-- script: |
-    rimraf ./demo
-    mkdir demo
-    cd demo
-    ipack new hyperapp
-    ipack
+- script: >
+    rimraf ./demo &&
+    mkdir demo &&
+    cd demo &&
+    ipack new hyperapp &&
+    ipack &&
     ipack -dx
   displayName: 'Full-Cycle Test: hyperapp'

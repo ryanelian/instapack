@@ -157,7 +157,7 @@ In addition, build flags are available:
 
 - `--hot` or `-h` enables Hot Reload development mode using dedicated build servers. :rotating_light: [Read more ↓](#hot-reload-development-mode-beta)
 
-- `--xdebug` or `-x` disables source maps, producing undebuggable outputs. (Slightly improves build speed)
+- `--nodebug` or `-b` disables source maps, producing undebuggable outputs. (Slightly improves build speed)
 
 - `--stats` generates `stats.json` next to the TypeScript build outputs, which can be fed to [webpack-bundle-analyzer](https://www.npmjs.com/package/webpack-bundle-analyzer) or [webpack-visualizer](http://chrisbateman.github.io/webpack-visualizer/). For sanity, this flag will be ignored when using `-d` or `-w` flags.
 

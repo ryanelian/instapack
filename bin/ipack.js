@@ -34,8 +34,8 @@ yargs_1.default.command({
         }).option('hot', {
             alias: 'h',
             describe: 'Enables Hot Reload development mode using dedicated build servers.'
-        }).option('xdebug', {
-            alias: 'x',
+        }).option('nodebug', {
+            alias: 'b',
             describe: 'Disables source maps, producing undebuggable outputs.'
         }).option('env', {
             describe: 'Defines process.env variables to be replaced in TypeScript project build.'
@@ -52,7 +52,7 @@ yargs_1.default.command({
         ipack.build(subCommand, {
             production: !Boolean(argv.dev),
             watch: Boolean(argv.watch),
-            sourceMap: !Boolean(argv.xdebug),
+            sourceMap: !Boolean(argv.nodebug),
             env: new VariablesFactory_1.VariablesFactory().parseCliEnv(argv.env),
             stats: Boolean(argv.stats),
             hot: Boolean(argv.hot),

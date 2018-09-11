@@ -6,8 +6,7 @@
   "author": "Ryan Elian",
   "private": true,
   "instapack": {
-    "output": "www",
-    "concat": {}
+    "output": "www"
   },
   "dependencies": {
     "@types/luxon": "^1.2.2",

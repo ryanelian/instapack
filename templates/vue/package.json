@@ -4,7 +4,6 @@
   "private": true,
   "instapack": {
     "output": "wwwroot",
-    "concat": {},
     "alias": {
       "vue": "vue/dist/vue.esm",
       "jquery": "jquery/dist/jquery.slim"

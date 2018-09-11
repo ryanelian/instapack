@@ -61,10 +61,6 @@ Out of the box, these files will be used as the program entry points:
 
   - Spiced :hot_pepper: with [AutoPrefixer](https://github.com/postcss/autoprefixer) for applying CSS vendor-prefixes automatically!
 
-- Concatenate files listed in `package.json` ([Read more ↓](#configurations))
-
-  - Usually the output file should be included in the HTML before `ipack.js`
-
 Practical guides can be read in the [books](https://github.com/ryanelian/instapack/tree/master/books) folder.
 
 ## System Requirements
@@ -151,7 +147,7 @@ Templates shipped by instapack have these common traits:
 
 ### build [project]
 
-Performs compilation of selected project type. Available projects: `all`, `js`, `css` and `concat`. If no project parameter is provided, `all` will be chosen.
+Performs compilation of selected project type. Available projects: `all`, `js`, and `css`. If no project parameter is provided, `all` will be chosen.
 
 In addition, build flags are available:
 
@@ -166,10 +162,6 @@ In addition, build flags are available:
 - `--stats` generates `stats.json` next to the TypeScript build outputs, which can be fed to [webpack-bundle-analyzer](https://www.npmjs.com/package/webpack-bundle-analyzer) or [webpack-visualizer](http://chrisbateman.github.io/webpack-visualizer/). For sanity, this flag will be ignored when using `-d` or `-w` flags.
 
 > You can combine multiple build flags, for example: `ipack -dw` = `dev` + `watch` mode for **massive productivity gainz!** :muscle:
-
-### clean
-
-Remove all files in the output folders.
 
 ### set <key> <value>
 
@@ -187,7 +179,6 @@ instapack puts configurations inside `package.json` to reduce project files clut
 {
   "instapack": {
     "output": "wwwroot",
-    "concat": {},
     "alias": {
       "vue": "vue/dist/vue.esm",
       "jquery": "jquery/dist/jquery.slim"
@@ -212,6 +203,10 @@ instapack puts configurations inside `package.json` to reduce project files clut
 
 - `externals` allows rewriting module `import` calls from all files, including dependencies, to globally exposed objects via `window` object. [Read more ↗](https://webpack.js.org/configuration/externals/)
 
+  - This technique enables usage of scripts hosted on [CDN](https://en.wikipedia.org/wiki/Content_delivery_network)!
+
+  - This technique also allows referencing IIFE / non-module JS loaded via `<script>` and allows excellent interop with older libraries!
+
 For example:
 
 ```json
@@ -232,41 +227,8 @@ import jQuery from 'jquery';
 // const jQuery = window["$"];
 ```
 
-so [CDN](https://en.wikipedia.org/wiki/Content_delivery_network) can be used! :tada:
-
 ```html
 <script src="https://unpkg.com/jquery@3.3.1/dist/jquery.js"></script>
-```
-
-- `concat` allows packing browser libraries to be consumed directly from `<script src="...">` rather than as a module.
-
-  - The file names will be resolved node-style (**but NOT their contents**), which allows concatenating packages downloaded from `npm` to be bundled, minified, and then placed into the output JS folder. 
-
-  - Use concatenation for libraries that cannot be imported / do not need to be imported (for example, jQuery plugins). This hybrid approach allows excellent interop with older libraries!
-
-  - For consuming the libraries within the TypeScript app code: include the concatenated file **BEFORE** the app bundle then...
-  
-    - Combo with the `externals` module configuration for easy import using `require` / [CommonJS module syntax](#commonjs--nodejs-require).
-
-    - Alternatively (for strongly-typed import), write a TypeScript module declaration (`declare module`) then import using [ES Modules syntax](#typescript--es-modules).
-
-    - Possible but not recommended: reference the library objects directly from the `window` (e.g. `window['$']`).
-
-**A `concat` configuration example:** (produces `vendor.js` bundle handy for ASP.NET MVC)
-
-```json
-{
-  "instapack": {
-    "concat": {
-      "vendor": [
-        "jquery",
-        "jquery-validation",
-        "jquery-validation-unobtrusive",
-        "./client/lib/my-ancient-jquery-plugin"
-      ]
-    }
-  }
-}
 ```
 
 - `port1` can be set for declaring a static port number to be used by the Hot Reload server for delivering built assets. If not set, the port number will be randomized. [Read more ↓](#hot-reload-development-mode-beta)

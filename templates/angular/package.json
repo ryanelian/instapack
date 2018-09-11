@@ -3,8 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "instapack": {
-    "output": "wwwroot",
-    "concat": {}
+    "output": "wwwroot"
   },
   "dependencies": {
     "@angular/animations": "^6.1.6",

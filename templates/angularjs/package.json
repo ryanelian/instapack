@@ -4,15 +4,6 @@
   "private": true,
   "instapack": {
     "output": "wwwroot",
-    "concat": {
-      "vendor": [
-        "ts-polyfill",
-        "jquery",
-        "jquery-validation",
-        "jquery-validation-unobtrusive",
-        "bootstrap-sass"
-      ]
-    },
     "externals": {
       "jquery": "$"
     }

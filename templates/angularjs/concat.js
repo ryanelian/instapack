@@ -2,6 +2,7 @@ const uglify = require('uglify-js');
 const fs = require('fs');
 const path = require('path');
 
+console.log('Concatenating and minifying these JS files:');
 let inputs = [
     require.resolve('ts-polyfill'),
     require.resolve('jquery'),
@@ -11,6 +12,7 @@ let inputs = [
 ];
 console.log(inputs);
 
+console.log('Reading file contents...');
 let codes = {};
 for (let input of inputs) {
     codes[input] = fs.readFileSync(input, 'utf8');
@@ -18,6 +20,7 @@ for (let input of inputs) {
 
 let outputFileName = 'concat.js';
 
+console.log('Concatenating and minifying...');
 let result = uglify.minify(codes, {
     sourceMap: {
         filename: outputFileName,
@@ -30,6 +33,7 @@ if (result.error) {
     return;
 }
 
+console.log('Writing files...');
 let folder = path.join(__dirname, 'wwwroot', 'js');
 let file = path.join(folder, outputFileName);
 

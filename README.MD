@@ -73,6 +73,8 @@ When using Visual Studio 2015 (Update 3 or above), install [the latest TypeScrip
 
 If using [the latest Visual Studio Code](https://code.visualstudio.com/), it should come with the latest TypeScript support out of the box.
 
+TypeScript project targeting `es5` is supported, which guarantees the JS output to be [runnable on browsers as early as Internet Explorer 9](http://kangax.github.io/compat-table/es5/) when armed with [polyfills](https://www.npmjs.com/package/ts-polyfill). That said, you are advised NOT to develop solutions for [obsoleted browsers](https://www.microsoft.com/en-us/windowsforbusiness/end-of-ie-support)!
+
 ## Design Philosophies
 
 - Zero configurations: Hyper-opinionated front-end project build system. **It just works!** :sparkling_heart:
@@ -136,14 +138,6 @@ Scaffolds a new instapack project into your existing app folder where the comman
 - (PREVIEW) `angular` for developing a web app using [the new Angular](https://angular.io/) and [Material Design](https://material.angular.io/). (Warnings: [1](https://github.com/angular/angular/issues/11580) [2](https://github.com/angular/angular/issues/21560))
 
 If no template parameter is provided, `vue` will be chosen. :vulcan_salute:
-
-Templates shipped by instapack have these common traits:
-
-- Compiled down to [ES5](http://kangax.github.io/compat-table/es5/) and armed with [ts-polyfill](https://github.com/ryanelian/ts-polyfill), which ensures compatibility to browsers as early as Internet Explorer 9.
-
-- Equipped with essential packages: LINQ, [Luxon](https://moment.github.io/luxon/) (DateTime library)
-
-- Frameworks without AJAX / XHR utility are equipped with [axios](https://github.com/axios/axios/) (Promise-based HTTP client).
 
 ### build [project]
 

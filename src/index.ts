@@ -153,10 +153,12 @@ export = class instapack {
         }
 
         try {
-            let file = man.userSettingsFilePath
+            let file = man.userSettingsFilePath;
+            console.log('Global settings file:', chalk.cyan(file));
             let settings = await man.readUserSettingsFrom(file);
             man.set(settings, key, value);
             await fse.outputJson(file, settings);
+            console.log('Successfully saved the new setting!');
         } catch (error) {
             Shout.error('when saving new settings:', error);
         }

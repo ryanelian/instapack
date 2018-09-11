@@ -155,9 +155,11 @@ module.exports = class instapack {
             }
             try {
                 let file = man.userSettingsFilePath;
+                console.log('Global settings file:', chalk_1.default.cyan(file));
                 let settings = yield man.readUserSettingsFrom(file);
                 man.set(settings, key, value);
                 yield fs_extra_1.default.outputJson(file, settings);
+                console.log('Successfully saved the new setting!');
             }
             catch (error) {
                 Shout_1.Shout.error('when saving new settings:', error);

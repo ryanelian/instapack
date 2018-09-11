@@ -131,7 +131,7 @@ Scaffolds a new instapack project into your existing app folder where the comman
 
 - `angularjs` for developing a *legacy* web app using [AngularJS 1.7](https://angularjs.org/) and [Bootstrap 3](http://getbootstrap.com/docs/3.3/).
 
-  - Includes [jquery-validation-unobtrusive](https://github.com/aspnet/jquery-validation-unobtrusive) for ASP.NET MVC client-side validation.
+  - Includes [jquery-validation-unobtrusive](https://github.com/aspnet/jquery-validation-unobtrusive) for ASP.NET MVC client-side validation and a simple JS concat tool.
 
 - (PREVIEW) `angular` for developing a web app using [the new Angular](https://angular.io/) and [Material Design](https://material.angular.io/). (Warnings: [1](https://github.com/angular/angular/issues/11580) [2](https://github.com/angular/angular/issues/21560))
 
@@ -205,7 +205,7 @@ instapack puts configurations inside `package.json` to reduce project files clut
 
   - This technique enables usage of scripts hosted on [CDN](https://en.wikipedia.org/wiki/Content_delivery_network)!
 
-  - This technique also allows referencing IIFE / non-module JS loaded via `<script>` and allows excellent interop with older libraries!
+  - This technique also allows referencing non-module, old-school IIFE JS loaded via `<script>` which provides excellent interop with older libraries!
 
 For example:
 
@@ -225,10 +225,6 @@ import jQuery from 'jquery';
 
 // into something similar to this...
 // const jQuery = window["$"];
-```
-
-```html
-<script src="https://unpkg.com/jquery@3.3.1/dist/jquery.js"></script>
 ```
 
 - `port1` can be set for declaring a static port number to be used by the Hot Reload server for delivering built assets. If not set, the port number will be randomized. [Read more ↓](#hot-reload-development-mode-beta)

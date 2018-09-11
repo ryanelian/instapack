@@ -28,5 +28,8 @@
     "sweetalert": "^2.1.0",
     "ts-polyfill": "^3.0.1",
     "tslib": "^1.9.3"
+  },
+  "devDependencies": {
+    "uglify-js": "^3.4.9"
   }
 }

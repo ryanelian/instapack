@@ -124,19 +124,14 @@ class SassBuildTool {
                 }
             };
             let sassResult = yield this.runSassAsync(sassOptions);
-            let css = sassResult.css.toString('utf8');
-            let charsetHeader = '@charset "UTF-8";\n';
-            if (css.startsWith(charsetHeader)) {
-                css = css.substring(charsetHeader.length);
-            }
             let result = {
-                css: css
+                css: sassResult.css.toString('utf8')
             };
             if (this.variables.sourceMap && sassResult.map) {
                 let sms = sassResult.map.toString('utf8');
-                let sm1 = JSON.parse(sms);
-                this.fixSassGeneratedSourceMap(sm1);
-                result.map = sm1;
+                let sm = JSON.parse(sms);
+                this.fixSassGeneratedSourceMap(sm);
+                result.map = sm;
             }
             return result;
         });

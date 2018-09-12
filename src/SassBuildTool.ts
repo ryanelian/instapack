@@ -201,27 +201,19 @@ export class SassBuildTool {
 
         let sassResult = await this.runSassAsync(sassOptions);
 
-        // apparently, dart-sass broke source-map by only prepending the CSS without fixing the source-map!
-        // https://github.com/sass/dart-sass/blob/3b6730369bdff9bb7859411c82e4b21f194d2514/lib/src/visitor/serialize.dart#L73
-        let css: string = sassResult.css.toString('utf8');
-        let charsetHeader = '@charset "UTF-8";\n';
-        if (css.startsWith(charsetHeader)) {
-            css = css.substring(charsetHeader.length);
-        }
-
         let result: CssBuildResult = {
-            css: css
+            css: sassResult.css.toString('utf8')
         };
 
         if (this.variables.sourceMap && sassResult.map) {
             let sms: string = sassResult.map.toString('utf8');
-            let sm1: RawSourceMap = JSON.parse(sms);
-            this.fixSassGeneratedSourceMap(sm1);
+            let sm: RawSourceMap = JSON.parse(sms);
+            this.fixSassGeneratedSourceMap(sm);
 
             // console.log(sm.sources);
             // console.log(sm.file);
 
-            result.map = sm1;
+            result.map = sm;
         }
 
         return result;

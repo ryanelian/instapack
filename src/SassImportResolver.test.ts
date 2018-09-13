@@ -62,6 +62,22 @@ test('Sass Import: Folder/_Partial', async t => {
     t.is(result, expected);
 });
 
+test('Sass Import: _Partial.scss', async t => {
+    let expected = path.join(fixtures, 'client', 'css', '_partial.scss');
+    let result = await sassImport(source, '_partial.scss');
+
+    // Ensures type-2 resolver is being used for queries starting with _
+    t.is(result, expected);
+});
+
+test('Sass Import: _Folder/_index', async t => {
+    let expected = path.join(fixtures, 'client', 'css', '_in-folder', '_index.scss');
+    let result = await sassImport(source, '_in-folder');
+
+    // Ensures type-2 resolver is being used for queries starting with _
+    t.is(result, expected);
+});
+
 test('Sass Import: npm/Library/_index', async t => {
     let expected = path.join(fixtures, 'node_modules', 'partial-in-npm', '_index.scss');
     let result = await sassImport(source, 'partial-in-npm');
@@ -76,6 +92,28 @@ test('Sass Import: npm/Library/_Partial', async t => {
     t.is(result, expected);
 });
 
-test('Sass Import Error: npm/_Partial.scss OR _Partial/index', async t => {
+test('CSS Import: Simple', async t => {
+    let expected = path.join(fixtures, 'client', 'css', 'test.css');
+    let result = await sassImport(source, 'test');
+
+    t.is(result, expected);
+});
+
+test('CSS Import: Folder/index', async t => {
+    let expected = path.join(fixtures, 'client', 'css', 'css-in-folder', 'index.css');
+    let result = await sassImport(source, 'css-in-folder');
+
+    t.is(result, expected);
+});
+
+test('CSS Import: Folder', async t => {
+    let expected = path.join(fixtures, 'client', 'css', 'css-in-folder', 'test.css');
+    let result = await sassImport(source, 'css-in-folder/test');
+
+    t.is(result, expected);
+});
+
+test('Sass Import Error: npm/_Partial.scss OR _Partial/index OR Folder/_index.css', async t => {
     await t.throwsAsync(sassImport(source, 'should-fail'));
 });
+

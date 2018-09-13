@@ -92,6 +92,21 @@ ava_1.default('CSS Import: Folder', (t) => __awaiter(this, void 0, void 0, funct
     let result = yield SassImportResolver_1.sassImport(source, 'css-in-folder/test');
     t.is(result, expected);
 }));
-ava_1.default('Sass Import Error: npm/_Partial.scss OR _Partial/index OR Folder/_index.css', (t) => __awaiter(this, void 0, void 0, function* () {
+ava_1.default('CSS Import: npm package.json:style', (t) => __awaiter(this, void 0, void 0, function* () {
+    let expected = path_1.default.join(fixtures, 'node_modules', 'lib', 'dist', 'index.css');
+    let result = yield SassImportResolver_1.sassImport(source, 'lib');
+    t.is(result, expected);
+}));
+ava_1.default('CSS Import: npm/dist/index.css', (t) => __awaiter(this, void 0, void 0, function* () {
+    let expected = path_1.default.join(fixtures, 'node_modules', 'lib', 'dist', 'index.css');
+    let result = yield SassImportResolver_1.sassImport(source, 'lib/dist');
+    t.is(result, expected);
+}));
+ava_1.default('CSS Import: npm/dist/test.css', (t) => __awaiter(this, void 0, void 0, function* () {
+    let expected = path_1.default.join(fixtures, 'node_modules', 'lib', 'dist', 'test.css');
+    let result = yield SassImportResolver_1.sassImport(source, 'lib/dist/test');
+    t.is(result, expected);
+}));
+ava_1.default('Sass Import Error', (t) => __awaiter(this, void 0, void 0, function* () {
     yield t.throwsAsync(SassImportResolver_1.sassImport(source, 'should-fail'));
 }));

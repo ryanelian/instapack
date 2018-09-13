@@ -113,7 +113,31 @@ test('CSS Import: Folder', async t => {
     t.is(result, expected);
 });
 
-test('Sass Import Error: npm/_Partial.scss OR _Partial/index OR Folder/_index.css', async t => {
-    await t.throwsAsync(sassImport(source, 'should-fail'));
+test('CSS Import: npm package.json:style', async t => {
+    let expected = path.join(fixtures, 'node_modules', 'lib', 'dist', 'index.css');
+    let result = await sassImport(source, 'lib');
+
+    t.is(result, expected);
 });
 
+test('CSS Import: npm/dist/index.css', async t => {
+    let expected = path.join(fixtures, 'node_modules', 'lib', 'dist', 'index.css');
+    let result = await sassImport(source, 'lib/dist');
+
+    t.is(result, expected);
+});
+
+test('CSS Import: npm/dist/test.css', async t => {
+    let expected = path.join(fixtures, 'node_modules', 'lib', 'dist', 'test.css');
+    let result = await sassImport(source, 'lib/dist/test');
+
+    t.is(result, expected);
+});
+
+test('Sass Import Error', async t => {
+    // npm/_Partial.scss
+    // _Partial/index.scss
+    // _Partial/_index.scss
+    // Folder/_index.css
+    await t.throwsAsync(sassImport(source, 'should-fail'));
+});

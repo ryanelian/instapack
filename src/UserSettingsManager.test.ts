@@ -120,7 +120,7 @@ let root = process.cwd();
 let fixtures = upath.join(root, 'fixtures');
 
 test('User Settings Manager: Read Not Found', async t => {
-    let file = upath.join(fixtures, 'UserSettingsNotFound', 'settings.json');
+    let file = upath.join(fixtures, 'Empty', 'settings.json');
     let settings = await man.readUserSettingsFrom(file);
     t.deepEqual(settings, defaultSettings);
 });

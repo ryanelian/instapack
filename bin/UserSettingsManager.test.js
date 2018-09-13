@@ -107,7 +107,7 @@ ava_1.default('User Settings Manager: Validate asdf', t => {
 let root = process.cwd();
 let fixtures = upath_1.default.join(root, 'fixtures');
 ava_1.default('User Settings Manager: Read Not Found', (t) => __awaiter(this, void 0, void 0, function* () {
-    let file = upath_1.default.join(fixtures, 'UserSettingsNotFound', 'settings.json');
+    let file = upath_1.default.join(fixtures, 'Empty', 'settings.json');
     let settings = yield man.readUserSettingsFrom(file);
     t.deepEqual(settings, defaultSettings);
 }));

@@ -18,7 +18,7 @@ let v = new VariablesFactory_1.VariablesFactory();
 let root = process.cwd();
 let fixtures = upath_1.default.join(root, 'fixtures');
 ava_1.default('Project Settings: Not Found', (t) => __awaiter(this, void 0, void 0, function* () {
-    let folder = upath_1.default.join(fixtures, 'ProjectSettingsNotFound');
+    let folder = upath_1.default.join(fixtures, 'Empty');
     let settings = yield v.readProjectSettingsFrom(folder);
     let result = {
         root: upath_1.default.toUnix(folder),
@@ -124,7 +124,7 @@ ava_1.default('Read .env File: Invalid', (t) => __awaiter(this, void 0, void 0, 
     t.deepEqual(r, {});
 }));
 ava_1.default('Read .env File: Not Found', (t) => __awaiter(this, void 0, void 0, function* () {
-    let folder = upath_1.default.join(fixtures, 'DotEnvNotFound');
+    let folder = upath_1.default.join(fixtures, 'Empty');
     let r = yield v.readDotEnvFrom(folder);
     t.deepEqual(r, {});
 }));

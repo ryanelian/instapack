@@ -9,7 +9,7 @@ let root = process.cwd();
 let fixtures = upath.join(root, 'fixtures');
 
 test('Project Settings: Not Found', async t => {
-    let folder = upath.join(fixtures, 'ProjectSettingsNotFound');
+    let folder = upath.join(fixtures, 'Empty');
     let settings = await v.readProjectSettingsFrom(folder);
     let result: IProjectSettings = {
         root: upath.toUnix(folder),
@@ -134,7 +134,7 @@ test('Read .env File: Invalid', async t => {
 });
 
 test('Read .env File: Not Found', async t => {
-    let folder = upath.join(fixtures, 'DotEnvNotFound');
+    let folder = upath.join(fixtures, 'Empty');
     let r = await v.readDotEnvFrom(folder);
 
     t.deepEqual(r, {});

@@ -20,10 +20,10 @@ const postcss_1 = __importDefault(require("postcss"));
 const autoprefixer_1 = __importDefault(require("autoprefixer"));
 const CleanCSS = require('clean-css');
 const merge_source_map_1 = __importDefault(require("merge-source-map"));
-const enhanced_resolve_1 = require("enhanced-resolve");
 const PrettyUnits_1 = require("./PrettyUnits");
 const Shout_1 = require("./Shout");
 const PathFinder_1 = require("./PathFinder");
+const SassImportResolver_1 = require("./SassImportResolver");
 class SassBuildTool {
     constructor(variables) {
         this.variables = variables;
@@ -54,56 +54,6 @@ class SassBuildTool {
             return '/' + upath_1.default.relative(this.finder.root, absolute);
         });
     }
-    resolveAsync(customResolver, lookupStartPath, request) {
-        return new Promise((ok, reject) => {
-            customResolver.resolve({}, lookupStartPath, request, {}, (error, resolution) => {
-                if (error) {
-                    reject(error);
-                }
-                else {
-                    ok(resolution);
-                }
-            });
-        });
-    }
-    sassImport(source, request) {
-        return __awaiter(this, void 0, void 0, function* () {
-            let lookupStartPath = upath_1.default.dirname(source);
-            let requestFileName = upath_1.default.basename(request);
-            let requestDir = upath_1.default.dirname(request);
-            if (requestFileName.startsWith('_') === false) {
-                let partialFileName = '_' + upath_1.default.addExt(requestFileName, '.scss');
-                let partialRequest = upath_1.default.join(requestDir, partialFileName);
-                let relativePartialPath = upath_1.default.join(lookupStartPath, partialRequest);
-                if (yield fs_extra_1.default.pathExists(relativePartialPath)) {
-                    return relativePartialPath;
-                }
-                let packagePartialPath = upath_1.default.join(this.finder.npmFolder, partialRequest);
-                if (yield fs_extra_1.default.pathExists(packagePartialPath)) {
-                    return packagePartialPath;
-                }
-            }
-            let sassResolver = enhanced_resolve_1.ResolverFactory.createResolver({
-                fileSystem: new enhanced_resolve_1.NodeJsInputFileSystem(),
-                extensions: ['.scss'],
-                modules: [lookupStartPath, 'node_modules'],
-                mainFiles: ['index', '_index'],
-                descriptionFiles: [],
-            });
-            try {
-                return yield this.resolveAsync(sassResolver, lookupStartPath, request);
-            }
-            catch (error) {
-            }
-            let cssResolver = enhanced_resolve_1.ResolverFactory.createResolver({
-                fileSystem: new enhanced_resolve_1.NodeJsInputFileSystem(),
-                extensions: ['.css'],
-                modules: [lookupStartPath, 'node_modules'],
-                mainFields: ['style']
-            });
-            return yield this.resolveAsync(cssResolver, lookupStartPath, request);
-        });
-    }
     compileSassProject(virtualSassOutputPath) {
         return __awaiter(this, void 0, void 0, function* () {
             let cssInput = this.finder.cssEntry;
@@ -114,7 +64,7 @@ class SassBuildTool {
                 sourceMap: this.variables.sourceMap,
                 sourceMapContents: this.variables.sourceMap,
                 importer: (request, source, done) => {
-                    this.sassImport(source, request).then(resolution => {
+                    SassImportResolver_1.sassImport(source, request).then(resolution => {
                         done({
                             file: resolution
                         });

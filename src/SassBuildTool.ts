@@ -8,12 +8,12 @@ import autoprefixer from 'autoprefixer';
 const CleanCSS = require('clean-css');
 import { RawSourceMap } from 'source-map';
 import mergeSourceMap from 'merge-source-map';
-import { NodeJsInputFileSystem, ResolverFactory } from 'enhanced-resolve';
 
 import { prettyHrTime } from './PrettyUnits';
 import { Shout } from './Shout';
 import { IVariables } from './interfaces/IVariables';
 import { PathFinder } from './PathFinder';
+import { sassImport } from './SassImportResolver';
 
 /**
  * Contains items returned by a CSS build sub-process.
@@ -84,94 +84,6 @@ export class SassBuildTool {
     }
 
     /**
-     * Invoke enhanced-resolve custom resolver as a Promise.
-     * @param lookupStartPath 
-     * @param request 
-     */
-    resolveAsync(customResolver, lookupStartPath: string, request: string) {
-        return new Promise<string>((ok, reject) => {
-            customResolver.resolve({}, lookupStartPath, request, {}, (error: Error, resolution: string) => {
-                if (error) {
-                    reject(error);
-                } else {
-                    ok(resolution);
-                }
-            });
-        });
-    }
-
-    /**
-     * Implements a smarter Sass @import logic.
-     * Performs node-like module resolution logic, which includes looking into package.json for style field.
-     * @param source 
-     * @param request 
-     */
-    async sassImport(source: string, request: string): Promise<string> {
-        // https://github.com/ryanelian/instapack/issues/99
-        // source               :   "E:/VS/MyProject/client/css/index.scss"
-        // request / @import    :   "@ryan/something"
-
-        let lookupStartPath = upath.dirname(source);        // E:/VS/MyProject/client/css/
-        let requestFileName = upath.basename(request);      // something
-        let requestDir = upath.dirname(request);            // @ryan/
-
-        if (requestFileName.startsWith('_') === false) {
-            let partialFileName = '_' + upath.addExt(requestFileName, '.scss');
-            let partialRequest = upath.join(requestDir, partialFileName);      // @ryan/_something.scss
-
-            // 3: E:/VS/MyProject/client/css/@ryan/_something.scss      (Standard)
-            let relativePartialPath = upath.join(lookupStartPath, partialRequest);
-            if (await fse.pathExists(relativePartialPath)) {
-                return relativePartialPath;
-            }
-
-            // 8: E:/VS/MyProject/node_modules/@ryan/_something.scss    (Standard+)
-            let packagePartialPath = upath.join(this.finder.npmFolder, partialRequest);
-            if (await fse.pathExists(packagePartialPath)) {
-                return packagePartialPath;
-            }
-        }
-
-        let sassResolver = ResolverFactory.createResolver({
-            fileSystem: new NodeJsInputFileSystem(),
-            extensions: ['.scss'],
-            modules: [lookupStartPath, 'node_modules'],
-            mainFiles: ['index', '_index'],
-            descriptionFiles: [],
-            // mainFields: ['sass']
-        });
-
-        // 2: E:/VS/MyProject/client/css/@ryan/something.scss               (Standard)
-        // 5: E:/VS/MyProject/client/css/@ryan/something/index.scss         (Standard https://github.com/sass/sass/issues/690) 
-        // 5: E:/VS/MyProject/client/css/@ryan/something/_index.scss        (Standard https://github.com/sass/sass/issues/690)
-        // 7: E:/VS/MyProject/node_modules/@ryan/something.scss             (Standard+)
-        // 7: E:/VS/MyProject/node_modules/@ryan/something/index.scss       (Standard+)
-        // 7: E:/VS/MyProject/node_modules/@ryan/something/_index.scss      (Standard+)
-        try {
-            return await this.resolveAsync(sassResolver, lookupStartPath, request);
-        } catch (error) {
-
-        }
-
-        let cssResolver = ResolverFactory.createResolver({
-            fileSystem: new NodeJsInputFileSystem(),
-            extensions: ['.css'],
-            modules: [lookupStartPath, 'node_modules'],
-            mainFields: ['style']
-        });
-
-        // http://sass.logdown.com/posts/7807041-feature-watchcss-imports-and-css-compatibility
-        // 4: E:/VS/MyProject/client/css/@ryan/something.css                    (Standard)
-        // 6: E:/VS/MyProject/client/css/@ryan/something/index.css              (Standard)
-        // 9: E:/VS/MyProject/node_modules/@ryan/something.css                  (Standard+)
-        // 9: E:/VS/MyProject/node_modules/@ryan/something/index.css            (Standard+)
-        // 10: E:/VS/MyProject/node_modules/@ryan/something/package.json:style  (Custom, Node-like)
-        return await this.resolveAsync(cssResolver, lookupStartPath, request);
-
-        // Standard+: when using node-sass includePaths option set to the node_modules folder. (Older instapack behavior)
-    }
-
-    /**
      * Compile the Sass project using project settings against the entry point.
      * Normalize generated source map.
      * @param virtualSassOutputPath 
@@ -188,7 +100,7 @@ export class SassBuildTool {
             sourceMapContents: this.variables.sourceMap,
 
             importer: (request, source, done) => {
-                this.sassImport(source, request).then(resolution => {
+                sassImport(source, request).then(resolution => {
                     // console.log(source, '+', request, '=', resolution); console.log();
                     done({
                         file: resolution

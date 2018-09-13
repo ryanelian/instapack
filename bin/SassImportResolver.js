@@ -72,3 +72,13 @@ function sassImport(source, request) {
     });
 }
 exports.sassImport = sassImport;
+function sassImporter(request, source, done) {
+    sassImport(source, request).then(resolution => {
+        done({
+            file: resolution
+        });
+    }).catch(error => {
+        done(error);
+    });
+}
+exports.sassImporter = sassImporter;

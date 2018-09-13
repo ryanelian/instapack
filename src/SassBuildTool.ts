@@ -13,7 +13,7 @@ import { prettyHrTime } from './PrettyUnits';
 import { Shout } from './Shout';
 import { IVariables } from './interfaces/IVariables';
 import { PathFinder } from './PathFinder';
-import { sassImport } from './SassImportResolver';
+import { sassImporter } from './SassImportResolver';
 
 /**
  * Contains items returned by a CSS build sub-process.
@@ -98,17 +98,7 @@ export class SassBuildTool {
 
             sourceMap: this.variables.sourceMap,
             sourceMapContents: this.variables.sourceMap,
-
-            importer: (request, source, done) => {
-                sassImport(source, request).then(resolution => {
-                    // console.log(source, '+', request, '=', resolution); console.log();
-                    done({
-                        file: resolution
-                    });
-                }).catch(error => {
-                    done(error);
-                });
-            }
+            importer: sassImporter
         };
 
         let sassResult = await this.runSassAsync(sassOptions);

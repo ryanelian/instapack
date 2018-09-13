@@ -38,6 +38,7 @@ export async function sassImport(source: string, request: string): Promise<strin
         let partialFolderLookups = [lookupStartPath];
         if (requestDir !== '.') {
             // upath.dirname('test') === '.'
+            // upath.dirname('test/') === '.' && upath.basename('test/') === 'test'
             // @import 'test' must not be resolved into /node_modules/_test.scss
             partialFolderLookups.push('node_modules');
         }
@@ -99,4 +100,21 @@ export async function sassImport(source: string, request: string): Promise<strin
     return await resolveAsync(cssResolver, lookupStartPath, request);
 
     // Standard+: when using node-sass includePaths option set to the node_modules folder. (Older instapack behavior)
+}
+
+interface SassImporterCallbackParameter {
+    file: string
+}
+
+type SassImporterCallback = (args: SassImporterCallbackParameter | Error) => {}
+
+export function sassImporter(request: string, source: string, done: SassImporterCallback) {
+    sassImport(source, request).then(resolution => {
+        // console.log(source, '+', request, '=', resolution); console.log();
+        done({
+            file: resolution
+        });
+    }).catch(error => {
+        done(error);
+    });
 }

@@ -63,15 +63,7 @@ class SassBuildTool {
                 data: yield fs_extra_1.default.readFile(cssInput, 'utf8'),
                 sourceMap: this.variables.sourceMap,
                 sourceMapContents: this.variables.sourceMap,
-                importer: (request, source, done) => {
-                    SassImportResolver_1.sassImport(source, request).then(resolution => {
-                        done({
-                            file: resolution
-                        });
-                    }).catch(error => {
-                        done(error);
-                    });
-                }
+                importer: SassImportResolver_1.sassImporter
             };
             let sassResult = yield this.runSassAsync(sassOptions);
             let result = {

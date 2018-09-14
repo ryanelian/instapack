@@ -6,11 +6,11 @@ Here are the list of breaking changes when upgrading between instapack major (or
 
 - Sass language compiler service has been swapped to the primary Dart implementation!
 
-  - Aligned CSS import syntaxes to official spec: certain import queries (such as paths ending with `.css`) will be treated as ordinary CSS import.
+  - Aligned CSS `@import` syntax to the official specification: [certain import queries](https://github.com/sass/language/blob/master/accepted/css-imports.md) (for example, paths ending with `.css`) will be treated as ordinary CSS import.
 
 - Removed clean command and concat build tools.
 
-  - Legacy `angularjs` project template is now shipped with a rudimentary concat tool.
+  - Legacy `angularjs` project template is now shipped with a rudimentary concat tool (`concat.cmd`).
 
 - Importing `.vue.html` module has been obsoleted due to improved `.vue` Single-File Components tooling.
 

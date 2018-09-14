@@ -571,13 +571,13 @@ cd MyProject
 ipack new vue-mobile
 cordova platform add android ios browser
 yarn
-ipack -dw               # then change www/index.html <script> and <link> tags.
-cordova run browser     # re-run commmand every time build outputs change
+ipack -h              # then change www/index.html <script> and <link> tags.
+cordova run browser
 ```
 
-> **CAUTION:** `cordova platform add` and `cordova plugin add` (or remove) will destroy your `node_modules`. Re-run `yarn` / `npm install` after invoking those commands!
+Change www/index.html `<script>` and `<link>` tags to the instapack build outputs. [Adjust assets whitelist and CSP](https://docs.microsoft.com/en-us/visualstudio/cross-platform/tools-for-cordova/security/whitelists?view=toolsforcordova-2017) as well if necessary.
 
-Alternatively, you can use `phonegap serve` for development due to Browsersync playing nice with instapack watch. You will need to remove / comment / edit the `<meta http-equiv="Content-Security-Policy">` tag though.
+> **CAUTION:** `cordova platform add` and `cordova plugin add` (or remove) will destroy your `node_modules`. Re-run `yarn upgrade` / `npm update` after invoking those commands!
 
 Later on...
 

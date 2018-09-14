@@ -404,7 +404,7 @@ let template: string = require('./mytemplate.html');
 
 ### JSON Modules
 
-Enables static JSON file imports in the TypeScript project using `require` syntax:
+instapack 7.0.0 with TypeScript 3.1.0 supports strongly-typed, static JSON file imports in the TypeScript project using the `import` syntax:
 
 ```json
 {
@@ -413,12 +413,14 @@ Enables static JSON file imports in the TypeScript project using `require` synta
 ```
 
 ```ts
-let settings = require('./settings.json');
+import * as settings from './settings.json';
 
 let foo: string = settings.foo;
 ```
 
-> TypeScript 2.9.0 supports strongly-typed import when `resolveJsonModule` compiler option in `tsconfig.json` is set to `true` ([but not 3.0.0 due to regression...](https://github.com/Microsoft/TypeScript/issues/26020))
+> Requires `resolveJsonModule` compiler option in `tsconfig.json` to be set to `true`
+
+> Earlier instapack versions may import JSON file using `require` syntax instead.
 
 ### Vue Single-File Components
 

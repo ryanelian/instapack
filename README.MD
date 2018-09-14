@@ -570,14 +570,14 @@ cordova create MyProject
 cd MyProject
 ipack new vue-mobile
 cordova platform add android ios browser
-yarn
-ipack -h              # then change www/index.html <script> and <link> tags.
+npm update
+ipack -h
 cordova run browser
 ```
 
 Change www/index.html `<script>` and `<link>` tags to the instapack build outputs. [Adjust assets whitelist and CSP](https://docs.microsoft.com/en-us/visualstudio/cross-platform/tools-for-cordova/security/whitelists?view=toolsforcordova-2017) as well if necessary.
 
-> **CAUTION:** `cordova platform add` and `cordova plugin add` (or remove) will destroy your `node_modules`. Re-run `yarn upgrade` / `npm update` after invoking those commands!
+> **CAUTION:** `cordova platform add` and `cordova plugin add` (or `remove`) will destroy your `node_modules`. Re-run `npm update` / `yarn upgrade` after invoking those commands!
 
 Later on...
 

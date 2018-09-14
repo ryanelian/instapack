@@ -8,11 +8,11 @@ Here are the list of breaking changes when upgrading between instapack major (or
 
   - Aligned CSS `@import` syntax to the official specification: [certain import queries](https://github.com/sass/language/blob/master/accepted/css-imports.md) (for example, paths ending with `.css`) will be treated as ordinary CSS import.
 
-- Removed clean command and concat build tools.
+- Removed `clean` command and `concat` build tools.
 
-  - Legacy `angularjs` project template is now shipped with a rudimentary concat tool (`concat.cmd`).
+  - Legacy `angularjs` project template is now shipped with a simple concat tool (`concat.cmd`).
 
-- Importing `.vue.html` module has been obsoleted due to improved `.vue` Single-File Components tooling.
+- Importing `.vue.html` module has been obsoleted due to improved `.vue` Single-File Components tooling!
 
   - Import will be treated as simple string just like ordinary `.html` file.
 

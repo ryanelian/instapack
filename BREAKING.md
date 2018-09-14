@@ -2,6 +2,24 @@
 
 Here are the list of breaking changes when upgrading between instapack major (or minor) versions.
 
+## 7.0.0
+
+- Sass language compiler service has been swapped to the primary Dart implementation!
+
+  - Aligned CSS import syntaxes to official spec: certain import queries (such as paths ending with `.css`) will be treated as ordinary CSS import.
+
+- Removed clean command and concat build tools.
+
+  - Legacy `angularjs` project template is now shipped with a rudimentary concat tool.
+
+- Importing `.vue.html` module has been obsoleted due to improved `.vue` Single-File Components tooling.
+
+  - Import will be treated as simple string just like ordinary `.html` file.
+
+  - Emits warning, which will be removed in the future.
+
+- Disable source map flag `--xdebug` or `-x` has been replaced with `--nodebug` or `-b`
+
 ## 6.7.0
 
 - Importing `.vue.html` module is deprecated in favor of **`.vue` Single-File Components (which supports Hot Reload Development Mode)** and will be removed in future instapack version 7.0.0!
@@ -12,7 +30,7 @@ Here are the list of breaking changes when upgrading between instapack major (or
 
   - [`unknown` is a reserved type name now.](https://blogs.msdn.microsoft.com/typescript/2018/07/30/announcing-typescript-3-0/#unknown-is-a-reserved-type-name)
 
-  - `resolveJsonModule` regression: [only works in when targeting AMD `module`](https://github.com/Microsoft/TypeScript/issues/25755) (to be fixed in TypeScript 3.1!)
+  - `resolveJsonModule` regression: [only works in when targeting AMD `module`](https://github.com/Microsoft/TypeScript/issues/25755) *(to be fixed in TypeScript 3.1!)*
 
 ## 6.2.0
 

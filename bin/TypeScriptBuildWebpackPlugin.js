@@ -55,6 +55,7 @@ function minifyChunkAssets(compilation, chunks, sourceMap) {
                 compilation.assets[fileName] = output;
             }).catch(minifyError => {
                 Shout_1.Shout.error(`when minifying ${chalk_1.default.blue(fileName)} during JS build:`, minifyError);
+                Shout_1.Shout.warning('Only', chalk_1.default.yellow('ES5'), 'modules are suppported. Check', chalk_1.default.cyan('tsconfig.json:target'), 'or', chalk_1.default.cyan('package.json'), 'dependencies.');
                 compilation.errors.push(minifyError);
             });
             tasks.push(t2);

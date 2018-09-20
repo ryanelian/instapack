@@ -6,7 +6,7 @@ import { IMinifyWorkerInput } from './IMinifyWorkerInput';
 const typeScriptBuildWorkerModulePath = require.resolve('./TypeScriptBuildWorker');
 const typeScriptCheckWorkerModulePath = require.resolve('./TypeScriptCheckWorker');
 const sassBuildWorkerModulePath = require.resolve('./SassBuildWorker');
-const jsMinifyWorkerModulePath = require.resolve('./JsMinifyWorker');
+const jsMinifyWorkerModulePath = require.resolve('./MinifyWorker');
 
 /**
  * Runs worker in separate process, returns Promise.

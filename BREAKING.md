@@ -12,17 +12,11 @@ Here are the list of breaking changes when upgrading between instapack major (or
 
   - Legacy `angularjs` project template is now shipped with a simple concat tool (`concat.cmd`).
 
-- Importing `.vue.html` module has been obsoleted due to improved `.vue` Single-File Components tooling!
-
-  - Import will be treated as simple string just like ordinary `.html` file.
-
-  - Emits warning, which will be removed in the future.
-
 - Disable source map flag `--xdebug` or `-x` has been replaced with `--nodebug` or `-b`
 
 ## 6.7.0
 
-- Importing `.vue.html` module is deprecated in favor of **`.vue` Single-File Components (which supports Hot Reload Development Mode)** and will be removed in future instapack version 7.0.0!
+- Importing `.vue.html` module is deprecated in favor of **`.vue` Single-File Components (which supports Hot Reload Development Mode)** and will be removed in future versions!
 
 ## 6.6.0
 

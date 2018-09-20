@@ -15,7 +15,7 @@ const worker_farm_1 = __importDefault(require("worker-farm"));
 const typeScriptBuildWorkerModulePath = require.resolve('./TypeScriptBuildWorker');
 const typeScriptCheckWorkerModulePath = require.resolve('./TypeScriptCheckWorker');
 const sassBuildWorkerModulePath = require.resolve('./SassBuildWorker');
-const jsMinifyWorkerModulePath = require.resolve('./JsMinifyWorker');
+const jsMinifyWorkerModulePath = require.resolve('./MinifyWorker');
 function runWorkerAsync(modulePath, params) {
     return __awaiter(this, void 0, void 0, function* () {
         let worker = worker_farm_1.default(modulePath);

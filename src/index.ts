@@ -3,7 +3,9 @@ import upath from 'upath';
 import chalk from 'chalk';
 
 import { ICommandLineFlags } from "./interfaces/ICommandLineFlags";
-import { VariablesFactory } from "./VariablesFactory";
+import { readProjectSettingsFrom } from './ReadProjectSettings';
+import { readDotEnvFrom } from './EnvParser';
+import { compileVariables } from './CompileVariables';
 import { UserSettingsManager } from './UserSettingsManager';
 import { PathFinder } from './PathFinder';
 import { PackageManager } from './PackageManager';
@@ -61,20 +63,18 @@ export = class instapack {
      * @param flags 
      */
     async build(taskName: string, flags: ICommandLineFlags) {
-
         let userMan = new UserSettingsManager();
-        let v = new VariablesFactory();
 
         if (flags.verbose) {
             Shout.displayVerboseOutput = true;
         }
 
         // parallel IO
-        let projectSettings = v.readProjectSettingsFrom(this.projectFolder);
-        let dotEnv = v.readDotEnvFrom(this.projectFolder);
+        let projectSettings = readProjectSettingsFrom(this.projectFolder);
+        let dotEnv = readDotEnvFrom(this.projectFolder);
         let userSettings = userMan.readUserSettingsFrom(userMan.userSettingsFilePath);
 
-        let variables = v.compile(flags, await projectSettings, await userSettings, await dotEnv);
+        let variables = compileVariables(flags, await projectSettings, await userSettings, await dotEnv);
 
         if (variables.muteNotification) {
             Shout.enableNotification = false;

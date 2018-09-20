@@ -13,7 +13,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 const fs_extra_1 = __importDefault(require("fs-extra"));
 const upath_1 = __importDefault(require("upath"));
 const chalk_1 = __importDefault(require("chalk"));
-const VariablesFactory_1 = require("./VariablesFactory");
+const ReadProjectSettings_1 = require("./ReadProjectSettings");
+const EnvParser_1 = require("./EnvParser");
+const CompileVariables_1 = require("./CompileVariables");
 const UserSettingsManager_1 = require("./UserSettingsManager");
 const PathFinder_1 = require("./PathFinder");
 const PackageManager_1 = require("./PackageManager");
@@ -84,14 +86,13 @@ module.exports = class instapack {
     build(taskName, flags) {
         return __awaiter(this, void 0, void 0, function* () {
             let userMan = new UserSettingsManager_1.UserSettingsManager();
-            let v = new VariablesFactory_1.VariablesFactory();
             if (flags.verbose) {
                 Shout_1.Shout.displayVerboseOutput = true;
             }
-            let projectSettings = v.readProjectSettingsFrom(this.projectFolder);
-            let dotEnv = v.readDotEnvFrom(this.projectFolder);
+            let projectSettings = ReadProjectSettings_1.readProjectSettingsFrom(this.projectFolder);
+            let dotEnv = EnvParser_1.readDotEnvFrom(this.projectFolder);
             let userSettings = userMan.readUserSettingsFrom(userMan.userSettingsFilePath);
-            let variables = v.compile(flags, yield projectSettings, yield userSettings, yield dotEnv);
+            let variables = CompileVariables_1.compileVariables(flags, yield projectSettings, yield userSettings, yield dotEnv);
             if (variables.muteNotification) {
                 Shout_1.Shout.enableNotification = false;
             }

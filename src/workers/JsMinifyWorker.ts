@@ -7,8 +7,8 @@ import { IMinifyInputs } from '../interfaces/IMinifyInputs';
 export = function (input: IMinifyInputs, callback) {
     let minifyOptions: UglifyJS.MinifyOptions = {
         // colapse_vars issues:
-        // 1. performance regressions   :   https://github.com/mishoo/UglifyJS2/issues/3174
-        // 2. bad output                :   https://github.com/mishoo/UglifyJS2/issues/3247
+        // 1. performance regressions   https://github.com/mishoo/UglifyJS2/issues/3174
+        // 2. bad output                https://github.com/mishoo/UglifyJS2/issues/3247
 
         compress: {
             collapse_vars: false,

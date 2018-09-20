@@ -7,7 +7,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const yargs_1 = __importDefault(require("yargs"));
 const chalk_1 = __importDefault(require("chalk"));
 const instapack = require("./index");
-const VariablesFactory_1 = require("./VariablesFactory");
+const EnvParser_1 = require("./EnvParser");
 const manifest = require('../package.json');
 let projectFolder = process.cwd();
 let ipack = new instapack(projectFolder);
@@ -53,7 +53,7 @@ yargs_1.default.command({
             production: !Boolean(argv.dev),
             watch: Boolean(argv.watch),
             sourceMap: !Boolean(argv.nodebug),
-            env: new VariablesFactory_1.VariablesFactory().parseCliEnv(argv.env),
+            env: EnvParser_1.parseCliEnvFlags(argv.env),
             stats: Boolean(argv.stats),
             hot: Boolean(argv.hot),
             verbose: Boolean(argv.verbose)

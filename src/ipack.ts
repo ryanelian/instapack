@@ -4,7 +4,7 @@ import program from 'yargs';
 import chalk from 'chalk';
 
 import instapack = require('./index');
-import { VariablesFactory } from './VariablesFactory';
+import { parseCliEnvFlags } from './EnvParser';
 const manifest = require('../package.json');
 
 let projectFolder = process.cwd();
@@ -60,7 +60,7 @@ program.command({
             production: !Boolean(argv.dev),
             watch: Boolean(argv.watch),
             sourceMap: !Boolean(argv.nodebug),
-            env: new VariablesFactory().parseCliEnv(argv.env),
+            env: parseCliEnvFlags(argv.env),
             stats: Boolean(argv.stats),
             hot: Boolean(argv.hot),
             verbose: Boolean(argv.verbose)

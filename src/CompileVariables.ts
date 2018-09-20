@@ -1,7 +1,7 @@
 import { IVariables } from "./interfaces/IVariables";
 import { ICommandLineFlags } from "./interfaces/ICommandLineFlags";
-import { IUserSettings } from "./interfaces/IUserSettings";
 import { IProjectSettings } from "./interfaces/IProjectSettings";
+import { IUserSettings } from "./user-settings/IUserSettings";
 
 export function compileVariables(
     buildFlags: ICommandLineFlags,

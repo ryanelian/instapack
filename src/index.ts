@@ -6,11 +6,11 @@ import { ICommandLineFlags } from "./interfaces/ICommandLineFlags";
 import { readProjectSettingsFrom } from './ReadProjectSettings';
 import { readDotEnvFrom } from './EnvParser';
 import { compileVariables } from './CompileVariables';
-import { UserSettingsManager } from './UserSettingsManager';
 import { PathFinder } from './PathFinder';
 import { PackageManager } from './PackageManager';
 import { Shout } from './Shout';
 import { ToolOrchestrator } from './ToolOrchestrator';
+import { readUserSettingsFrom, userSettingsFilePath, validateUserSetting, setUserSetting } from './user-settings/UserSettingsManager';
 
 /**
  * Exposes methods for developing a web app client project.
@@ -51,20 +51,11 @@ export = class instapack {
     }
 
     /**
-     * Gets all available keys for `instapack set` command.
-     */
-    get availableSettings() {
-        return new UserSettingsManager().availableSettings;
-    }
-
-    /**
      * Performs web app client project compilation using a pre-configured task and build flags.
      * @param taskName 
      * @param flags 
      */
     async build(taskName: string, flags: ICommandLineFlags) {
-        let userMan = new UserSettingsManager();
-
         if (flags.verbose) {
             Shout.displayVerboseOutput = true;
         }
@@ -72,7 +63,7 @@ export = class instapack {
         // parallel IO
         let projectSettings = readProjectSettingsFrom(this.projectFolder);
         let dotEnv = readDotEnvFrom(this.projectFolder);
-        let userSettings = userMan.readUserSettingsFrom(userMan.userSettingsFilePath);
+        let userSettings = readUserSettingsFrom(userSettingsFilePath);
 
         let variables = compileVariables(flags, await projectSettings, await userSettings, await dotEnv);
 
@@ -145,18 +136,17 @@ export = class instapack {
      * @param value 
      */
     async changeUserSettings(key: string, value: string) {
-        let man = new UserSettingsManager();
-        let valid = man.validate(key, value);
+        let valid = validateUserSetting(key, value);
         if (!valid) {
             Shout.error('invalid setting! Please consult README.')
             return;
         }
 
         try {
-            let file = man.userSettingsFilePath;
+            let file = userSettingsFilePath;
             console.log('Global settings file:', chalk.cyan(file));
-            let settings = await man.readUserSettingsFrom(file);
-            man.set(settings, key, value);
+            let settings = await readUserSettingsFrom(file);
+            setUserSetting(settings, key, value);
             await fse.outputJson(file, settings);
             console.log('Successfully saved the new setting!');
         } catch (error) {

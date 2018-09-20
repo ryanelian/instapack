@@ -8,6 +8,7 @@ const yargs_1 = __importDefault(require("yargs"));
 const chalk_1 = __importDefault(require("chalk"));
 const instapack = require("./index");
 const EnvParser_1 = require("./EnvParser");
+const UserSettingsManager_1 = require("./user-settings/UserSettingsManager");
 const manifest = require('../package.json');
 let projectFolder = process.cwd();
 let ipack = new instapack(projectFolder);
@@ -76,7 +77,7 @@ yargs_1.default.command({
     command: 'set <key> <value>',
     describe: 'Change a global setting.',
     builder: yargs => {
-        return yargs.choices('key', ipack.availableSettings);
+        return yargs.choices('key', UserSettingsManager_1.userSettingOptions);
     },
     handler: argv => {
         echo('set', argv.key);

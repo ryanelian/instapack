@@ -16,11 +16,11 @@ const chalk_1 = __importDefault(require("chalk"));
 const ReadProjectSettings_1 = require("./ReadProjectSettings");
 const EnvParser_1 = require("./EnvParser");
 const CompileVariables_1 = require("./CompileVariables");
-const UserSettingsManager_1 = require("./UserSettingsManager");
 const PathFinder_1 = require("./PathFinder");
 const PackageManager_1 = require("./PackageManager");
 const Shout_1 = require("./Shout");
 const ToolOrchestrator_1 = require("./ToolOrchestrator");
+const UserSettingsManager_1 = require("./user-settings/UserSettingsManager");
 function objectSortByKeys(input) {
     let output = {};
     let keys = Object.keys(input).sort();
@@ -80,18 +80,14 @@ module.exports = class instapack {
         });
         return templates;
     }
-    get availableSettings() {
-        return new UserSettingsManager_1.UserSettingsManager().availableSettings;
-    }
     build(taskName, flags) {
         return __awaiter(this, void 0, void 0, function* () {
-            let userMan = new UserSettingsManager_1.UserSettingsManager();
             if (flags.verbose) {
                 Shout_1.Shout.displayVerboseOutput = true;
             }
             let projectSettings = ReadProjectSettings_1.readProjectSettingsFrom(this.projectFolder);
             let dotEnv = EnvParser_1.readDotEnvFrom(this.projectFolder);
-            let userSettings = userMan.readUserSettingsFrom(userMan.userSettingsFilePath);
+            let userSettings = UserSettingsManager_1.readUserSettingsFrom(UserSettingsManager_1.userSettingsFilePath);
             let variables = CompileVariables_1.compileVariables(flags, yield projectSettings, yield userSettings, yield dotEnv);
             if (variables.muteNotification) {
                 Shout_1.Shout.enableNotification = false;
@@ -148,17 +144,16 @@ module.exports = class instapack {
     }
     changeUserSettings(key, value) {
         return __awaiter(this, void 0, void 0, function* () {
-            let man = new UserSettingsManager_1.UserSettingsManager();
-            let valid = man.validate(key, value);
+            let valid = UserSettingsManager_1.validateUserSetting(key, value);
             if (!valid) {
                 Shout_1.Shout.error('invalid setting! Please consult README.');
                 return;
             }
             try {
-                let file = man.userSettingsFilePath;
+                let file = UserSettingsManager_1.userSettingsFilePath;
                 console.log('Global settings file:', chalk_1.default.cyan(file));
-                let settings = yield man.readUserSettingsFrom(file);
-                man.set(settings, key, value);
+                let settings = yield UserSettingsManager_1.readUserSettingsFrom(file);
+                UserSettingsManager_1.setUserSetting(settings, key, value);
                 yield fs_extra_1.default.outputJson(file, settings);
                 console.log('Successfully saved the new setting!');
             }

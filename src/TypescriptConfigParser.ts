@@ -4,7 +4,7 @@ import TypeScript from 'typescript';
 import { Shout } from './Shout';
 import chalk from 'chalk';
 
-let fallbackTypeScriptConfigJson = {
+let fallbackTypeScriptConfig = {
     compilerOptions: {
         alwaysStrict: true,
         skipLibCheck: true,
@@ -42,13 +42,17 @@ export async function tryReadTypeScriptConfigJson(folder: string) {
     } catch (error) {
         Shout.error('when reading', chalk.cyan(tsconfigJsonPath), error);
         Shout.warning('Using the default fallback TypeScript configuration!');
-        return fallbackTypeScriptConfigJson;
+        return fallbackTypeScriptConfig;
     }
 }
 
 export function parseTypescriptConfig(folder: string, json: any): TypeScript.ParsedCommandLine {
+    // apparently TypeScript.parseJsonConfigFileContent modifies the input object!
+    // deep copy the object for unit test sanity...
+    let o = JSON.parse(JSON.stringify(json));
+
     // https://github.com/Microsoft/TypeScript/blob/master/src/compiler/commandLineParser.ts#L992
-    let tsconfig = TypeScript.parseJsonConfigFileContent(json, TypeScript.sys, folder);
+    let tsconfig = TypeScript.parseJsonConfigFileContent(o, TypeScript.sys, folder);
     if (tsconfig.errors.length) {
         throw Error(tsconfig.errors[0].messageText.toString());
     }

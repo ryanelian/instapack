@@ -16,7 +16,7 @@ const upath_1 = __importDefault(require("upath"));
 const typescript_1 = __importDefault(require("typescript"));
 const Shout_1 = require("./Shout");
 const chalk_1 = __importDefault(require("chalk"));
-let fallbackTypeScriptConfigJson = {
+let fallbackTypeScriptConfig = {
     compilerOptions: {
         alwaysStrict: true,
         skipLibCheck: true,
@@ -50,13 +50,14 @@ function tryReadTypeScriptConfigJson(folder) {
         catch (error) {
             Shout_1.Shout.error('when reading', chalk_1.default.cyan(tsconfigJsonPath), error);
             Shout_1.Shout.warning('Using the default fallback TypeScript configuration!');
-            return fallbackTypeScriptConfigJson;
+            return fallbackTypeScriptConfig;
         }
     });
 }
 exports.tryReadTypeScriptConfigJson = tryReadTypeScriptConfigJson;
 function parseTypescriptConfig(folder, json) {
-    let tsconfig = typescript_1.default.parseJsonConfigFileContent(json, typescript_1.default.sys, folder);
+    let o = JSON.parse(JSON.stringify(json));
+    let tsconfig = typescript_1.default.parseJsonConfigFileContent(o, typescript_1.default.sys, folder);
     if (tsconfig.errors.length) {
         throw Error(tsconfig.errors[0].messageText.toString());
     }

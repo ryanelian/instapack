@@ -22,49 +22,7 @@ const Shout_1 = require("./Shout");
 const ToolOrchestrator_1 = require("./ToolOrchestrator");
 const UserSettingsManager_1 = require("./user-settings/UserSettingsManager");
 const TypescriptConfigParser_1 = require("./TypescriptConfigParser");
-function objectSortByKeys(input) {
-    let output = {};
-    let keys = Object.keys(input).sort();
-    for (let key of keys) {
-        output[key] = input[key];
-    }
-    return output;
-}
-function mergePackageJson(projectPackageJson, templatePackageJson) {
-    let packageJson = JSON.parse(JSON.stringify(projectPackageJson));
-    if (templatePackageJson.instapack) {
-        packageJson.instapack = templatePackageJson.instapack;
-    }
-    if (!packageJson.dependencies) {
-        packageJson.dependencies = {};
-    }
-    if (!packageJson.devDependencies) {
-        packageJson.devDependencies = {};
-    }
-    if (templatePackageJson.dependencies) {
-        for (let packageName in templatePackageJson.dependencies) {
-            if (packageJson.devDependencies[packageName]) {
-                packageJson.devDependencies[packageName] = templatePackageJson.dependencies[packageName];
-            }
-            else {
-                packageJson.dependencies[packageName] = templatePackageJson.dependencies[packageName];
-            }
-        }
-    }
-    if (templatePackageJson.devDependencies) {
-        for (let packageName in templatePackageJson.devDependencies) {
-            if (packageJson.dependencies[packageName]) {
-                packageJson.dependencies[packageName] = templatePackageJson.devDependencies[packageName];
-            }
-            else {
-                packageJson.devDependencies[packageName] = templatePackageJson.devDependencies[packageName];
-            }
-        }
-    }
-    packageJson.dependencies = objectSortByKeys(packageJson.dependencies);
-    packageJson.devDependencies = objectSortByKeys(packageJson.devDependencies);
-    return packageJson;
-}
+const MergePackageJson_1 = require("./MergePackageJson");
 module.exports = class instapack {
     constructor(projectFolder) {
         this.projectFolder = upath_1.default.normalize(projectFolder);
@@ -130,7 +88,7 @@ module.exports = class instapack {
             if ((yield fs_extra_1.default.pathExists(projectPackageJsonPath)) && (yield fs_extra_1.default.pathExists(templatePackageJsonPath))) {
                 let projectPackageJson = yield fs_extra_1.default.readJson(projectPackageJsonPath);
                 let templatePackageJson = yield fs_extra_1.default.readJson(templatePackageJsonPath);
-                mergedPackageJson = mergePackageJson(projectPackageJson, templatePackageJson);
+                mergedPackageJson = MergePackageJson_1.mergePackageJson(projectPackageJson, templatePackageJson);
             }
             console.log('Initializing new project using template:', chalk_1.default.cyan(template));
             console.log('Scaffolding project into your web app...');

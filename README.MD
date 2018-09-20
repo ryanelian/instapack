@@ -575,13 +575,14 @@ ipack -h
 cordova run browser
 ```
 
-Change www/index.html `<script>` and `<link>` tags to the instapack build outputs. [Adjust assets whitelist and CSP](https://docs.microsoft.com/en-us/visualstudio/cross-platform/tools-for-cordova/security/whitelists?view=toolsforcordova-2017) as well if necessary.
+Change www/index.html `<script>` and `<link>` tags to the instapack build outputs. [Adjust assets whitelist and CSP too](https://docs.microsoft.com/en-us/visualstudio/cross-platform/tools-for-cordova/security/whitelists?view=toolsforcordova-2017) if necessary.
 
 > **CAUTION:** `cordova platform add` and `cordova plugin add` (or `remove`) will destroy your `node_modules`. Re-run `npm update` / `yarn upgrade` after invoking those commands!
 
 Later on...
 
 ```
+ipack
 cordova build android
 cordova build ios
 ```

@@ -1,6 +1,4 @@
 import upath from 'upath';
-import fse from 'fs-extra';
-import TypeScript from 'typescript';
 import { Configuration } from 'tslint';
 import { IVariables } from './interfaces/IVariables';
 

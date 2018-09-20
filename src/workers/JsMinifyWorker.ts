@@ -5,13 +5,21 @@ import { IMinifyInputs } from '../interfaces/IMinifyInputs';
  * Accepts minification input parameter to used by UglifyJS minifier.
  */
 export = function (input: IMinifyInputs, callback) {
-    let minifyOptions: UglifyJS.MinifyOptions | undefined = undefined;
-    if (input.map) {
-        minifyOptions = {
-            sourceMap: {
-                content: input.map as any // HACK78
-            }
+    let minifyOptions: UglifyJS.MinifyOptions = {
+        // colapse_vars issues:
+        // 1. performance regressions   :   https://github.com/mishoo/UglifyJS2/issues/3174
+        // 2. bad output                :   https://github.com/mishoo/UglifyJS2/issues/3247
+
+        compress: {
+            collapse_vars: false,
+            conditionals: false,     // https://github.com/mishoo/UglifyJS2/issues/3245#issuecomment-417940973
         }
+    };
+
+    if (input.map) {
+        minifyOptions.sourceMap = {
+            content: input.map as any // HACK78
+        };
     }
 
     let result = UglifyJS.minify({

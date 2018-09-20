@@ -8,12 +8,15 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 const UglifyJS = __importStar(require("uglify-js"));
 module.exports = function (input, callback) {
-    let minifyOptions = undefined;
+    let minifyOptions = {
+        compress: {
+            collapse_vars: false,
+            conditionals: false,
+        }
+    };
     if (input.map) {
-        minifyOptions = {
-            sourceMap: {
-                content: input.map
-            }
+        minifyOptions.sourceMap = {
+            content: input.map
         };
     }
     let result = UglifyJS.minify({

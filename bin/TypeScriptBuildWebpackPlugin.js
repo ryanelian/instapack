@@ -35,7 +35,7 @@ function createMinificationInput(asset, fileName, sourceMap) {
 }
 function minifyChunkAssets(compilation, chunks, sourceMap) {
     let tasks = [];
-    Shout_1.Shout.timed('TypeScript compile finished! Minifying bundles...');
+    Shout_1.Shout.timed('TypeScript compilation finished! Minifying bundles...');
     for (let chunk of chunks) {
         for (let fileName of chunk.files) {
             if (fileName.endsWith('js') === false) {

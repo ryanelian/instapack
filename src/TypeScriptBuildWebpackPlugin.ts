@@ -49,7 +49,7 @@ function createMinificationInput(asset: Source, fileName: string, sourceMap: boo
 function minifyChunkAssets(compilation: webpack.compilation.Compilation, chunks: webpack.compilation.Chunk[], sourceMap: boolean) {
     let tasks: Promise<void>[] = [];
 
-    Shout.timed('TypeScript compile finished! Minifying bundles...');
+    Shout.timed('TypeScript compilation finished! Minifying bundles...');
     for (let chunk of chunks) {
         for (let fileName of chunk.files as string[]) {
             if (fileName.endsWith('js') === false) {

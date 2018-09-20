@@ -33,10 +33,9 @@ export class ToolOrchestrator {
         }
 
         if (this.variables.production) {
-            Shout.timed(chalk.yellow("Production"), "Mode: Outputs minification is enabled.", chalk.red("(Slow build)"));
+            Shout.timed(chalk.yellow("Production"), "Mode: Build optimizations are enabled.", chalk.red("(Slower)"));
         } else {
-            Shout.timed(chalk.yellow("Development"), "Mode: Outputs minification", chalk.red("is disabled!"), chalk.grey("(Fast build)"));
-            Shout.timed(chalk.red("REMEMBER TO MINIFY"), "before pushing to production server!");
+            Shout.timed(chalk.yellow("Development"), "Mode: Build optimizations are", chalk.red("DISABLED!"), chalk.grey("(Fast build)"));
         }
 
         Shout.timed('Source Maps:', chalk.yellow(this.variables.sourceMap ? 'Enabled' : 'Disabled'));

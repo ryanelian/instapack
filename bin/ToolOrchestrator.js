@@ -26,11 +26,10 @@ class ToolOrchestrator {
             Shout_1.Shout.timed(chalk_1.default.yellow("Watch"), "Mode: Source code will be automatically compiled on changes.");
         }
         if (this.variables.production) {
-            Shout_1.Shout.timed(chalk_1.default.yellow("Production"), "Mode: Outputs minification is enabled.", chalk_1.default.red("(Slow build)"));
+            Shout_1.Shout.timed(chalk_1.default.yellow("Production"), "Mode: Build optimizations are enabled.", chalk_1.default.red("(Slower)"));
         }
         else {
-            Shout_1.Shout.timed(chalk_1.default.yellow("Development"), "Mode: Outputs minification", chalk_1.default.red("is disabled!"), chalk_1.default.grey("(Fast build)"));
-            Shout_1.Shout.timed(chalk_1.default.red("REMEMBER TO MINIFY"), "before pushing to production server!");
+            Shout_1.Shout.timed(chalk_1.default.yellow("Development"), "Mode: Build optimizations are", chalk_1.default.red("DISABLED!"), chalk_1.default.grey("(Fast build)"));
         }
         Shout_1.Shout.timed('Source Maps:', chalk_1.default.yellow(this.variables.sourceMap ? 'Enabled' : 'Disabled'));
         if (this.variables.stats) {

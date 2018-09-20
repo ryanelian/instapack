@@ -3,8 +3,8 @@ import webpack from 'webpack';
 import { Source, SourceMapSource, RawSource } from 'webpack-sources';
 
 import { Shout } from './Shout';
-import { IMinifyInputs } from './interfaces/IMinifyInputs';
-import { runMinifyWorkerAsync } from './WorkerRunner';
+import { IMinifyWorkerInput } from './workers/IMinifyWorkerInput';
+import { runMinifyWorker } from './workers/RunWorker';
 
 /**
  * Options required for TypeScriptBuildWebpackPlugin to function, collected from Settings and ICompilerFlags.
@@ -21,7 +21,7 @@ interface ITypeScriptBuildWebpackPluginOptions {
 * @param fileName 
 */
 function createMinificationInput(asset: Source, fileName: string, sourceMap: boolean) {
-    let input: IMinifyInputs;
+    let input: IMinifyWorkerInput;
 
     if (sourceMap) {
         let o = asset.sourceAndMap();
@@ -60,7 +60,7 @@ function minifyChunkAssets(compilation: webpack.compilation.Compilation, chunks:
             let asset = compilation.assets[fileName] as Source;
             let input = createMinificationInput(asset, fileName, sourceMap);
 
-            let t1 = runMinifyWorkerAsync(input);
+            let t1 = runMinifyWorker(input);
             let t2 = t1.then(minified => {
                 let output: Source;
                 if (sourceMap) {

@@ -1,12 +1,12 @@
 import WorkerFarm from 'worker-farm';
-import { IVariables } from './interfaces/IVariables';
 import { MinifyOutput } from 'uglify-js';
-import { IMinifyInputs } from './interfaces/IMinifyInputs';
+import { IVariables } from '../interfaces/IVariables';
+import { IMinifyWorkerInput } from './IMinifyWorkerInput';
 
-const typeScriptBuildWorkerModulePath = require.resolve('./workers/TypeScriptBuildWorker');
-const typeScriptCheckWorkerModulePath = require.resolve('./workers/TypeScriptCheckWorker');
-const sassBuildWorkerModulePath = require.resolve('./workers/SassBuildWorker');
-const jsMinifyWorkerModulePath = require.resolve('./workers/JsMinifyWorker');
+const typeScriptBuildWorkerModulePath = require.resolve('./TypeScriptBuildWorker');
+const typeScriptCheckWorkerModulePath = require.resolve('./TypeScriptCheckWorker');
+const sassBuildWorkerModulePath = require.resolve('./SassBuildWorker');
+const jsMinifyWorkerModulePath = require.resolve('./JsMinifyWorker');
 
 /**
  * Runs worker in separate process, returns Promise.
@@ -32,18 +32,18 @@ export async function runWorkerAsync<T>(modulePath: string, params) {
     }
 }
 
-export function runTypeScriptBuildWorkerAsync(variables: IVariables) {
+export function runTypeScriptBuildWorker(variables: IVariables) {
     return runWorkerAsync<void>(typeScriptBuildWorkerModulePath, variables);
 }
 
-export function runTypeScriptCheckWorkerAsync(variables: IVariables) {
+export function runTypeScriptCheckWorker(variables: IVariables) {
     return runWorkerAsync<void>(typeScriptCheckWorkerModulePath, variables);
 }
 
-export function runSassBuildWorkerAsync(variables: IVariables) {
+export function runSassBuildWorker(variables: IVariables) {
     return runWorkerAsync<void>(sassBuildWorkerModulePath, variables);
 }
 
-export function runMinifyWorkerAsync(variables: IMinifyInputs) {
+export function runMinifyWorker(variables: IMinifyWorkerInput) {
     return runWorkerAsync<MinifyOutput>(jsMinifyWorkerModulePath, variables);
 }

@@ -14,7 +14,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const chalk_1 = __importDefault(require("chalk"));
 const webpack_sources_1 = require("webpack-sources");
 const Shout_1 = require("./Shout");
-const WorkerRunner_1 = require("./WorkerRunner");
+const RunWorker_1 = require("./workers/RunWorker");
 function createMinificationInput(asset, fileName, sourceMap) {
     let input;
     if (sourceMap) {
@@ -43,7 +43,7 @@ function minifyChunkAssets(compilation, chunks, sourceMap) {
             }
             let asset = compilation.assets[fileName];
             let input = createMinificationInput(asset, fileName, sourceMap);
-            let t1 = WorkerRunner_1.runMinifyWorkerAsync(input);
+            let t1 = RunWorker_1.runMinifyWorker(input);
             let t2 = t1.then(minified => {
                 let output;
                 if (sourceMap) {

@@ -15,7 +15,7 @@ const fs_extra_1 = __importDefault(require("fs-extra"));
 const chalk_1 = __importDefault(require("chalk"));
 const Shout_1 = require("./Shout");
 const PathFinder_1 = require("./PathFinder");
-const WorkerRunner_1 = require("./WorkerRunner");
+const RunWorker_1 = require("./workers/RunWorker");
 class ToolOrchestrator {
     constructor(variables) {
         this.variables = variables;
@@ -68,11 +68,11 @@ class ToolOrchestrator {
                 case 'js': {
                     let valid = yield this.validateJsBuildTask();
                     if (valid) {
-                        WorkerRunner_1.runTypeScriptBuildWorkerAsync(this.variables).catch(error => {
+                        RunWorker_1.runTypeScriptBuildWorker(this.variables).catch(error => {
                             Shout_1.Shout.fatal(`during JS build:`, error);
                             Shout_1.Shout.notify(`FATAL ERROR during JS build!`);
                         });
-                        WorkerRunner_1.runTypeScriptCheckWorkerAsync(this.variables).catch(error => {
+                        RunWorker_1.runTypeScriptCheckWorker(this.variables).catch(error => {
                             Shout_1.Shout.fatal(`during type-checking:`, error);
                             Shout_1.Shout.notify(`FATAL ERROR during type-checking!`);
                         });
@@ -82,7 +82,7 @@ class ToolOrchestrator {
                 case 'css': {
                     let valid = yield this.validateCssBuildTask();
                     if (valid) {
-                        WorkerRunner_1.runSassBuildWorkerAsync(this.variables).catch(error => {
+                        RunWorker_1.runSassBuildWorker(this.variables).catch(error => {
                             Shout_1.Shout.fatal(`during CSS build:`, error);
                             Shout_1.Shout.notify(`FATAL ERROR during CSS build!`);
                         });

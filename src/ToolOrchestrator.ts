@@ -4,7 +4,7 @@ import chalk from 'chalk';
 import { Shout } from './Shout';
 import { IVariables } from './interfaces/IVariables';
 import { PathFinder } from './PathFinder';
-import { runTypeScriptBuildWorkerAsync, runSassBuildWorkerAsync, runTypeScriptCheckWorkerAsync } from './WorkerRunner';
+import { runTypeScriptBuildWorker, runSassBuildWorker, runTypeScriptCheckWorker } from './workers/RunWorker';
 
 /**
  * Contains methods for assembling and invoking the build tasks.
@@ -85,11 +85,11 @@ export class ToolOrchestrator {
             case 'js': {
                 let valid = await this.validateJsBuildTask();
                 if (valid) {
-                    runTypeScriptBuildWorkerAsync(this.variables).catch(error => {
+                    runTypeScriptBuildWorker(this.variables).catch(error => {
                         Shout.fatal(`during JS build:`, error);
                         Shout.notify(`FATAL ERROR during JS build!`);
                     });
-                    runTypeScriptCheckWorkerAsync(this.variables).catch(error => {
+                    runTypeScriptCheckWorker(this.variables).catch(error => {
                         Shout.fatal(`during type-checking:`, error);
                         Shout.notify(`FATAL ERROR during type-checking!`);
                     });
@@ -100,7 +100,7 @@ export class ToolOrchestrator {
             case 'css': {
                 let valid = await this.validateCssBuildTask();
                 if (valid) {
-                    runSassBuildWorkerAsync(this.variables).catch(error => {
+                    runSassBuildWorker(this.variables).catch(error => {
                         Shout.fatal(`during CSS build:`, error);
                         Shout.notify(`FATAL ERROR during CSS build!`);
                     });

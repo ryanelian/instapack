@@ -11,6 +11,7 @@ import { PackageManager } from './PackageManager';
 import { Shout } from './Shout';
 import { ToolOrchestrator } from './ToolOrchestrator';
 import { readUserSettingsFrom, userSettingsFilePath, validateUserSetting, setUserSetting } from './user-settings/UserSettingsManager';
+import { tryReadTypeScriptConfigJson } from './TypescriptConfigParser';
 
 /**
  * Exposes methods for developing a web app client project.
@@ -64,8 +65,14 @@ export = class instapack {
         let projectSettings = readProjectSettingsFrom(this.projectFolder);
         let dotEnv = readDotEnvFrom(this.projectFolder);
         let userSettings = readUserSettingsFrom(userSettingsFilePath);
+        let typescriptConfiguration = tryReadTypeScriptConfigJson(this.projectFolder);
 
-        let variables = compileVariables(flags, await projectSettings, await userSettings, await dotEnv);
+        let variables = compileVariables(flags,
+            await projectSettings,
+            await userSettings,
+            await dotEnv,
+            await typescriptConfiguration
+        );
 
         if (variables.muteNotification) {
             Shout.enableNotification = false;

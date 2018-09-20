@@ -11,6 +11,7 @@ import { VirtualSourceStore } from './VirtualSourceStore';
 import { IVariables } from './interfaces/IVariables';
 import { PathFinder } from './PathFinder';
 import { IMapLike } from './interfaces/IMapLike';
+import { parseTypescriptConfig } from './TypescriptConfigParser';
 
 /**
  * Contains methods for static-checking TypeScript projects. 
@@ -88,7 +89,7 @@ export class TypeScriptCheckerTool {
 
     static async createToolAsync(variables: IVariables): Promise<TypeScriptCheckerTool> {
         let finder = new PathFinder(variables);
-        let tsconfig = await finder.readTsConfig();
+        let tsconfig = parseTypescriptConfig(variables.root, variables.typescriptConfiguration);
 
         let compilerOptions = tsconfig.options;
         let definitions = tsconfig.fileNames.filter(Q => Q.endsWith('.d.ts'));

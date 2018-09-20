@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-function compileVariables(buildFlags, projectSettings, userSettings, dotEnv) {
+function compileVariables(buildFlags, projectSettings, userSettings, dotEnv, typescriptConfiguration) {
     let variables = {
         root: projectSettings.root,
         input: projectSettings.input,
@@ -20,6 +20,7 @@ function compileVariables(buildFlags, projectSettings, userSettings, dotEnv) {
         hot: buildFlags.hot,
         port1: projectSettings.port1,
         port2: projectSettings.port2,
+        typescriptConfiguration: typescriptConfiguration
     };
     if (variables.hot) {
         variables.production = false;

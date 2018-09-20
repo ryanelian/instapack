@@ -52,17 +52,10 @@ export class ToolOrchestrator {
      */
     async validateJsBuildTask() {
         let entry = this.finder.jsEntry;
-        let tsconfig = this.finder.tsConfigJson
         let checkEntry = fse.pathExists(entry);
-        let checkProject = fse.pathExists(tsconfig);
 
         if (await checkEntry === false) {
             Shout.timed('Entry file', chalk.cyan(entry), 'was not found.', chalk.red('Aborting JS build!'));
-            return false;
-        }
-
-        if (await checkProject === false) {
-            Shout.timed('Project file', chalk.cyan(tsconfig), 'was not found.', chalk.red('Aborting JS build!'));
             return false;
         }
 

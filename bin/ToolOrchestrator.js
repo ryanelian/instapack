@@ -40,15 +40,9 @@ class ToolOrchestrator {
     validateJsBuildTask() {
         return __awaiter(this, void 0, void 0, function* () {
             let entry = this.finder.jsEntry;
-            let tsconfig = this.finder.tsConfigJson;
             let checkEntry = fs_extra_1.default.pathExists(entry);
-            let checkProject = fs_extra_1.default.pathExists(tsconfig);
             if ((yield checkEntry) === false) {
                 Shout_1.Shout.timed('Entry file', chalk_1.default.cyan(entry), 'was not found.', chalk_1.default.red('Aborting JS build!'));
-                return false;
-            }
-            if ((yield checkProject) === false) {
-                Shout_1.Shout.timed('Project file', chalk_1.default.cyan(tsconfig), 'was not found.', chalk_1.default.red('Aborting JS build!'));
                 return false;
             }
             return true;

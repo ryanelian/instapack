@@ -16,6 +16,7 @@ import { IVariables } from './interfaces/IVariables';
 import { IMapLike } from './interfaces/IMapLike';
 import { PathFinder } from './PathFinder';
 import { loaders } from './loaders';
+import { parseTypescriptConfig } from './TypescriptConfigParser';
 
 /**
  * Contains methods for compiling a TypeScript project.
@@ -93,7 +94,7 @@ export class TypeScriptBuildEngine {
             // technical limitation: 1 alias = 1 path, not multiple paths...
             let values = tsCompilerOptions.paths[key];
             if (values.length > 1) {
-                Shout.danger(chalk.cyan('tsconfig.json'),
+                Shout.warning(chalk.cyan('tsconfig.json'),
                     'paths:', chalk.yellow(key), 'resolves to more than one path!',
                     chalk.grey('(Using the first one.)')
                 );
@@ -279,7 +280,6 @@ inject();
      * @param tsCompilerOptions 
      */
     createOnBuildStartMessageDelegate(tsCompilerOptions: TypeScript.CompilerOptions) {
-        let buildTargetWarned = false;
         let compileTarget = tsCompilerOptions.target;
         if (!compileTarget) {
             compileTarget = TypeScript.ScriptTarget.ES3;
@@ -287,10 +287,6 @@ inject();
         let t = TypeScript.ScriptTarget[compileTarget].toUpperCase();
 
         return () => {
-            if (t !== 'ES5' && !buildTargetWarned) {
-                Shout.danger('TypeScript compile target is not', chalk.yellow('ES5') + '!', chalk.grey('(tsconfig.json)'));
-                buildTargetWarned = true;
-            }
             Shout.timed('Compiling', chalk.cyan('index.ts'),
                 '>', chalk.yellow(t),
                 chalk.grey('in ' + this.finder.jsInputFolder + '/')
@@ -365,7 +361,7 @@ inject();
      */
     async createWebpackConfiguration() {
         let useBabel = await fse.pathExists(this.finder.babelConfiguration);
-        let tsconfig = await this.finder.readTsConfig();
+        let tsconfig = parseTypescriptConfig(this.variables.root, this.variables.typescriptConfiguration);
         // console.log(tsconfig.errors);
         let tsCompilerOptions = tsconfig.options;
         tsCompilerOptions.noEmit = false;

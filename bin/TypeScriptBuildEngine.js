@@ -26,6 +26,7 @@ const Shout_1 = require("./Shout");
 const PortScanner_1 = require("./PortScanner");
 const PathFinder_1 = require("./PathFinder");
 const loaders_1 = require("./loaders");
+const TypescriptConfigParser_1 = require("./TypescriptConfigParser");
 class TypeScriptBuildEngine {
     constructor(variables) {
         this.wormholes = new Set();
@@ -59,7 +60,7 @@ class TypeScriptBuildEngine {
             }
             let values = tsCompilerOptions.paths[key];
             if (values.length > 1) {
-                Shout_1.Shout.danger(chalk_1.default.cyan('tsconfig.json'), 'paths:', chalk_1.default.yellow(key), 'resolves to more than one path!', chalk_1.default.grey('(Using the first one.)'));
+                Shout_1.Shout.warning(chalk_1.default.cyan('tsconfig.json'), 'paths:', chalk_1.default.yellow(key), 'resolves to more than one path!', chalk_1.default.grey('(Using the first one.)'));
             }
             let value = values[0];
             if (!value) {
@@ -188,17 +189,12 @@ inject();
 `;
     }
     createOnBuildStartMessageDelegate(tsCompilerOptions) {
-        let buildTargetWarned = false;
         let compileTarget = tsCompilerOptions.target;
         if (!compileTarget) {
             compileTarget = typescript_1.default.ScriptTarget.ES3;
         }
         let t = typescript_1.default.ScriptTarget[compileTarget].toUpperCase();
         return () => {
-            if (t !== 'ES5' && !buildTargetWarned) {
-                Shout_1.Shout.danger('TypeScript compile target is not', chalk_1.default.yellow('ES5') + '!', chalk_1.default.grey('(tsconfig.json)'));
-                buildTargetWarned = true;
-            }
             Shout_1.Shout.timed('Compiling', chalk_1.default.cyan('index.ts'), '>', chalk_1.default.yellow(t), chalk_1.default.grey('in ' + this.finder.jsInputFolder + '/'));
         };
     }
@@ -245,7 +241,7 @@ inject();
     createWebpackConfiguration() {
         return __awaiter(this, void 0, void 0, function* () {
             let useBabel = yield fs_extra_1.default.pathExists(this.finder.babelConfiguration);
-            let tsconfig = yield this.finder.readTsConfig();
+            let tsconfig = TypescriptConfigParser_1.parseTypescriptConfig(this.variables.root, this.variables.typescriptConfiguration);
             let tsCompilerOptions = tsconfig.options;
             tsCompilerOptions.noEmit = false;
             tsCompilerOptions.sourceMap = this.variables.sourceMap;

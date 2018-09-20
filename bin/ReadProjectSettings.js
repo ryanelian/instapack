@@ -40,7 +40,7 @@ function readProjectSettingsFrom(folder) {
             alias: {},
             externals: {},
             port1: 0,
-            port2: 0
+            port2: 0,
         };
         let parse;
         try {

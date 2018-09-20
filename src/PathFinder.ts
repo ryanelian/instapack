@@ -47,38 +47,6 @@ export class PathFinder {
         return upath.join(this.root, 'tsconfig.json');
     }
 
-    async readTsConfig(): Promise<TypeScript.ParsedCommandLine> {
-        let tsconfigRaw = await fse.readFile(this.tsConfigJson, 'utf8');
-        // console.log(tsconfigRaw);
-
-        // https://github.com/Microsoft/TypeScript/blob/master/src/compiler/commandLineParser.ts#L992
-        let tsconfigJson = TypeScript.parseConfigFileTextToJson(this.tsConfigJson, tsconfigRaw);
-        if (tsconfigJson.error) {
-            throw Error(tsconfigJson.error.messageText.toString());
-        }
-        // console.log(tsconfigJson);
-        let tsconfig = TypeScript.parseJsonConfigFileContent(tsconfigJson.config, TypeScript.sys, this.root);
-        if (tsconfig.errors.length) {
-            throw Error(tsconfig.errors[0].messageText.toString());
-        }
-        // console.log(tsconfig);
-        return tsconfig;
-    }
-
-    /**
-     * /project/tslint.json
-     */
-    get tslintJson(): string {
-        return upath.join(this.root, 'tslint.json');
-    }
-
-    /**
-     * /project/tslint.yaml
-     */
-    get tslintYaml(): string {
-        return upath.join(this.root, 'tslint.yaml');
-    }
-
     findTslintConfiguration() {
         let yaml = upath.join(this.root, 'tslint.yaml');
         let json = upath.join(this.root, 'tslint.json');

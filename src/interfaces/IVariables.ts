@@ -94,4 +94,6 @@ export interface IVariables {
      * Gets the static port number to be used by the Hot Reload server for broadcasting changes using WebSocket.
      */
     port2: number;
+
+    typescriptConfiguration: any;
 }

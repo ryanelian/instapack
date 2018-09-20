@@ -53,11 +53,6 @@ exports.Shout = {
         let output = '\n' + chalk_1.default.red('FATAL ERROR') + message + '\n';
         console.error(output);
     },
-    danger: function (...tokens) {
-        let message = concatenateTokens(tokens);
-        let output = chalk_1.default.red('DANGER') + message;
-        console.warn(output);
-    },
     warning: function (...tokens) {
         let message = concatenateTokens(tokens);
         let output = chalk_1.default.yellow('WARNING') + message;

@@ -21,6 +21,7 @@ const PrettyUnits_1 = require("./PrettyUnits");
 const Shout_1 = require("./Shout");
 const VirtualSourceStore_1 = require("./VirtualSourceStore");
 const PathFinder_1 = require("./PathFinder");
+const TypescriptConfigParser_1 = require("./TypescriptConfigParser");
 class TypeScriptCheckerTool {
     constructor(variables, compilerOptions, host, virtualSourceStore, tslintConfiguration) {
         this.variables = variables;
@@ -49,7 +50,7 @@ class TypeScriptCheckerTool {
     static createToolAsync(variables) {
         return __awaiter(this, void 0, void 0, function* () {
             let finder = new PathFinder_1.PathFinder(variables);
-            let tsconfig = yield finder.readTsConfig();
+            let tsconfig = TypescriptConfigParser_1.parseTypescriptConfig(variables.root, variables.typescriptConfiguration);
             let compilerOptions = tsconfig.options;
             let definitions = tsconfig.fileNames.filter(Q => Q.endsWith('.d.ts'));
             let virtualSourceStore = new VirtualSourceStore_1.VirtualSourceStore(compilerOptions);

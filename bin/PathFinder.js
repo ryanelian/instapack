@@ -1,19 +1,9 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const upath_1 = __importDefault(require("upath"));
-const fs_extra_1 = __importDefault(require("fs-extra"));
-const typescript_1 = __importDefault(require("typescript"));
 const tslint_1 = require("tslint");
 class PathFinder {
     constructor(variables) {
@@ -30,26 +20,6 @@ class PathFinder {
     }
     get tsConfigJson() {
         return upath_1.default.join(this.root, 'tsconfig.json');
-    }
-    readTsConfig() {
-        return __awaiter(this, void 0, void 0, function* () {
-            let tsconfigRaw = yield fs_extra_1.default.readFile(this.tsConfigJson, 'utf8');
-            let tsconfigJson = typescript_1.default.parseConfigFileTextToJson(this.tsConfigJson, tsconfigRaw);
-            if (tsconfigJson.error) {
-                throw Error(tsconfigJson.error.messageText.toString());
-            }
-            let tsconfig = typescript_1.default.parseJsonConfigFileContent(tsconfigJson.config, typescript_1.default.sys, this.root);
-            if (tsconfig.errors.length) {
-                throw Error(tsconfig.errors[0].messageText.toString());
-            }
-            return tsconfig;
-        });
-    }
-    get tslintJson() {
-        return upath_1.default.join(this.root, 'tslint.json');
-    }
-    get tslintYaml() {
-        return upath_1.default.join(this.root, 'tslint.yaml');
     }
     findTslintConfiguration() {
         let yaml = upath_1.default.join(this.root, 'tslint.yaml');

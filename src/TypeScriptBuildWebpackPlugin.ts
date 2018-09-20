@@ -72,8 +72,8 @@ function minifyChunkAssets(compilation: webpack.compilation.Compilation, chunks:
                 compilation.assets[fileName] = output;
             }).catch(minifyError => {
                 Shout.error(`when minifying ${chalk.blue(fileName)} during JS build:`, minifyError);
-                Shout.warning('Only', chalk.yellow('ES5'), 'modules are suppported. Check',
-                    chalk.cyan('tsconfig.json:target'), 'or', chalk.cyan('package.json'), 'dependencies.');
+                Shout.warning('Only', chalk.yellow('ES5'), 'modules can be minified! Check',
+                    chalk.cyan('tsconfig.json:target'), 'or', chalk.cyan('package.json'), 'dependencies...');
                 compilation.errors.push(minifyError);
             });
 

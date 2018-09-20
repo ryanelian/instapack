@@ -21,6 +21,7 @@ const PackageManager_1 = require("./PackageManager");
 const Shout_1 = require("./Shout");
 const ToolOrchestrator_1 = require("./ToolOrchestrator");
 const UserSettingsManager_1 = require("./user-settings/UserSettingsManager");
+const TypescriptConfigParser_1 = require("./TypescriptConfigParser");
 function objectSortByKeys(input) {
     let output = {};
     let keys = Object.keys(input).sort();
@@ -88,7 +89,8 @@ module.exports = class instapack {
             let projectSettings = ReadProjectSettings_1.readProjectSettingsFrom(this.projectFolder);
             let dotEnv = EnvParser_1.readDotEnvFrom(this.projectFolder);
             let userSettings = UserSettingsManager_1.readUserSettingsFrom(UserSettingsManager_1.userSettingsFilePath);
-            let variables = CompileVariables_1.compileVariables(flags, yield projectSettings, yield userSettings, yield dotEnv);
+            let typescriptConfiguration = TypescriptConfigParser_1.tryReadTypeScriptConfigJson(this.projectFolder);
+            let variables = CompileVariables_1.compileVariables(flags, yield projectSettings, yield userSettings, yield dotEnv, yield typescriptConfiguration);
             if (variables.muteNotification) {
                 Shout_1.Shout.enableNotification = false;
             }

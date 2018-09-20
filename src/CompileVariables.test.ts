@@ -34,6 +34,19 @@ test('Compile Variables: Simple', t => {
         },
         {
             hello: 'world'
+        },
+        {
+            compilerOptions: {
+                alwaysStrict: true,
+                skipLibCheck: true,
+                noImplicitReturns: true,
+                noFallthroughCasesInSwitch: true,
+                allowSyntheticDefaultImports: true,
+
+                target: "es5",
+                module: "esnext",
+                moduleResolution: "node"
+            }
         });
 
     let expected: IVariables = {
@@ -58,7 +71,20 @@ test('Compile Variables: Simple', t => {
         watch: false,
         sourceMap: true,
         stats: true,
-        verbose: false
+        verbose: false,
+        typescriptConfiguration: {
+            compilerOptions: {
+                alwaysStrict: true,
+                skipLibCheck: true,
+                noImplicitReturns: true,
+                noFallthroughCasesInSwitch: true,
+                allowSyntheticDefaultImports: true,
+
+                target: "es5",
+                module: "esnext",
+                moduleResolution: "node"
+            }
+        }
     }
 
     t.deepEqual(result, expected);
@@ -99,6 +125,19 @@ test('Compile Variables: Overrides', t => {
         },
         {
             foo: 'zero'
+        },
+        {
+            compilerOptions: {
+                alwaysStrict: true,
+                skipLibCheck: true,
+                noImplicitReturns: true,
+                noFallthroughCasesInSwitch: true,
+                allowSyntheticDefaultImports: true,
+
+                target: "es5",
+                module: "esnext",
+                moduleResolution: "node"
+            }
         });
 
     let expected: IVariables = {
@@ -126,7 +165,20 @@ test('Compile Variables: Overrides', t => {
         watch: true,
         sourceMap: false,
         stats: false,
-        verbose: true
+        verbose: true,
+        typescriptConfiguration: {
+            compilerOptions: {
+                alwaysStrict: true,
+                skipLibCheck: true,
+                noImplicitReturns: true,
+                noFallthroughCasesInSwitch: true,
+                allowSyntheticDefaultImports: true,
+
+                target: "es5",
+                module: "esnext",
+                moduleResolution: "node"
+            }
+        }
     }
 
     t.deepEqual(result, expected);

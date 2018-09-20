@@ -7,7 +7,8 @@ export function compileVariables(
     buildFlags: ICommandLineFlags,
     projectSettings: IProjectSettings,
     userSettings: IUserSettings,
-    dotEnv: NodeJS.ProcessEnv): IVariables {
+    dotEnv: NodeJS.ProcessEnv,
+    typescriptConfiguration: any): IVariables {
 
     let variables: IVariables = {
         root: projectSettings.root,
@@ -32,6 +33,7 @@ export function compileVariables(
         hot: buildFlags.hot,
         port1: projectSettings.port1,
         port2: projectSettings.port2,
+        typescriptConfiguration: typescriptConfiguration
     };
 
     if (variables.hot) {

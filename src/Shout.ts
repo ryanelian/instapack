@@ -61,12 +61,6 @@ export let Shout = {
         console.error(output);
     },
 
-    danger: function (...tokens) {
-        let message = concatenateTokens(tokens);
-        let output = chalk.red('DANGER') + message;
-        console.warn(output);
-    },
-
     warning: function (...tokens) {
         let message = concatenateTokens(tokens);
         let output = chalk.yellow('WARNING') + message;

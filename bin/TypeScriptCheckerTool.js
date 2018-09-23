@@ -10,9 +10,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const typescript_1 = __importDefault(require("typescript"));
-const tslint_1 = __importDefault(require("tslint"));
+const tslint = __importStar(require("tslint"));
 const chalk_1 = __importDefault(require("chalk"));
 const fs_extra_1 = __importDefault(require("fs-extra"));
 const upath_1 = __importDefault(require("upath"));
@@ -74,7 +81,7 @@ class TypeScriptCheckerTool {
         let tsc = typescript_1.default.createProgram(entryPoints, this.compilerOptions, this.host);
         let linter = undefined;
         if (this.tslintConfiguration) {
-            linter = new tslint_1.default.Linter({
+            linter = new tslint.Linter({
                 fix: false
             }, tsc);
         }

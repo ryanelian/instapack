@@ -1,5 +1,5 @@
 import TypeScript from 'typescript';
-import tslint from 'tslint';
+import * as tslint from 'tslint';
 import chalk from 'chalk';
 import fse from 'fs-extra';
 import upath from 'upath';
@@ -38,6 +38,7 @@ export class TypeScriptCheckerTool {
     private readonly tslintConfiguration: tslint.Configuration.IConfigurationFile | undefined;
 
     private readonly variables: IVariables;
+
     private readonly finder: PathFinder;
 
     /**

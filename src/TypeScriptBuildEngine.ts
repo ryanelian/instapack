@@ -297,7 +297,7 @@ inject();
     /**
      * Returns webpack plugins array.
      */
-    async createWebpackPlugins(tsCompilerOptions: TypeScript.CompilerOptions) {
+    createWebpackPlugins(tsCompilerOptions: TypeScript.CompilerOptions) {
         let plugins: webpack.Plugin[] = [];
 
         let onBuildStart = this.createOnBuildStartMessageDelegate(tsCompilerOptions);
@@ -374,7 +374,7 @@ inject();
         // console.log(wildcards);
 
         let rules = this.createWebpackRules(tsCompilerOptions, useBabel);
-        let plugins = await this.createWebpackPlugins(tsCompilerOptions);
+        let plugins = this.createWebpackPlugins(tsCompilerOptions);
 
         // webpack configuration errors if using UNIX path in Windows!
         let osEntry = path.normalize(this.finder.jsEntry);

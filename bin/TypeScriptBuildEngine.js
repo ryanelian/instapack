@@ -199,20 +199,18 @@ inject();
         };
     }
     createWebpackPlugins(tsCompilerOptions) {
-        return __awaiter(this, void 0, void 0, function* () {
-            let plugins = [];
-            let onBuildStart = this.createOnBuildStartMessageDelegate(tsCompilerOptions);
-            plugins.push(new TypeScriptBuildWebpackPlugin_1.TypeScriptBuildWebpackPlugin({
-                onBuildStart: onBuildStart,
-                minify: this.variables.production,
-                sourceMap: this.variables.sourceMap
-            }));
-            plugins.push(new vue_loader_1.VueLoaderPlugin());
-            if (Object.keys(this.variables.env).length > 0) {
-                plugins.push(new webpack_1.default.EnvironmentPlugin(this.variables.env));
-            }
-            return plugins;
-        });
+        let plugins = [];
+        let onBuildStart = this.createOnBuildStartMessageDelegate(tsCompilerOptions);
+        plugins.push(new TypeScriptBuildWebpackPlugin_1.TypeScriptBuildWebpackPlugin({
+            onBuildStart: onBuildStart,
+            minify: this.variables.production,
+            sourceMap: this.variables.sourceMap
+        }));
+        plugins.push(new vue_loader_1.VueLoaderPlugin());
+        if (Object.keys(this.variables.env).length > 0) {
+            plugins.push(new webpack_1.default.EnvironmentPlugin(this.variables.env));
+        }
+        return plugins;
     }
     createWebpackRules(tsCompilerOptions, useBabel) {
         let rules = [
@@ -249,7 +247,7 @@ inject();
             let alias = this.mergeTypeScriptPathAlias(tsCompilerOptions);
             let wildcards = this.getWildcardModules(tsCompilerOptions);
             let rules = this.createWebpackRules(tsCompilerOptions, useBabel);
-            let plugins = yield this.createWebpackPlugins(tsCompilerOptions);
+            let plugins = this.createWebpackPlugins(tsCompilerOptions);
             let osEntry = path_1.default.normalize(this.finder.jsEntry);
             let osOutputJsFolder = path_1.default.normalize(this.finder.jsOutputFolder);
             let config = {

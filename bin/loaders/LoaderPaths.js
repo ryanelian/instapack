@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.loaders = {
+exports.LoaderPaths = {
     typescript: require.resolve('./CoreTypeScriptLoader'),
     template: require.resolve('./TemplateLoader'),
     babel: require.resolve('babel-loader'),

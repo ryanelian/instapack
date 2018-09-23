@@ -15,7 +15,7 @@ import { getAvailablePort, isPortAvailable } from './PortScanner';
 import { IVariables } from './interfaces/IVariables';
 import { IMapLike } from './interfaces/IMapLike';
 import { PathFinder } from './PathFinder';
-import { loaders } from './loaders';
+import { LoaderPaths } from './loaders/LoaderPaths';
 import { parseTypescriptConfig } from './TypescriptConfigParser';
 
 /**
@@ -163,7 +163,7 @@ export class TypeScriptBuildEngine {
             test: /\.m?jsx?$/,
             exclude: /node_modules/,
             use: {
-                loader: loaders.babel
+                loader: LoaderPaths.babel
             }
         };
     }
@@ -182,12 +182,12 @@ export class TypeScriptBuildEngine {
 
         if (useBabel) {
             tsRules.use.push({
-                loader: loaders.babel
+                loader: LoaderPaths.babel
             })
         }
 
         tsRules.use.push({
-            loader: loaders.typescript,
+            loader: LoaderPaths.typescript,
             options: {
                 compilerOptions: tsCompilerOptions
             }
@@ -203,7 +203,7 @@ export class TypeScriptBuildEngine {
         return {
             test: /\.vue$/,
             use: [{
-                loader: loaders.vue,
+                loader: LoaderPaths.vue,
                 options: {
                     transformAssetUrls: {},     // remove <img> src and SVG <image> xlink:href resolution
                 }
@@ -218,7 +218,7 @@ export class TypeScriptBuildEngine {
         return {
             test: /\.html$/,
             use: [{
-                loader: loaders.template
+                loader: LoaderPaths.template
             }]
         };
     }
@@ -228,17 +228,17 @@ export class TypeScriptBuildEngine {
      */
     get cssWebpackRules(): webpack.Rule {
         let vueStyleLoader = {
-            loader: loaders.vueStyle
+            loader: LoaderPaths.vueStyle
         };
         let cssModulesLoader = {
-            loader: loaders.css,
+            loader: LoaderPaths.css,
             options: {
                 modules: true,
                 url: false
             }
         };
         let cssLoader = {
-            loader: loaders.css,
+            loader: LoaderPaths.css,
             options: {
                 url: false
             }

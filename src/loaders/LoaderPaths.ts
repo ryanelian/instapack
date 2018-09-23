@@ -1,7 +1,7 @@
 /**
- * Returns strongly-typed, directory agnostic loaders path.
+ * Returns strongly-typed, absolute loader module paths.
  */
-export let loaders = {
+export let LoaderPaths = {
     typescript: require.resolve('./CoreTypeScriptLoader'),
     template: require.resolve('./TemplateLoader'),
     babel: require.resolve('babel-loader'),

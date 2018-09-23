@@ -25,7 +25,7 @@ const TypeScriptBuildWebpackPlugin_1 = require("./TypeScriptBuildWebpackPlugin")
 const Shout_1 = require("./Shout");
 const PortScanner_1 = require("./PortScanner");
 const PathFinder_1 = require("./PathFinder");
-const loaders_1 = require("./loaders");
+const LoaderPaths_1 = require("./loaders/LoaderPaths");
 const TypescriptConfigParser_1 = require("./TypescriptConfigParser");
 class TypeScriptBuildEngine {
     constructor(variables) {
@@ -105,7 +105,7 @@ class TypeScriptBuildEngine {
             test: /\.m?jsx?$/,
             exclude: /node_modules/,
             use: {
-                loader: loaders_1.loaders.babel
+                loader: LoaderPaths_1.LoaderPaths.babel
             }
         };
     }
@@ -116,11 +116,11 @@ class TypeScriptBuildEngine {
         };
         if (useBabel) {
             tsRules.use.push({
-                loader: loaders_1.loaders.babel
+                loader: LoaderPaths_1.LoaderPaths.babel
             });
         }
         tsRules.use.push({
-            loader: loaders_1.loaders.typescript,
+            loader: LoaderPaths_1.LoaderPaths.typescript,
             options: {
                 compilerOptions: tsCompilerOptions
             }
@@ -131,7 +131,7 @@ class TypeScriptBuildEngine {
         return {
             test: /\.vue$/,
             use: [{
-                    loader: loaders_1.loaders.vue,
+                    loader: LoaderPaths_1.LoaderPaths.vue,
                     options: {
                         transformAssetUrls: {},
                     }
@@ -142,23 +142,23 @@ class TypeScriptBuildEngine {
         return {
             test: /\.html$/,
             use: [{
-                    loader: loaders_1.loaders.template
+                    loader: LoaderPaths_1.LoaderPaths.template
                 }]
         };
     }
     get cssWebpackRules() {
         let vueStyleLoader = {
-            loader: loaders_1.loaders.vueStyle
+            loader: LoaderPaths_1.LoaderPaths.vueStyle
         };
         let cssModulesLoader = {
-            loader: loaders_1.loaders.css,
+            loader: LoaderPaths_1.LoaderPaths.css,
             options: {
                 modules: true,
                 url: false
             }
         };
         let cssLoader = {
-            loader: loaders_1.loaders.css,
+            loader: LoaderPaths_1.LoaderPaths.css,
             options: {
                 url: false
             }

@@ -22,14 +22,14 @@ class ToolOrchestrator {
         this.finder = new PathFinder_1.PathFinder(this.variables);
     }
     outputBuildInformation() {
-        if (this.variables.watch) {
-            Shout_1.Shout.timed(chalk_1.default.yellow("Watch"), "Mode: Source code will be automatically compiled on changes.");
-        }
         if (this.variables.production) {
             Shout_1.Shout.timed(chalk_1.default.yellow("Production"), "Mode: Build optimizations are enabled.", chalk_1.default.red("(Slower)"));
         }
         else {
             Shout_1.Shout.timed(chalk_1.default.yellow("Development"), "Mode: Build optimizations are", chalk_1.default.red("DISABLED!"), chalk_1.default.grey("(Fast build)"));
+        }
+        if (this.variables.watch) {
+            Shout_1.Shout.timed(chalk_1.default.yellow("Watch"), "Mode: Source code will be automatically compiled on changes.");
         }
         Shout_1.Shout.timed('Source Maps:', chalk_1.default.yellow(this.variables.sourceMap ? 'Enabled' : 'Disabled'));
         if (this.variables.stats) {

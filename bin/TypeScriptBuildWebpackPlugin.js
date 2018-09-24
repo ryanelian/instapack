@@ -76,9 +76,8 @@ class TypeScriptBuildWebpackPlugin {
             return;
         }
         compiler.hooks.compilation.tap(pluginId, compilation => {
-            compilation.hooks.optimizeChunkAssets.tapAsync(pluginId, (chunks, next) => __awaiter(this, void 0, void 0, function* () {
+            compilation.hooks.optimizeChunkAssets.tapPromise(pluginId, (chunks) => __awaiter(this, void 0, void 0, function* () {
                 yield minifyChunkAssets(compilation, chunks, this.options.sourceMap);
-                next();
             }));
         });
     }

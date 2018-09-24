@@ -28,14 +28,14 @@ export class ToolOrchestrator {
      * Displays information about currently used build flags.
      */
     outputBuildInformation() {
-        if (this.variables.watch) {
-            Shout.timed(chalk.yellow("Watch"), "Mode: Source code will be automatically compiled on changes.");
-        }
-
         if (this.variables.production) {
             Shout.timed(chalk.yellow("Production"), "Mode: Build optimizations are enabled.", chalk.red("(Slower)"));
         } else {
             Shout.timed(chalk.yellow("Development"), "Mode: Build optimizations are", chalk.red("DISABLED!"), chalk.grey("(Fast build)"));
+        }
+
+        if (this.variables.watch) {
+            Shout.timed(chalk.yellow("Watch"), "Mode: Source code will be automatically compiled on changes.");
         }
 
         Shout.timed('Source Maps:', chalk.yellow(this.variables.sourceMap ? 'Enabled' : 'Disabled'));

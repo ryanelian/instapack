@@ -16,7 +16,9 @@ const path_1 = __importDefault(require("path"));
 const fs_extra_1 = __importDefault(require("fs-extra"));
 const chalk_1 = __importDefault(require("chalk"));
 const webpack_1 = __importDefault(require("webpack"));
-const webpack_serve_1 = __importDefault(require("webpack-serve"));
+const webpack_hot_client_1 = __importDefault(require("webpack-hot-client"));
+const webpack_dev_middleware_1 = __importDefault(require("webpack-dev-middleware"));
+const express_1 = __importDefault(require("express"));
 const typescript_1 = __importDefault(require("typescript"));
 const vue_loader_1 = require("vue-loader");
 const url_1 = __importDefault(require("url"));
@@ -44,8 +46,8 @@ class TypeScriptBuildEngine {
     mergeTypeScriptPathAlias(tsCompilerOptions) {
         let alias = Object.assign({}, this.variables.alias);
         if (this.variables.hot) {
-            let hotClient = require.resolve('webpack-hot-client/client');
-            alias['webpack-hot-client/client'] = hotClient;
+            let hotClientModulePath = require.resolve('webpack-hot-client/client');
+            alias['webpack-hot-client/client'] = hotClientModulePath;
         }
         if (!tsCompilerOptions.paths) {
             return alias;
@@ -251,7 +253,7 @@ inject();
             let osEntry = path_1.default.normalize(this.finder.jsEntry);
             let osOutputJsFolder = path_1.default.normalize(this.finder.jsOutputFolder);
             let config = {
-                entry: osEntry,
+                entry: [osEntry],
                 output: {
                     filename: this.finder.jsOutputFileName,
                     chunkFilename: this.finder.jsChunkFileName,
@@ -336,7 +338,7 @@ inject();
                     reject(error);
                     return;
                 }
-                this.displayCompileResult(stats);
+                this.displayBuildResults(stats);
                 if (this.variables.watch) {
                     return;
                 }
@@ -349,7 +351,7 @@ inject();
             return Promise.resolve();
         });
     }
-    displayCompileResult(stats) {
+    displayBuildResults(stats) {
         let o = stats.toJson(this.statsSerializeEssentialOption);
         let errors = o.errors;
         if (errors.length) {
@@ -417,8 +419,9 @@ inject();
     }
     putWormhole(fileName) {
         let physicalFilePath = upath_1.default.join(this.finder.jsOutputFolder, fileName);
+        let relativeFilePath = upath_1.default.relative(this.finder.root, physicalFilePath);
         let hotUri = url_1.default.resolve(this.outputHotJsFolderUri, fileName);
-        Shout_1.Shout.timed(`+wormhole: ${chalk_1.default.cyan(physicalFilePath)} --> ${chalk_1.default.cyan(hotUri)}`);
+        Shout_1.Shout.timed(`+wormhole: ${chalk_1.default.cyan(relativeFilePath)} --> ${chalk_1.default.cyan(hotUri)}`);
         let hotProxy = this.createWormholeToHotScript(hotUri);
         return fs_extra_1.default.outputFile(physicalFilePath, hotProxy);
     }
@@ -428,25 +431,28 @@ inject();
     runDevServer(webpackConfiguration) {
         return __awaiter(this, void 0, void 0, function* () {
             const logLevel = 'warn';
-            let devServer = yield webpack_serve_1.default({}, {
-                config: webpackConfiguration,
-                port: this.variables.port1,
-                content: this.finder.outputFolderPath,
-                hotClient: {
-                    port: this.variables.port2,
-                    logLevel: logLevel
-                },
-                logLevel: logLevel,
-                devMiddleware: {
+            const compiler = webpack_1.default(webpackConfiguration);
+            compiler.hooks.done.tapPromise('display-build-results', (stats) => __awaiter(this, void 0, void 0, function* () {
+                this.displayBuildResults(stats);
+            }));
+            const client = webpack_hot_client_1.default(compiler, {
+                port: this.variables.port2,
+                logLevel: logLevel
+            });
+            let app = express_1.default();
+            client.server.on('listening', () => {
+                app.use(webpack_dev_middleware_1.default(compiler, {
                     publicPath: this.outputPublicPath,
+                    logLevel: logLevel,
                     headers: {
                         'Access-Control-Allow-Origin': '*'
                     },
-                    logLevel: logLevel
-                }
-            });
-            devServer.on('build-finished', args => {
-                this.displayCompileResult(args.stats);
+                }));
+                let p1 = chalk_1.default.green(this.variables.port1.toString());
+                let p2 = chalk_1.default.green(this.variables.port2.toString());
+                app.listen(this.variables.port1, () => {
+                    Shout_1.Shout.timed(chalk_1.default.yellow('Hot Reload'), `Server running on ports: ${p1}, ${p2}`);
+                });
             });
             yield new Promise((ok, reject) => { });
         });
@@ -479,9 +485,6 @@ inject();
             if (genPort2) {
                 this.variables.port2 = yield PortScanner_1.getAvailablePort(this.variables.port1 + 1);
             }
-            let p1 = chalk_1.default.green(this.variables.port1.toString());
-            let p2 = chalk_1.default.green(this.variables.port2.toString());
-            Shout_1.Shout.timed(chalk_1.default.yellow('Hot Reload'), `Server running on ports: ${p1}, ${p2}`);
             if (this.variables.hot) {
                 this.outputPublicPath = this.outputHotJsFolderUri;
             }

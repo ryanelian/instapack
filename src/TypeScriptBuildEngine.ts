@@ -3,7 +3,9 @@ import path from 'path';
 import fse from 'fs-extra';
 import chalk from 'chalk';
 import webpack from 'webpack';
-import serve from 'webpack-serve';
+import hotClient from 'webpack-hot-client';
+import devMiddleware from 'webpack-dev-middleware';
+import express from 'express';
 import TypeScript from 'typescript';
 import { VueLoaderPlugin } from 'vue-loader';
 import url from 'url';
@@ -69,8 +71,8 @@ export class TypeScriptBuildEngine {
         let alias: IMapLike<string> = Object.assign({}, this.variables.alias);
 
         if (this.variables.hot) {
-            let hotClient = require.resolve('webpack-hot-client/client');
-            alias['webpack-hot-client/client'] = hotClient;
+            let hotClientModulePath = require.resolve('webpack-hot-client/client');
+            alias['webpack-hot-client/client'] = hotClientModulePath;
             // console.log(hotClient);
         }
 
@@ -382,7 +384,7 @@ inject();
         // apparently we don't need to normalize paths for alias and wildcards.
 
         let config: webpack.Configuration = {
-            entry: osEntry,
+            entry: [osEntry],
             output: {
                 filename: this.finder.jsOutputFileName,
                 chunkFilename: this.finder.jsChunkFileName,   // https://webpack.js.org/guides/code-splitting
@@ -482,7 +484,7 @@ inject();
                     return;
                 }
 
-                this.displayCompileResult(stats);
+                this.displayBuildResults(stats);
 
                 if (this.variables.watch) {
                     return; // do not terminate build worker on watch mode!
@@ -502,7 +504,7 @@ inject();
      * Interact with user via CLI output when TypeScript build is finished.
      * @param stats 
      */
-    displayCompileResult(stats: webpack.Stats): void {
+    displayBuildResults(stats: webpack.Stats): void {
         let o = stats.toJson(this.statsSerializeEssentialOption);
         // console.log(o);
 
@@ -589,8 +591,9 @@ inject();
      */
     putWormhole(fileName: string) {
         let physicalFilePath = upath.join(this.finder.jsOutputFolder, fileName);
+        let relativeFilePath = upath.relative(this.finder.root, physicalFilePath);
         let hotUri = url.resolve(this.outputHotJsFolderUri, fileName);
-        Shout.timed(`+wormhole: ${chalk.cyan(physicalFilePath)} --> ${chalk.cyan(hotUri)}`);
+        Shout.timed(`+wormhole: ${chalk.cyan(relativeFilePath)} --> ${chalk.cyan(hotUri)}`);
         let hotProxy = this.createWormholeToHotScript(hotUri);
         return fse.outputFile(physicalFilePath, hotProxy);
     }
@@ -610,26 +613,34 @@ inject();
     async runDevServer(webpackConfiguration: webpack.Configuration) {
         const logLevel = 'warn';
 
-        let devServer = await serve({}, {
-            config: webpackConfiguration,
-            port: this.variables.port1,
-            content: this.finder.outputFolderPath,
-            hotClient: {
-                port: this.variables.port2,
-                logLevel: logLevel
-            },
-            logLevel: logLevel,
-            devMiddleware: {
+        const compiler = webpack(webpackConfiguration);
+        compiler.hooks.done.tapPromise('display-build-results', async stats => {
+            this.displayBuildResults(stats);
+        });
+
+        const client = hotClient(compiler, {
+            port: this.variables.port2,
+            logLevel: logLevel
+        });
+
+        // console.log(client);
+        let app = express();
+
+        client.server.on('listening', () => {
+            app.use(devMiddleware(compiler, {
                 publicPath: this.outputPublicPath,
+                logLevel: logLevel,
                 headers: {
                     'Access-Control-Allow-Origin': '*'
                 },
-                logLevel: logLevel
-            }
-        });
+            }));
 
-        devServer.on('build-finished', args => {
-            this.displayCompileResult(args.stats);
+            let p1 = chalk.green(this.variables.port1.toString());
+            let p2 = chalk.green(this.variables.port2.toString());
+
+            app.listen(this.variables.port1, () => {
+                Shout.timed(chalk.yellow('Hot Reload'), `Server running on ports: ${p1}, ${p2}`);
+            });
         });
 
         await new Promise((ok, reject) => { });
@@ -667,10 +678,6 @@ inject();
         if (genPort2) {
             this.variables.port2 = await getAvailablePort(this.variables.port1 + 1);
         }
-
-        let p1 = chalk.green(this.variables.port1.toString());
-        let p2 = chalk.green(this.variables.port2.toString());
-        Shout.timed(chalk.yellow('Hot Reload'), `Server running on ports: ${p1}, ${p2}`);
 
         if (this.variables.hot) {
             this.outputPublicPath = this.outputHotJsFolderUri;

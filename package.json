@@ -1,6 +1,6 @@
 {
   "name": "instapack",
-  "version": "7.0.0-beta2",
+  "version": "7.0.0-beta3",
   "description": "All-in-one TypeScript and Sass compiler for web applications!",
   "keywords": [
     "typescript",
@@ -60,6 +60,7 @@
     "css-loader": "1.0.0",
     "dotenv": "6.0.0",
     "enhanced-resolve": "4.1.0",
+    "express": "4.16.3",
     "fs-extra": "7.0.0",
     "glob": "7.1.3",
     "html-minifier": "3.5.20",
@@ -76,7 +77,8 @@
     "vue-loader": "15.4.2",
     "vue-template-compiler": "2.5.17",
     "webpack": "4.19.1",
-    "webpack-serve": "2.0.2",
+    "webpack-dev-middleware": "3.3.0",
+    "webpack-hot-client": "4.1.1",
     "webpack-sources": "1.3.0",
     "worker-farm": "1.6.0",
     "yargs": "12.0.2"
@@ -84,6 +86,7 @@
   "devDependencies": {
     "@types/chokidar": "^1.7.5",
     "@types/dotenv": "^4.0.3",
+    "@types/express": "^4.16.0",
     "@types/fs-extra": "^5.0.4",
     "@types/glob": "^7.1.0",
     "@types/html-minifier": "^3.5.2",
@@ -91,7 +94,7 @@
     "@types/node": "8",
     "@types/uglify-js": "^3.0.3",
     "@types/webpack": "^4.4.12",
-    "@types/webpack-serve": "^2.0.0",
+    "@types/webpack-dev-middleware": "^2.0.2",
     "@types/webpack-sources": "^0.1.5",
     "@types/yargs": "^12.0.0",
     "ava": "1.0.0-beta.8"

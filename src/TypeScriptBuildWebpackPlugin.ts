@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import webpack from 'webpack';
+import webpack = require('webpack');
 import { Source, SourceMapSource, RawSource } from 'webpack-sources';
 
 import { Shout } from './Shout';

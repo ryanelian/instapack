@@ -1,7 +1,7 @@
 import chalk from 'chalk';
-import notifier from 'node-notifier';
-import upath from 'upath';
-import fse from 'fs-extra';
+import notifier = require('node-notifier');
+import * as upath from 'upath';
+import * as fse from 'fs-extra';
 import { prettyBytes } from './PrettyUnits';
 
 /**

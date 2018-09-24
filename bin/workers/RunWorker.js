@@ -7,18 +7,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const worker_farm_1 = __importDefault(require("worker-farm"));
+const WorkerFarm = require("worker-farm");
 const typeScriptBuildWorkerModulePath = require.resolve('./TypeScriptBuildWorker');
 const typeScriptCheckWorkerModulePath = require.resolve('./TypeScriptCheckWorker');
 const sassBuildWorkerModulePath = require.resolve('./SassBuildWorker');
 const jsMinifyWorkerModulePath = require.resolve('./MinifyWorker');
 function runWorkerAsync(modulePath, params) {
     return __awaiter(this, void 0, void 0, function* () {
-        let worker = worker_farm_1.default(modulePath);
+        let worker = WorkerFarm(modulePath);
         try {
             let p = new Promise((ok, reject) => {
                 worker(params, (error, result) => {
@@ -33,7 +30,7 @@ function runWorkerAsync(modulePath, params) {
             return yield p;
         }
         finally {
-            worker_farm_1.default.end(worker);
+            WorkerFarm.end(worker);
         }
     });
 }

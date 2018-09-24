@@ -1,6 +1,6 @@
-import upath from 'upath';
+import * as upath from 'upath';
 import { Configuration } from 'tslint';
-import { IVariables } from './interfaces/IVariables';
+import { IVariables } from './IVariables';
 
 /**
  * A very light and thin extension build on top of IVariables for getting various file paths. 

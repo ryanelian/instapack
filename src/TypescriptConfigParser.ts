@@ -1,6 +1,6 @@
-import fse from 'fs-extra';
-import upath from 'upath';
-import TypeScript from 'typescript';
+import * as fse from 'fs-extra';
+import * as upath from 'upath';
+import * as TypeScript from 'typescript';
 import { Shout } from './Shout';
 import chalk from 'chalk';
 

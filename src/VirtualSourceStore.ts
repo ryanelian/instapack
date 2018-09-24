@@ -1,9 +1,8 @@
-import fse from 'fs-extra';
-import glob from 'glob';
+import * as fse from 'fs-extra';
+import glob = require('glob');
 import { createHash } from 'crypto';
-import TypeScript from 'typescript';
-import { parseComponent } from 'vue-template-compiler';
-import { IMapLike } from './interfaces/IMapLike';
+import * as TypeScript from 'typescript';
+import VueTemplateCompiler = require('vue-template-compiler');
 
 /**
  * Contains virtual and cached source code for TypeScript project.
@@ -140,7 +139,7 @@ export class VirtualSourceStore {
      * @param raw 
      */
     private parseVueFile(raw: string): string {
-        let parse = parseComponent(raw);
+        let parse = VueTemplateCompiler.parseComponent(raw);
 
         if (!parse.script) {
             return '';

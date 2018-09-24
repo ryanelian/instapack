@@ -1,4 +1,4 @@
-import net from 'net';
+import * as net from 'net';
 
 /**
  * Check if a port number is available

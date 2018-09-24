@@ -1,12 +1,12 @@
-import fse from 'fs-extra';
-import upath from 'upath';
+import * as fse from 'fs-extra';
+import * as upath from 'upath';
 import chalk from 'chalk';
 
-import { ICommandLineFlags } from "./interfaces/ICommandLineFlags";
-import { readProjectSettingsFrom } from './ReadProjectSettings';
-import { readDotEnvFrom } from './EnvParser';
-import { compileVariables } from './CompileVariables';
-import { PathFinder } from './PathFinder';
+import { ICommandLineFlags } from "./variables-factory/ICommandLineFlags";
+import { readProjectSettingsFrom } from './variables-factory/ReadProjectSettings';
+import { readDotEnvFrom } from './variables-factory/EnvParser';
+import { compileVariables } from './variables-factory/CompileVariables';
+import { PathFinder } from './variables-factory/PathFinder';
 import { PackageManager } from './PackageManager';
 import { Shout } from './Shout';
 import { ToolOrchestrator } from './ToolOrchestrator';

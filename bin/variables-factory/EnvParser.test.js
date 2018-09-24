@@ -7,17 +7,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const ava_1 = __importDefault(require("ava"));
-const upath_1 = __importDefault(require("upath"));
+const ava_1 = require("ava");
+const upath = require("upath");
 const EnvParser_1 = require("./EnvParser");
 let root = process.cwd();
-let fixtures = upath_1.default.join(root, 'fixtures');
+let fixtures = upath.join(root, 'fixtures');
 ava_1.default('Read .env File: Valid', (t) => __awaiter(this, void 0, void 0, function* () {
-    let folder = upath_1.default.join(fixtures, 'DotEnvValid');
+    let folder = upath.join(fixtures, 'DotEnvValid');
     let r = yield EnvParser_1.readDotEnvFrom(folder);
     t.deepEqual(r, {
         foo: 'undefined',
@@ -28,12 +25,12 @@ ava_1.default('Read .env File: Valid', (t) => __awaiter(this, void 0, void 0, fu
     });
 }));
 ava_1.default('Read .env File: Invalid', (t) => __awaiter(this, void 0, void 0, function* () {
-    let folder = upath_1.default.join(fixtures, 'DotEnvInvalid');
+    let folder = upath.join(fixtures, 'DotEnvInvalid');
     let r = yield EnvParser_1.readDotEnvFrom(folder);
     t.deepEqual(r, {});
 }));
 ava_1.default('Read .env File: Not Found', (t) => __awaiter(this, void 0, void 0, function* () {
-    let folder = upath_1.default.join(fixtures, 'Empty');
+    let folder = upath.join(fixtures, 'Empty');
     let r = yield EnvParser_1.readDotEnvFrom(folder);
     t.deepEqual(r, {});
 }));

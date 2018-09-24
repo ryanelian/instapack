@@ -1,6 +1,6 @@
 import { loader } from 'webpack';
 import { minify } from 'html-minifier';
-import { compile } from 'vue-template-compiler';
+import VueTemplateCompiler = require('vue-template-compiler');
 import { SourceMapGenerator } from 'source-map';
 import { Shout } from '../Shout';
 
@@ -56,7 +56,7 @@ export = function (this: loader.LoaderContext, html: string) {
             deprecateVueHtmlWarned = true;
         }
 
-        let vueResult = compile(template);
+        let vueResult = VueTemplateCompiler.compile(template);
         // console.log(vueResult);
 
         let error = vueResult.errors[0];

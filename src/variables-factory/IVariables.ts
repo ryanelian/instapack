@@ -1,5 +1,3 @@
-import { IMapLike } from "./IMapLike";
-
 /**
  * Contains all flags and settings for the instapack build tool.
  */

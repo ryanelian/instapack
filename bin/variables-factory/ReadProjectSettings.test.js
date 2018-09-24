@@ -7,20 +7,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const ava_1 = __importDefault(require("ava"));
-const upath_1 = __importDefault(require("upath"));
+const ava_1 = require("ava");
+const upath = require("upath");
 const ReadProjectSettings_1 = require("./ReadProjectSettings");
 let root = process.cwd();
-let fixtures = upath_1.default.join(root, 'fixtures');
+let fixtures = upath.join(root, 'fixtures');
 ava_1.default('Project Settings: Not Found', (t) => __awaiter(this, void 0, void 0, function* () {
-    let folder = upath_1.default.join(fixtures, 'Empty');
+    let folder = upath.join(fixtures, 'Empty');
     let settings = yield ReadProjectSettings_1.readProjectSettingsFrom(folder);
     let result = {
-        root: upath_1.default.toUnix(folder),
+        root: upath.toUnix(folder),
         input: 'client',
         output: 'wwwroot',
         jsOut: 'ipack.js',
@@ -33,10 +30,10 @@ ava_1.default('Project Settings: Not Found', (t) => __awaiter(this, void 0, void
     t.deepEqual(settings, result);
 }));
 ava_1.default('Project Settings: Invalid', (t) => __awaiter(this, void 0, void 0, function* () {
-    let folder = upath_1.default.join(fixtures, 'ProjectSettingsInvalid');
+    let folder = upath.join(fixtures, 'ProjectSettingsInvalid');
     let settings = yield ReadProjectSettings_1.readProjectSettingsFrom(folder);
     let result = {
-        root: upath_1.default.toUnix(folder),
+        root: upath.toUnix(folder),
         input: 'client',
         output: 'wwwroot',
         jsOut: 'ipack.js',
@@ -49,10 +46,10 @@ ava_1.default('Project Settings: Invalid', (t) => __awaiter(this, void 0, void 0
     t.deepEqual(settings, result);
 }));
 ava_1.default('Project Settings: Valid', (t) => __awaiter(this, void 0, void 0, function* () {
-    let folder = upath_1.default.join(fixtures, 'ProjectSettingsValid');
+    let folder = upath.join(fixtures, 'ProjectSettingsValid');
     let settings = yield ReadProjectSettings_1.readProjectSettingsFrom(folder);
     let result = {
-        root: upath_1.default.toUnix(folder),
+        root: upath.toUnix(folder),
         input: 'src',
         output: 'www',
         jsOut: 'bundle.js',

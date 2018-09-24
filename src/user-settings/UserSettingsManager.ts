@@ -1,13 +1,12 @@
-import upath from 'upath';
-import os from 'os';
-import fse from 'fs-extra';
-import { IMapLike } from '../interfaces/IMapLike';
+import * as upath from 'upath';
+import * as OS from 'os';
+import * as fse from 'fs-extra';
 import { PackageManagerUserSettingMapper } from './mappers/PackageManagerUserSettingMapper';
 import { NotificationUserSettingMapper } from './mappers/NotificationUserSettingMapper';
 import { IUserSettings } from './IUserSettings';
 import { IUserSettingMapper } from './mappers/IUserSettingMapper';
 
-export let userSettingsFilePath: string = upath.join(os.homedir(), 'instapack', 'settings.json');
+export let userSettingsFilePath: string = upath.join(OS.homedir(), 'instapack', 'settings.json');
 
 let userSettingMappers: IMapLike<IUserSettingMapper<any>> = {
     'package-manager': new PackageManagerUserSettingMapper(),

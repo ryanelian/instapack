@@ -7,11 +7,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const upath_1 = __importDefault(require("upath"));
+const upath = require("upath");
 const enhanced_resolve_1 = require("enhanced-resolve");
 function resolveAsync(customResolver, lookupStartPath, request) {
     return new Promise((ok, reject) => {
@@ -27,9 +24,9 @@ function resolveAsync(customResolver, lookupStartPath, request) {
 }
 function sassImport(source, request) {
     return __awaiter(this, void 0, void 0, function* () {
-        let lookupStartPath = upath_1.default.dirname(source);
-        let requestFileName = upath_1.default.basename(request);
-        let requestDir = upath_1.default.dirname(request);
+        let lookupStartPath = upath.dirname(source);
+        let requestFileName = upath.basename(request);
+        let requestDir = upath.dirname(request);
         if (requestFileName.startsWith('_') === false) {
             let partialFolderLookups = [lookupStartPath];
             if (requestDir !== '.') {
@@ -42,8 +39,8 @@ function sassImport(source, request) {
                 mainFiles: [],
                 descriptionFiles: []
             });
-            let partialFileName = '_' + upath_1.default.addExt(requestFileName, '.scss');
-            let partialRequest = upath_1.default.join(requestDir, partialFileName);
+            let partialFileName = '_' + upath.addExt(requestFileName, '.scss');
+            let partialRequest = upath.join(requestDir, partialFileName);
             try {
                 return yield resolveAsync(partialSassResolver, lookupStartPath, partialRequest);
             }

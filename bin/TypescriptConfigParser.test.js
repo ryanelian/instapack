@@ -7,20 +7,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const ava_1 = __importDefault(require("ava"));
-const path_1 = __importDefault(require("path"));
-const typescript_1 = __importDefault(require("typescript"));
+const ava_1 = require("ava");
+const path = require("path");
+const TypeScript = require("typescript");
 const TypescriptConfigParser_1 = require("./TypescriptConfigParser");
 const Shout_1 = require("./Shout");
 let root = process.cwd();
-let fixtures = path_1.default.join(root, 'fixtures');
-let validFolder = path_1.default.join(fixtures, 'TypeScriptConfigValid');
-let emptyFolder = path_1.default.join(fixtures, 'TypeScriptConfigEmpty');
-let invalidFolder = path_1.default.join(fixtures, 'TypeScriptConfigInvalid');
+let fixtures = path.join(root, 'fixtures');
+let validFolder = path.join(fixtures, 'TypeScriptConfigValid');
+let emptyFolder = path.join(fixtures, 'TypeScriptConfigEmpty');
+let invalidFolder = path.join(fixtures, 'TypeScriptConfigInvalid');
 Shout_1.Shout.error = function () { };
 Shout_1.Shout.warning = function () { };
 ava_1.default('Parse TypeScript Configuration: Error', t => {
@@ -92,11 +89,11 @@ ava_1.default('Parse TypeScript Configuration: OK', t => {
         && result.options.noImplicitReturns === true
         && result.options.noFallthroughCasesInSwitch === true
         && result.options.noEmit === true
-        && result.options.target === typescript_1.default.ScriptTarget.ES5
-        && result.options.module === typescript_1.default.ModuleKind.ESNext
-        && result.options.moduleResolution === typescript_1.default.ModuleResolutionKind.NodeJs
+        && result.options.target === TypeScript.ScriptTarget.ES5
+        && result.options.module === TypeScript.ModuleKind.ESNext
+        && result.options.moduleResolution === TypeScript.ModuleResolutionKind.NodeJs
         && result.options.importHelpers === true
-        && result.options.jsx === typescript_1.default.JsxEmit.React);
+        && result.options.jsx === TypeScript.JsxEmit.React);
 });
 ava_1.default('Read tsconfig.json: Valid', (t) => __awaiter(this, void 0, void 0, function* () {
     let r = yield TypescriptConfigParser_1.tryReadTypeScriptConfigJson(validFolder);

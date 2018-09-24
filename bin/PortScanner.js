@@ -7,14 +7,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const net_1 = __importDefault(require("net"));
+const net = require("net");
 function isPortAvailable(port) {
     return new Promise((ok, reject) => {
-        let tester = net_1.default
+        let tester = net
             .createServer()
             .once('error', function (err) {
             ok(false);

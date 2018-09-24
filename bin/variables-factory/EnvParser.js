@@ -7,22 +7,19 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const fs_extra_1 = __importDefault(require("fs-extra"));
-const upath_1 = __importDefault(require("upath"));
-const dotenv_1 = __importDefault(require("dotenv"));
+const fse = require("fs-extra");
+const upath = require("upath");
+const DotEnv = require("dotenv");
 function readDotEnvFrom(folder) {
     return __awaiter(this, void 0, void 0, function* () {
-        let file = upath_1.default.join(folder, '.env');
-        if ((yield fs_extra_1.default.pathExists(file)) === false) {
+        let file = upath.join(folder, '.env');
+        if ((yield fse.pathExists(file)) === false) {
             return {};
         }
         ;
-        let dotEnvRaw = yield fs_extra_1.default.readFile(file, 'utf8');
-        return dotenv_1.default.parse(dotEnvRaw);
+        let dotEnvRaw = yield fse.readFile(file, 'utf8');
+        return DotEnv.parse(dotEnvRaw);
     });
 }
 exports.readDotEnvFrom = readDotEnvFrom;

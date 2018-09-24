@@ -1,8 +1,8 @@
 import test from "ava";
-import upath from 'upath';
+import * as upath from 'upath';
 
 import { isValidExternals, readProjectSettingsFrom } from "./ReadProjectSettings";
-import { IProjectSettings } from "./interfaces/IProjectSettings";
+import { IProjectSettings } from "./IProjectSettings";
 
 let root = process.cwd();
 let fixtures = upath.join(root, 'fixtures');

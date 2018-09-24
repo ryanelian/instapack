@@ -7,16 +7,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-const fs_extra_1 = __importDefault(require("fs-extra"));
-const upath_1 = __importDefault(require("upath"));
-const chalk_1 = __importDefault(require("chalk"));
-const ReadProjectSettings_1 = require("./ReadProjectSettings");
-const EnvParser_1 = require("./EnvParser");
-const CompileVariables_1 = require("./CompileVariables");
-const PathFinder_1 = require("./PathFinder");
+const fse = require("fs-extra");
+const upath = require("upath");
+const chalk_1 = require("chalk");
+const ReadProjectSettings_1 = require("./variables-factory/ReadProjectSettings");
+const EnvParser_1 = require("./variables-factory/EnvParser");
+const CompileVariables_1 = require("./variables-factory/CompileVariables");
+const PathFinder_1 = require("./variables-factory/PathFinder");
 const PackageManager_1 = require("./PackageManager");
 const Shout_1 = require("./Shout");
 const ToolOrchestrator_1 = require("./ToolOrchestrator");
@@ -25,17 +22,17 @@ const TypescriptConfigParser_1 = require("./TypescriptConfigParser");
 const MergePackageJson_1 = require("./MergePackageJson");
 module.exports = class instapack {
     constructor(projectFolder) {
-        this.projectFolder = upath_1.default.normalize(projectFolder);
+        this.projectFolder = upath.normalize(projectFolder);
     }
     get availableBuildTasks() {
         return ['all', 'js', 'css'];
     }
     get availableTemplates() {
-        let templatesFolder = upath_1.default.join(__dirname, '..', 'templates');
-        let ar = fs_extra_1.default.readdirSync(templatesFolder);
+        let templatesFolder = upath.join(__dirname, '..', 'templates');
+        let ar = fse.readdirSync(templatesFolder);
         let templates = ar.filter(Q => {
-            let test = upath_1.default.join(templatesFolder, Q);
-            return fs_extra_1.default.lstatSync(test).isDirectory();
+            let test = upath.join(templatesFolder, Q);
+            return fse.lstatSync(test).isDirectory();
         });
         return templates;
     }
@@ -55,7 +52,7 @@ module.exports = class instapack {
             if (variables.packageManager !== 'disabled') {
                 let finder = new PathFinder_1.PathFinder(variables);
                 let packageJsonPath = finder.packageJson;
-                let packageJsonExists = yield fs_extra_1.default.pathExists(packageJsonPath);
+                let packageJsonExists = yield fse.pathExists(packageJsonPath);
                 if (packageJsonExists) {
                     try {
                         let pm = new PackageManager_1.PackageManager();
@@ -76,26 +73,26 @@ module.exports = class instapack {
     }
     scaffold(template) {
         return __awaiter(this, void 0, void 0, function* () {
-            let templateFolder = upath_1.default.join(__dirname, '../templates', template);
-            let exist = yield fs_extra_1.default.pathExists(templateFolder);
+            let templateFolder = upath.join(__dirname, '../templates', template);
+            let exist = yield fse.pathExists(templateFolder);
             if (!exist) {
                 Shout_1.Shout.error('Unable to find new project template for:', chalk_1.default.cyan(template));
                 return;
             }
             let mergedPackageJson;
-            let projectPackageJsonPath = upath_1.default.join(this.projectFolder, 'package.json');
-            let templatePackageJsonPath = upath_1.default.join(templateFolder, 'package.json');
-            if ((yield fs_extra_1.default.pathExists(projectPackageJsonPath)) && (yield fs_extra_1.default.pathExists(templatePackageJsonPath))) {
-                let projectPackageJson = yield fs_extra_1.default.readJson(projectPackageJsonPath);
-                let templatePackageJson = yield fs_extra_1.default.readJson(templatePackageJsonPath);
+            let projectPackageJsonPath = upath.join(this.projectFolder, 'package.json');
+            let templatePackageJsonPath = upath.join(templateFolder, 'package.json');
+            if ((yield fse.pathExists(projectPackageJsonPath)) && (yield fse.pathExists(templatePackageJsonPath))) {
+                let projectPackageJson = yield fse.readJson(projectPackageJsonPath);
+                let templatePackageJson = yield fse.readJson(templatePackageJsonPath);
                 mergedPackageJson = MergePackageJson_1.mergePackageJson(projectPackageJson, templatePackageJson);
             }
             console.log('Initializing new project using template:', chalk_1.default.cyan(template));
             console.log('Scaffolding project into your web app...');
-            yield fs_extra_1.default.copy(templateFolder, this.projectFolder);
+            yield fse.copy(templateFolder, this.projectFolder);
             if (mergedPackageJson) {
                 console.log(`Merging ${chalk_1.default.blue('package.json')}...`);
-                yield fs_extra_1.default.writeJson(projectPackageJsonPath, mergedPackageJson, {
+                yield fse.writeJson(projectPackageJsonPath, mergedPackageJson, {
                     spaces: 2
                 });
             }
@@ -114,7 +111,7 @@ module.exports = class instapack {
                 console.log('Global settings file:', chalk_1.default.cyan(file));
                 let settings = yield UserSettingsManager_1.readUserSettingsFrom(file);
                 UserSettingsManager_1.setUserSetting(settings, key, value);
-                yield fs_extra_1.default.outputJson(file, settings);
+                yield fse.outputJson(file, settings);
                 console.log('Successfully saved the new setting!');
             }
             catch (error) {

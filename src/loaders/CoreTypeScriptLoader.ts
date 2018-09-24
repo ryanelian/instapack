@@ -1,5 +1,5 @@
 import { loader } from 'webpack';
-import TypeScript from 'typescript';
+import * as TypeScript from 'typescript';
 import { getOptions } from 'loader-utils';
 import { RawSourceMap } from 'source-map';
 

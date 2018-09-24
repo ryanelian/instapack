@@ -1,22 +1,21 @@
-import upath from 'upath';
-import path from 'path';
-import fse from 'fs-extra';
+import * as upath from 'upath';
+import * as path from 'path';
+import * as fse from 'fs-extra';
+import * as url from 'url';
 import chalk from 'chalk';
-import webpack from 'webpack';
-import hotClient from 'webpack-hot-client';
-import devMiddleware from 'webpack-dev-middleware';
-import express from 'express';
-import TypeScript from 'typescript';
+import webpack = require('webpack');
+import hotClient = require('webpack-hot-client');
+import devMiddleware = require('webpack-dev-middleware');
+import express = require('express');
+import * as TypeScript from 'typescript';
 import { VueLoaderPlugin } from 'vue-loader';
-import url from 'url';
 
 import { prettyBytes, prettyMilliseconds } from './PrettyUnits';
 import { TypeScriptBuildWebpackPlugin } from './TypeScriptBuildWebpackPlugin';
 import { Shout } from './Shout';
 import { getAvailablePort, isPortAvailable } from './PortScanner';
-import { IVariables } from './interfaces/IVariables';
-import { IMapLike } from './interfaces/IMapLike';
-import { PathFinder } from './PathFinder';
+import { IVariables } from './variables-factory/IVariables';
+import { PathFinder } from './variables-factory/PathFinder';
 import { LoaderPaths } from './loaders/LoaderPaths';
 import { parseTypescriptConfig } from './TypescriptConfigParser';
 

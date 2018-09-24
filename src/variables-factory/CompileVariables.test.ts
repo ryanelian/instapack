@@ -1,7 +1,7 @@
 import test from "ava";
 
 import { compileVariables } from "./CompileVariables";
-import { IVariables } from "./interfaces/IVariables";
+import { IVariables } from "./IVariables";
 
 test('Compile Variables: Simple', t => {
     let result = compileVariables(

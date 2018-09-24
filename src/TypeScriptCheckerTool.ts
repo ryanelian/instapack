@@ -1,16 +1,15 @@
-import TypeScript from 'typescript';
+import * as TypeScript from 'typescript';
 import * as tslint from 'tslint';
 import chalk from 'chalk';
-import fse from 'fs-extra';
-import upath from 'upath';
-import chokidar from 'chokidar';
+import * as fse from 'fs-extra';
+import * as upath from 'upath';
+import { watch } from 'chokidar';
 
 import { prettyHrTime } from './PrettyUnits';
 import { Shout } from './Shout';
 import { VirtualSourceStore } from './VirtualSourceStore';
-import { IVariables } from './interfaces/IVariables';
-import { PathFinder } from './PathFinder';
-import { IMapLike } from './interfaces/IMapLike';
+import { IVariables } from './variables-factory/IVariables';
+import { PathFinder } from './variables-factory/PathFinder';
 import { parseTypescriptConfig } from './TypescriptConfigParser';
 
 /**
@@ -242,7 +241,7 @@ export class TypeScriptCheckerTool {
             }, 300);
         };
 
-        chokidar.watch(this.finder.typeCheckGlobs, {
+        watch(this.finder.typeCheckGlobs, {
             ignoreInitial: true
         })
             .on('add', (file: string) => {

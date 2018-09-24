@@ -16,7 +16,6 @@
     "target": "es2016",
     "module": "commonjs",
     "moduleResolution": "node",
-    "esModuleInterop": true,
     "removeComments": true,
 
     "outDir": "bin",

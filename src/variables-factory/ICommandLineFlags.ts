@@ -1,5 +1,3 @@
-import { IMapLike } from "./IMapLike";
-
 /**
  * Defines build flags to be passed when invoking instapack using the Command Line Interface.
  */

@@ -7,26 +7,23 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const upath_1 = __importDefault(require("upath"));
-const path_1 = __importDefault(require("path"));
-const fs_extra_1 = __importDefault(require("fs-extra"));
-const chalk_1 = __importDefault(require("chalk"));
-const webpack_1 = __importDefault(require("webpack"));
-const webpack_hot_client_1 = __importDefault(require("webpack-hot-client"));
-const webpack_dev_middleware_1 = __importDefault(require("webpack-dev-middleware"));
-const express_1 = __importDefault(require("express"));
-const typescript_1 = __importDefault(require("typescript"));
+const upath = require("upath");
+const path = require("path");
+const fse = require("fs-extra");
+const url = require("url");
+const chalk_1 = require("chalk");
+const webpack = require("webpack");
+const hotClient = require("webpack-hot-client");
+const devMiddleware = require("webpack-dev-middleware");
+const express = require("express");
+const TypeScript = require("typescript");
 const vue_loader_1 = require("vue-loader");
-const url_1 = __importDefault(require("url"));
 const PrettyUnits_1 = require("./PrettyUnits");
 const TypeScriptBuildWebpackPlugin_1 = require("./TypeScriptBuildWebpackPlugin");
 const Shout_1 = require("./Shout");
 const PortScanner_1 = require("./PortScanner");
-const PathFinder_1 = require("./PathFinder");
+const PathFinder_1 = require("./variables-factory/PathFinder");
 const LoaderPaths_1 = require("./loaders/LoaderPaths");
 const TypescriptConfigParser_1 = require("./TypescriptConfigParser");
 class TypeScriptBuildEngine {
@@ -37,7 +34,7 @@ class TypeScriptBuildEngine {
         this.outputPublicPath = 'js/';
     }
     convertTypeScriptPathToWebpackAliasPath(baseUrl, value) {
-        let result = upath_1.default.join(baseUrl, value);
+        let result = upath.join(baseUrl, value);
         if (result.endsWith('/*')) {
             result = result.substr(0, result.length - 2);
         }
@@ -193,9 +190,9 @@ inject();
     createOnBuildStartMessageDelegate(tsCompilerOptions) {
         let compileTarget = tsCompilerOptions.target;
         if (!compileTarget) {
-            compileTarget = typescript_1.default.ScriptTarget.ES3;
+            compileTarget = TypeScript.ScriptTarget.ES3;
         }
-        let t = typescript_1.default.ScriptTarget[compileTarget].toUpperCase();
+        let t = TypeScript.ScriptTarget[compileTarget].toUpperCase();
         return () => {
             Shout_1.Shout.timed('Compiling', chalk_1.default.cyan('index.ts'), '>', chalk_1.default.yellow(t), chalk_1.default.grey('in ' + this.finder.jsInputFolder + '/'));
         };
@@ -210,7 +207,7 @@ inject();
         }));
         plugins.push(new vue_loader_1.VueLoaderPlugin());
         if (Object.keys(this.variables.env).length > 0) {
-            plugins.push(new webpack_1.default.EnvironmentPlugin(this.variables.env));
+            plugins.push(new webpack.EnvironmentPlugin(this.variables.env));
         }
         return plugins;
     }
@@ -240,7 +237,7 @@ inject();
     }
     createWebpackConfiguration() {
         return __awaiter(this, void 0, void 0, function* () {
-            let useBabel = yield fs_extra_1.default.pathExists(this.finder.babelConfiguration);
+            let useBabel = yield fse.pathExists(this.finder.babelConfiguration);
             let tsconfig = TypescriptConfigParser_1.parseTypescriptConfig(this.variables.root, this.variables.typescriptConfiguration);
             let tsCompilerOptions = tsconfig.options;
             tsCompilerOptions.noEmit = false;
@@ -250,8 +247,8 @@ inject();
             let wildcards = this.getWildcardModules(tsCompilerOptions);
             let rules = this.createWebpackRules(tsCompilerOptions, useBabel);
             let plugins = this.createWebpackPlugins(tsCompilerOptions);
-            let osEntry = path_1.default.normalize(this.finder.jsEntry);
-            let osOutputJsFolder = path_1.default.normalize(this.finder.jsOutputFolder);
+            let osEntry = path.normalize(this.finder.jsEntry);
+            let osOutputJsFolder = path.normalize(this.finder.jsOutputFolder);
             let config = {
                 entry: [osEntry],
                 output: {
@@ -333,7 +330,7 @@ inject();
     }
     runWebpackAsync(webpackConfiguration) {
         return new Promise((ok, reject) => {
-            webpack_1.default(webpackConfiguration, (error, stats) => {
+            webpack(webpackConfiguration, (error, stats) => {
                 if (error) {
                     reject(error);
                     return;
@@ -346,7 +343,7 @@ inject();
             });
         }).then(stats => {
             if (this.variables.stats) {
-                return fs_extra_1.default.outputJson(this.finder.statsJsonFilePath, stats.toJson());
+                return fse.outputJson(this.finder.statsJsonFilePath, stats.toJson());
             }
             return Promise.resolve();
         });
@@ -418,12 +415,12 @@ inject();
         }
     }
     putWormhole(fileName) {
-        let physicalFilePath = upath_1.default.join(this.finder.jsOutputFolder, fileName);
-        let relativeFilePath = upath_1.default.relative(this.finder.root, physicalFilePath);
-        let hotUri = url_1.default.resolve(this.outputHotJsFolderUri, fileName);
+        let physicalFilePath = upath.join(this.finder.jsOutputFolder, fileName);
+        let relativeFilePath = upath.relative(this.finder.root, physicalFilePath);
+        let hotUri = url.resolve(this.outputHotJsFolderUri, fileName);
         Shout_1.Shout.timed(`+wormhole: ${chalk_1.default.cyan(relativeFilePath)} --> ${chalk_1.default.cyan(hotUri)}`);
         let hotProxy = this.createWormholeToHotScript(hotUri);
-        return fs_extra_1.default.outputFile(physicalFilePath, hotProxy);
+        return fse.outputFile(physicalFilePath, hotProxy);
     }
     get outputHotJsFolderUri() {
         return `http://localhost:${this.variables.port1}/js/`;
@@ -431,17 +428,17 @@ inject();
     runDevServer(webpackConfiguration) {
         return __awaiter(this, void 0, void 0, function* () {
             const logLevel = 'warn';
-            const compiler = webpack_1.default(webpackConfiguration);
+            const compiler = webpack(webpackConfiguration);
             compiler.hooks.done.tapPromise('display-build-results', (stats) => __awaiter(this, void 0, void 0, function* () {
                 this.displayBuildResults(stats);
             }));
-            const client = webpack_hot_client_1.default(compiler, {
+            const client = hotClient(compiler, {
                 port: this.variables.port2,
                 logLevel: logLevel
             });
-            let app = express_1.default();
+            let app = express();
             client.server.on('listening', () => {
-                app.use(webpack_dev_middleware_1.default(compiler, {
+                app.use(devMiddleware(compiler, {
                     publicPath: this.outputPublicPath,
                     logLevel: logLevel,
                     headers: {

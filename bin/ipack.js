@@ -1,18 +1,15 @@
 #!/usr/bin/env node
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const yargs_1 = __importDefault(require("yargs"));
-const chalk_1 = __importDefault(require("chalk"));
+const program = require("yargs");
+const chalk_1 = require("chalk");
 const instapack = require("./index");
-const EnvParser_1 = require("./EnvParser");
+const EnvParser_1 = require("./variables-factory/EnvParser");
 const UserSettingsManager_1 = require("./user-settings/UserSettingsManager");
 const manifest = require('../package.json');
 let projectFolder = process.cwd();
 let ipack = new instapack(projectFolder);
-yargs_1.default.version(manifest.version);
+program.version(manifest.version);
 function echo(command, subCommand) {
     if (!subCommand) {
         subCommand = '';
@@ -20,7 +17,7 @@ function echo(command, subCommand) {
     console.log(chalk_1.default.yellow(manifest.name) + ' ' + chalk_1.default.green(manifest.version) + ' ' + command + ' ' + subCommand);
     console.log();
 }
-yargs_1.default.command({
+program.command({
     command: 'build [project]',
     describe: 'Builds the web application!',
     aliases: ['*'],
@@ -61,7 +58,7 @@ yargs_1.default.command({
         });
     }
 });
-yargs_1.default.command({
+program.command({
     command: 'new [template]',
     describe: 'Scaffolds new TypeScript + Sass projects!',
     builder: yargs => {
@@ -73,7 +70,7 @@ yargs_1.default.command({
         ipack.scaffold(subCommand);
     }
 });
-yargs_1.default.command({
+program.command({
     command: 'set <key> <value>',
     describe: 'Change a global setting.',
     builder: yargs => {
@@ -84,4 +81,4 @@ yargs_1.default.command({
         ipack.changeUserSettings(argv.key, argv.value);
     }
 });
-let parse = yargs_1.default.strict().help().argv;
+let parse = program.strict().help().argv;

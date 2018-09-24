@@ -7,22 +7,19 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const fs_extra_1 = __importDefault(require("fs-extra"));
-const upath_1 = __importDefault(require("upath"));
-const chalk_1 = __importDefault(require("chalk"));
-const sass_1 = __importDefault(require("sass"));
-const chokidar_1 = __importDefault(require("chokidar"));
-const postcss_1 = __importDefault(require("postcss"));
-const autoprefixer_1 = __importDefault(require("autoprefixer"));
+const fse = require("fs-extra");
+const upath = require("upath");
+const chalk_1 = require("chalk");
+const sass = require("sass");
+const chokidar_1 = require("chokidar");
+const postcss = require("postcss");
+const autoprefixer = require("autoprefixer");
 const CleanCSS = require('clean-css');
-const merge_source_map_1 = __importDefault(require("merge-source-map"));
+const mergeSourceMap = require("merge-source-map");
 const PrettyUnits_1 = require("./PrettyUnits");
 const Shout_1 = require("./Shout");
-const PathFinder_1 = require("./PathFinder");
+const PathFinder_1 = require("./variables-factory/PathFinder");
 const SassImportResolver_1 = require("./SassImportResolver");
 class SassBuildTool {
     constructor(variables) {
@@ -31,7 +28,7 @@ class SassBuildTool {
     }
     runSassAsync(options) {
         return new Promise((ok, reject) => {
-            sass_1.default.render(options, (error, result) => {
+            sass.render(options, (error, result) => {
                 if (error) {
                     reject(error);
                 }
@@ -42,16 +39,16 @@ class SassBuildTool {
         });
     }
     get virtualSassOutputFilePath() {
-        return upath_1.default.join(this.finder.root, '(intermediate)', '(sass-output).css');
+        return upath.join(this.finder.root, '(intermediate)', '(sass-output).css');
     }
     get virtualPostcssOutputFilePath() {
-        return upath_1.default.join(this.finder.root, '(intermediate)', '(postcss-output).css');
+        return upath.join(this.finder.root, '(intermediate)', '(postcss-output).css');
     }
     fixSassGeneratedSourceMap(sm) {
-        let folder = upath_1.default.basename(this.virtualSassOutputFilePath);
+        let folder = upath.basename(this.virtualSassOutputFilePath);
         sm.sources = sm.sources.map(s => {
-            let absolute = upath_1.default.join(folder, s);
-            return '/' + upath_1.default.relative(this.finder.root, absolute);
+            let absolute = upath.join(folder, s);
+            return '/' + upath.relative(this.finder.root, absolute);
         });
     }
     compileSassProject(virtualSassOutputPath) {
@@ -60,7 +57,7 @@ class SassBuildTool {
             let sassOptions = {
                 file: cssInput,
                 outFile: virtualSassOutputPath,
-                data: yield fs_extra_1.default.readFile(cssInput, 'utf8'),
+                data: yield fse.readFile(cssInput, 'utf8'),
                 sourceMap: this.variables.sourceMap,
                 sourceMapContents: this.variables.sourceMap,
                 importer: SassImportResolver_1.sassImporter
@@ -90,17 +87,17 @@ class SassBuildTool {
                     prev: false
                 };
             }
-            let postcssResult = yield postcss_1.default([
-                autoprefixer_1.default()
+            let postcssResult = yield postcss([
+                autoprefixer()
             ]).process(sassResult.css, postcssOptions);
             let result = {
                 css: postcssResult.css
             };
             if (this.variables.sourceMap && sassResult.map && postcssResult.map) {
                 let sm2 = postcssResult.map.toJSON();
-                let abs = upath_1.default.resolve(upath_1.default.dirname(virtualPostcssOutputPath), sm2.sources[0]);
-                sm2.sources[0] = '/' + upath_1.default.relative(this.variables.root, abs);
-                result.map = merge_source_map_1.default(sassResult.map, sm2);
+                let abs = upath.resolve(upath.dirname(virtualPostcssOutputPath), sm2.sources[0]);
+                sm2.sources[0] = '/' + upath.relative(this.variables.root, abs);
+                result.map = mergeSourceMap(sassResult.map, sm2);
             }
             return result;
         });
@@ -127,9 +124,9 @@ class SassBuildTool {
         if (this.variables.sourceMap && postcssResult.map && cleanResult.sourceMap) {
             let sm3 = cleanResult.sourceMap.toJSON();
             sm3.sources[0] = '/(intermediate)/(postcss-output).css';
-            sm3.file = upath_1.default.basename(cssOutputPath);
-            result.map = merge_source_map_1.default(postcssResult.map, sm3);
-            let sourceMapFileName = upath_1.default.basename(cssOutputPath) + '.map';
+            sm3.file = upath.basename(cssOutputPath);
+            result.map = mergeSourceMap(postcssResult.map, sm3);
+            let sourceMapFileName = upath.basename(cssOutputPath) + '.map';
             result.css += `\n/*# sourceMappingURL=${sourceMapFileName} */`;
         }
         return result;
@@ -189,21 +186,21 @@ class SassBuildTool {
                 this.buildWithStopwatch();
             }, 300);
         };
-        chokidar_1.default.watch(this.finder.scssGlob, {
+        chokidar_1.watch(this.finder.scssGlob, {
             ignoreInitial: true
         })
             .on('add', file => {
-            file = upath_1.default.toUnix(file);
+            file = upath.toUnix(file);
             Shout_1.Shout.sass(chalk_1.default.grey('tracking new file:', file));
             debounce();
         })
             .on('change', file => {
-            file = upath_1.default.toUnix(file);
+            file = upath.toUnix(file);
             Shout_1.Shout.sass(chalk_1.default.grey('updating file:', file));
             debounce();
         })
             .on('unlink', file => {
-            file = upath_1.default.toUnix(file);
+            file = upath.toUnix(file);
             Shout_1.Shout.sass(chalk_1.default.grey('removing file:', file));
             debounce();
         });

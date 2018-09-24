@@ -1,8 +1,6 @@
-import fse from 'fs-extra';
-import upath from 'upath';
-import dotenv from 'dotenv';
-
-import { IMapLike } from './interfaces/IMapLike';
+import * as fse from 'fs-extra';
+import * as upath from 'upath';
+import * as DotEnv from 'dotenv';
 
 /**
  * Attempt to parse .env file in the folder.
@@ -15,7 +13,7 @@ export async function readDotEnvFrom(folder: string): Promise<IMapLike<string>> 
     };
 
     let dotEnvRaw = await fse.readFile(file, 'utf8');
-    return dotenv.parse(dotEnvRaw);
+    return DotEnv.parse(dotEnvRaw);
 }
 
 export function parseCliEnvFlags(yargsEnv: any): any {

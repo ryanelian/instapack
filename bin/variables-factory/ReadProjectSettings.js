@@ -7,12 +7,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const fs_extra_1 = __importDefault(require("fs-extra"));
-const upath_1 = __importDefault(require("upath"));
+const fse = require("fs-extra");
+const upath = require("upath");
 function isValidExternals(value) {
     if (!value) {
         return false;
@@ -32,7 +29,7 @@ exports.isValidExternals = isValidExternals;
 function readProjectSettingsFrom(folder) {
     return __awaiter(this, void 0, void 0, function* () {
         let settings = {
-            root: upath_1.default.toUnix(folder),
+            root: upath.toUnix(folder),
             input: 'client',
             output: 'wwwroot',
             jsOut: 'ipack.js',
@@ -44,8 +41,8 @@ function readProjectSettingsFrom(folder) {
         };
         let parse;
         try {
-            let jsonPath = upath_1.default.join(folder, 'package.json');
-            let json = yield fs_extra_1.default.readJson(jsonPath);
+            let jsonPath = upath.join(folder, 'package.json');
+            let json = yield fse.readJson(jsonPath);
             parse = json.instapack;
         }
         catch (ex) {
@@ -58,11 +55,11 @@ function readProjectSettingsFrom(folder) {
                 settings.output = parse.output;
             }
             if (typeof parse.jsOut === 'string') {
-                let s = upath_1.default.addExt(parse.jsOut, '.js');
+                let s = upath.addExt(parse.jsOut, '.js');
                 settings.jsOut = s;
             }
             if (typeof parse.cssOut === 'string') {
-                let s = upath_1.default.addExt(parse.cssOut, '.css');
+                let s = upath.addExt(parse.cssOut, '.css');
                 settings.cssOut = s;
             }
             if (Number.isInteger(parse.port1)) {

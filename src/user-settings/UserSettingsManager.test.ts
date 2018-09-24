@@ -1,5 +1,5 @@
 import test from 'ava';
-import upath from 'upath';
+import * as upath from 'upath';
 import { IUserSettings } from './IUserSettings';
 import { validateUserSetting, readUserSettingsFrom, setUserSetting } from './UserSettingsManager';
 

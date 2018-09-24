@@ -1,9 +1,9 @@
-import fse from 'fs-extra';
+import * as fse from 'fs-extra';
 import chalk from 'chalk';
 
 import { Shout } from './Shout';
-import { IVariables } from './interfaces/IVariables';
-import { PathFinder } from './PathFinder';
+import { IVariables } from './variables-factory/IVariables';
+import { PathFinder } from './variables-factory/PathFinder';
 import { runTypeScriptBuildWorker, runSassBuildWorker, runTypeScriptCheckWorker } from './workers/RunWorker';
 
 /**

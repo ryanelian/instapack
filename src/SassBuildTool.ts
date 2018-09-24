@@ -1,18 +1,18 @@
-import fse from 'fs-extra';
-import upath from 'upath';
+import * as fse from 'fs-extra';
+import * as upath from 'upath';
 import chalk from 'chalk';
-import sass from 'sass';
-import chokidar from 'chokidar';
-import postcss from 'postcss';
-import autoprefixer from 'autoprefixer';
+import sass = require('sass');
+import { watch } from 'chokidar';
+import postcss = require('postcss');
+import autoprefixer = require('autoprefixer');
 const CleanCSS = require('clean-css');
 import { RawSourceMap } from 'source-map';
-import mergeSourceMap from 'merge-source-map';
+import mergeSourceMap = require('merge-source-map');
 
 import { prettyHrTime } from './PrettyUnits';
 import { Shout } from './Shout';
-import { IVariables } from './interfaces/IVariables';
-import { PathFinder } from './PathFinder';
+import { IVariables } from './variables-factory/IVariables';
+import { PathFinder } from './variables-factory/PathFinder';
 import { sassImporter } from './SassImportResolver';
 
 /**
@@ -287,7 +287,7 @@ export class SassBuildTool {
             }, 300);
         };
 
-        chokidar.watch(this.finder.scssGlob, {
+        watch(this.finder.scssGlob, {
             ignoreInitial: true
         })
             .on('add', file => {

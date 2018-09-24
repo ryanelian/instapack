@@ -7,12 +7,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const ava_1 = __importDefault(require("ava"));
-const upath_1 = __importDefault(require("upath"));
+const ava_1 = require("ava");
+const upath = require("upath");
 const UserSettingsManager_1 = require("./UserSettingsManager");
 let defaultSettings = {
     muteNotification: false,
@@ -51,19 +48,19 @@ ava_1.default('User Settings Manager: Validate asdf', t => {
     t.is(valid, false);
 });
 let root = process.cwd();
-let fixtures = upath_1.default.join(root, 'fixtures');
+let fixtures = upath.join(root, 'fixtures');
 ava_1.default('User Settings Manager: Read Not Found', (t) => __awaiter(this, void 0, void 0, function* () {
-    let file = upath_1.default.join(fixtures, 'Empty', 'settings.json');
+    let file = upath.join(fixtures, 'Empty', 'settings.json');
     let settings = yield UserSettingsManager_1.readUserSettingsFrom(file);
     t.deepEqual(settings, defaultSettings);
 }));
 ava_1.default('User Settings Manager: Read Invalid', (t) => __awaiter(this, void 0, void 0, function* () {
-    let file = upath_1.default.join(fixtures, 'UserSettingsInvalid', 'settings.json');
+    let file = upath.join(fixtures, 'UserSettingsInvalid', 'settings.json');
     let settings = yield UserSettingsManager_1.readUserSettingsFrom(file);
     t.deepEqual(settings, defaultSettings);
 }));
 ava_1.default('User Settings Manager: Read Valid', (t) => __awaiter(this, void 0, void 0, function* () {
-    let file = upath_1.default.join(fixtures, 'UserSettingsValid', 'settings.json');
+    let file = upath.join(fixtures, 'UserSettingsValid', 'settings.json');
     let settings = yield UserSettingsManager_1.readUserSettingsFrom(file);
     t.deepEqual(settings, {
         packageManager: 'disabled',

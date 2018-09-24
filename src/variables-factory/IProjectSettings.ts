@@ -1,5 +1,3 @@
-import { IMapLike } from "./IMapLike";
-
 export interface IProjectSettings {
     root: string;
     input: string;

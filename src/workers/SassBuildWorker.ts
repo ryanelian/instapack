@@ -1,6 +1,6 @@
 import { Shout } from "../Shout";
 import { SassBuildTool } from "../SassBuildTool";
-import { IVariables } from "../interfaces/IVariables";
+import { IVariables } from "../variables-factory/IVariables";
 
 /**
  * Accepts build task command as input parameter then run Sass build tool.

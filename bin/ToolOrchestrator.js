@@ -7,14 +7,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const fs_extra_1 = __importDefault(require("fs-extra"));
-const chalk_1 = __importDefault(require("chalk"));
+const fse = require("fs-extra");
+const chalk_1 = require("chalk");
 const Shout_1 = require("./Shout");
-const PathFinder_1 = require("./PathFinder");
+const PathFinder_1 = require("./variables-factory/PathFinder");
 const RunWorker_1 = require("./workers/RunWorker");
 class ToolOrchestrator {
     constructor(variables) {
@@ -39,7 +36,7 @@ class ToolOrchestrator {
     validateJsBuildTask() {
         return __awaiter(this, void 0, void 0, function* () {
             let entry = this.finder.jsEntry;
-            let checkEntry = fs_extra_1.default.pathExists(entry);
+            let checkEntry = fse.pathExists(entry);
             if ((yield checkEntry) === false) {
                 Shout_1.Shout.timed('Entry file', chalk_1.default.cyan(entry), 'was not found.', chalk_1.default.red('Aborting JS build!'));
                 return false;
@@ -50,7 +47,7 @@ class ToolOrchestrator {
     validateCssBuildTask() {
         return __awaiter(this, void 0, void 0, function* () {
             let entry = this.finder.cssEntry;
-            let exist = yield fs_extra_1.default.pathExists(entry);
+            let exist = yield fse.pathExists(entry);
             if (!exist) {
                 Shout_1.Shout.timed('Entry file', chalk_1.default.cyan(entry), 'was not found.', chalk_1.default.red('Aborting CSS build!'));
             }

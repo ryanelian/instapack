@@ -7,27 +7,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const typescript_1 = __importDefault(require("typescript"));
-const tslint = __importStar(require("tslint"));
-const chalk_1 = __importDefault(require("chalk"));
-const fs_extra_1 = __importDefault(require("fs-extra"));
-const upath_1 = __importDefault(require("upath"));
-const chokidar_1 = __importDefault(require("chokidar"));
+const TypeScript = require("typescript");
+const tslint = require("tslint");
+const chalk_1 = require("chalk");
+const fse = require("fs-extra");
+const upath = require("upath");
+const chokidar_1 = require("chokidar");
 const PrettyUnits_1 = require("./PrettyUnits");
 const Shout_1 = require("./Shout");
 const VirtualSourceStore_1 = require("./VirtualSourceStore");
-const PathFinder_1 = require("./PathFinder");
+const PathFinder_1 = require("./variables-factory/PathFinder");
 const TypescriptConfigParser_1 = require("./TypescriptConfigParser");
 class TypeScriptCheckerTool {
     constructor(variables, compilerOptions, host, virtualSourceStore, tslintConfiguration) {
@@ -46,7 +36,7 @@ class TypeScriptCheckerTool {
             if (s) {
                 return s;
             }
-            let fileContent = fs_extra_1.default.readFileSync(fileName, 'utf8');
+            let fileContent = fse.readFileSync(fileName, 'utf8');
             rawFileCache[fileName] = fileContent;
             return fileContent;
         };
@@ -63,7 +53,7 @@ class TypeScriptCheckerTool {
             let virtualSourceStore = new VirtualSourceStore_1.VirtualSourceStore(compilerOptions);
             virtualSourceStore.includeFile(finder.jsEntry);
             virtualSourceStore.includeFiles(definitions);
-            let host = typescript_1.default.createCompilerHost(compilerOptions);
+            let host = TypeScript.createCompilerHost(compilerOptions);
             let tslintConfiguration = undefined;
             let tslintFind = finder.findTslintConfiguration();
             if (tslintFind) {
@@ -78,14 +68,14 @@ class TypeScriptCheckerTool {
     }
     typeCheck() {
         let entryPoints = this.virtualSourceStore.entryFilePaths;
-        let tsc = typescript_1.default.createProgram(entryPoints, this.compilerOptions, this.host);
+        let tsc = TypeScript.createProgram(entryPoints, this.compilerOptions, this.host);
         let linter = undefined;
         if (this.tslintConfiguration) {
             linter = new tslint.Linter({
                 fix: false
             }, tsc);
         }
-        Shout_1.Shout.timed('Type-checking using TypeScript', chalk_1.default.green(typescript_1.default.version));
+        Shout_1.Shout.timed('Type-checking using TypeScript', chalk_1.default.green(TypeScript.version));
         let start = process.hrtime();
         try {
             let errors = [];
@@ -137,7 +127,7 @@ class TypeScriptCheckerTool {
                 let { line, character } = diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start);
                 error += chalk_1.default.red(realFileName) + ' ' + chalk_1.default.yellow(`(${line + 1},${character + 1})`) + ':\n';
             }
-            error += typescript_1.default.flattenDiagnosticMessageText(diagnostic.messageText, "\n");
+            error += TypeScript.flattenDiagnosticMessageText(diagnostic.messageText, "\n");
             return error;
         });
         return errors;
@@ -165,18 +155,18 @@ class TypeScriptCheckerTool {
                 }
             }, 300);
         };
-        chokidar_1.default.watch(this.finder.typeCheckGlobs, {
+        chokidar_1.watch(this.finder.typeCheckGlobs, {
             ignoreInitial: true
         })
             .on('add', (file) => {
-            file = upath_1.default.toUnix(file);
+            file = upath.toUnix(file);
             this.virtualSourceStore.addOrUpdateSourceAsync(file).then(changed => {
                 Shout_1.Shout.typescript(chalk_1.default.grey('tracking new file:', file));
                 debounce();
             });
         })
             .on('change', (file) => {
-            file = upath_1.default.toUnix(file);
+            file = upath.toUnix(file);
             this.virtualSourceStore.addOrUpdateSourceAsync(file).then(changed => {
                 if (changed) {
                     Shout_1.Shout.typescript(chalk_1.default.grey('updating file:', file));
@@ -185,7 +175,7 @@ class TypeScriptCheckerTool {
             });
         })
             .on('unlink', (file) => {
-            file = upath_1.default.toUnix(file);
+            file = upath.toUnix(file);
             let deleted = this.virtualSourceStore.tryRemoveSource(file);
             if (deleted) {
                 Shout_1.Shout.typescript(chalk_1.default.grey('removing file:', file));

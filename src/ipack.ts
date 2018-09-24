@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
-import program from 'yargs';
+import program = require('yargs');
 import chalk from 'chalk';
 
 import instapack = require('./index');
-import { parseCliEnvFlags } from './EnvParser';
+import { parseCliEnvFlags } from './variables-factory/EnvParser';
 import { userSettingOptions } from './user-settings/UserSettingsManager';
 const manifest = require('../package.json');
 

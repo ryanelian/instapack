@@ -1,11 +1,11 @@
-import * as UglifyJS from 'uglify-js';
+import { minify, MinifyOptions } from 'uglify-js';
 import { IMinifyWorkerInput } from './IMinifyWorkerInput';
 
 /**
  * Accepts minification input parameter to used by UglifyJS minifier.
  */
 export = function (input: IMinifyWorkerInput, callback) {
-    let minifyOptions: UglifyJS.MinifyOptions = {
+    let minifyOptions: MinifyOptions = {
         // colapse_vars issues:
         // 1. performance regressions   https://github.com/mishoo/UglifyJS2/issues/3174
         // 2. bad output                https://github.com/mishoo/UglifyJS2/issues/3247
@@ -22,7 +22,7 @@ export = function (input: IMinifyWorkerInput, callback) {
         };
     }
 
-    let result = UglifyJS.minify({
+    let result = minify({
         [input.fileName]: input.code
     }, minifyOptions);
 

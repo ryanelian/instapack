@@ -1,8 +1,5 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-const typescript_1 = __importDefault(require("typescript"));
+const TypeScript = require("typescript");
 const loader_utils_1 = require("loader-utils");
 module.exports = function (source) {
     let options = loader_utils_1.getOptions(this);
@@ -10,7 +7,7 @@ module.exports = function (source) {
         this.emitError(new Error('TypeScript compiler options was not provided to Core TypeScript Loader!'));
         return;
     }
-    let result = typescript_1.default.transpileModule(source, {
+    let result = TypeScript.transpileModule(source, {
         compilerOptions: options.compilerOptions,
         fileName: this.resourcePath
     });

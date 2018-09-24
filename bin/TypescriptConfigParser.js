@@ -7,15 +7,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const fs_extra_1 = __importDefault(require("fs-extra"));
-const upath_1 = __importDefault(require("upath"));
-const typescript_1 = __importDefault(require("typescript"));
+const fse = require("fs-extra");
+const upath = require("upath");
+const TypeScript = require("typescript");
 const Shout_1 = require("./Shout");
-const chalk_1 = __importDefault(require("chalk"));
+const chalk_1 = require("chalk");
 let fallbackTypeScriptConfig = {
     compilerOptions: {
         alwaysStrict: true,
@@ -38,11 +35,11 @@ let fallbackTypeScriptConfig = {
 };
 function tryReadTypeScriptConfigJson(folder) {
     return __awaiter(this, void 0, void 0, function* () {
-        let tsconfigJsonPath = upath_1.default.join(folder, 'tsconfig.json');
+        let tsconfigJsonPath = upath.join(folder, 'tsconfig.json');
         try {
-            let tsconfigJson = yield fs_extra_1.default.readJson(tsconfigJsonPath);
+            let tsconfigJson = yield fse.readJson(tsconfigJsonPath);
             let parse = parseTypescriptConfig(folder, tsconfigJson);
-            if (parse.options.target !== typescript_1.default.ScriptTarget.ES5) {
+            if (parse.options.target !== TypeScript.ScriptTarget.ES5) {
                 Shout_1.Shout.warning('TypeScript build', chalk_1.default.cyan('target'), 'is not', chalk_1.default.yellow('ES5') + '!');
             }
             return tsconfigJson;
@@ -57,7 +54,7 @@ function tryReadTypeScriptConfigJson(folder) {
 exports.tryReadTypeScriptConfigJson = tryReadTypeScriptConfigJson;
 function parseTypescriptConfig(folder, json) {
     let o = JSON.parse(JSON.stringify(json));
-    let tsconfig = typescript_1.default.parseJsonConfigFileContent(o, typescript_1.default.sys, folder);
+    let tsconfig = TypeScript.parseJsonConfigFileContent(o, TypeScript.sys, folder);
     if (tsconfig.errors.length) {
         throw Error(tsconfig.errors[0].messageText.toString());
     }

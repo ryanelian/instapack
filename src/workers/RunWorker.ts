@@ -1,6 +1,6 @@
-import WorkerFarm from 'worker-farm';
+import WorkerFarm = require('worker-farm');
 import { MinifyOutput } from 'uglify-js';
-import { IVariables } from '../interfaces/IVariables';
+import { IVariables } from '../variables-factory/IVariables';
 import { IMinifyWorkerInput } from './IMinifyWorkerInput';
 
 const typeScriptBuildWorkerModulePath = require.resolve('./TypeScriptBuildWorker');

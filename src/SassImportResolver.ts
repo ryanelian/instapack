@@ -1,4 +1,4 @@
-import upath from 'upath';
+import * as upath from 'upath';
 import { NodeJsInputFileSystem, ResolverFactory } from 'enhanced-resolve';
 
 /**

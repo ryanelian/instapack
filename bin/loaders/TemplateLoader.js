@@ -1,6 +1,6 @@
 "use strict";
 const html_minifier_1 = require("html-minifier");
-const vue_template_compiler_1 = require("vue-template-compiler");
+const VueTemplateCompiler = require("vue-template-compiler");
 const source_map_1 = require("source-map");
 const Shout_1 = require("../Shout");
 let minifierOptions = {
@@ -48,7 +48,7 @@ module.exports = function (html) {
             Shout_1.Shout.warning('Importing .vue.html module is deprecated in favor of .vue Single-File Components (which supports Hot Reload Development Mode) and will be removed in future versions!');
             deprecateVueHtmlWarned = true;
         }
-        let vueResult = vue_template_compiler_1.compile(template);
+        let vueResult = VueTemplateCompiler.compile(template);
         let error = vueResult.errors[0];
         if (error) {
             this.callback(Error(error));

@@ -7,16 +7,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const upath_1 = __importDefault(require("upath"));
-const os_1 = __importDefault(require("os"));
-const fs_extra_1 = __importDefault(require("fs-extra"));
+const upath = require("upath");
+const OS = require("os");
+const fse = require("fs-extra");
 const PackageManagerUserSettingMapper_1 = require("./mappers/PackageManagerUserSettingMapper");
 const NotificationUserSettingMapper_1 = require("./mappers/NotificationUserSettingMapper");
-exports.userSettingsFilePath = upath_1.default.join(os_1.default.homedir(), 'instapack', 'settings.json');
+exports.userSettingsFilePath = upath.join(OS.homedir(), 'instapack', 'settings.json');
 let userSettingMappers = {
     'package-manager': new PackageManagerUserSettingMapper_1.PackageManagerUserSettingMapper(),
     'mute-notification': new NotificationUserSettingMapper_1.NotificationUserSettingMapper()
@@ -36,7 +33,7 @@ function readUserSettingsFrom(file) {
             packageManager: 'yarn'
         };
         try {
-            let json = yield fs_extra_1.default.readJson(file);
+            let json = yield fse.readJson(file);
             if (json.packageManager === 'yarn' || json.packageManager === 'npm' || json.packageManager === 'disabled') {
                 settings.packageManager = json.packageManager;
             }

@@ -7,15 +7,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const fs_extra_1 = __importDefault(require("fs-extra"));
-const glob_1 = __importDefault(require("glob"));
+const fse = require("fs-extra");
+const glob = require("glob");
 const crypto_1 = require("crypto");
-const typescript_1 = __importDefault(require("typescript"));
-const vue_template_compiler_1 = require("vue-template-compiler");
+const TypeScript = require("typescript");
+const VueTemplateCompiler = require("vue-template-compiler");
 class VirtualSourceStore {
     constructor(tsCompilerOptions) {
         this.sources = {};
@@ -36,7 +33,7 @@ class VirtualSourceStore {
     }
     addExoticSources(globPattern) {
         return new Promise((ok, reject) => {
-            glob_1.default(globPattern, (error, files) => {
+            glob(globPattern, (error, files) => {
                 if (error) {
                     reject(error);
                 }
@@ -79,7 +76,7 @@ class VirtualSourceStore {
         }
     }
     parseVueFile(raw) {
-        let parse = vue_template_compiler_1.parseComponent(raw);
+        let parse = VueTemplateCompiler.parseComponent(raw);
         if (!parse.script) {
             return '';
         }
@@ -111,18 +108,18 @@ class VirtualSourceStore {
         if (version === lastVersion) {
             return false;
         }
-        let target = this.tsCompilerOptions.target || typescript_1.default.ScriptTarget.ES5;
-        this.sources[virtualFilePath] = typescript_1.default.createSourceFile(virtualFilePath, raw, target);
+        let target = this.tsCompilerOptions.target || TypeScript.ScriptTarget.ES5;
+        this.sources[virtualFilePath] = TypeScript.createSourceFile(virtualFilePath, raw, target);
         this.versions[virtualFilePath] = version;
         return true;
     }
     addOrUpdateSource(realFilePath) {
-        let raw = fs_extra_1.default.readFileSync(realFilePath, 'utf8');
+        let raw = fse.readFileSync(realFilePath, 'utf8');
         return this.parseThenStoreSource(realFilePath, raw);
     }
     addOrUpdateSourceAsync(realFilePath) {
         return __awaiter(this, void 0, void 0, function* () {
-            let raw = yield fs_extra_1.default.readFile(realFilePath, 'utf8');
+            let raw = yield fse.readFile(realFilePath, 'utf8');
             return this.parseThenStoreSource(realFilePath, raw);
         });
     }

@@ -1,9 +1,6 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const ava_1 = __importDefault(require("ava"));
+const ava_1 = require("ava");
 const CompileVariables_1 = require("./CompileVariables");
 ava_1.default('Compile Variables: Simple', t => {
     let result = CompileVariables_1.compileVariables({

@@ -7,11 +7,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const chalk_1 = __importDefault(require("chalk"));
+const chalk_1 = require("chalk");
 const webpack_sources_1 = require("webpack-sources");
 const Shout_1 = require("./Shout");
 const RunWorker_1 = require("./workers/RunWorker");

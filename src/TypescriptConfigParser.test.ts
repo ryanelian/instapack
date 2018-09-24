@@ -1,6 +1,6 @@
 import test from "ava";
-import path from 'path';
-import TypeScript from 'typescript';
+import * as path from 'path';
+import * as TypeScript from 'typescript';
 import { parseTypescriptConfig, tryReadTypeScriptConfigJson } from "./TypescriptConfigParser";
 import { Shout } from "./Shout";
 

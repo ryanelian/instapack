@@ -1,12 +1,5 @@
 "use strict";
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
-const UglifyJS = __importStar(require("uglify-js"));
+const uglify_js_1 = require("uglify-js");
 module.exports = function (input, callback) {
     let minifyOptions = {
         compress: {
@@ -19,7 +12,7 @@ module.exports = function (input, callback) {
             content: input.map
         };
     }
-    let result = UglifyJS.minify({
+    let result = uglify_js_1.minify({
         [input.fileName]: input.code
     }, minifyOptions);
     if (result.error) {

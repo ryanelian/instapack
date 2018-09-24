@@ -1,5 +1,5 @@
-import cp from 'child_process';
-import { platform } from 'process';
+import * as Process from 'process';
+import * as ChildProcess from 'child_process';
 
 /**
  * Contains methods responsible for restoring user packages.
@@ -9,14 +9,14 @@ export class PackageManager {
      * Detects if instapack is running on Windows OS.
      */
     get isWindows() {
-        return (platform === 'win32');
+        return (Process.platform === 'win32');
     }
 
     /**
      * Detects if instapack is running on Mac OS.
      */
     get isMac() {
-        return (platform === 'darwin');
+        return (Process.platform === 'darwin');
     }
 
     /**
@@ -39,7 +39,7 @@ export class PackageManager {
      */
     runWithOutputs(command: string) {
         // inherit
-        return cp.execSync(command, {
+        return ChildProcess.execSync(command, {
             stdio: [0, 1, 2]
         });
     }
@@ -50,7 +50,7 @@ export class PackageManager {
      */
     doesToolExists(tool: string) {
         return new Promise<boolean>((ok, reject) => {
-            cp.exec(this.toolExistCheckerCommand(tool), (error, stdout, stderr) => {
+            ChildProcess.exec(this.toolExistCheckerCommand(tool), (error, stdout, stderr) => {
                 if (error) {
                     ok(false);
                     // console.log(error);

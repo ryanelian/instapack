@@ -1,5 +1,5 @@
 import test from "ava";
-import path from 'path';
+import * as path from 'path';
 import { sassImport } from "./SassImportResolver";
 
 let root = process.cwd();

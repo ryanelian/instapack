@@ -29,7 +29,7 @@ export class ToolOrchestrator {
      */
     outputBuildInformation() {
         if (this.variables.production) {
-            Shout.timed(chalk.yellow("Production"), "Mode: Build optimizations are enabled.", chalk.red("(Slower)"));
+            Shout.timed(chalk.yellow("Production"), "Mode: Build optimizations are enabled.");
         } else {
             Shout.timed(chalk.yellow("Development"), "Mode: Build optimizations are", chalk.red("DISABLED!"), chalk.grey("(Fast build)"));
         }

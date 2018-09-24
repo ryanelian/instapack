@@ -20,7 +20,7 @@ class ToolOrchestrator {
     }
     outputBuildInformation() {
         if (this.variables.production) {
-            Shout_1.Shout.timed(chalk_1.default.yellow("Production"), "Mode: Build optimizations are enabled.", chalk_1.default.red("(Slower)"));
+            Shout_1.Shout.timed(chalk_1.default.yellow("Production"), "Mode: Build optimizations are enabled.");
         }
         else {
             Shout_1.Shout.timed(chalk_1.default.yellow("Development"), "Mode: Build optimizations are", chalk_1.default.red("DISABLED!"), chalk_1.default.grey("(Fast build)"));

@@ -402,10 +402,10 @@ Imports an `.html` file to be minified and then stringified. This technique is i
 
 ```ts
 // ESM syntax
-import template2 from './MyTemplate.html';
+import template from './MyTemplate.html';
 
 // CJS syntax
-let template1: string = require('./MyTemplate.html');
+let templateCJS: string = require('./MyTemplate.html');
 ```
 
 > A global TypeScript definition file for `*.html` module is required for importing the `.html` file from TypeScript using ESM syntax.

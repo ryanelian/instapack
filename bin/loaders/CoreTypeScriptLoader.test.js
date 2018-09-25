@@ -79,5 +79,6 @@ ava_1.default('Core TypeScript Loader: ES5', (t) => __awaiter(this, void 0, void
     let stats = yield compileAsync(entry);
     let o = stats.toJson();
     let result = o.modules[0].source;
-    t.is(result, '"use strict";\r\nvar foo = function (bar) {\r\n    return bar.length;\r\n};\r\nvar x = foo(\'abcd\');\r\n');
+    result = result.replace(/\r/g, '');
+    t.is(result, '"use strict";\nvar foo = function (bar) {\n    return bar.length;\n};\nvar x = foo(\'abcd\');\n');
 }));

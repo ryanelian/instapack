@@ -76,7 +76,6 @@ function minifyChunkAssets(compilation: webpack.compilation.Compilation, chunks:
 }
 
 export class TypeScriptBuildMinifyPlugin {
-
     /**
      * Apply function prototype for registering a webpack plugin.
      * @param compiler 

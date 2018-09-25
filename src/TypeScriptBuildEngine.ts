@@ -230,7 +230,7 @@ export class TypeScriptBuildEngine {
      */
     get templatesWebpackRules(): webpack.Rule {
         return {
-            test: /\.html$/,
+            test: /\.html?$/,
             use: [{
                 loader: LoaderPaths.template
             }]
@@ -370,7 +370,9 @@ inject();
             },
             externals: this.variables.externals,
             resolve: {
-                extensions: ['.ts', '.tsx', '.js', '.jsx', '.mjs', '.vue', '.wasm', '.json', '.html'],
+                extensions: ['.ts', '.tsx', '.js', '.jsx', '.mjs', '.vue', '.wasm', '.json'],
+                // .vue automatic resolution follows vue-cli behavior, although is still required in TypeScript...
+                // .html module import must now be explicit!
                 // .mjs causes runtime error when `module.exports` is being used instead of `export`.
                 // .wasm requires adding `application/wasm` MIME to web server (both IIS and Kestrel).
                 alias: alias

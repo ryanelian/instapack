@@ -14,6 +14,8 @@ Here are the list of breaking changes when upgrading between instapack major (or
 
 - Disable source map flag `--xdebug` or `-x` has been replaced with `--nodebug` or `-b`
 
+- Automatic resolution for `.html` modules is now disabled, for improved source code clarity. (You will need to explicitly write the extension when importing the file!)
+
 ## 6.7.0
 
 - Importing `.vue.html` module is deprecated in favor of **`.vue` Single-File Components (which supports Hot Reload Development Mode)** and will be removed in future versions!

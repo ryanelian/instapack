@@ -360,7 +360,7 @@ import List from 'linq';
 
 ### ES Modules: Dynamic Import
 
-instapack version 6.4.0+ supports code-splitting using ES Modules dynamic `import()` syntax:
+instapack version 6.4.0+ supports code-splitting using ESM dynamic `import()` syntax:
 
 ```ts
 import('lunr').then(lunr => {
@@ -388,19 +388,38 @@ An excerpt of build log when using dynamic import:
 
 ### CommonJS / Node.js require
 
-- Easily imports ordinary JS modules within the project or from `node_modules`. However, **you will NOT get intellisense!** (Modules will be imported as `any` data type.)
+Easily imports ordinary JS modules within the project or from `node_modules`. However, **you will NOT get intellisense!** (Modules will be imported as `any` data type.)
 
 ```js
 let $ = require('jquery');
 ```
 
-- Imports an `.html` file to be minified and then stringified. This technique is invaluable for working with frameworks relying on HTML-based templates such as AngularJS, mustache.js / Handlebars.js, and Vue.js:
+> CommonJS `require` method in TypeScript is provided through `@types/requirejs` or `@types/node` packages.
+
+### HTML Modules
+
+Imports an `.html` file to be minified and then stringified. This technique is invaluable for working with frameworks relying on HTML-based templates such as AngularJS:
 
 ```ts
-let template: string = require('./mytemplate.html');
+// ESM syntax
+import template2 from './MyTemplate.html';
+
+// CJS syntax
+let template1: string = require('./MyTemplate.html');
 ```
 
-> CommonJS `require` method in TypeScript is provided through `@types/requirejs` or `@types/node` packages.
+> A global TypeScript definition file for `*.html` module is required for importing the `.html` file from TypeScript using ESM syntax.
+
+```ts
+// html-shim.d.ts
+
+declare module "*.html" {
+  const s: string;
+  export default s;
+}
+```
+
+> Deprecation notice: the special extension `.vue.html` will be compiled to an [object `{ render: function(){}, staticRenderFns: function(){} }` to be used as parameters for vue-class-component ComponentOptions](https://vuejs.org/v2/guide/render-function.html#Template-Compilation). This behavior will be removed in future instapack versions.
 
 ### JSON Modules
 
@@ -448,7 +467,7 @@ export default class Hello extends Vue {
 
 - The HTML `<template>` will be compiled Ahead-of-Time (AoT) for greater app startup performance!
 
-- [A global TypeScript definition file for `*.vue` module](https://github.com/ryanelian/instapack/blob/master/templates/vue/client/js/vue-shim.d.ts) is required for importing the `.vue` file using ES Modules syntax from TypeScript.
+- [A global TypeScript definition file for `*.vue` module](https://github.com/ryanelian/instapack/blob/master/templates/vue/client/js/vue-shim.d.ts) is required for importing the `.vue` file from TypeScript using ESM syntax.
 
   - This file will be created for you when using the `vue` new project template!
 

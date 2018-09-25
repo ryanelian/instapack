@@ -148,7 +148,7 @@ class TypeScriptBuildEngine {
     }
     get templatesWebpackRules() {
         return {
-            test: /\.html$/,
+            test: /\.html?$/,
             use: [{
                     loader: LoaderPaths_1.LoaderPaths.template
                 }]
@@ -245,7 +245,7 @@ inject();
             },
             externals: this.variables.externals,
             resolve: {
-                extensions: ['.ts', '.tsx', '.js', '.jsx', '.mjs', '.vue', '.wasm', '.json', '.html'],
+                extensions: ['.ts', '.tsx', '.js', '.jsx', '.mjs', '.vue', '.wasm', '.json'],
                 alias: alias
             },
             module: {

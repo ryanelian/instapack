@@ -414,18 +414,40 @@ let templateCJS: string = require('./MyTemplate.html');
 // html-shim.d.ts
 
 declare module "*.html" {
-  const s: string;
-  export default s;
+  const _: string;
+  export default _;
 }
 ```
 
 > **DEPRECATION NOTICE:** a special extension `.vue.html` module will be compiled to [an `IVueCompiledTemplate` object to be used as parameters for Vue.js `ComponentOptions`](https://vuejs.org/v2/guide/render-function.html#Template-Compilation). This behavior will be removed in future instapack versions.
 
 ```ts
-interface IVueCompiledTemplate
-{
-  render: (createElement: CreateElement) => VNode,
-  staticRenderFns: ((createElement: CreateElement) => VNode)[]
+// vue-html-shim.d.ts
+
+declare module "*.vue.html" {
+    import { CreateElement, VNode } from 'vue';
+    
+    interface IVueCompiledTemplate
+    {
+      render: (createElement: CreateElement) => VNode,
+      staticRenderFns: ((createElement: CreateElement) => VNode)[]
+    }
+
+    const _: IVueCompiledTemplate;
+    export default _;
+}
+```
+
+```ts
+import Vue from 'vue';
+import Component from 'vue-class-component';
+import MyComponentTemplate from './MyComponent.vue.html';
+
+@Component({
+    render: MyComponentTemplate.render,
+    staticRenderFns: MyComponentTemplate.staticRenderFns
+})
+export class MyComponent extends Vue {
 }
 ```
 

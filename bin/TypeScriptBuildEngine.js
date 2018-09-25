@@ -20,7 +20,7 @@ const express = require("express");
 const TypeScript = require("typescript");
 const vue_loader_1 = require("vue-loader");
 const PrettyUnits_1 = require("./PrettyUnits");
-const TypeScriptBuildWebpackPlugin_1 = require("./TypeScriptBuildWebpackPlugin");
+const TypeScriptBuildMinifyPlugin_1 = require("./TypeScriptBuildMinifyPlugin");
 const Shout_1 = require("./Shout");
 const PathFinder_1 = require("./variables-factory/PathFinder");
 const LoaderPaths_1 = require("./loaders/LoaderPaths");
@@ -196,24 +196,8 @@ function inject() {
 inject();
 `;
     }
-    createOnBuildStartMessageDelegate() {
-        let compileTarget = this.typescriptCompilerOptions.target;
-        if (!compileTarget) {
-            compileTarget = TypeScript.ScriptTarget.ES3;
-        }
-        let t = TypeScript.ScriptTarget[compileTarget].toUpperCase();
-        return () => {
-            Shout_1.Shout.timed('Compiling', chalk_1.default.cyan('index.ts'), '>', chalk_1.default.yellow(t), chalk_1.default.grey('in ' + this.finder.jsInputFolder + '/'));
-        };
-    }
     createWebpackPlugins() {
         let plugins = [];
-        let onBuildStart = this.createOnBuildStartMessageDelegate();
-        plugins.push(new TypeScriptBuildWebpackPlugin_1.TypeScriptBuildWebpackPlugin({
-            onBuildStart: onBuildStart,
-            minify: this.variables.production,
-            sourceMap: this.variables.sourceMap
-        }));
         plugins.push(new vue_loader_1.VueLoaderPlugin());
         if (Object.keys(this.variables.env).length > 0) {
             plugins.push(new webpack.EnvironmentPlugin(this.variables.env));
@@ -270,7 +254,7 @@ inject();
             mode: (this.variables.production ? 'production' : 'development'),
             devtool: this.webpackConfigurationDevTool,
             optimization: {
-                minimize: false,
+                minimizer: [new TypeScriptBuildMinifyPlugin_1.TypeScriptBuildMinifyPlugin()],
                 noEmitOnErrors: true,
                 splitChunks: {
                     cacheGroups: {
@@ -322,20 +306,34 @@ inject();
             providedExports: false
         };
     }
+    addCompilerBuildNotification(compiler) {
+        let compileTarget = this.typescriptCompilerOptions.target;
+        if (!compileTarget) {
+            compileTarget = TypeScript.ScriptTarget.ES3;
+        }
+        let t = TypeScript.ScriptTarget[compileTarget].toUpperCase();
+        compiler.hooks.compile.tap('typescript-compile-start', compilationParams => {
+            Shout_1.Shout.timed('Compiling', chalk_1.default.cyan('index.ts'), '>', chalk_1.default.yellow(t), chalk_1.default.grey('in ' + this.finder.jsInputFolder + '/'));
+        });
+        compiler.hooks.done.tapPromise('display-build-results', (stats) => __awaiter(this, void 0, void 0, function* () {
+            this.displayBuildResults(stats);
+        }));
+    }
     buildOnce(webpackConfiguration) {
         let compiler = webpack(webpackConfiguration);
+        this.addCompilerBuildNotification(compiler);
         return new Promise((ok, reject) => {
             compiler.run((err, stats) => {
                 if (err) {
                     reject(err);
                 }
-                this.displayBuildResults(stats);
                 ok(stats);
             });
         });
     }
     watch(webpackConfiguration) {
         let compiler = webpack(webpackConfiguration);
+        this.addCompilerBuildNotification(compiler);
         return new Promise((ok, reject) => {
             compiler.watch({
                 ignored: /node_modules/,
@@ -344,7 +342,6 @@ inject();
                 if (err) {
                     reject(err);
                 }
-                this.displayBuildResults(stats);
                 return ok();
             });
         });
@@ -426,9 +423,7 @@ inject();
     runDevServer(webpackConfiguration) {
         const logLevel = 'warn';
         const compiler = webpack(webpackConfiguration);
-        compiler.hooks.done.tapPromise('display-build-results', (stats) => __awaiter(this, void 0, void 0, function* () {
-            this.displayBuildResults(stats);
-        }));
+        this.addCompilerBuildNotification(compiler);
         const client = hotClient(compiler, {
             port: this.variables.port2,
             logLevel: logLevel

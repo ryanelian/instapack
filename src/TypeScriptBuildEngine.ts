@@ -11,7 +11,7 @@ import * as TypeScript from 'typescript';
 import { VueLoaderPlugin } from 'vue-loader';
 
 import { prettyBytes, prettyMilliseconds } from './PrettyUnits';
-import { TypeScriptBuildWebpackPlugin } from './TypeScriptBuildWebpackPlugin';
+import { TypeScriptBuildMinifyPlugin } from './TypeScriptBuildMinifyPlugin';
 import { Shout } from './Shout';
 import { IVariables } from './variables-factory/IVariables';
 import { PathFinder } from './variables-factory/PathFinder';
@@ -288,33 +288,11 @@ inject();
 `;
     }
 
-    createOnBuildStartMessageDelegate() {
-        let compileTarget = this.typescriptCompilerOptions.target;
-        if (!compileTarget) {
-            compileTarget = TypeScript.ScriptTarget.ES3;
-        }
-        let t = TypeScript.ScriptTarget[compileTarget].toUpperCase();
-
-        return () => {
-            Shout.timed('Compiling', chalk.cyan('index.ts'),
-                '>', chalk.yellow(t),
-                chalk.grey('in ' + this.finder.jsInputFolder + '/')
-            );
-        };
-    }
-
     /**
      * Returns webpack plugins array.
      */
     createWebpackPlugins() {
         let plugins: webpack.Plugin[] = [];
-
-        let onBuildStart = this.createOnBuildStartMessageDelegate();
-        plugins.push(new TypeScriptBuildWebpackPlugin({
-            onBuildStart: onBuildStart,
-            minify: this.variables.production,
-            sourceMap: this.variables.sourceMap
-        }));
 
         plugins.push(new VueLoaderPlugin());
 
@@ -402,8 +380,8 @@ inject();
             },
             mode: (this.variables.production ? 'production' : 'development'),
             devtool: this.webpackConfigurationDevTool,
-            optimization: {
-                minimize: false,        // https://medium.com/webpack/webpack-4-mode-and-optimization-5423a6bc597a
+            optimization: {     // https://medium.com/webpack/webpack-4-mode-and-optimization-5423a6bc597a
+                minimizer: [new TypeScriptBuildMinifyPlugin()], // https://webpack.js.org/configuration/optimization/
                 noEmitOnErrors: true,   // https://dev.to/flexdinesh/upgrade-to-webpack-4---5bc5
                 splitChunks: {          // https://webpack.js.org/plugins/split-chunks-plugin/
                     cacheGroups: {
@@ -462,8 +440,29 @@ inject();
         };
     }
 
+    addCompilerBuildNotification(compiler: webpack.Compiler) {
+        let compileTarget = this.typescriptCompilerOptions.target;
+        if (!compileTarget) {
+            compileTarget = TypeScript.ScriptTarget.ES3;
+        }
+
+        let t = TypeScript.ScriptTarget[compileTarget].toUpperCase();
+
+        compiler.hooks.compile.tap('typescript-compile-start', compilationParams => {
+            Shout.timed('Compiling', chalk.cyan('index.ts'),
+                '>', chalk.yellow(t),
+                chalk.grey('in ' + this.finder.jsInputFolder + '/')
+            );
+        });
+
+        compiler.hooks.done.tapPromise('display-build-results', async stats => {
+            this.displayBuildResults(stats);
+        });
+    }
+
     buildOnce(webpackConfiguration: webpack.Configuration) {
         let compiler = webpack(webpackConfiguration);
+        this.addCompilerBuildNotification(compiler);
 
         return new Promise<webpack.Stats>((ok, reject) => {
             compiler.run((err, stats) => {
@@ -471,7 +470,6 @@ inject();
                     reject(err);
                 }
 
-                this.displayBuildResults(stats);
                 ok(stats);
             });
         });
@@ -479,6 +477,7 @@ inject();
 
     watch(webpackConfiguration: webpack.Configuration) {
         let compiler = webpack(webpackConfiguration);
+        this.addCompilerBuildNotification(compiler);
 
         return new Promise<void>((ok, reject) => {
             compiler.watch({
@@ -489,7 +488,6 @@ inject();
                     reject(err);
                 }
 
-                this.displayBuildResults(stats);
                 return ok();
             });
         });
@@ -602,9 +600,7 @@ inject();
         const logLevel = 'warn';
 
         const compiler = webpack(webpackConfiguration);
-        compiler.hooks.done.tapPromise('display-build-results', async stats => {
-            this.displayBuildResults(stats);
-        });
+        this.addCompilerBuildNotification(compiler);
 
         const client = hotClient(compiler, {
             port: this.variables.port2,

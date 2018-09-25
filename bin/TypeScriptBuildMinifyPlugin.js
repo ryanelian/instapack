@@ -60,23 +60,18 @@ function minifyChunkAssets(compilation, chunks, sourceMap) {
     }
     return Promise.all(tasks);
 }
-class TypeScriptBuildWebpackPlugin {
-    constructor(options) {
-        this.options = options;
-    }
+class TypeScriptBuildMinifyPlugin {
     apply(compiler) {
-        let pluginId = 'typescript-build';
-        compiler.hooks.compile.tap(pluginId, compilation => {
-            this.options.onBuildStart();
-        });
-        if (!this.options.minify) {
-            return;
+        let pluginId = 'typescript-build-minify';
+        let enableSourceMaps = false;
+        if (compiler.options.devtool) {
+            enableSourceMaps = true;
         }
         compiler.hooks.compilation.tap(pluginId, compilation => {
             compilation.hooks.optimizeChunkAssets.tapPromise(pluginId, (chunks) => __awaiter(this, void 0, void 0, function* () {
-                yield minifyChunkAssets(compilation, chunks, this.options.sourceMap);
+                yield minifyChunkAssets(compilation, chunks, enableSourceMaps);
             }));
         });
     }
 }
-exports.TypeScriptBuildWebpackPlugin = TypeScriptBuildWebpackPlugin;
+exports.TypeScriptBuildMinifyPlugin = TypeScriptBuildMinifyPlugin;

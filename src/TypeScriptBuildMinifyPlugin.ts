@@ -7,15 +7,6 @@ import { IMinifyWorkerInput } from './workers/IMinifyWorkerInput';
 import { runMinifyWorker } from './workers/RunWorker';
 
 /**
- * Options required for TypeScriptBuildWebpackPlugin to function, collected from Settings and ICompilerFlags.
- */
-interface ITypeScriptBuildWebpackPluginOptions {
-    onBuildStart: () => any;
-    minify: boolean;
-    sourceMap: boolean;
-}
-
-/**
 * Create required parameters for minifying a compiled asset, as an object.
 * @param asset 
 * @param fileName 
@@ -84,42 +75,23 @@ function minifyChunkAssets(compilation: webpack.compilation.Compilation, chunks:
     return Promise.all(tasks);
 }
 
-/**
- * Custom webpack plugin for managing TypeScript build lifecycle. 
- */
-export class TypeScriptBuildWebpackPlugin {
-
-    /**
-     * Gets the options required for TypeScriptBuildWebpackPlugin to function.
-     */
-    private readonly options: ITypeScriptBuildWebpackPluginOptions;
-
-    /**
-     * Constructs a new instance of TypeScriptBuildWebpackPlugin using its options. 
-     * @param options 
-     */
-    constructor(options: ITypeScriptBuildWebpackPluginOptions) {
-        this.options = options;
-    }
+export class TypeScriptBuildMinifyPlugin {
 
     /**
      * Apply function prototype for registering a webpack plugin.
      * @param compiler 
      */
     apply(compiler: webpack.Compiler) {
-        let pluginId = 'typescript-build';
+        let pluginId = 'typescript-build-minify';
 
-        compiler.hooks.compile.tap(pluginId, compilation => {
-            this.options.onBuildStart();
-        });
-
-        if (!this.options.minify) {
-            return;
+        let enableSourceMaps = false;
+        if (compiler.options.devtool) {
+            enableSourceMaps = true;
         }
 
         compiler.hooks.compilation.tap(pluginId, compilation => {
             compilation.hooks.optimizeChunkAssets.tapPromise(pluginId, async chunks => {
-                await minifyChunkAssets(compilation, chunks, this.options.sourceMap);
+                await minifyChunkAssets(compilation, chunks, enableSourceMaps);
             });
         });
     }

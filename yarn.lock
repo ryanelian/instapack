@@ -5230,10 +5230,10 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
-typescript@3.1.0-rc.20180911:
-  version "3.1.0-rc.20180911"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.1.0-rc.20180911.tgz#73654821f9064dfe75a0440899ff0e2238338584"
-  integrity sha512-q6WeNUmkB6GNKftShDNLr9/aBSCVEFQ+8PF9/DwF/EswfCj1l6BmxtDU8s8eFlmgOmwOqBLaYdut6BEjvnzYVg==
+typescript@3.1.0-dev.20180925:
+  version "3.1.0-dev.20180925"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.1.0-dev.20180925.tgz#e2c8ce5cd70219a489904328efea87f81168dfa0"
+  integrity sha512-/e/T1trdDXoRUysMuoo0flJEviH3ChMZCVif2PmAcJ7K1FdiwQsPcjCAR8VhWI0Va/S6vIShjiy/IkRfxUlqGw==
 
 uglify-es@^3.3.4:
   version "3.3.9"

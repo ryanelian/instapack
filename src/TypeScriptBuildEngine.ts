@@ -427,14 +427,6 @@ inject();
             config.resolve.modules = wildcards;
         }
 
-        if (this.variables.watch) {
-            config.watch = true;
-            config.watchOptions = {
-                ignored: /node_modules/,
-                aggregateTimeout: 300
-            };
-        }
-
         return config;
     }
 
@@ -470,32 +462,36 @@ inject();
         };
     }
 
-    /**
-     * Runs webpack as promise. 
-     * Returned Promise will **never** resolve if running on watch mode!
-     * @param webpackConfiguration 
-     */
-    runWebpackAsync(webpackConfiguration: webpack.Configuration) {
+    buildOnce(webpackConfiguration: webpack.Configuration) {
+        let compiler = webpack(webpackConfiguration);
+
         return new Promise<webpack.Stats>((ok, reject) => {
-            webpack(webpackConfiguration, (error, stats) => {
-                if (error) {
-                    reject(error);
-                    return;
+            compiler.run((err, stats) => {
+                if (err) {
+                    reject(err);
                 }
 
                 this.displayBuildResults(stats);
-
-                if (this.variables.watch) {
-                    return; // do not terminate build worker on watch mode!
-                }
                 ok(stats);
             });
-        }).then(stats => {
-            if (this.variables.stats) {
-                return fse.outputJson(this.finder.statsJsonFilePath, stats.toJson());
-            }
+        });
+    }
 
-            return Promise.resolve();
+    watch(webpackConfiguration: webpack.Configuration) {
+        let compiler = webpack(webpackConfiguration);
+
+        return new Promise<void>((ok, reject) => {
+            compiler.watch({
+                ignored: /node_modules/,
+                aggregateTimeout: 300
+            }, (err, stats) => {
+                if (err) {
+                    reject(err);
+                }
+
+                this.displayBuildResults(stats);
+                return ok();
+            });
         });
     }
 
@@ -609,7 +605,7 @@ inject();
      * Promise will also never resolve unless errored.
      * @param webpackConfiguration 
      */
-    async runDevServer(webpackConfiguration: webpack.Configuration) {
+    runDevServer(webpackConfiguration: webpack.Configuration) {
         const logLevel = 'warn';
 
         const compiler = webpack(webpackConfiguration);
@@ -641,8 +637,6 @@ inject();
                 Shout.timed(chalk.yellow('Hot Reload'), `Server running on ports: ${p1}, ${p2}`);
             });
         });
-
-        await new Promise((ok, reject) => { });
     }
 
     /**
@@ -694,9 +688,14 @@ inject();
         let webpackConfiguration = await this.createWebpackConfiguration();
 
         if (this.variables.hot) {
-            await this.runDevServer(webpackConfiguration);
+            this.runDevServer(webpackConfiguration);
+        } else if (this.variables.watch) {
+            await this.watch(webpackConfiguration);
         } else {
-            await this.runWebpackAsync(webpackConfiguration);
+            let stats = await this.buildOnce(webpackConfiguration);
+            if (this.variables.stats) {
+                await fse.outputJson(this.finder.statsJsonFilePath, stats.toJson());
+            }
         }
     }
 }

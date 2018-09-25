@@ -20,7 +20,9 @@ module.exports = function (variables, finish) {
         let tool = new TypeScriptBuildEngine_1.TypeScriptBuildEngine(variables);
         try {
             yield tool.build();
-            finish(null);
+            if (!variables.watch) {
+                finish(null);
+            }
         }
         catch (error) {
             finish(error);

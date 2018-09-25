@@ -290,13 +290,6 @@ inject();
             if (wildcards && config.resolve) {
                 config.resolve.modules = wildcards;
             }
-            if (this.variables.watch) {
-                config.watch = true;
-                config.watchOptions = {
-                    ignored: /node_modules/,
-                    aggregateTimeout: 300
-                };
-            }
             return config;
         });
     }
@@ -328,24 +321,31 @@ inject();
             providedExports: false
         };
     }
-    runWebpackAsync(webpackConfiguration) {
+    buildOnce(webpackConfiguration) {
+        let compiler = webpack(webpackConfiguration);
         return new Promise((ok, reject) => {
-            webpack(webpackConfiguration, (error, stats) => {
-                if (error) {
-                    reject(error);
-                    return;
+            compiler.run((err, stats) => {
+                if (err) {
+                    reject(err);
                 }
                 this.displayBuildResults(stats);
-                if (this.variables.watch) {
-                    return;
-                }
                 ok(stats);
             });
-        }).then(stats => {
-            if (this.variables.stats) {
-                return fse.outputJson(this.finder.statsJsonFilePath, stats.toJson());
-            }
-            return Promise.resolve();
+        });
+    }
+    watch(webpackConfiguration) {
+        let compiler = webpack(webpackConfiguration);
+        return new Promise((ok, reject) => {
+            compiler.watch({
+                ignored: /node_modules/,
+                aggregateTimeout: 300
+            }, (err, stats) => {
+                if (err) {
+                    reject(err);
+                }
+                this.displayBuildResults(stats);
+                return ok();
+            });
         });
     }
     displayBuildResults(stats) {
@@ -426,32 +426,29 @@ inject();
         return `http://localhost:${this.variables.port1}/js/`;
     }
     runDevServer(webpackConfiguration) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const logLevel = 'warn';
-            const compiler = webpack(webpackConfiguration);
-            compiler.hooks.done.tapPromise('display-build-results', (stats) => __awaiter(this, void 0, void 0, function* () {
-                this.displayBuildResults(stats);
+        const logLevel = 'warn';
+        const compiler = webpack(webpackConfiguration);
+        compiler.hooks.done.tapPromise('display-build-results', (stats) => __awaiter(this, void 0, void 0, function* () {
+            this.displayBuildResults(stats);
+        }));
+        const client = hotClient(compiler, {
+            port: this.variables.port2,
+            logLevel: logLevel
+        });
+        let app = express();
+        client.server.on('listening', () => {
+            app.use(devMiddleware(compiler, {
+                publicPath: this.outputPublicPath,
+                logLevel: logLevel,
+                headers: {
+                    'Access-Control-Allow-Origin': '*'
+                },
             }));
-            const client = hotClient(compiler, {
-                port: this.variables.port2,
-                logLevel: logLevel
+            let p1 = chalk_1.default.green(this.variables.port1.toString());
+            let p2 = chalk_1.default.green(this.variables.port2.toString());
+            app.listen(this.variables.port1, () => {
+                Shout_1.Shout.timed(chalk_1.default.yellow('Hot Reload'), `Server running on ports: ${p1}, ${p2}`);
             });
-            let app = express();
-            client.server.on('listening', () => {
-                app.use(devMiddleware(compiler, {
-                    publicPath: this.outputPublicPath,
-                    logLevel: logLevel,
-                    headers: {
-                        'Access-Control-Allow-Origin': '*'
-                    },
-                }));
-                let p1 = chalk_1.default.green(this.variables.port1.toString());
-                let p2 = chalk_1.default.green(this.variables.port2.toString());
-                app.listen(this.variables.port1, () => {
-                    Shout_1.Shout.timed(chalk_1.default.yellow('Hot Reload'), `Server running on ports: ${p1}, ${p2}`);
-                });
-            });
-            yield new Promise((ok, reject) => { });
         });
     }
     setDevServerPorts() {
@@ -494,10 +491,16 @@ inject();
             }
             let webpackConfiguration = yield this.createWebpackConfiguration();
             if (this.variables.hot) {
-                yield this.runDevServer(webpackConfiguration);
+                this.runDevServer(webpackConfiguration);
+            }
+            else if (this.variables.watch) {
+                yield this.watch(webpackConfiguration);
             }
             else {
-                yield this.runWebpackAsync(webpackConfiguration);
+                let stats = yield this.buildOnce(webpackConfiguration);
+                if (this.variables.stats) {
+                    yield fse.outputJson(this.finder.statsJsonFilePath, stats.toJson());
+                }
             }
         });
     }

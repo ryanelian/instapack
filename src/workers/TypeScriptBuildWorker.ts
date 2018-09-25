@@ -19,8 +19,9 @@ export = async function (variables: IVariables, finish) {
 
     try {
         await tool.build();
-        // Promise will never finish if runs on watch mode!
-        finish(null);
+        if (!variables.watch) {
+            finish(null);
+        }
     } catch (error) {
         finish(error);
     }

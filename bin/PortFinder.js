@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const net = require("net");
+const Shout_1 = require("./Shout");
 function isPortAvailable(port) {
     return new Promise((ok, reject) => {
         let tester = net
@@ -42,3 +43,34 @@ function getAvailablePort(startFrom) {
     });
 }
 exports.getAvailablePort = getAvailablePort;
+function setVariablesPorts(variables) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let genPort1 = false;
+        let genPort2 = false;
+        if (variables.port1) {
+            if ((yield isPortAvailable(variables.port1)) === false) {
+                Shout_1.Shout.error('Configuration Error: Port 1 is not available. Randomizing Port 1...');
+                genPort1 = true;
+            }
+        }
+        else {
+            genPort1 = true;
+        }
+        if (genPort1) {
+            variables.port1 = yield getAvailablePort(22001);
+        }
+        if (variables.port2) {
+            if ((yield isPortAvailable(variables.port2)) === false) {
+                Shout_1.Shout.error('Configuration Error: Port 2 is not available. Randomizing Port 2...');
+                genPort2 = true;
+            }
+        }
+        else {
+            genPort2 = true;
+        }
+        if (genPort2) {
+            variables.port2 = yield getAvailablePort(variables.port1 + 1);
+        }
+    });
+}
+exports.setVariablesPorts = setVariablesPorts;

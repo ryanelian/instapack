@@ -7,8 +7,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+const fse = require("fs-extra");
 const TypeScriptBuildEngine_1 = require("../TypeScriptBuildEngine");
 const Shout_1 = require("../Shout");
+const PortFinder_1 = require("../PortFinder");
+const PathFinder_1 = require("../variables-factory/PathFinder");
 module.exports = function (variables, finish) {
     return __awaiter(this, void 0, void 0, function* () {
         if (variables.verbose) {
@@ -17,7 +20,12 @@ module.exports = function (variables, finish) {
         if (variables.muteNotification) {
             Shout_1.Shout.enableNotification = false;
         }
-        let tool = new TypeScriptBuildEngine_1.TypeScriptBuildEngine(variables);
+        let finder = new PathFinder_1.PathFinder(variables);
+        let useBabel = fse.pathExists(finder.babelConfiguration);
+        if (variables.hot) {
+            yield PortFinder_1.setVariablesPorts(variables);
+        }
+        let tool = new TypeScriptBuildEngine_1.TypeScriptBuildEngine(variables, yield useBabel);
         try {
             yield tool.build();
             if (!variables.watch) {

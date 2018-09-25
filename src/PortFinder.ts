@@ -1,4 +1,6 @@
 import * as net from 'net';
+import { IVariables } from './variables-factory/IVariables';
+import { Shout } from './Shout';
 
 /**
  * Check if a port number is available
@@ -41,4 +43,35 @@ export async function getAvailablePort(startFrom: number) {
     }
 
     return i;
+}
+
+export async function setVariablesPorts(variables: IVariables) {
+    let genPort1 = false;
+    let genPort2 = false;
+
+    if (variables.port1) {
+        if (await isPortAvailable(variables.port1) === false) {
+            Shout.error('Configuration Error: Port 1 is not available. Randomizing Port 1...');
+            genPort1 = true;
+        }
+    } else {
+        genPort1 = true;
+    }
+
+    if (genPort1) {
+        variables.port1 = await getAvailablePort(22001);
+    }
+
+    if (variables.port2) {
+        if (await isPortAvailable(variables.port2) === false) {
+            Shout.error('Configuration Error: Port 2 is not available. Randomizing Port 2...');
+            genPort2 = true;
+        }
+    } else {
+        genPort2 = true;
+    }
+
+    if (genPort2) {
+        variables.port2 = await getAvailablePort(variables.port1 + 1);
+    }
 }

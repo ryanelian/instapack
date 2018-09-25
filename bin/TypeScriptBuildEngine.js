@@ -22,16 +22,25 @@ const vue_loader_1 = require("vue-loader");
 const PrettyUnits_1 = require("./PrettyUnits");
 const TypeScriptBuildWebpackPlugin_1 = require("./TypeScriptBuildWebpackPlugin");
 const Shout_1 = require("./Shout");
-const PortScanner_1 = require("./PortScanner");
 const PathFinder_1 = require("./variables-factory/PathFinder");
 const LoaderPaths_1 = require("./loaders/LoaderPaths");
 const TypescriptConfigParser_1 = require("./TypescriptConfigParser");
 class TypeScriptBuildEngine {
-    constructor(variables) {
+    constructor(variables, useBabel) {
         this.wormholes = new Set();
         this.variables = variables;
         this.finder = new PathFinder_1.PathFinder(variables);
-        this.outputPublicPath = 'js/';
+        if (variables.hot) {
+            this.outputPublicPath = `http://localhost:${this.variables.port1}/js/`;
+        }
+        else {
+            this.outputPublicPath = 'js/';
+        }
+        this.typescriptCompilerOptions = TypescriptConfigParser_1.parseTypescriptConfig(variables.root, variables.typescriptConfiguration).options;
+        this.typescriptCompilerOptions.noEmit = false;
+        this.typescriptCompilerOptions.sourceMap = variables.sourceMap;
+        this.typescriptCompilerOptions.inlineSources = variables.sourceMap;
+        this.useBabel = useBabel;
     }
     convertTypeScriptPathToWebpackAliasPath(baseUrl, value) {
         let result = upath.join(baseUrl, value);
@@ -40,24 +49,24 @@ class TypeScriptBuildEngine {
         }
         return result;
     }
-    mergeTypeScriptPathAlias(tsCompilerOptions) {
+    mergeTypeScriptPathAlias() {
         let alias = Object.assign({}, this.variables.alias);
         if (this.variables.hot) {
             let hotClientModulePath = require.resolve('webpack-hot-client/client');
             alias['webpack-hot-client/client'] = hotClientModulePath;
         }
-        if (!tsCompilerOptions.paths) {
+        if (!this.typescriptCompilerOptions.paths) {
             return alias;
         }
-        if (!tsCompilerOptions.baseUrl) {
+        if (!this.typescriptCompilerOptions.baseUrl) {
             Shout_1.Shout.warning(chalk_1.default.cyan('tsconfig.json'), 'paths are defined, but baseUrl is not!', chalk_1.default.grey('(Ignoring)'));
             return alias;
         }
-        for (let key in tsCompilerOptions.paths) {
+        for (let key in this.typescriptCompilerOptions.paths) {
             if (key === '*') {
                 continue;
             }
-            let values = tsCompilerOptions.paths[key];
+            let values = this.typescriptCompilerOptions.paths[key];
             if (values.length > 1) {
                 Shout_1.Shout.warning(chalk_1.default.cyan('tsconfig.json'), 'paths:', chalk_1.default.yellow(key), 'resolves to more than one path!', chalk_1.default.grey('(Using the first one.)'));
             }
@@ -69,21 +78,21 @@ class TypeScriptBuildEngine {
             if (key.endsWith('/*')) {
                 key = key.substr(0, key.length - 2);
             }
-            let result = this.convertTypeScriptPathToWebpackAliasPath(tsCompilerOptions.baseUrl, value);
+            let result = this.convertTypeScriptPathToWebpackAliasPath(this.typescriptCompilerOptions.baseUrl, value);
             if (!alias[key]) {
                 alias[key] = result;
             }
         }
         return alias;
     }
-    getWildcardModules(tsCompilerOptions) {
-        if (!tsCompilerOptions.baseUrl) {
+    getWildcardModules() {
+        if (!this.typescriptCompilerOptions.baseUrl) {
             return undefined;
         }
-        if (!tsCompilerOptions.paths) {
+        if (!this.typescriptCompilerOptions.paths) {
             return undefined;
         }
-        let wildcards = tsCompilerOptions.paths['*'];
+        let wildcards = this.typescriptCompilerOptions.paths['*'];
         if (!wildcards) {
             return undefined;
         }
@@ -93,7 +102,7 @@ class TypeScriptBuildEngine {
         }
         let r = new Set();
         for (let value of wildcards) {
-            let result = this.convertTypeScriptPathToWebpackAliasPath(tsCompilerOptions.baseUrl, value);
+            let result = this.convertTypeScriptPathToWebpackAliasPath(this.typescriptCompilerOptions.baseUrl, value);
             r.add(result);
         }
         r.add('node_modules');
@@ -108,12 +117,12 @@ class TypeScriptBuildEngine {
             }
         };
     }
-    createTypescriptWebpackRules(tsCompilerOptions, useBabel) {
+    get typescriptWebpackRules() {
         let tsRules = {
             test: /\.tsx?$/,
             use: []
         };
-        if (useBabel) {
+        if (this.useBabel) {
             tsRules.use.push({
                 loader: LoaderPaths_1.LoaderPaths.babel
             });
@@ -121,7 +130,7 @@ class TypeScriptBuildEngine {
         tsRules.use.push({
             loader: LoaderPaths_1.LoaderPaths.typescript,
             options: {
-                compilerOptions: tsCompilerOptions
+                compilerOptions: this.typescriptCompilerOptions
             }
         });
         return tsRules;
@@ -187,8 +196,8 @@ function inject() {
 inject();
 `;
     }
-    createOnBuildStartMessageDelegate(tsCompilerOptions) {
-        let compileTarget = tsCompilerOptions.target;
+    createOnBuildStartMessageDelegate() {
+        let compileTarget = this.typescriptCompilerOptions.target;
         if (!compileTarget) {
             compileTarget = TypeScript.ScriptTarget.ES3;
         }
@@ -197,9 +206,9 @@ inject();
             Shout_1.Shout.timed('Compiling', chalk_1.default.cyan('index.ts'), '>', chalk_1.default.yellow(t), chalk_1.default.grey('in ' + this.finder.jsInputFolder + '/'));
         };
     }
-    createWebpackPlugins(tsCompilerOptions) {
+    createWebpackPlugins() {
         let plugins = [];
-        let onBuildStart = this.createOnBuildStartMessageDelegate(tsCompilerOptions);
+        let onBuildStart = this.createOnBuildStartMessageDelegate();
         plugins.push(new TypeScriptBuildWebpackPlugin_1.TypeScriptBuildWebpackPlugin({
             onBuildStart: onBuildStart,
             minify: this.variables.production,
@@ -211,14 +220,14 @@ inject();
         }
         return plugins;
     }
-    createWebpackRules(tsCompilerOptions, useBabel) {
+    createWebpackRules() {
         let rules = [
-            this.createTypescriptWebpackRules(tsCompilerOptions, useBabel),
+            this.typescriptWebpackRules,
             this.vueWebpackRules,
             this.templatesWebpackRules,
             this.cssWebpackRules
         ];
-        if (useBabel) {
+        if (this.useBabel) {
             rules.push(this.jsBabelWebpackRules);
         }
         return rules;
@@ -236,62 +245,54 @@ inject();
         return 'eval-source-map';
     }
     createWebpackConfiguration() {
-        return __awaiter(this, void 0, void 0, function* () {
-            let useBabel = yield fse.pathExists(this.finder.babelConfiguration);
-            let tsconfig = TypescriptConfigParser_1.parseTypescriptConfig(this.variables.root, this.variables.typescriptConfiguration);
-            let tsCompilerOptions = tsconfig.options;
-            tsCompilerOptions.noEmit = false;
-            tsCompilerOptions.sourceMap = this.variables.sourceMap;
-            tsCompilerOptions.inlineSources = this.variables.sourceMap;
-            let alias = this.mergeTypeScriptPathAlias(tsCompilerOptions);
-            let wildcards = this.getWildcardModules(tsCompilerOptions);
-            let rules = this.createWebpackRules(tsCompilerOptions, useBabel);
-            let plugins = this.createWebpackPlugins(tsCompilerOptions);
-            let osEntry = path.normalize(this.finder.jsEntry);
-            let osOutputJsFolder = path.normalize(this.finder.jsOutputFolder);
-            let config = {
-                entry: [osEntry],
-                output: {
-                    filename: this.finder.jsOutputFileName,
-                    chunkFilename: this.finder.jsChunkFileName,
-                    path: osOutputJsFolder,
-                    publicPath: this.outputPublicPath
-                },
-                externals: this.variables.externals,
-                resolve: {
-                    extensions: ['.ts', '.tsx', '.js', '.jsx', '.mjs', '.vue', '.wasm', '.json', '.html'],
-                    alias: alias
-                },
-                module: {
-                    rules: rules
-                },
-                mode: (this.variables.production ? 'production' : 'development'),
-                devtool: this.webpackConfigurationDevTool,
-                optimization: {
-                    minimize: false,
-                    noEmitOnErrors: true,
-                    splitChunks: {
-                        cacheGroups: {
-                            vendors: {
-                                name: 'dll',
-                                test: /[\\/]node_modules[\\/]/,
-                                chunks: 'initial',
-                                enforce: true,
-                                priority: -10
-                            }
+        let alias = this.mergeTypeScriptPathAlias();
+        let wildcards = this.getWildcardModules();
+        let rules = this.createWebpackRules();
+        let plugins = this.createWebpackPlugins();
+        let osEntry = path.normalize(this.finder.jsEntry);
+        let osOutputJsFolder = path.normalize(this.finder.jsOutputFolder);
+        let config = {
+            entry: [osEntry],
+            output: {
+                filename: this.finder.jsOutputFileName,
+                chunkFilename: this.finder.jsChunkFileName,
+                path: osOutputJsFolder,
+                publicPath: this.outputPublicPath
+            },
+            externals: this.variables.externals,
+            resolve: {
+                extensions: ['.ts', '.tsx', '.js', '.jsx', '.mjs', '.vue', '.wasm', '.json', '.html'],
+                alias: alias
+            },
+            module: {
+                rules: rules
+            },
+            mode: (this.variables.production ? 'production' : 'development'),
+            devtool: this.webpackConfigurationDevTool,
+            optimization: {
+                minimize: false,
+                noEmitOnErrors: true,
+                splitChunks: {
+                    cacheGroups: {
+                        vendors: {
+                            name: 'dll',
+                            test: /[\\/]node_modules[\\/]/,
+                            chunks: 'initial',
+                            enforce: true,
+                            priority: -10
                         }
                     }
-                },
-                performance: {
-                    hints: false
-                },
-                plugins: plugins
-            };
-            if (wildcards && config.resolve) {
-                config.resolve.modules = wildcards;
-            }
-            return config;
-        });
+                }
+            },
+            performance: {
+                hints: false
+            },
+            plugins: plugins
+        };
+        if (wildcards && config.resolve) {
+            config.resolve.modules = wildcards;
+        }
+        return config;
     }
     get statsSerializeEssentialOption() {
         return {
@@ -374,7 +375,7 @@ inject();
         }
         let jsOutputPath;
         if (this.variables.hot) {
-            jsOutputPath = this.outputHotJsFolderUri;
+            jsOutputPath = this.outputPublicPath;
         }
         else {
             jsOutputPath = this.finder.jsOutputFolder + '/';
@@ -417,13 +418,10 @@ inject();
     putWormhole(fileName) {
         let physicalFilePath = upath.join(this.finder.jsOutputFolder, fileName);
         let relativeFilePath = upath.relative(this.finder.root, physicalFilePath);
-        let hotUri = url.resolve(this.outputHotJsFolderUri, fileName);
+        let hotUri = url.resolve(this.outputPublicPath, fileName);
         Shout_1.Shout.timed(`+wormhole: ${chalk_1.default.cyan(relativeFilePath)} --> ${chalk_1.default.cyan(hotUri)}`);
         let hotProxy = this.createWormholeToHotScript(hotUri);
         return fse.outputFile(physicalFilePath, hotProxy);
-    }
-    get outputHotJsFolderUri() {
-        return `http://localhost:${this.variables.port1}/js/`;
     }
     runDevServer(webpackConfiguration) {
         const logLevel = 'warn';
@@ -435,9 +433,9 @@ inject();
             port: this.variables.port2,
             logLevel: logLevel
         });
-        let app = express();
+        let devServer = express();
         client.server.on('listening', () => {
-            app.use(devMiddleware(compiler, {
+            devServer.use(devMiddleware(compiler, {
                 publicPath: this.outputPublicPath,
                 logLevel: logLevel,
                 headers: {
@@ -446,50 +444,14 @@ inject();
             }));
             let p1 = chalk_1.default.green(this.variables.port1.toString());
             let p2 = chalk_1.default.green(this.variables.port2.toString());
-            app.listen(this.variables.port1, () => {
+            devServer.listen(this.variables.port1, () => {
                 Shout_1.Shout.timed(chalk_1.default.yellow('Hot Reload'), `Server running on ports: ${p1}, ${p2}`);
             });
         });
     }
-    setDevServerPorts() {
-        return __awaiter(this, void 0, void 0, function* () {
-            let genPort1 = false;
-            let genPort2 = false;
-            if (this.variables.port1) {
-                if ((yield PortScanner_1.isPortAvailable(this.variables.port1)) === false) {
-                    Shout_1.Shout.error('Configuration Error: Port 1 is not available. Randomizing Port 1...');
-                    genPort1 = true;
-                }
-            }
-            else {
-                genPort1 = true;
-            }
-            if (genPort1) {
-                this.variables.port1 = yield PortScanner_1.getAvailablePort(22001);
-            }
-            if (this.variables.port2) {
-                if ((yield PortScanner_1.isPortAvailable(this.variables.port2)) === false) {
-                    Shout_1.Shout.error('Configuration Error: Port 2 is not available. Randomizing Port 2...');
-                    genPort2 = true;
-                }
-            }
-            else {
-                genPort2 = true;
-            }
-            if (genPort2) {
-                this.variables.port2 = yield PortScanner_1.getAvailablePort(this.variables.port1 + 1);
-            }
-            if (this.variables.hot) {
-                this.outputPublicPath = this.outputHotJsFolderUri;
-            }
-        });
-    }
     build() {
         return __awaiter(this, void 0, void 0, function* () {
-            if (this.variables.hot) {
-                yield this.setDevServerPorts();
-            }
-            let webpackConfiguration = yield this.createWebpackConfiguration();
+            let webpackConfiguration = this.createWebpackConfiguration();
             if (this.variables.hot) {
                 this.runDevServer(webpackConfiguration);
             }

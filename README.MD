@@ -419,7 +419,7 @@ declare module "*.html" {
 }
 ```
 
-> Deprecation notice: the special extension `.vue.html` will be compiled to an [object `{ render: function(){}, staticRenderFns: function(){} }` to be used as parameters for vue-class-component ComponentOptions](https://vuejs.org/v2/guide/render-function.html#Template-Compilation). This behavior will be removed in future instapack versions.
+> DEPRECATION NOTICE: the special extension `.vue.html` module will be compiled to an [object `{ render: (createElement: CreateElement, hack: RenderContext<Props>): VNode, staticRenderFns: ((createElement: CreateElement) => VNode)[] }` to be used as parameters for Vue.js `ComponentOptions`](https://vuejs.org/v2/guide/render-function.html#Template-Compilation). This behavior will be removed in future instapack versions.
 
 ### JSON Modules
 

@@ -50,7 +50,7 @@
   "dependencies": {
     "@babel/core": "7.0.0",
     "autoprefixer": "9.1.5",
-    "babel-loader": "8.0.2",
+    "babel-loader": "8.0.3",
     "chalk": "2.4.1",
     "chokidar": "2.0.4",
     "clean-css": "4.2.1",

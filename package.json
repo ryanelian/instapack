@@ -1,6 +1,6 @@
 {
   "name": "instapack",
-  "version": "7.0.0-beta4",
+  "version": "7.0.0-beta5",
   "description": "All-in-one TypeScript and Sass compiler for web applications!",
   "keywords": [
     "typescript",
@@ -53,7 +53,7 @@
   "dependencies": {
     "@babel/core": "7.1.0",
     "autoprefixer": "9.1.5",
-    "babel-loader": "8.0.2",
+    "babel-loader": "8.0.4",
     "chalk": "2.4.1",
     "chokidar": "2.0.4",
     "clean-css": "4.2.1",
@@ -94,7 +94,7 @@
     "@types/node": "8",
     "@types/node-notifier": "^0.0.28",
     "@types/uglify-js": "^3.0.3",
-    "@types/webpack": "^4.4.12",
+    "@types/webpack": "^4.4.13",
     "@types/webpack-dev-middleware": "^2.0.2",
     "@types/webpack-sources": "^0.1.5",
     "@types/yargs": "^12.0.0",

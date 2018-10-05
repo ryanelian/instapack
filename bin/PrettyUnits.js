@@ -5,10 +5,18 @@ const bigUnitPrefix = ['', 'k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'];
 function siDegree(x) {
     return Math.floor(Math.log10(x) / 3);
 }
+exports.siDegree = siDegree;
 function prettyBytes(size) {
+    let result = '';
     let unit = siDegree(size);
-    let scale = size * Math.pow(1000, -unit);
-    return scale.toPrecision(3) + ' ' + bigUnitPrefix[unit] + 'B';
+    if (size >= 1000) {
+        let scale = size * Math.pow(1000, -unit);
+        result = result + scale.toPrecision(3);
+    }
+    else {
+        result = result + size;
+    }
+    return result + ' ' + bigUnitPrefix[unit] + 'B';
 }
 exports.prettyBytes = prettyBytes;
 function prettySeconds(s) {

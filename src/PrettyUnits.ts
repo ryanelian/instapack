@@ -5,7 +5,7 @@ const bigUnitPrefix = ['', 'k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'];
  * Returns number scale in multiples of 10e3 in O(1) complexity.
  * @param x 
  */
-function siDegree(x: number) {
+export function siDegree(x: number) {
     return Math.floor(Math.log10(x) / 3);
 }
 
@@ -14,9 +14,19 @@ function siDegree(x: number) {
  * @param size 
  */
 export function prettyBytes(size: number) {
+    let result = '';
     let unit = siDegree(size);
-    let scale = size * Math.pow(1000, -unit);
-    return scale.toPrecision(3) + ' ' + bigUnitPrefix[unit] + 'B';
+
+    if (size >= 1000) {
+        let scale = size * Math.pow(1000, -unit);
+        result = result + scale.toPrecision(3);
+    } else {
+        // no need to add decimal points when number is lower than 1000
+        // because bytes being the smallest digital size unit in use.
+        result = result + size;
+    }
+
+    return result + ' ' + bigUnitPrefix[unit] + 'B';
 }
 
 /**

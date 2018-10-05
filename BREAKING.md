@@ -10,7 +10,7 @@ Here are the list of breaking changes when upgrading between instapack major (or
 
 - Removed `clean` command and `concat` build tools.
 
-  - Legacy `angularjs` project template is now shipped with a simple concat tool (`concat.cmd`).
+  - Legacy `angularjs` project template is now shipped with a simple concat tool (`concat.cmd`), which can be adopted by projects requiring similar approach for side-loading legacy JS.
 
 - Disable source map flag `--xdebug` or `-x` has been replaced with `--nodebug` or `-b`
 
@@ -26,7 +26,7 @@ Here are the list of breaking changes when upgrading between instapack major (or
 
   - [`unknown` is a reserved type name now.](https://blogs.msdn.microsoft.com/typescript/2018/07/30/announcing-typescript-3-0/#unknown-is-a-reserved-type-name)
 
-  - `resolveJsonModule` regression: [only works in when targeting AMD `module`](https://github.com/Microsoft/TypeScript/issues/25755) *(to be fixed in TypeScript 3.1!)*
+  - `resolveJsonModule` regression: [only works in when targeting AMD `module`](https://github.com/Microsoft/TypeScript/issues/25755) *(fixed in TypeScript 3.1 / instapack 7.0.0)*
 
 ## 6.2.0
 

@@ -9,24 +9,22 @@ export function siDegree(x: number) {
     return Math.floor(Math.log10(x) / 3);
 }
 
+export function stringifyExponent(ordinal: number, scale: number): string {
+    if (ordinal < 1000) {
+        return ordinal.toFixed().toString();
+    }
+
+    let firstThreeDigits = ordinal * Math.pow(1000, -scale);
+    return firstThreeDigits.toPrecision(3).toString();
+}
+
 /**
  * Returns byte formatted as string with SI prefix.
  * @param size 
  */
 export function prettyBytes(size: number) {
-    let result = '';
     let unit = siDegree(size);
-
-    if (size >= 1000) {
-        let scale = size * Math.pow(1000, -unit);
-        result = result + scale.toPrecision(3);
-    } else {
-        // no need to add decimal points when number is lower than 1000
-        // because bytes being the smallest digital size unit in use.
-        result = result + size;
-    }
-
-    return result + ' ' + bigUnitPrefix[unit] + 'B';
+    return stringifyExponent(size, unit) + ' ' + bigUnitPrefix[unit] + 'B';
 }
 
 /**
@@ -69,8 +67,7 @@ export function prettyMilliseconds(ms: number) {
 export function prettyHrTime(hrtime: [number, number]) {
     if (hrtime[0] === 0) {
         let unit = siDegree(hrtime[1]);
-        let scale = hrtime[1] * Math.pow(1000, -unit);
-        return scale.toPrecision(3) + ' ' + nanoUnitPrefix[unit] + 's';
+        return stringifyExponent(hrtime[1], unit) + ' ' + nanoUnitPrefix[unit] + 's';
     } else {
         let s = hrtime[0] + (hrtime[1] / Math.pow(1000, 3));
         return prettySeconds(s);

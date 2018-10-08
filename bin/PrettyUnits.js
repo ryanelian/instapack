@@ -6,17 +6,17 @@ function siDegree(x) {
     return Math.floor(Math.log10(x) / 3);
 }
 exports.siDegree = siDegree;
+function stringifyExponent(ordinal, scale) {
+    if (ordinal < 1000) {
+        return ordinal.toFixed().toString();
+    }
+    let firstThreeDigits = ordinal * Math.pow(1000, -scale);
+    return firstThreeDigits.toPrecision(3).toString();
+}
+exports.stringifyExponent = stringifyExponent;
 function prettyBytes(size) {
-    let result = '';
     let unit = siDegree(size);
-    if (size >= 1000) {
-        let scale = size * Math.pow(1000, -unit);
-        result = result + scale.toPrecision(3);
-    }
-    else {
-        result = result + size;
-    }
-    return result + ' ' + bigUnitPrefix[unit] + 'B';
+    return stringifyExponent(size, unit) + ' ' + bigUnitPrefix[unit] + 'B';
 }
 exports.prettyBytes = prettyBytes;
 function prettySeconds(s) {
@@ -46,8 +46,7 @@ exports.prettyMilliseconds = prettyMilliseconds;
 function prettyHrTime(hrtime) {
     if (hrtime[0] === 0) {
         let unit = siDegree(hrtime[1]);
-        let scale = hrtime[1] * Math.pow(1000, -unit);
-        return scale.toPrecision(3) + ' ' + nanoUnitPrefix[unit] + 's';
+        return stringifyExponent(hrtime[1], unit) + ' ' + nanoUnitPrefix[unit] + 's';
     }
     else {
         let s = hrtime[0] + (hrtime[1] / Math.pow(1000, 3));

@@ -55,7 +55,7 @@
     "chokidar": "2.0.4",
     "clean-css": "4.2.1",
     "css-loader": "1.0.0",
-    "dotenv": "6.0.0",
+    "dotenv": "6.1.0",
     "enhanced-resolve": "4.1.0",
     "fs-extra": "7.0.0",
     "glob": "7.1.3",

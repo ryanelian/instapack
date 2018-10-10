@@ -3,9 +3,9 @@
     "noImplicitAny": false,
     "noImplicitThis": true,
     "alwaysStrict": true,
-    "strictNullChecks": false,
+    "strictNullChecks": true,
     "strictFunctionTypes": true,
-    "strictPropertyInitialization": false,
+    "strictPropertyInitialization": true,
     "skipLibCheck": true,
 
     "noUnusedLocals": false,
@@ -27,6 +27,7 @@
   },
   "exclude": [
     "node_modules",
-    "templates"
+    "templates",
+    "fixtures"
   ]
 }

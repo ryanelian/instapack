@@ -5,8 +5,17 @@ const bigUnitPrefix = ['', 'k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'];
  * Returns number scale in multiples of 10e3 in O(1) complexity.
  * @param x 
  */
-function siDegree(x: number) {
+export function siDegree(x: number) {
     return Math.floor(Math.log10(x) / 3);
+}
+
+export function stringifyExponent(ordinal: number, scale: number): string {
+    if (ordinal < 1000) {
+        return ordinal.toFixed().toString();
+    }
+
+    let firstThreeDigits = ordinal * Math.pow(1000, -scale);
+    return firstThreeDigits.toPrecision(3).toString();
 }
 
 /**
@@ -15,8 +24,7 @@ function siDegree(x: number) {
  */
 export function prettyBytes(size: number) {
     let unit = siDegree(size);
-    let scale = size * Math.pow(1000, -unit);
-    return scale.toPrecision(3) + ' ' + bigUnitPrefix[unit] + 'B';
+    return stringifyExponent(size, unit) + ' ' + bigUnitPrefix[unit] + 'B';
 }
 
 /**
@@ -59,8 +67,7 @@ export function prettyMilliseconds(ms: number) {
 export function prettyHrTime(hrtime: [number, number]) {
     if (hrtime[0] === 0) {
         let unit = siDegree(hrtime[1]);
-        let scale = hrtime[1] * Math.pow(1000, -unit);
-        return scale.toPrecision(3) + ' ' + nanoUnitPrefix[unit] + 's';
+        return stringifyExponent(hrtime[1], unit) + ' ' + nanoUnitPrefix[unit] + 's';
     } else {
         let s = hrtime[0] + (hrtime[1] / Math.pow(1000, 3));
         return prettySeconds(s);

@@ -1,8 +1,8 @@
 import * as fse from 'fs-extra';
-import * as glob from 'glob';
+import glob = require('glob');
 import { createHash } from 'crypto';
 import * as TypeScript from 'typescript';
-import * as vueTemplateCompiler from 'vue-template-compiler';
+import VueTemplateCompiler = require('vue-template-compiler');
 
 /**
  * Contains virtual and cached source code for TypeScript project.
@@ -11,17 +11,17 @@ export class VirtualSourceStore {
     /**
      * Gets the lookup from virtual source file path to TypeScript source file.
      */
-    private readonly sources: IMapLike<TypeScript.SourceFile> = {};
+    private readonly sources: IMapLike<TypeScript.SourceFile | undefined> = {};
 
     /**
      * Gets the lookup from virtual source file path to file content hash.
      */
-    private readonly versions: IMapLike<string> = {};
+    private readonly versions: IMapLike<string | undefined> = {};
 
     /**
      * Gets the lookup from virtual source file path to real file path for exotic (non-TypeScript) sources.
      */
-    private readonly virtualToRealFilePaths: IMapLike<string> = {};
+    private readonly virtualToRealFilePaths: IMapLike<string | undefined> = {};
 
     /**
      * Gets the collection of TypeScript file paths to be used as program entry points.
@@ -94,6 +94,9 @@ export class VirtualSourceStore {
 
         for (let virtualFilePath in this.virtualToRealFilePaths) {
             let realFilePath = this.virtualToRealFilePaths[virtualFilePath];
+            if (!realFilePath) {
+                throw new Error('Unexpected undefined value when iterating virtual-to-real file paths!');
+            }
             tasks.push(this.addOrUpdateSourceAsync(realFilePath));
         }
 
@@ -105,8 +108,9 @@ export class VirtualSourceStore {
      * @param virtualFilePath 
      */
     getRealFilePath(virtualFilePath: string): string {
-        if (this.virtualToRealFilePaths[virtualFilePath]) {
-            return this.virtualToRealFilePaths[virtualFilePath];
+        let p = this.virtualToRealFilePaths[virtualFilePath];
+        if (p) {
+            return p;
         }
 
         return virtualFilePath;
@@ -135,7 +139,7 @@ export class VirtualSourceStore {
      * @param raw 
      */
     private parseVueFile(raw: string): string {
-        let parse = vueTemplateCompiler.parseComponent(raw);
+        let parse = VueTemplateCompiler.parseComponent(raw);
 
         if (!parse.script) {
             return '';
@@ -184,7 +188,8 @@ export class VirtualSourceStore {
         }
 
         // https://github.com/Microsoft/TypeScript/blob/master/src/compiler/program.ts
-        this.sources[virtualFilePath] = TypeScript.createSourceFile(virtualFilePath, raw, this.tsCompilerOptions.target);
+        let target = this.tsCompilerOptions.target || TypeScript.ScriptTarget.ES5;
+        this.sources[virtualFilePath] = TypeScript.createSourceFile(virtualFilePath, raw, target);
         this.versions[virtualFilePath] = version;
         return true;
     }
@@ -214,16 +219,22 @@ export class VirtualSourceStore {
      * @param virtualFilePath 
      */
     getSource(virtualFilePath: string): TypeScript.SourceFile {
-        if (this.sources[virtualFilePath]) {
+        let s = this.sources[virtualFilePath];
+        if (s) {
             // console.log('SOURCE (cache) ' + virtualFilePath);
-            return this.sources[virtualFilePath];
+            return s;
         }
 
         let realFilePath = this.getRealFilePath(virtualFilePath);
         this.addOrUpdateSource(realFilePath);
 
         // console.log('SOURCE (sync) ' + virtualFilePath);
-        return this.sources[virtualFilePath];
+        s = this.sources[virtualFilePath];
+        if (!s) {
+            throw new Error(`Source ${virtualFilePath} was updated but is undefined!`);
+        }
+
+        return s;
     }
 
     /**

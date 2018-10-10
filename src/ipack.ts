@@ -1,15 +1,16 @@
 #!/usr/bin/env node
 
-import instapack = require('./index');
-import * as program from 'yargs';
+import program = require('yargs');
 import chalk from 'chalk';
-import { Meta } from './Meta';
+
+import instapack = require('./index');
+import { parseCliEnvFlags } from './variables-factory/EnvParser';
+import { userSettingOptions } from './user-settings/UserSettingsManager';
+const manifest = require('../package.json');
 
 let projectFolder = process.cwd();
-let app = new instapack(projectFolder);
-let meta = new Meta();
-meta.checkForUpdates();
-program.version(meta.version);
+let ipack = new instapack(projectFolder);
+program.version(manifest.version);
 
 /**
  * Writes app name, version number, command and sub-command to the console output.
@@ -21,7 +22,7 @@ function echo(command: string, subCommand: string) {
         subCommand = '';
     }
 
-    console.log(chalk.yellow(meta.name) + ' ' + chalk.green(meta.version) + ' ' + command + ' ' + subCommand);
+    console.log(chalk.yellow(manifest.name) + ' ' + chalk.green(manifest.version) + ' ' + command + ' ' + subCommand);
     console.log();
 }
 
@@ -30,7 +31,7 @@ program.command({
     describe: 'Builds the web application!',
     aliases: ['*'],
     builder: yargs => {
-        return yargs.choices('project', app.availableTasks)
+        return yargs.choices('project', ipack.availableBuildTasks)
             .option('watch', {
                 alias: 'w',
                 describe: 'Enables automatic incremental build on source code changes.'
@@ -40,38 +41,30 @@ program.command({
             }).option('hot', {
                 alias: 'h',
                 describe: 'Enables Hot Reload development mode using dedicated build servers.'
-            }).option('xdebug', {
-                alias: 'x',
+            }).option('nodebug', {
+                alias: 'b',
                 describe: 'Disables source maps, producing undebuggable outputs.'
             }).option('env', {
                 describe: 'Defines process.env variables to be replaced in TypeScript project build.'
             }).option('stats', {
                 describe: 'Generates webpack stats.json next to the TypeScript build outputs for analysis.'
-            })/*.option('v', {
+            }).option('v', {
                 alias: 'verbose',
                 describe: 'Trace diagnostic outputs for debugging instapack.'
-            })*/
+            });
     },
     handler: argv => {
         let subCommand = argv.project || 'all';
 
-        let cliEnv: IMapLike<string> = {};
-        if (argv.env && typeof argv.env === 'object' && !Array.isArray(argv.env)) {
-            cliEnv = argv.env;
-            for (let key in cliEnv) {
-                cliEnv[key] = cliEnv[key].toString();
-            }
-            // console.log(cliEnv);
-        }
-
         echo('build', subCommand);
-        app.build(subCommand, {
+        ipack.build(subCommand, {
             production: !Boolean(argv.dev),
             watch: Boolean(argv.watch),
-            sourceMap: !Boolean(argv.xdebug),
-            env: cliEnv,
+            sourceMap: !Boolean(argv.nodebug),
+            env: parseCliEnvFlags(argv.env),
             stats: Boolean(argv.stats),
-            hot: Boolean(argv.hot)
+            hot: Boolean(argv.hot),
+            verbose: Boolean(argv.verbose)
         });
     }
 });
@@ -80,22 +73,13 @@ program.command({
     command: 'new [template]',
     describe: 'Scaffolds new TypeScript + Sass projects!',
     builder: yargs => {
-        return yargs.choices('template', app.availableTemplates);
+        return yargs.choices('template', ipack.availableTemplates);
     },
     handler: argv => {
         let subCommand = argv.template || 'vue';
 
         echo('new', subCommand);
-        app.scaffold(subCommand);
-    }
-});
-
-program.command({
-    command: 'clean',
-    describe: 'Remove files in output folder.',
-    handler: argv => {
-        echo('clean', null);
-        app.clean();
+        ipack.scaffold(subCommand);
     }
 });
 
@@ -103,23 +87,12 @@ program.command({
     command: 'set <key> <value>',
     describe: 'Change a global setting.',
     builder: yargs => {
-        return yargs.choices('key', app.availableSettings);
+        return yargs.choices('key', userSettingOptions);
     },
     handler: argv => {
         echo('set', argv.key);
-        app.changeGlobalSetting(argv.key, argv.value);
+        ipack.changeUserSettings(argv.key, argv.value);
     }
 });
 
 let parse = program.strict().help().argv;
-//console.log(parse);
-
-process.on('exit', () => {
-    meta.updateNag();
-});
-
-// Catch CTRL+C event then exit normally.
-process.on('SIGINT', () => {
-    meta.updateNag();
-    process.exit(2);
-});

@@ -1,20 +1,20 @@
 #!/usr/bin/env node
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const instapack = require("./index");
 const program = require("yargs");
 const chalk_1 = require("chalk");
-const Meta_1 = require("./Meta");
+const instapack = require("./index");
+const EnvParser_1 = require("./variables-factory/EnvParser");
+const UserSettingsManager_1 = require("./user-settings/UserSettingsManager");
+const manifest = require('../package.json');
 let projectFolder = process.cwd();
-let app = new instapack(projectFolder);
-let meta = new Meta_1.Meta();
-meta.checkForUpdates();
-program.version(meta.version);
+let ipack = new instapack(projectFolder);
+program.version(manifest.version);
 function echo(command, subCommand) {
     if (!subCommand) {
         subCommand = '';
     }
-    console.log(chalk_1.default.yellow(meta.name) + ' ' + chalk_1.default.green(meta.version) + ' ' + command + ' ' + subCommand);
+    console.log(chalk_1.default.yellow(manifest.name) + ' ' + chalk_1.default.green(manifest.version) + ' ' + command + ' ' + subCommand);
     console.log();
 }
 program.command({
@@ -22,7 +22,7 @@ program.command({
     describe: 'Builds the web application!',
     aliases: ['*'],
     builder: yargs => {
-        return yargs.choices('project', app.availableTasks)
+        return yargs.choices('project', ipack.availableBuildTasks)
             .option('watch', {
             alias: 'w',
             describe: 'Enables automatic incremental build on source code changes.'
@@ -32,32 +32,29 @@ program.command({
         }).option('hot', {
             alias: 'h',
             describe: 'Enables Hot Reload development mode using dedicated build servers.'
-        }).option('xdebug', {
-            alias: 'x',
+        }).option('nodebug', {
+            alias: 'b',
             describe: 'Disables source maps, producing undebuggable outputs.'
         }).option('env', {
             describe: 'Defines process.env variables to be replaced in TypeScript project build.'
         }).option('stats', {
             describe: 'Generates webpack stats.json next to the TypeScript build outputs for analysis.'
+        }).option('v', {
+            alias: 'verbose',
+            describe: 'Trace diagnostic outputs for debugging instapack.'
         });
     },
     handler: argv => {
         let subCommand = argv.project || 'all';
-        let cliEnv = {};
-        if (argv.env && typeof argv.env === 'object' && !Array.isArray(argv.env)) {
-            cliEnv = argv.env;
-            for (let key in cliEnv) {
-                cliEnv[key] = cliEnv[key].toString();
-            }
-        }
         echo('build', subCommand);
-        app.build(subCommand, {
+        ipack.build(subCommand, {
             production: !Boolean(argv.dev),
             watch: Boolean(argv.watch),
-            sourceMap: !Boolean(argv.xdebug),
-            env: cliEnv,
+            sourceMap: !Boolean(argv.nodebug),
+            env: EnvParser_1.parseCliEnvFlags(argv.env),
             stats: Boolean(argv.stats),
-            hot: Boolean(argv.hot)
+            hot: Boolean(argv.hot),
+            verbose: Boolean(argv.verbose)
         });
     }
 });
@@ -65,38 +62,23 @@ program.command({
     command: 'new [template]',
     describe: 'Scaffolds new TypeScript + Sass projects!',
     builder: yargs => {
-        return yargs.choices('template', app.availableTemplates);
+        return yargs.choices('template', ipack.availableTemplates);
     },
     handler: argv => {
         let subCommand = argv.template || 'vue';
         echo('new', subCommand);
-        app.scaffold(subCommand);
-    }
-});
-program.command({
-    command: 'clean',
-    describe: 'Remove files in output folder.',
-    handler: argv => {
-        echo('clean', null);
-        app.clean();
+        ipack.scaffold(subCommand);
     }
 });
 program.command({
     command: 'set <key> <value>',
     describe: 'Change a global setting.',
     builder: yargs => {
-        return yargs.choices('key', app.availableSettings);
+        return yargs.choices('key', UserSettingsManager_1.userSettingOptions);
     },
     handler: argv => {
         echo('set', argv.key);
-        app.changeGlobalSetting(argv.key, argv.value);
+        ipack.changeUserSettings(argv.key, argv.value);
     }
 });
 let parse = program.strict().help().argv;
-process.on('exit', () => {
-    meta.updateNag();
-});
-process.on('SIGINT', () => {
-    meta.updateNag();
-    process.exit(2);
-});

@@ -1,3 +1,5 @@
+import template from './ValidationMessage.html';
+
 class ValidationMessageController implements angular.IController {
     static $inject = [];
 
@@ -95,7 +97,7 @@ class ValidationMessageController implements angular.IController {
 }
 
 export let ValidationMessage: angular.IComponentOptions = {
-    template: require('./ValidationMessage.html') as string,
+    template: template,
     bindings: {
         input: '<for',
         forId: '@',

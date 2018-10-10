@@ -1,33 +1,38 @@
-import { Compiler } from './Compiler';
-import { Settings } from './Settings';
-
 import * as fse from 'fs-extra';
 import * as upath from 'upath';
 import chalk from 'chalk';
-import { GlobalSettingsManager } from './GlobalSettingsManager';
+
+import { ICommandLineFlags } from "./variables-factory/ICommandLineFlags";
+import { readProjectSettingsFrom } from './variables-factory/ReadProjectSettings';
+import { readDotEnvFrom } from './variables-factory/EnvParser';
+import { compileVariables } from './variables-factory/CompileVariables';
+import { PathFinder } from './variables-factory/PathFinder';
 import { PackageManager } from './PackageManager';
 import { Shout } from './Shout';
-import { mergePackageJson } from './CompilerUtilities';
+import { ToolOrchestrator } from './ToolOrchestrator';
+import { readUserSettingsFrom, userSettingsFilePath, validateUserSetting, setUserSetting } from './user-settings/UserSettingsManager';
+import { tryReadTypeScriptConfigJson } from './TypescriptConfigParser';
+import { mergePackageJson } from './MergePackageJson';
 
 /**
  * Exposes methods for developing a web app client project.
  */
 export = class instapack {
-    /**
-     * Gets the project folder path. (Known as root in Settings.)
-     */
-    private readonly projectFolder: string;
+
+    readonly projectFolder: string;
 
     /**
-     * Gets the object responsible for reading and writing the instapack global settings.
+     * Constructs instapack class instance using settings read from project.json. 
      */
-    readonly globalSettingsManager: GlobalSettingsManager;
+    constructor(projectFolder: string) {
+        this.projectFolder = upath.normalize(projectFolder);
+    }
 
     /**
      * Gets a list of string which contains tasks available for the build method.
      */
-    get availableTasks() {
-        return ['all', 'js', 'css', 'concat'];
+    get availableBuildTasks() {
+        return ['all', 'js', 'css'];
     }
 
     /**
@@ -48,53 +53,51 @@ export = class instapack {
     }
 
     /**
-     * Gets all available keys for `instapack set` command.
-     */
-    get availableSettings() {
-        return this.globalSettingsManager.availableSettings;
-    }
-
-    /**
-     * Constructs instapack class instance using settings read from project.json. 
-     */
-    constructor(projectFolder: string) {
-        this.projectFolder = upath.normalize(projectFolder);
-        this.globalSettingsManager = new GlobalSettingsManager();
-    }
-
-    /**
      * Performs web app client project compilation using a pre-configured task and build flags.
      * @param taskName 
      * @param flags 
      */
-    async build(taskName: string, flags: IBuildFlags) {
-
-        let settings = await Settings.tryReadFromPackageJson(this.projectFolder);
-        let compiler = new Compiler(settings, flags);
-
-        let globalSettings = await this.globalSettingsManager.tryRead();
-        let packageManager = new PackageManager();
-
-        if (flags.notification === undefined) {
-            flags.notification = !globalSettings.muteNotification;
+    async build(taskName: string, flags: ICommandLineFlags) {
+        if (flags.verbose) {
+            Shout.displayVerboseOutput = true;
         }
 
-        // Shout.notify('Build start!');
+        // parallel IO
+        let projectSettings = readProjectSettingsFrom(this.projectFolder);
+        let dotEnv = readDotEnvFrom(this.projectFolder);
+        let userSettings = readUserSettingsFrom(userSettingsFilePath);
+        let typescriptConfiguration = tryReadTypeScriptConfigJson(this.projectFolder);
 
-        if (globalSettings.packageManager !== 'disabled') {
-            let packageJsonExists = await fse.pathExists(settings.packageJson);
+        let variables = compileVariables(flags,
+            await projectSettings,
+            await userSettings,
+            await dotEnv,
+            await typescriptConfiguration
+        );
+
+        if (variables.muteNotification) {
+            Shout.enableNotification = false;
+        }
+
+        if (variables.packageManager !== 'disabled') {
+            let finder = new PathFinder(variables);
+            let packageJsonPath = finder.packageJson;
+            let packageJsonExists = await fse.pathExists(packageJsonPath);
             if (packageJsonExists) {
                 try {
-                    await packageManager.restore(globalSettings.packageManager);
+                    let pm = new PackageManager();
+                    await pm.restore(variables.packageManager);
                 } catch (error) {
                     Shout.error('when restoring package:', error);
                 }
             } else {
-                Shout.warning('unable to find', chalk.cyan(settings.packageJson), chalk.grey('skipping package restore...'));
+                Shout.warning('unable to find', chalk.cyan(packageJsonPath), chalk.grey('skipping package restore...'));
             }
         }
 
-        compiler.build(taskName);
+        let tm = new ToolOrchestrator(variables);
+        tm.outputBuildInformation();
+        tm.build(taskName);
     }
 
     /**
@@ -136,33 +139,24 @@ export = class instapack {
     }
 
     /**
-     * Cleans the JavaScript and CSS output folder and the temporary cache folder.
-     */
-    async clean() {
-        let settings = await Settings.tryReadFromPackageJson(this.projectFolder);
-        let cleanCSS = fse.emptyDir(settings.outputCssFolder);
-        let cleanJS = fse.emptyDir(settings.outputJsFolder);
-
-        await cleanJS;
-        console.log('Clean successful: ' + settings.outputJsFolder);
-        await cleanCSS;
-        console.log('Clean successful: ' + settings.outputCssFolder);
-    }
-
-    /**
-     * Change an instapack global setting.
+     * Change an instapack user global setting.
      * @param key 
      * @param value 
      */
-    async changeGlobalSetting(key: string, value: string) {
-        let valid = this.globalSettingsManager.validate(key, value);
+    async changeUserSettings(key: string, value: string) {
+        let valid = validateUserSetting(key, value);
         if (!valid) {
             Shout.error('invalid setting! Please consult README.')
             return;
         }
 
         try {
-            await this.globalSettingsManager.set(key, value);
+            let file = userSettingsFilePath;
+            console.log('Global settings file:', chalk.cyan(file));
+            let settings = await readUserSettingsFrom(file);
+            setUserSetting(settings, key, value);
+            await fse.outputJson(file, settings);
+            console.log('Successfully saved the new setting!');
         } catch (error) {
             Shout.error('when saving new settings:', error);
         }

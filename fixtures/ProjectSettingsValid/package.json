@@ -1,0 +1,16 @@
+{
+    "instapack": {
+        "input": "src",
+        "output": "www",
+        "jsOut": "bundle.js",
+        "cssOut": "bundle",
+        "alias": {
+            "vue": "vue/dist/vue.esm"
+        },
+        "externals": {
+            "jquery": "$"
+        },
+        "port1": 32101,
+        "port2": 32102
+    }
+}

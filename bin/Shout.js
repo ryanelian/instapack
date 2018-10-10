@@ -3,6 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const chalk_1 = require("chalk");
 const notifier = require("node-notifier");
 const upath = require("upath");
+const fse = require("fs-extra");
+const PrettyUnits_1 = require("./PrettyUnits");
 function padZeroToDoubleDigits(x) {
     let s = '';
     if (x < 10) {
@@ -19,7 +21,12 @@ function concatenateTokens(tokens) {
     let message = '';
     for (let token of tokens) {
         if (token instanceof Error) {
-            message += '\n' + chalk_1.default.red(token.stack);
+            if (token.stack) {
+                message += '\n' + chalk_1.default.red(token.stack);
+            }
+            else {
+                message += '\n' + chalk_1.default.red(token.toString());
+            }
         }
         else {
             message += ' ' + token;
@@ -43,11 +50,6 @@ exports.Shout = {
         let output = '\n' + chalk_1.default.red('FATAL ERROR') + message + '\n';
         console.error(output);
     },
-    danger: function (...tokens) {
-        let message = concatenateTokens(tokens);
-        let output = chalk_1.default.red('DANGER') + message;
-        console.warn(output);
-    },
     warning: function (...tokens) {
         let message = concatenateTokens(tokens);
         let output = chalk_1.default.yellow('WARNING') + message;
@@ -63,7 +65,8 @@ exports.Shout = {
         let output = chalk_1.default.magenta('Sass') + message;
         console.log(output);
     },
-    enableNotification: false,
+    enableNotification: true,
+    displayVerboseOutput: false,
     notify: function (...tokens) {
         if (!this.enableNotification) {
             return;
@@ -79,5 +82,12 @@ exports.Shout = {
             icon,
             sound: false
         });
+    },
+    fileOutput(filePath, content) {
+        let bundle = Buffer.from(content, 'utf8');
+        let info = upath.parse(filePath);
+        let size = PrettyUnits_1.prettyBytes(bundle.byteLength);
+        exports.Shout.timed(chalk_1.default.blue(info.base), chalk_1.default.magenta(size), chalk_1.default.grey('in ' + info.dir + '/'));
+        return fse.outputFile(filePath, bundle);
     }
 };

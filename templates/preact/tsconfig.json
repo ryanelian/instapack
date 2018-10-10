@@ -15,7 +15,7 @@
     
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
-    "resolveJsonModule": false,
+    "resolveJsonModule": true,
 
     "noEmit": true,
     "target": "es5",

@@ -7,18 +7,25 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-const Compiler_1 = require("./Compiler");
-const Settings_1 = require("./Settings");
 const fse = require("fs-extra");
 const upath = require("upath");
 const chalk_1 = require("chalk");
-const GlobalSettingsManager_1 = require("./GlobalSettingsManager");
+const ReadProjectSettings_1 = require("./variables-factory/ReadProjectSettings");
+const EnvParser_1 = require("./variables-factory/EnvParser");
+const CompileVariables_1 = require("./variables-factory/CompileVariables");
+const PathFinder_1 = require("./variables-factory/PathFinder");
 const PackageManager_1 = require("./PackageManager");
 const Shout_1 = require("./Shout");
-const CompilerUtilities_1 = require("./CompilerUtilities");
+const ToolOrchestrator_1 = require("./ToolOrchestrator");
+const UserSettingsManager_1 = require("./user-settings/UserSettingsManager");
+const TypescriptConfigParser_1 = require("./TypescriptConfigParser");
+const MergePackageJson_1 = require("./MergePackageJson");
 module.exports = class instapack {
-    get availableTasks() {
-        return ['all', 'js', 'css', 'concat'];
+    constructor(projectFolder) {
+        this.projectFolder = upath.normalize(projectFolder);
+    }
+    get availableBuildTasks() {
+        return ['all', 'js', 'css'];
     }
     get availableTemplates() {
         let templatesFolder = upath.join(__dirname, '..', 'templates');
@@ -29,37 +36,39 @@ module.exports = class instapack {
         });
         return templates;
     }
-    get availableSettings() {
-        return this.globalSettingsManager.availableSettings;
-    }
-    constructor(projectFolder) {
-        this.projectFolder = upath.normalize(projectFolder);
-        this.globalSettingsManager = new GlobalSettingsManager_1.GlobalSettingsManager();
-    }
     build(taskName, flags) {
         return __awaiter(this, void 0, void 0, function* () {
-            let settings = yield Settings_1.Settings.tryReadFromPackageJson(this.projectFolder);
-            let compiler = new Compiler_1.Compiler(settings, flags);
-            let globalSettings = yield this.globalSettingsManager.tryRead();
-            let packageManager = new PackageManager_1.PackageManager();
-            if (flags.notification === undefined) {
-                flags.notification = !globalSettings.muteNotification;
+            if (flags.verbose) {
+                Shout_1.Shout.displayVerboseOutput = true;
             }
-            if (globalSettings.packageManager !== 'disabled') {
-                let packageJsonExists = yield fse.pathExists(settings.packageJson);
+            let projectSettings = ReadProjectSettings_1.readProjectSettingsFrom(this.projectFolder);
+            let dotEnv = EnvParser_1.readDotEnvFrom(this.projectFolder);
+            let userSettings = UserSettingsManager_1.readUserSettingsFrom(UserSettingsManager_1.userSettingsFilePath);
+            let typescriptConfiguration = TypescriptConfigParser_1.tryReadTypeScriptConfigJson(this.projectFolder);
+            let variables = CompileVariables_1.compileVariables(flags, yield projectSettings, yield userSettings, yield dotEnv, yield typescriptConfiguration);
+            if (variables.muteNotification) {
+                Shout_1.Shout.enableNotification = false;
+            }
+            if (variables.packageManager !== 'disabled') {
+                let finder = new PathFinder_1.PathFinder(variables);
+                let packageJsonPath = finder.packageJson;
+                let packageJsonExists = yield fse.pathExists(packageJsonPath);
                 if (packageJsonExists) {
                     try {
-                        yield packageManager.restore(globalSettings.packageManager);
+                        let pm = new PackageManager_1.PackageManager();
+                        yield pm.restore(variables.packageManager);
                     }
                     catch (error) {
                         Shout_1.Shout.error('when restoring package:', error);
                     }
                 }
                 else {
-                    Shout_1.Shout.warning('unable to find', chalk_1.default.cyan(settings.packageJson), chalk_1.default.grey('skipping package restore...'));
+                    Shout_1.Shout.warning('unable to find', chalk_1.default.cyan(packageJsonPath), chalk_1.default.grey('skipping package restore...'));
                 }
             }
-            compiler.build(taskName);
+            let tm = new ToolOrchestrator_1.ToolOrchestrator(variables);
+            tm.outputBuildInformation();
+            tm.build(taskName);
         });
     }
     scaffold(template) {
@@ -76,7 +85,7 @@ module.exports = class instapack {
             if ((yield fse.pathExists(projectPackageJsonPath)) && (yield fse.pathExists(templatePackageJsonPath))) {
                 let projectPackageJson = yield fse.readJson(projectPackageJsonPath);
                 let templatePackageJson = yield fse.readJson(templatePackageJsonPath);
-                mergedPackageJson = CompilerUtilities_1.mergePackageJson(projectPackageJson, templatePackageJson);
+                mergedPackageJson = MergePackageJson_1.mergePackageJson(projectPackageJson, templatePackageJson);
             }
             console.log('Initializing new project using template:', chalk_1.default.cyan(template));
             console.log('Scaffolding project into your web app...');
@@ -90,26 +99,20 @@ module.exports = class instapack {
             console.log(chalk_1.default.green('Scaffold completed.'), 'To build the app, type:', chalk_1.default.yellow('ipack'));
         });
     }
-    clean() {
+    changeUserSettings(key, value) {
         return __awaiter(this, void 0, void 0, function* () {
-            let settings = yield Settings_1.Settings.tryReadFromPackageJson(this.projectFolder);
-            let cleanCSS = fse.emptyDir(settings.outputCssFolder);
-            let cleanJS = fse.emptyDir(settings.outputJsFolder);
-            yield cleanJS;
-            console.log('Clean successful: ' + settings.outputJsFolder);
-            yield cleanCSS;
-            console.log('Clean successful: ' + settings.outputCssFolder);
-        });
-    }
-    changeGlobalSetting(key, value) {
-        return __awaiter(this, void 0, void 0, function* () {
-            let valid = this.globalSettingsManager.validate(key, value);
+            let valid = UserSettingsManager_1.validateUserSetting(key, value);
             if (!valid) {
                 Shout_1.Shout.error('invalid setting! Please consult README.');
                 return;
             }
             try {
-                yield this.globalSettingsManager.set(key, value);
+                let file = UserSettingsManager_1.userSettingsFilePath;
+                console.log('Global settings file:', chalk_1.default.cyan(file));
+                let settings = yield UserSettingsManager_1.readUserSettingsFrom(file);
+                UserSettingsManager_1.setUserSetting(settings, key, value);
+                yield fse.outputJson(file, settings);
+                console.log('Successfully saved the new setting!');
             }
             catch (error) {
                 Shout_1.Shout.error('when saving new settings:', error);

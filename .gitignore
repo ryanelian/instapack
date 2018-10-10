@@ -4,3 +4,4 @@ www
 templates/**/yarn.lock
 templates/**/package-lock.json
 *.log
+!fixtures/**/*

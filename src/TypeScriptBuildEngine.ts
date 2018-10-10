@@ -1,45 +1,38 @@
 import * as upath from 'upath';
 import * as path from 'path';
 import * as fse from 'fs-extra';
+import * as url from 'url';
 import chalk from 'chalk';
-import * as webpack from 'webpack';
-import * as serve from 'webpack-serve';
+import webpack = require('webpack');
+import hotClient = require('webpack-hot-client');
+import devMiddleware = require('webpack-dev-middleware');
+import express = require('express');
 import * as TypeScript from 'typescript';
 import { VueLoaderPlugin } from 'vue-loader';
-import * as dotenv from 'dotenv';
-import * as url from 'url';
 
-import { Settings } from './Settings';
 import { prettyBytes, prettyMilliseconds } from './PrettyUnits';
-import { TypeScriptBuildWebpackPlugin } from './TypeScriptBuildWebpackPlugin';
+import { TypeScriptBuildMinifyPlugin } from './TypeScriptBuildMinifyPlugin';
 import { Shout } from './Shout';
-import { getAvailablePort, isPortAvailable } from './CompilerUtilities';
+import { IVariables } from './variables-factory/IVariables';
+import { PathFinder } from './variables-factory/PathFinder';
+import { LoaderPaths } from './loaders/LoaderPaths';
+import { parseTypescriptConfig } from './TypescriptConfigParser';
 
 /**
  * Contains methods for compiling a TypeScript project.
  */
 export class TypeScriptBuildEngine {
 
-    /**
-     * Gets the project settings.
-     */
-    private readonly settings: Settings;
+    private readonly variables: IVariables;
 
-    /**
-     * Gets the compiler build flags.
-     */
-    private readonly flags: IBuildFlags;
+    private readonly finder: PathFinder;
 
-    /** 
-     * Port number to be used by the Hot Reload server for delivering built assets.
-     */
-    private port1: number;
+    private readonly outputPublicPath: string;
 
-    /**
-     * Port number to be used by the Hot Reload server for broadcasting changes using WebSocket.
-     */
-    private port2: number;
-    
+    private readonly typescriptCompilerOptions: TypeScript.CompilerOptions;
+
+    private readonly useBabel: boolean;
+
     /**
      * Keep track of Hot Reload wormhole file names already created.
      */
@@ -50,9 +43,23 @@ export class TypeScriptBuildEngine {
      * @param settings 
      * @param flags 
      */
-    constructor(settings: Settings, flags: IBuildFlags) {
-        this.settings = settings
-        this.flags = flags;
+    constructor(variables: IVariables, useBabel: boolean) {
+        this.variables = variables;
+        this.finder = new PathFinder(variables);
+
+        if (variables.hot) {
+            this.outputPublicPath = `http://localhost:${this.variables.port1}/js/`;
+        } else {
+            // yay for using "js" folder in output!
+            this.outputPublicPath = 'js/';
+        }
+
+        this.typescriptCompilerOptions = parseTypescriptConfig(variables.root, variables.typescriptConfiguration).options;
+        this.typescriptCompilerOptions.noEmit = false;
+        this.typescriptCompilerOptions.sourceMap = variables.sourceMap;
+        this.typescriptCompilerOptions.inlineSources = variables.sourceMap;
+
+        this.useBabel = useBabel;
     }
 
     /**
@@ -73,36 +80,36 @@ export class TypeScriptBuildEngine {
     /**
      * Translates tsconfig.json paths into webpack-compatible aliases!
      */
-    private getWebpackAlias(tsCompilerOptions: TypeScript.CompilerOptions): IMapLike<string> {
-        let alias: IMapLike<string> = Object.assign({}, this.settings.alias);
+    mergeTypeScriptPathAlias(): IMapLike<string> {
+        let alias: IMapLike<string> = Object.assign({}, this.variables.alias);
 
-        if (this.flags.hot) {
-            let hotClient = require.resolve('webpack-hot-client/client');
-            alias['webpack-hot-client/client'] = hotClient;
+        if (this.variables.hot) {
+            let hotClientModulePath = require.resolve('webpack-hot-client/client');
+            alias['webpack-hot-client/client'] = hotClientModulePath;
             // console.log(hotClient);
         }
 
-        if (!tsCompilerOptions.paths) {
+        if (!this.typescriptCompilerOptions.paths) {
             return alias;
         }
 
-        if (!tsCompilerOptions.baseUrl) {
+        if (!this.typescriptCompilerOptions.baseUrl) {
             Shout.warning(chalk.cyan('tsconfig.json'),
                 'paths are defined, but baseUrl is not!',
                 chalk.grey('(Ignoring)'));
             return alias;
         }
 
-        for (let key in tsCompilerOptions.paths) {
+        for (let key in this.typescriptCompilerOptions.paths) {
             if (key === '*') {
                 // configure this in resolve.modules instead
                 continue;
             }
 
             // technical limitation: 1 alias = 1 path, not multiple paths...
-            let values = tsCompilerOptions.paths[key];
+            let values = this.typescriptCompilerOptions.paths[key];
             if (values.length > 1) {
-                Shout.danger(chalk.cyan('tsconfig.json'),
+                Shout.warning(chalk.cyan('tsconfig.json'),
                     'paths:', chalk.yellow(key), 'resolves to more than one path!',
                     chalk.grey('(Using the first one.)')
                 );
@@ -118,7 +125,7 @@ export class TypeScriptBuildEngine {
             if (key.endsWith('/*')) {
                 key = key.substr(0, key.length - 2);
             }
-            let result = this.convertTypeScriptPathToWebpackAliasPath(tsCompilerOptions.baseUrl, value);
+            let result = this.convertTypeScriptPathToWebpackAliasPath(this.typescriptCompilerOptions.baseUrl, value);
             // console.log(key, " ", result);
 
             // don't let the merge overrides user-defined aliases!
@@ -132,24 +139,29 @@ export class TypeScriptBuildEngine {
 
     /**
      * Returns lookup folders for non-relative module imports, from TypeScript * paths. 
-     * @param tsCompilerOptions 
      */
-    private getWildcardModules(tsCompilerOptions: TypeScript.CompilerOptions): string[] {
-        let valid = tsCompilerOptions.baseUrl && tsCompilerOptions.paths && tsCompilerOptions.paths['*'];
-        if (!valid) {
-            return null;
+    private getWildcardModules(): string[] | undefined {
+        if (!this.typescriptCompilerOptions.baseUrl) {
+            return undefined;
         }
 
-        let wildcards = tsCompilerOptions.paths['*'];
+        if (!this.typescriptCompilerOptions.paths) {
+            return undefined;
+        }
+
+        let wildcards = this.typescriptCompilerOptions.paths['*'];
+        if (!wildcards) {
+            return undefined;
+        }
         if (!wildcards[0]) {
             Shout.warning(chalk.cyan('tsconfig.json'), 'paths:', chalk.yellow('*'), 'is empty!');
-            return null;
+            return undefined;
         }
 
         let r = new Set<string>();
 
         for (let value of wildcards) {
-            let result = this.convertTypeScriptPathToWebpackAliasPath(tsCompilerOptions.baseUrl, value);
+            let result = this.convertTypeScriptPathToWebpackAliasPath(this.typescriptCompilerOptions.baseUrl, value);
             r.add(result);
         }
 
@@ -165,55 +177,33 @@ export class TypeScriptBuildEngine {
             test: /\.m?jsx?$/,
             exclude: /node_modules/,
             use: {
-                loader: 'babel-loader'
+                loader: LoaderPaths.babel
             }
         };
     }
 
     /**
-     * Attempt to parse .env file in the project root folder!
-     */
-    async readEnvFile(): Promise<IMapLike<string>> {
-        let env: IMapLike<string> = {};
-        let dotEnvPath = this.settings.dotEnv;
-
-        if (await fse.pathExists(dotEnvPath) === false) {
-            return env;
-        };
-
-        let dotEnvRaw = await fse.readFile(dotEnvPath, 'utf8');
-        let parsedEnv = dotenv.parse(dotEnvRaw);
-        // console.log(parsedEnv);
-
-        Object.assign(env, parsedEnv);
-        Object.assign(env, this.flags.env);
-        // console.log(env);
-
-        return env;
-    }
-
-    /**
      * Gets a configured TypeScript rules for webpack.
      */
-    createTypescriptWebpackRules(tsCompilerOptions: TypeScript.CompilerOptions, useBabel: boolean): webpack.Rule {
+    get typescriptWebpackRules(): webpack.Rule {
         let tsRules = {
             test: /\.tsx?$/,
-            use: []
+            use: [] as webpack.Loader[]
         };
 
         // webpack loaders are declared in reverse / right-to-left!
         // babel(typescript(source_code))
 
-        if (useBabel) {
+        if (this.useBabel) {
             tsRules.use.push({
-                loader: 'babel-loader'
+                loader: LoaderPaths.babel
             })
         }
 
         tsRules.use.push({
-            loader: 'core-typescript-loader',
+            loader: LoaderPaths.typescript,
             options: {
-                compilerOptions: tsCompilerOptions
+                compilerOptions: this.typescriptCompilerOptions
             }
         });
 
@@ -227,7 +217,7 @@ export class TypeScriptBuildEngine {
         return {
             test: /\.vue$/,
             use: [{
-                loader: 'vue-loader',
+                loader: LoaderPaths.vue,
                 options: {
                     transformAssetUrls: {},     // remove <img> src and SVG <image> xlink:href resolution
                 }
@@ -240,9 +230,9 @@ export class TypeScriptBuildEngine {
      */
     get templatesWebpackRules(): webpack.Rule {
         return {
-            test: /\.html$/,
+            test: /\.html?$/,
             use: [{
-                loader: 'template-loader'
+                loader: LoaderPaths.template
             }]
         };
     }
@@ -252,17 +242,17 @@ export class TypeScriptBuildEngine {
      */
     get cssWebpackRules(): webpack.Rule {
         let vueStyleLoader = {
-            loader: 'vue-style-loader'
+            loader: LoaderPaths.vueStyle
         };
         let cssModulesLoader = {
-            loader: 'css-loader',
+            loader: LoaderPaths.css,
             options: {
                 modules: true,
                 url: false
             }
         };
         let cssLoader = {
-            loader: 'css-loader',
+            loader: LoaderPaths.css,
             options: {
                 url: false
             }
@@ -282,7 +272,7 @@ export class TypeScriptBuildEngine {
 
     /**
      * Create a fake physical source code for importing the real hot-reloading source code.
-     * @param portNumber 
+     * @param uri 
      */
     createWormholeToHotScript(uri: string): string {
         return `// instapack wormhole: automagically reference the real hot-reloading script
@@ -299,49 +289,15 @@ inject();
     }
 
     /**
-     * Returns a delegate which displays message when compile is starting.
-     * Warns user once if target is not ES5, in tsconfig compiler options.  
-     * @param tsCompilerOptions 
-     */
-    createOnBuildStartMessageDelegate(tsCompilerOptions: TypeScript.CompilerOptions) {
-        let buildTargetWarned = false;
-        let compileTarget = tsCompilerOptions.target;
-        if (!compileTarget) {
-            compileTarget = TypeScript.ScriptTarget.ES3;
-        }
-        let t = TypeScript.ScriptTarget[compileTarget].toUpperCase();
-
-        return () => {
-            if (t !== 'ES5' && !buildTargetWarned) {
-                Shout.danger('TypeScript compile target is not', chalk.yellow('ES5') + '!', chalk.grey('(tsconfig.json)'));
-                buildTargetWarned = true;
-            }
-            Shout.timed('Compiling', chalk.cyan('index.ts'),
-                '>', chalk.yellow(t),
-                chalk.grey('in ' + this.settings.inputJsFolder + '/')
-            );
-        };
-    }
-
-    /**
      * Returns webpack plugins array.
      */
-    async createWebpackPlugins(tsCompilerOptions: TypeScript.CompilerOptions) {
-        let plugins = [];
-
-        let onBuildStart = this.createOnBuildStartMessageDelegate(tsCompilerOptions);
-        plugins.push(new TypeScriptBuildWebpackPlugin({
-            onBuildStart: onBuildStart,
-            minify: this.flags.production,
-            sourceMap: this.flags.sourceMap
-        }));
+    createWebpackPlugins() {
+        let plugins: webpack.Plugin[] = [];
 
         plugins.push(new VueLoaderPlugin());
 
-        let env = await this.readEnvFile();
-        // console.log(env);
-        if (Object.keys(env).length > 0) {
-            plugins.push(new webpack.EnvironmentPlugin(env));
+        if (Object.keys(this.variables.env).length > 0) {
+            plugins.push(new webpack.EnvironmentPlugin(this.variables.env));
         }
 
         return plugins;
@@ -352,15 +308,15 @@ inject();
      * @param tsCompilerOptions 
      * @param useBabel 
      */
-    createWebpackRules(tsCompilerOptions: TypeScript.CompilerOptions, useBabel: boolean): webpack.Rule[] {
+    createWebpackRules(): webpack.Rule[] {
         let rules = [
-            this.createTypescriptWebpackRules(tsCompilerOptions, useBabel),
+            this.typescriptWebpackRules,
             this.vueWebpackRules,
             this.templatesWebpackRules,
             this.cssWebpackRules
         ];
 
-        if (useBabel) {
+        if (this.useBabel) {
             rules.push(this.jsBabelWebpackRules);
         }
 
@@ -371,16 +327,16 @@ inject();
      * Get the suitable webpack configuration dev tool for the job, according to instapack settings.
      */
     get webpackConfigurationDevTool() {
-        if (this.flags.sourceMap === false) {
+        if (this.variables.sourceMap === false) {
             return false;
         }
 
-        if (this.flags.production) {
+        if (this.variables.production) {
             return 'source-map';
         }
 
         // dev mode, faster build only during incremental compilation
-        if (this.flags.watch === false) {
+        if (this.variables.watch === false) {
             return 'source-map';
         }
 
@@ -390,57 +346,44 @@ inject();
     /**
      * Returns webpack configuration from blended instapack settings and build flags.
      */
-    async createWebpackConfiguration() {
-        let useBabel = await fse.pathExists(this.settings.babelConfiguration);
-        let tsconfig = await this.settings.readTsConfig();
-        // console.log(tsconfig.errors);
-        let tsCompilerOptions = tsconfig.options;
-        tsCompilerOptions.noEmit = false;
-        tsCompilerOptions.sourceMap = this.flags.sourceMap;
-        tsCompilerOptions.inlineSources = this.flags.sourceMap;
-
-        let alias = this.getWebpackAlias(tsCompilerOptions);
-        let wildcards = this.getWildcardModules(tsCompilerOptions);
+    createWebpackConfiguration() {
+        let alias = this.mergeTypeScriptPathAlias();
+        let wildcards = this.getWildcardModules();
         // console.log(alias);
         // console.log(wildcards);
 
-        let rules = this.createWebpackRules(tsCompilerOptions, useBabel);
-        let plugins = await this.createWebpackPlugins(tsCompilerOptions);
+        let rules = this.createWebpackRules();
+        let plugins = this.createWebpackPlugins();
 
         // webpack configuration errors if using UNIX path in Windows!
-        let osEntry = path.normalize(this.settings.jsEntry);
-        let osOutputJsFolder = path.normalize(this.settings.outputJsFolder);
+        let osEntry = path.normalize(this.finder.jsEntry);
+        let osOutputJsFolder = path.normalize(this.finder.jsOutputFolder);
         // apparently we don't need to normalize paths for alias and wildcards.
 
         let config: webpack.Configuration = {
-            entry: osEntry,
+            entry: [osEntry],
             output: {
-                filename: this.settings.jsOut,
-                chunkFilename: this.settings.jsChunkFileName,   // https://webpack.js.org/guides/code-splitting
+                filename: this.finder.jsOutputFileName,
+                chunkFilename: this.finder.jsChunkFileName,   // https://webpack.js.org/guides/code-splitting
                 path: osOutputJsFolder,
-                publicPath: 'js/'   // yay for using "js" folder in output!
+                publicPath: this.outputPublicPath
             },
-            externals: this.settings.externals,
+            externals: this.variables.externals,
             resolve: {
-                extensions: ['.ts', '.tsx', '.js', '.jsx', '.mjs', '.vue', '.wasm', '.json', '.html'],
+                extensions: ['.ts', '.tsx', '.js', '.jsx', '.mjs', '.vue', '.wasm', '.json'],
+                // .vue automatic resolution follows vue-cli behavior, although is still required in TypeScript...
+                // .html module import must now be explicit!
                 // .mjs causes runtime error when `module.exports` is being used instead of `export`.
                 // .wasm requires adding `application/wasm` MIME to web server (both IIS and Kestrel).
                 alias: alias
             },
-            resolveLoader: {
-                modules: [
-                    path.resolve(__dirname, 'loaders'),             // custom internal loaders
-                    path.resolve(__dirname, '../node_modules'),     // local node_modules
-                    path.resolve(__dirname, '..', '..'),            // yarn's flat global node_modules
-                ]
-            },
             module: {
                 rules: rules
             },
-            mode: (this.flags.production ? 'production' : 'development'),
+            mode: (this.variables.production ? 'production' : 'development'),
             devtool: this.webpackConfigurationDevTool,
-            optimization: {
-                minimize: false,        // https://medium.com/webpack/webpack-4-mode-and-optimization-5423a6bc597a
+            optimization: {     // https://medium.com/webpack/webpack-4-mode-and-optimization-5423a6bc597a
+                minimizer: [new TypeScriptBuildMinifyPlugin()], // https://webpack.js.org/configuration/optimization/
                 noEmitOnErrors: true,   // https://dev.to/flexdinesh/upgrade-to-webpack-4---5bc5
                 splitChunks: {          // https://webpack.js.org/plugins/split-chunks-plugin/
                     cacheGroups: {
@@ -460,20 +403,8 @@ inject();
             plugins: plugins
         };
 
-        if (wildcards) {
+        if (wildcards && config.resolve) {
             config.resolve.modules = wildcards;
-        }
-
-        if (this.flags.watch) {
-            config.watch = true;
-            config.watchOptions = {
-                ignored: /node_modules/,
-                aggregateTimeout: 300
-            };
-        }
-
-        if (this.flags.hot) {
-            config.output.publicPath = this.outputHotJsFolderUri;
         }
 
         return config;
@@ -490,7 +421,7 @@ inject();
             children: false,
             chunkModules: false,
             chunkOrigins: false,
-            chunks: this.flags.hot,
+            chunks: this.variables.hot,
             depth: false,
             entrypoints: false,
             env: false,
@@ -511,32 +442,56 @@ inject();
         };
     }
 
-    /**
-     * Runs webpack as promise. 
-     * Returned Promise will **never** resolve if running on watch mode!
-     * @param webpackConfiguration 
-     */
-    runWebpackAsync(webpackConfiguration: webpack.Configuration) {
+    addCompilerBuildNotification(compiler: webpack.Compiler) {
+        let compileTarget = this.typescriptCompilerOptions.target;
+        if (!compileTarget) {
+            compileTarget = TypeScript.ScriptTarget.ES3;
+        }
+
+        let t = TypeScript.ScriptTarget[compileTarget].toUpperCase();
+
+        compiler.hooks.compile.tap('typescript-compile-start', compilationParams => {
+            Shout.timed('Compiling', chalk.cyan('index.ts'),
+                '>', chalk.yellow(t),
+                chalk.grey('in ' + this.finder.jsInputFolder + '/')
+            );
+        });
+
+        compiler.hooks.done.tapPromise('display-build-results', async stats => {
+            this.displayBuildResults(stats);
+        });
+    }
+
+    buildOnce(webpackConfiguration: webpack.Configuration) {
+        let compiler = webpack(webpackConfiguration);
+        this.addCompilerBuildNotification(compiler);
+
         return new Promise<webpack.Stats>((ok, reject) => {
-            webpack(webpackConfiguration, (error, stats) => {
-                if (error) {
-                    reject(error);
-                    return;
+            compiler.run((err, stats) => {
+                if (err) {
+                    reject(err);
                 }
 
-                this.displayCompileResult(stats);
-
-                if (this.flags.watch) {
-                    return; // do not terminate build worker on watch mode!
-                }
                 ok(stats);
             });
-        }).then(stats => {
-            if (this.flags.stats) {
-                return fse.outputJson(this.settings.statJsonPath, stats.toJson());
-            }
+        });
+    }
 
-            return Promise.resolve();
+    watch(webpackConfiguration: webpack.Configuration) {
+        let compiler = webpack(webpackConfiguration);
+        this.addCompilerBuildNotification(compiler);
+
+        return new Promise<void>((ok, reject) => {
+            compiler.watch({
+                ignored: /node_modules/,
+                aggregateTimeout: 300
+            }, (err, stats) => {
+                if (err) {
+                    reject(err);
+                }
+
+                return ok();
+            });
         });
     }
 
@@ -544,7 +499,7 @@ inject();
      * Interact with user via CLI output when TypeScript build is finished.
      * @param stats 
      */
-    displayCompileResult(stats: webpack.Stats): void {
+    displayBuildResults(stats: webpack.Stats): void {
         let o = stats.toJson(this.statsSerializeEssentialOption);
         // console.log(o);
 
@@ -571,10 +526,10 @@ inject();
         }
 
         let jsOutputPath;
-        if (this.flags.hot) {
-            jsOutputPath = this.outputHotJsFolderUri;
+        if (this.variables.hot) {
+            jsOutputPath = this.outputPublicPath;
         } else {
-            jsOutputPath = this.settings.outputJsFolder + '/';
+            jsOutputPath = this.finder.jsOutputFolder + '/';
         }
 
         for (let asset of o.assets) {
@@ -586,7 +541,7 @@ inject();
             }
         }
 
-        if (this.flags.hot && o.chunks) {
+        if (this.variables.hot && o.chunks) {
             for (let chunk of o.chunks) {
                 if (chunk.initial === false) {
                     continue;
@@ -630,18 +585,12 @@ inject();
      * Create physical wormhole script in place of output file.
      */
     putWormhole(fileName: string) {
-        let physicalFilePath = upath.join(this.settings.outputJsFolder, fileName);
-        let hotUri = url.resolve(this.outputHotJsFolderUri, fileName);
-        Shout.timed(`+wormhole: ${chalk.cyan(physicalFilePath)} --> ${chalk.cyan(hotUri)}`);
+        let physicalFilePath = upath.join(this.finder.jsOutputFolder, fileName);
+        let relativeFilePath = upath.relative(this.finder.root, physicalFilePath);
+        let hotUri = url.resolve(this.outputPublicPath, fileName);
+        Shout.timed(`+wormhole: ${chalk.cyan(relativeFilePath)} --> ${chalk.cyan(hotUri)}`);
         let hotProxy = this.createWormholeToHotScript(hotUri);
         return fse.outputFile(physicalFilePath, hotProxy);
-    }
-
-    /**
-     * Gets the URI to JS folder in the hot reload server.
-     */
-    get outputHotJsFolderUri(): string {
-        return `http://localhost:${this.port1}/js/`;
     }
 
     /**
@@ -649,83 +598,53 @@ inject();
      * Promise will also never resolve unless errored.
      * @param webpackConfiguration 
      */
-    async runDevServer(webpackConfiguration: webpack.Configuration) {
+    runDevServer(webpackConfiguration: webpack.Configuration) {
         const logLevel = 'warn';
 
-        let devServer = await serve({}, {
-            config: webpackConfiguration,
-            port: this.port1,
-            content: path.resolve(this.settings.outputFolder),
-            hotClient: {
-                port: this.port2,
-                logLevel: logLevel
-            },
-            logLevel: logLevel,
-            devMiddleware: {
-                publicPath: webpackConfiguration.output.publicPath,
+        const compiler = webpack(webpackConfiguration);
+        this.addCompilerBuildNotification(compiler);
+
+        const client = hotClient(compiler, {
+            port: this.variables.port2,
+            logLevel: logLevel
+        });
+
+        // console.log(client);
+        let devServer = express();
+
+        client.server.on('listening', () => {
+            devServer.use(devMiddleware(compiler, {
+                publicPath: this.outputPublicPath,
+                logLevel: logLevel,
                 headers: {
                     'Access-Control-Allow-Origin': '*'
                 },
-                logLevel: logLevel
-            }
+            }));
+
+            let p1 = chalk.green(this.variables.port1.toString());
+            let p2 = chalk.green(this.variables.port2.toString());
+
+            devServer.listen(this.variables.port1, () => {
+                Shout.timed(chalk.yellow('Hot Reload'), `Server running on ports: ${p1}, ${p2}`);
+            });
         });
-
-        devServer.on('build-finished', args => {
-            this.displayCompileResult(args.stats);
-        });
-
-        await new Promise((ok, reject) => { });
-    }
-
-    /**
-     * Gets host system's two open ports for Hot Reload Server then declare to UI.
-     */
-    async setDevServerPorts() {
-        if (this.settings.port1) {
-            if (await isPortAvailable(this.settings.port1)) {
-                this.port1 = this.settings.port1;
-            } else {
-                Shout.error('Configuration Error: Port 1 is not available. Randomizing Port 1...');
-            }
-        }
-
-        if (!this.port1) {
-            this.port1 = await getAvailablePort(22001);
-        }
-
-        if (this.settings.port2) {
-            if (this.port1 === this.settings.port2) {
-                Shout.error('Configuration Error: Port 2 is equal to Port 1. Randomizing Port 2...');
-            } else if (await isPortAvailable(this.settings.port2)) {
-                this.port2 = this.settings.port2;
-            } else {
-                Shout.error('Configuration Error: Port 2 is not available. Randomizing Port 2...');
-            }
-        }
-
-        if (!this.port2) {
-            this.port2 = await getAvailablePort(this.port1 + 1);
-        }
-
-        let p1 = chalk.green(this.port1.toString());
-        let p2 = chalk.green(this.port2.toString());
-        Shout.timed(chalk.yellow('Hot Reload'), `Server running on ports: ${p1}, ${p2}`);
     }
 
     /**
      * Runs the TypeScript build engine.
      */
     async build() {
-        if (this.flags.hot) {
-            await this.setDevServerPorts();
-        }
+        let webpackConfiguration = this.createWebpackConfiguration();
 
-        let webpackConfiguration = await this.createWebpackConfiguration();
-
-        if (this.flags.hot) {
-            await this.runDevServer(webpackConfiguration);
+        if (this.variables.hot) {
+            this.runDevServer(webpackConfiguration);
+        } else if (this.variables.watch) {
+            await this.watch(webpackConfiguration);
         } else {
-            await this.runWebpackAsync(webpackConfiguration);
+            let stats = await this.buildOnce(webpackConfiguration);
+            if (this.variables.stats) {
+                await fse.outputJson(this.finder.statsJsonFilePath, stats.toJson());
+            }
         }
     }
 }

@@ -8,14 +8,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const cp = require("child_process");
-const process_1 = require("process");
+const Process = require("process");
+const ChildProcess = require("child_process");
 class PackageManager {
     get isWindows() {
-        return (process_1.platform === 'win32');
+        return (Process.platform === 'win32');
     }
     get isMac() {
-        return (process_1.platform === 'darwin');
+        return (Process.platform === 'darwin');
     }
     toolExistCheckerCommand(tool) {
         if (this.isWindows) {
@@ -29,13 +29,13 @@ class PackageManager {
         }
     }
     runWithOutputs(command) {
-        return cp.execSync(command, {
+        return ChildProcess.execSync(command, {
             stdio: [0, 1, 2]
         });
     }
     doesToolExists(tool) {
         return new Promise((ok, reject) => {
-            cp.exec(this.toolExistCheckerCommand(tool), (error, stdout, stderr) => {
+            ChildProcess.exec(this.toolExistCheckerCommand(tool), (error, stdout, stderr) => {
                 if (error) {
                     ok(false);
                 }

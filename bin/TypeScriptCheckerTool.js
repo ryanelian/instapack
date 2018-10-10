@@ -13,54 +13,68 @@ const tslint = require("tslint");
 const chalk_1 = require("chalk");
 const fse = require("fs-extra");
 const upath = require("upath");
-const chokidar = require("chokidar");
+const chokidar_1 = require("chokidar");
 const PrettyUnits_1 = require("./PrettyUnits");
 const Shout_1 = require("./Shout");
 const VirtualSourceStore_1 = require("./VirtualSourceStore");
+const PathFinder_1 = require("./variables-factory/PathFinder");
+const TypescriptConfigParser_1 = require("./TypescriptConfigParser");
 class TypeScriptCheckerTool {
-    constructor(settings) {
-        this.settings = settings;
+    constructor(variables, compilerOptions, host, virtualSourceStore, tslintConfiguration) {
+        this.variables = variables;
+        this.finder = new PathFinder_1.PathFinder(variables);
+        this.compilerOptions = compilerOptions;
+        this.host = host;
+        this.patchCompilerHost();
+        this.virtualSourceStore = virtualSourceStore;
+        this.tslintConfiguration = tslintConfiguration;
     }
-    setupCompilerHost() {
-        return __awaiter(this, void 0, void 0, function* () {
-            let tsconfig = yield this.settings.readTsConfig();
-            this.compilerOptions = tsconfig.options;
-            this.virtualSourceStore = new VirtualSourceStore_1.VirtualSourceStore(this.compilerOptions);
-            let definitions = tsconfig.fileNames.filter(Q => Q.endsWith('.d.ts'));
-            this.virtualSourceStore.includeFile(this.settings.jsEntry);
-            this.virtualSourceStore.includeFiles(definitions);
-            this.host = TypeScript.createCompilerHost(tsconfig.options);
-            let rawFileCache = {};
-            this.host.readFile = (fileName) => {
-                if (rawFileCache[fileName]) {
-                    return rawFileCache[fileName];
-                }
-                let fileContent = fse.readFileSync(fileName, 'utf8');
-                rawFileCache[fileName] = fileContent;
-                return fileContent;
-            };
-            this.host.getSourceFile = (fileName, languageVersion, onError, shouldCreateNewSourceFile) => {
-                return this.virtualSourceStore.getSource(fileName);
-            };
-            yield this.virtualSourceStore.addExoticSources(this.settings.vueGlobs);
-            yield this.virtualSourceStore.preloadSources();
-            let tslintFind = tslint.Configuration.findConfiguration(null, this.settings.root);
-            if (tslintFind.path) {
-                let tslintPath = upath.toUnix(tslintFind.path);
-                if (tslintPath === this.settings.tslintJson || tslintPath === this.settings.tslintYaml) {
-                    Shout_1.Shout.timed('tslint:', chalk_1.default.cyan(tslintPath));
-                    this.tslintConfiguration = tslintFind.results;
-                }
+    patchCompilerHost() {
+        let rawFileCache = {};
+        this.host.readFile = (fileName) => {
+            let s = rawFileCache[fileName];
+            if (s) {
+                return s;
             }
+            let fileContent = fse.readFileSync(fileName, 'utf8');
+            rawFileCache[fileName] = fileContent;
+            return fileContent;
+        };
+        this.host.getSourceFile = (fileName, languageVersion, onError, shouldCreateNewSourceFile) => {
+            return this.virtualSourceStore.getSource(fileName);
+        };
+    }
+    static createToolAsync(variables) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let finder = new PathFinder_1.PathFinder(variables);
+            let tsconfig = TypescriptConfigParser_1.parseTypescriptConfig(variables.root, variables.typescriptConfiguration);
+            let compilerOptions = tsconfig.options;
+            let definitions = tsconfig.fileNames.filter(Q => Q.endsWith('.d.ts'));
+            let virtualSourceStore = new VirtualSourceStore_1.VirtualSourceStore(compilerOptions);
+            virtualSourceStore.includeFile(finder.jsEntry);
+            virtualSourceStore.includeFiles(definitions);
+            let host = TypeScript.createCompilerHost(compilerOptions);
+            let tslintConfiguration = undefined;
+            let tslintFind = finder.findTslintConfiguration();
+            if (tslintFind) {
+                tslintConfiguration = tslintFind.results;
+                Shout_1.Shout.timed('tslint:', chalk_1.default.cyan(tslintFind.path));
+            }
+            yield virtualSourceStore.addExoticSources(finder.vueGlobs);
+            yield virtualSourceStore.preloadSources();
+            let tool = new TypeScriptCheckerTool(variables, compilerOptions, host, virtualSourceStore, tslintConfiguration);
+            return tool;
         });
     }
     typeCheck() {
         let entryPoints = this.virtualSourceStore.entryFilePaths;
         let tsc = TypeScript.createProgram(entryPoints, this.compilerOptions, this.host);
-        let doLint = Boolean(this.tslintConfiguration);
-        let linter = new tslint.Linter({
-            fix: false
-        }, tsc);
+        let linter = undefined;
+        if (this.tslintConfiguration) {
+            linter = new tslint.Linter({
+                fix: false
+            }, tsc);
+        }
         Shout_1.Shout.timed('Type-checking using TypeScript', chalk_1.default.green(TypeScript.version));
         let start = process.hrtime();
         try {
@@ -75,11 +89,11 @@ class TypeScriptCheckerTool {
                 for (let error of newErrors) {
                     errors.push(error);
                 }
-                if (newErrors.length === 0 && doLint) {
+                if (newErrors.length === 0 && linter) {
                     linter.lint(source.fileName, source.text, this.tslintConfiguration);
                 }
             }
-            if (doLint) {
+            if (linter) {
                 let lintResult = linter.getResult();
                 for (let failure of lintResult.failures) {
                     let lintErrorMessage = this.renderLintFailure(failure);
@@ -108,7 +122,7 @@ class TypeScriptCheckerTool {
     renderDiagnostics(diagnostics) {
         let errors = diagnostics.map(diagnostic => {
             let error = chalk_1.default.red('TS' + diagnostic.code) + ' ';
-            if (diagnostic.file) {
+            if (diagnostic.file && diagnostic.start) {
                 let realFileName = this.virtualSourceStore.getRealFilePath(diagnostic.file.fileName);
                 let { line, character } = diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start);
                 error += chalk_1.default.red(realFileName) + ' ' + chalk_1.default.yellow(`(${line + 1},${character + 1})`) + ':\n';
@@ -141,7 +155,7 @@ class TypeScriptCheckerTool {
                 }
             }, 300);
         };
-        chokidar.watch(this.settings.typeCheckGlobs, {
+        chokidar_1.watch(this.finder.typeCheckGlobs, {
             ignoreInitial: true
         })
             .on('add', (file) => {

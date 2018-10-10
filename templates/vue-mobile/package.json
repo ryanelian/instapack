@@ -6,18 +6,17 @@
   "author": "Ryan Elian",
   "private": true,
   "instapack": {
-    "output": "www",
-    "concat": {}
+    "output": "www"
   },
   "dependencies": {
-    "@types/luxon": "^1.2.2",
+    "@types/luxon": "^1.4.0",
     "@types/pouchdb-browser": "^6.1.2",
     "@types/requirejs": "^2.1.31",
     "axios": "^0.18.0",
-    "fork-awesome": "^1.1.0",
+    "font-awesome": "^4.7.0",
     "linq": "^3.1.0",
-    "luxon": "^1.3.3",
-    "onsenui": "^2.10.4",
+    "luxon": "^1.4.3",
+    "onsenui": "^2.10.5",
     "pouchdb-browser": "^7.0.0",
     "ts-polyfill": "^3.0.1",
     "tslib": "^1.9.3",

@@ -4,7 +4,6 @@
 
 [![npm](https://badge.fury.io/js/instapack.svg)](https://www.npmjs.com/package/instapack)
 [![Build Status](https://ryanelian.visualstudio.com/instapack/_apis/build/status/ryanelian.instapack)](https://ryanelian.visualstudio.com/instapack/_build/latest?definitionId=1)
-[![Build status](https://ci.appveyor.com/api/projects/status/y6v2hde0mhh9o5an/branch/master?svg=true)](https://ci.appveyor.com/project/RyanElian/instapack/branch/master)
 [![Greenkeeper badge](https://badges.greenkeeper.io/ryanelian/instapack.svg)](https://greenkeeper.io/)
 
 ![Screenshot](https://raw.githubusercontent.com/ryanelian/instapack/master/img/screenshot.png)
@@ -62,10 +61,6 @@ Out of the box, these files will be used as the program entry points:
 
   - Spiced :hot_pepper: with [AutoPrefixer](https://github.com/postcss/autoprefixer) for applying CSS vendor-prefixes automatically!
 
-- Concatenate files listed in `package.json` ([Read more ↓](#configurations))
-
-  - Usually the output file should be included in the HTML before `ipack.js`
-
 Practical guides can be read in the [books](https://github.com/ryanelian/instapack/tree/master/books) folder.
 
 ## System Requirements
@@ -77,6 +72,8 @@ When using [Visual Studio 2017 (Update 2 or above)](https://www.visualstudio.com
 When using Visual Studio 2015 (Update 3 or above), install [the latest TypeScript SDK for Visual Studio 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48593).
 
 If using [the latest Visual Studio Code](https://code.visualstudio.com/), it should come with the latest TypeScript support out of the box.
+
+TypeScript project targeting `es5` is supported, which guarantees the JS output to be [runnable on browsers as early as Internet Explorer 9](http://kangax.github.io/compat-table/es5/) when armed with [polyfills](https://www.npmjs.com/package/ts-polyfill). (That said, you are advised NOT to develop solutions for [obsoleted browsers](https://www.microsoft.com/en-us/windowsforbusiness/end-of-ie-support)!)
 
 ## Design Philosophies
 
@@ -136,23 +133,15 @@ Scaffolds a new instapack project into your existing app folder where the comman
 
 - `angularjs` for developing a *legacy* web app using [AngularJS 1.7](https://angularjs.org/) and [Bootstrap 3](http://getbootstrap.com/docs/3.3/).
 
-  - Includes [jquery-validation-unobtrusive](https://github.com/aspnet/jquery-validation-unobtrusive) for ASP.NET MVC client-side validation.
+  - Includes [jquery-validation-unobtrusive](https://github.com/aspnet/jquery-validation-unobtrusive) for ASP.NET MVC client-side validation and a simple JS concat tool.
 
 - (PREVIEW) `angular` for developing a web app using [the new Angular](https://angular.io/) and [Material Design](https://material.angular.io/). (Warnings: [1](https://github.com/angular/angular/issues/11580) [2](https://github.com/angular/angular/issues/21560))
 
 If no template parameter is provided, `vue` will be chosen. :vulcan_salute:
 
-Templates shipped by instapack have these common traits:
-
-- Compiled down to [ES5](http://kangax.github.io/compat-table/es5/) and armed with [ts-polyfill](https://github.com/ryanelian/ts-polyfill), which ensures compatibility to browsers as early as Internet Explorer 9.
-
-- Equipped with essential packages: LINQ, [Luxon](https://moment.github.io/luxon/) (DateTime library)
-
-- Frameworks without AJAX / XHR utility are equipped with [axios](https://github.com/axios/axios/) (Promise-based HTTP client).
-
 ### build [project]
 
-Performs compilation of selected project type. Available projects: `all`, `js`, `css` and `concat`. If no project parameter is provided, `all` will be chosen.
+Performs compilation of selected project type. Available projects: `all`, `js`, and `css`. If no project parameter is provided, `all` will be chosen.
 
 In addition, build flags are available:
 
@@ -162,15 +151,11 @@ In addition, build flags are available:
 
 - `--hot` or `-h` enables Hot Reload development mode using dedicated build servers. :rotating_light: [Read more ↓](#hot-reload-development-mode-beta)
 
-- `--xdebug` or `-x` disables source maps, producing undebuggable outputs. (Slightly improves build speed)
+- `--nodebug` or `-b` disables source maps, producing undebuggable outputs. (Slightly improves build speed)
 
 - `--stats` generates `stats.json` next to the TypeScript build outputs, which can be fed to [webpack-bundle-analyzer](https://www.npmjs.com/package/webpack-bundle-analyzer) or [webpack-visualizer](http://chrisbateman.github.io/webpack-visualizer/). For sanity, this flag will be ignored when using `-d` or `-w` flags.
 
 > You can combine multiple build flags, for example: `ipack -dw` = `dev` + `watch` mode for **massive productivity gainz!** :muscle:
-
-### clean
-
-Remove all files in the output folders.
 
 ### set <key> <value>
 
@@ -182,13 +167,12 @@ Remove all files in the output folders.
 
 instapack puts configurations inside `package.json` to reduce project files clutter. For example, this is the included `package.json` with `vue` template:
 
-> `name`, `version`, `private`, `dependencies`, and `devDependencies` fields were removed for brevity.
+> `name`, `version`, `private`, and `dependencies` fields were removed for brevity.
 
 ```json
 {
   "instapack": {
     "output": "wwwroot",
-    "concat": {},
     "alias": {
       "vue": "vue/dist/vue.esm",
       "jquery": "jquery/dist/jquery.slim"
@@ -213,6 +197,10 @@ instapack puts configurations inside `package.json` to reduce project files clut
 
 - `externals` allows rewriting module `import` calls from all files, including dependencies, to globally exposed objects via `window` object. [Read more ↗](https://webpack.js.org/configuration/externals/)
 
+  - This technique enables usage of scripts hosted on [CDN](https://en.wikipedia.org/wiki/Content_delivery_network)!
+
+  - This technique also allows referencing non-module, old-school IIFE JS loaded via `<script>` which provides excellent interop with older libraries!
+
 For example:
 
 ```json
@@ -231,43 +219,6 @@ import jQuery from 'jquery';
 
 // into something similar to this...
 // const jQuery = window["$"];
-```
-
-so [CDN](https://en.wikipedia.org/wiki/Content_delivery_network) can be used! :tada:
-
-```html
-<script src="https://unpkg.com/jquery@3.3.1/dist/jquery.js"></script>
-```
-
-- `concat` allows packing browser libraries to be consumed directly from `<script src="...">` rather than as a module.
-
-  - The file names will be resolved node-style (**but NOT their contents**), which allows concatenating packages downloaded from `npm` to be bundled, minified, and then placed into the output JS folder. 
-
-  - Use concatenation for libraries that cannot be imported / do not need to be imported (for example, jQuery plugins). This hybrid approach allows excellent interop with older libraries!
-
-  - For consuming the libraries within the TypeScript app code: include the concatenated file **BEFORE** the app bundle then...
-  
-    - Combo with the `externals` module configuration for easy import using `require` / [CommonJS module syntax](#commonjs--nodejs-require).
-
-    - Alternatively (for strongly-typed import), write a TypeScript module declaration (`declare module`) then import using [ES Modules syntax](#typescript--es-modules).
-
-    - Possible but not recommended: reference the library objects directly from the `window` (e.g. `window['$']`).
-
-**A `concat` configuration example:** (produces `vendor.js` bundle handy for ASP.NET MVC)
-
-```json
-{
-  "instapack": {
-    "concat": {
-      "vendor": [
-        "jquery",
-        "jquery-validation",
-        "jquery-validation-unobtrusive",
-        "./client/lib/my-ancient-jquery-plugin"
-      ]
-    }
-  }
-}
 ```
 
 - `port1` can be set for declaring a static port number to be used by the Hot Reload server for delivering built assets. If not set, the port number will be randomized. [Read more ↓](#hot-reload-development-mode-beta)
@@ -409,7 +360,7 @@ import List from 'linq';
 
 ### ES Modules: Dynamic Import
 
-instapack version 6.4.0+ supports code-splitting using ES Modules dynamic `import()` syntax:
+instapack version 6.4.0+ supports code-splitting using ESM dynamic `import()` syntax:
 
 ```ts
 import('lunr').then(lunr => {
@@ -437,23 +388,66 @@ An excerpt of build log when using dynamic import:
 
 ### CommonJS / Node.js require
 
-- Easily imports ordinary JS modules within the project or from `node_modules`. However, **you will NOT get intellisense!** (Modules will be imported as `any` data type.)
+Easily imports ordinary JS modules within the project or from `node_modules`. However, **you will NOT get intellisense!** (Modules will be imported as `any` data type.)
 
 ```js
 let $ = require('jquery');
 ```
 
-- Imports an `.html` file to be minified and then stringified. This technique is invaluable for working with frameworks relying on HTML-based templates such as AngularJS, mustache.js / Handlebars.js, and Vue.js:
+> CommonJS `require` method in TypeScript is provided through `@types/requirejs` or `@types/node` packages.
+
+### HTML Modules
+
+Imports an `.html` file to be minified and then stringified. This technique is invaluable for working with frameworks relying on HTML-based templates such as AngularJS:
 
 ```ts
-let template: string = require('./mytemplate.html');
+// ESM syntax
+import template from './MyTemplate.html';
+
+// CJS syntax
+let templateCJS: string = require('./MyTemplate.html');
 ```
 
-> CommonJS `require` method in TypeScript is provided through `@types/requirejs` or `@types/node` packages.
+> A global TypeScript definition file for `*.html` module is required for importing the `.html` file from TypeScript using ESM syntax.
+
+```ts
+// html-shim.d.ts
+
+declare module "*.html" {
+  const _: string;
+  export default _;
+}
+```
+
+**DEPRECATION WARNING:** HTML modules with special extension `.vue.html` will be compiled to [parameter objects for Vue.js `ComponentOptions`](https://vuejs.org/v2/guide/render-function.html#Template-Compilation). This behavior will be removed in future instapack versions due to improved `.vue` toolings.
+
+```ts
+// vue-html-shim.d.ts
+
+declare module "*.vue.html" {
+    import { CreateElement, VNode } from 'vue';
+
+    export const render: (createElement: CreateElement) => VNode;
+    export const staticRenderFns: ((createElement: CreateElement) => VNode)[];
+}
+```
+
+```ts
+import Vue from 'vue';
+import Component from 'vue-class-component';
+import { render, staticRenderFns } from './MyComponent.vue.html';
+
+@Component({
+    render: render,
+    staticRenderFns: staticRenderFns
+})
+export class MyComponent extends Vue {
+}
+```
 
 ### JSON Modules
 
-Enables static JSON file imports in the TypeScript project using `require` syntax:
+instapack 7.0.0 with TypeScript 3.1.0 supports strongly-typed, static JSON file imports in the TypeScript project using the `import` syntax:
 
 ```json
 {
@@ -462,12 +456,14 @@ Enables static JSON file imports in the TypeScript project using `require` synta
 ```
 
 ```ts
-let settings = require('./settings.json');
+import * as settings from './settings.json';
 
 let foo: string = settings.foo;
 ```
 
-> TypeScript 2.9.0 supports strongly-typed import when `resolveJsonModule` compiler option in `tsconfig.json` is set to `true` ([but not 3.0.0 due to regression...](https://github.com/Microsoft/TypeScript/issues/26020))
+> Requires `resolveJsonModule` compiler option in `tsconfig.json` to be set to `true`
+
+> Earlier instapack versions may import JSON file using `require` syntax instead.
 
 ### Vue Single-File Components
 
@@ -495,7 +491,7 @@ export default class Hello extends Vue {
 
 - The HTML `<template>` will be compiled Ahead-of-Time (AoT) for greater app startup performance!
 
-- [A global TypeScript definition file for `*.vue` module](https://github.com/ryanelian/instapack/blob/master/templates/vue/client/js/vue-shim.d.ts) is required for importing the `.vue` file using ES Modules syntax from TypeScript.
+- [A global TypeScript definition file for `*.vue` module](https://github.com/ryanelian/instapack/blob/master/templates/vue/client/js/vue-shim.d.ts) is required for importing the `.vue` file from TypeScript using ESM syntax.
 
   - This file will be created for you when using the `vue` new project template!
 
@@ -509,13 +505,27 @@ export default class Hello extends Vue {
 
 ### Sass @import
 
-instapack also has a custom Node-like but standard-compliant Sass module system using `@import` syntax, which picks up CSS files for convenience:
+instapack also has a custom Node-like but standard-compliant Sass module system using `@import` syntax. 
 
-- Include files relative to the source, including _partial.scss files. ([Standard Sass behavior](https://jonathantneal.github.io/sass-import-resolve/))
+- Aligned with [the official Sass CSS Imports specification](https://github.com/sass/language/blob/master/accepted/css-imports.md), these imports will be treated as plain CSS `@import` rule instead of being included in the compiled CSS:
 
-- Include files relative to the source in a named folder, but as `index.scss` or `_index.scss` ([Standard Sass behavior](https://github.com/sass/sass/issues/690)) or `index.css`
+  - The imported URL / query path begins with `http://` or `https://`
 
-- Include files resolved from `node_modules`. Also reads `package.json` to resolve `.css` file in the `style` field!
+  - The query path ends with `.css` **(omit `.css` extension to include the file!)**
+
+  - The query path is syntactically defined as a `url()`
+
+  - The argument has a [media query](https://developer.mozilla.org/en-US/docs/Web/CSS/Media_Queries/Using_media_queries) and/or a [supports query](https://developer.mozilla.org/en-US/docs/Web/CSS/@supports).
+
+- Includes `.scss` and `.css` files relative to the source. ([Standard Sass behavior](https://jonathantneal.github.io/sass-import-resolve/))
+
+  - Includes _partial.scss files, but not _partial.css files!
+
+- Includes files relative to the source in a named folder, but as `index.scss` or `_index.scss` ([Standard Sass behavior](https://github.com/sass/sass/issues/690)) or `index.css`
+
+- Includes files resolved from `node_modules` 
+
+  - Also reads `package.json` to resolve `.css` file in the `style` field!
 
 ## Environment Variables
 
@@ -603,18 +613,19 @@ cordova create MyProject
 cd MyProject
 ipack new vue-mobile
 cordova platform add android ios browser
-yarn
-ipack -dw               # then change www/index.html <script> and <link> tags.
-cordova run browser     # re-run commmand every time build outputs change
+npm update
+ipack -h
+cordova run browser
 ```
 
-> **CAUTION:** `cordova platform add` and `cordova plugin add` (or remove) will destroy your `node_modules`. Re-run `yarn` / `npm install` after invoking those commands!
+Change www/index.html `<script>` and `<link>` tags to the instapack build outputs. [Adjust assets whitelist and CSP too](https://docs.microsoft.com/en-us/visualstudio/cross-platform/tools-for-cordova/security/whitelists?view=toolsforcordova-2017) if necessary.
 
-Alternatively, you can use `phonegap serve` for development due to Browsersync playing nice with instapack watch. You will need to remove / comment / edit the `<meta http-equiv="Content-Security-Policy">` tag though.
+> **CAUTION:** `cordova platform add` and `cordova plugin add` (or `remove`) will destroy your `node_modules`. Re-run `npm update` / `yarn upgrade` after invoking those commands!
 
 Later on...
 
 ```
+ipack
 cordova build android
 cordova build ios
 ```

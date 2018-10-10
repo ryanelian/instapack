@@ -246,13 +246,13 @@ Compiling a JS project using this mode will:
 - Create wormholes (script injections) in place of the usual JS output files, directed to respective scripts on the build server.
 
 ```
-[17:14:25] Hot Reload Server running on ports: 22001, 22002
-[17:14:25] Compiling index.ts > ES5 in C:/VS/MyWebApp/client/js/
-[17:14:26] ipack.dll.js 5.00 MB in http://localhost:22001/js/
-[17:14:26] ipack.js 58.0 kB in http://localhost:22001/js/
-[17:14:26] +wormhole: C:/VS/MyWebApp/wwwroot/js/ipack.dll.js --> http://localhost:22001/js/ipack.dll.js
-[17:14:26] +wormhole: C:/VS/MyWebApp/wwwroot/js/ipack.js --> http://localhost:22001/js/ipack.js
-[17:14:26] Finished JS build after 1.22 s
+[15:10:33] Compiling index.ts > ES5 in C:/VS/MyApp/client/js/
+[15:10:33] Hot Reload Server running on ports: 22001, 22002
+[15:10:34] ipack.dll.js 673 kB in http://localhost:22001/js/
+[15:10:34] ipack.js 33.6 kB in http://localhost:22001/js/
+[15:10:34] +wormhole: wwwroot/js/ipack.dll.js --> http://localhost:22001/js/ipack.dll.js
+[15:10:34] +wormhole: wwwroot/js/ipack.js --> http://localhost:22001/js/ipack.js
+[15:10:34] Finished JS build after 309 ms
 ```
 
 > No changes should be required for the `<script src="...">` in the app itself!

@@ -6,7 +6,7 @@
 [![Build Status](https://ryanelian.visualstudio.com/instapack/_apis/build/status/ryanelian.instapack)](https://ryanelian.visualstudio.com/instapack/_build/latest?definitionId=1)
 [![Greenkeeper badge](https://badges.greenkeeper.io/ryanelian/instapack.svg)](https://greenkeeper.io/)
 
-![Screenshot](https://raw.githubusercontent.com/ryanelian/instapack/master/img/screenshot.png)
+<img src="https://raw.githubusercontent.com/ryanelian/instapack/master/img/screenshot.png" alt="screenshot" width="450" height="400">
 
 ## Install
 

@@ -10,7 +10,7 @@ Here are the list of breaking changes when upgrading between instapack major (or
 
 - Removed `clean` command and `concat` build tools.
 
-  - Legacy `angularjs` project template is now shipped with a simple concat tool (`concat.cmd`), which can be adopted by projects requiring similar approach for side-loading legacy JS.
+  - Legacy `angularjs` project template is now shipped with a simple concat tool (`concat.cmd`), which can be adopted by projects requiring similar approach for side-loading IIFE JS.
 
 - Disable source map flag `--xdebug` or `-x` has been replaced with `--nodebug` or `-b`
 

@@ -1,6 +1,6 @@
 {
   "name": "instapack",
-  "version": "7.0.1-beta1",
+  "version": "7.0.1-beta2",
   "description": "All-in-one TypeScript and Sass compiler for web applications!",
   "keywords": [
     "typescript",
@@ -98,7 +98,7 @@
     "@types/webpack-dev-middleware": "^2.0.2",
     "@types/webpack-sources": "^0.1.5",
     "@types/yargs": "^12.0.1",
-    "ava": "1.0.0-beta.8"
+    "ava": "1.0.0-rc.1"
   },
   "resolutions": {
     "**/@types/node": "8",

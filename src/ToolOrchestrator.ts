@@ -38,7 +38,11 @@ export class ToolOrchestrator {
             Shout.timed(chalk.yellow("Watch"), "Mode: Source code will be automatically compiled on changes.");
         }
 
-        Shout.timed('Source Maps:', chalk.yellow(this.variables.sourceMap ? 'Enabled' : 'Disabled'));
+        let smState = chalk.yellow(this.variables.sourceMap ? 'Enabled' : 'Disabled');
+        if (!this.variables.production && this.variables.watch) {
+            smState = smState + ' ' + chalk.grey('(Inlined JS)');
+        }
+        Shout.timed('Source Maps:', smState);
 
         if (this.variables.stats) {
             Shout.timed('JS build stats:', chalk.cyan(this.finder.statsJsonFilePath));

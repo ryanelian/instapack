@@ -28,7 +28,11 @@ class ToolOrchestrator {
         if (this.variables.watch) {
             Shout_1.Shout.timed(chalk_1.default.yellow("Watch"), "Mode: Source code will be automatically compiled on changes.");
         }
-        Shout_1.Shout.timed('Source Maps:', chalk_1.default.yellow(this.variables.sourceMap ? 'Enabled' : 'Disabled'));
+        let smState = chalk_1.default.yellow(this.variables.sourceMap ? 'Enabled' : 'Disabled');
+        if (!this.variables.production && this.variables.watch) {
+            smState = smState + ' ' + chalk_1.default.grey('(Inlined JS)');
+        }
+        Shout_1.Shout.timed('Source Maps:', smState);
         if (this.variables.stats) {
             Shout_1.Shout.timed('JS build stats:', chalk_1.default.cyan(this.finder.statsJsonFilePath));
         }

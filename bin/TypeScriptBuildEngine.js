@@ -142,6 +142,7 @@ class TypeScriptBuildEngine {
                     loader: LoaderPaths_1.LoaderPaths.vue,
                     options: {
                         transformAssetUrls: {},
+                        appendExtension: true
                     }
                 }]
         };

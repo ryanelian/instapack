@@ -54,8 +54,8 @@ class TypeScriptCheckerTool {
                 tslintConfiguration = tslintFind.results;
                 Shout_1.Shout.timed('tslint:', chalk_1.default.cyan(tslintFind.path));
             }
-            yield loading;
             let tool = new TypeScriptCheckerTool(sourceStore, compilerOptions, tslintConfiguration);
+            yield loading;
             return tool;
         });
     }

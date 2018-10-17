@@ -101,8 +101,8 @@ export class TypeScriptCheckerTool {
             Shout.timed('tslint:', chalk.cyan(tslintFind.path));
         }
 
-        await loading;
         let tool = new TypeScriptCheckerTool(sourceStore, compilerOptions, tslintConfiguration);
+        await loading;
         return tool;
     }
 

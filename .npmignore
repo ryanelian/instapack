@@ -1,3 +1,19 @@
+# artefact folders
+wwwroot
+www
+
+# lock files
+templates/**/yarn.lock
+templates/**/package-lock.json
+
+# log files
+*.log
+
+# unit test files
+fixtures/
+bin/**/*.test.js
+
+# development files
 src/
 .vscode/
 tsconfig.json
@@ -8,5 +24,3 @@ appveyor.yml
 build.ps1
 link.ps1
 templates/update.ps1
-fixtures/
-bin/**/*.test.js

@@ -1,7 +1,14 @@
+# artefact folders
 node_modules
 wwwroot
 www
+
+# lock files
 templates/**/yarn.lock
 templates/**/package-lock.json
+
+# log files
 *.log
+
+# include unit test files (may contain artefact folders)
 !fixtures/**/*

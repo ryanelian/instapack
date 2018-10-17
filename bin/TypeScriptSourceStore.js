@@ -16,17 +16,21 @@ const glob = require("fast-glob");
 const TypeScriptVueParser_1 = require("./TypeScriptVueParser");
 class TypeScriptSourceStore {
     constructor(target) {
-        this.sourceToFilePaths = new Map();
-        this.sources = {};
-        this.sourceVersions = {};
+        this.sources = new Map();
         this._typeCheckGlobs = [];
         this.target = target;
     }
     get sourcePaths() {
-        return Array.from(this.sourceToFilePaths.keys());
+        return Array.from(this.sources.keys());
     }
     getFilePath(sourcePath) {
-        return this.sourceToFilePaths.get(sourcePath) || sourcePath;
+        let s = this.sources.get(sourcePath);
+        if (s) {
+            return s.filePath;
+        }
+        else {
+            return sourcePath;
+        }
     }
     get typeCheckGlobs() {
         return this._typeCheckGlobs;
@@ -55,7 +59,7 @@ class TypeScriptSourceStore {
         let raw = fse.readFileSync(filePath, 'utf8');
         return this.parseThenStoreSource(filePath, raw);
     }
-    versionSource(content) {
+    calculateFileVersion(content) {
         let hash = crypto_1.createHash('sha512');
         hash.update(content);
         return hash.digest('hex');
@@ -67,28 +71,30 @@ class TypeScriptSourceStore {
             sourcePath = upath.addExt(filePath, '.ts');
             raw = TypeScriptVueParser_1.parseTypeScriptInVueFile(raw);
         }
-        let version = this.versionSource(raw);
-        let lastVersion = this.sourceVersions[sourcePath];
-        if (version === lastVersion) {
+        let version = this.calculateFileVersion(raw);
+        let previousSource = this.sources.get(sourcePath);
+        if (previousSource && previousSource.version === version) {
             return false;
         }
-        this.sourceToFilePaths.set(sourcePath, filePath);
-        this.sources[sourcePath] = TypeScript.createSourceFile(sourcePath, raw, this.target);
-        this.sourceVersions[sourcePath] = version;
+        this.sources.set(sourcePath, {
+            filePath: filePath,
+            source: TypeScript.createSourceFile(sourcePath, raw, this.target),
+            version: version
+        });
         return true;
     }
     getSource(sourcePath) {
-        const s = this.sources[sourcePath];
-        if (s) {
-            return s;
+        const s1 = this.sources.get(sourcePath);
+        if (s1) {
+            return s1.source;
         }
         let filePath = this.getFilePath(sourcePath);
         this.loadFileSync(filePath);
-        const r = this.sources[sourcePath];
-        if (!r) {
+        const s2 = this.sources.get(sourcePath);
+        if (!s2) {
             throw new Error(`Source ${sourcePath} should not be undefined!`);
         }
-        return r;
+        return s2.source;
     }
     removeFile(filePath) {
         filePath = upath.toUnix(filePath);
@@ -96,13 +102,7 @@ class TypeScriptSourceStore {
         if (filePath.endsWith('.vue')) {
             sourcePath = upath.addExt(filePath, '.ts');
         }
-        this.sourceToFilePaths.delete(sourcePath);
-        if (this.sources[sourcePath]) {
-            this.sources[sourcePath] = undefined;
-            this.sourceVersions[sourcePath] = undefined;
-            return true;
-        }
-        return false;
+        return this.sources.delete(sourcePath);
     }
 }
 exports.TypeScriptSourceStore = TypeScriptSourceStore;

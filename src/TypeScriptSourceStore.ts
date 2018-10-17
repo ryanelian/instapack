@@ -14,24 +14,21 @@ import { parseTypeScriptInVueFile } from './TypeScriptVueParser';
 // 2. add custom extension parse logic to parseThenStoreSource
 // 3. add check to delete virtual file path condition
 
+interface ICachedSource {
+    filePath: string;
+    source: TypeScript.SourceFile;
+    version: string;
+}
+
 /**
  * An in-memory cache of TypeScript source files.
  */
 export class TypeScriptSourceStore {
-    /**
-     * Gets the lookup from TypeScript source file path to real / physical file path.
-     */
-    private readonly sourceToFilePaths: Map<string, string> = new Map<string, string>();
 
     /**
      * Gets the cached source.
      */
-    private readonly sources: IMapLike<TypeScript.SourceFile | undefined> = {};
-
-    /**
-     * Gets the cached source version.
-     */
-    private readonly sourceVersions: IMapLike<string | undefined> = {};
+    private readonly sources: Map<string, ICachedSource> = new Map<string, ICachedSource>();
 
     /**
      * Gets the parser language target.
@@ -43,7 +40,7 @@ export class TypeScriptSourceStore {
     }
 
     get sourcePaths() {
-        return Array.from(this.sourceToFilePaths.keys());
+        return Array.from(this.sources.keys());
     }
 
     /**
@@ -51,7 +48,12 @@ export class TypeScriptSourceStore {
      * @param sourcePath 
      */
     getFilePath(sourcePath: string): string {
-        return this.sourceToFilePaths.get(sourcePath) || sourcePath;
+        let s = this.sources.get(sourcePath);
+        if (s) {
+            return s.filePath;
+        } else {
+            return sourcePath;
+        }
     }
 
     private readonly _typeCheckGlobs: string[] = [];
@@ -99,7 +101,7 @@ export class TypeScriptSourceStore {
      * Versions a text-based file content using fast SHA-512 algorithm.
      * @param content 
      */
-    private versionSource(content: string): string {
+    private calculateFileVersion(content: string): string {
         let hash = createHash('sha512');
         hash.update(content);
         return hash.digest('hex');
@@ -120,16 +122,19 @@ export class TypeScriptSourceStore {
             raw = parseTypeScriptInVueFile(raw);
         }
 
-        let version = this.versionSource(raw);
-        let lastVersion = this.sourceVersions[sourcePath];
-        if (version === lastVersion) {
+        let version = this.calculateFileVersion(raw);
+
+        let previousSource = this.sources.get(sourcePath);
+        if (previousSource && previousSource.version === version) {
             return false;
         }
 
         // https://github.com/Microsoft/TypeScript/blob/master/src/compiler/program.ts
-        this.sourceToFilePaths.set(sourcePath, filePath);
-        this.sources[sourcePath] = TypeScript.createSourceFile(sourcePath, raw, this.target);
-        this.sourceVersions[sourcePath] = version;
+        this.sources.set(sourcePath, {
+            filePath: filePath,
+            source: TypeScript.createSourceFile(sourcePath, raw, this.target),
+            version: version
+        });
         return true;
     }
 
@@ -139,22 +144,22 @@ export class TypeScriptSourceStore {
      * @param sourcePath 
      */
     getSource(sourcePath: string): TypeScript.SourceFile {
-        const s = this.sources[sourcePath];
-        if (s) {
+        const s1 = this.sources.get(sourcePath);
+        if (s1) {
             // console.log('SOURCE (cache) ' + sourcePath);
-            return s;
+            return s1.source;
         }
 
         let filePath = this.getFilePath(sourcePath);
         this.loadFileSync(filePath);
 
         // console.log('SOURCE (sync) ' + sourcePath);
-        const r = this.sources[sourcePath];
-        if (!r) {
+        const s2 = this.sources.get(sourcePath);
+        if (!s2) {
             throw new Error(`Source ${sourcePath} should not be undefined!`);
         }
 
-        return r;
+        return s2.source;
     }
 
     /**
@@ -169,14 +174,6 @@ export class TypeScriptSourceStore {
             sourcePath = upath.addExt(filePath, '.ts');
         }
 
-        this.sourceToFilePaths.delete(sourcePath);
-
-        if (this.sources[sourcePath]) {
-            this.sources[sourcePath] = undefined;
-            this.sourceVersions[sourcePath] = undefined;
-            return true;
-        }
-
-        return false;
+        return this.sources.delete(sourcePath);
     }
 }

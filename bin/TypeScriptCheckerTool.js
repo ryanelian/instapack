@@ -12,21 +12,18 @@ const TypeScript = require("typescript");
 const tslint = require("tslint");
 const chalk_1 = require("chalk");
 const fse = require("fs-extra");
-const upath = require("upath");
 const chokidar_1 = require("chokidar");
 const PrettyUnits_1 = require("./PrettyUnits");
 const Shout_1 = require("./Shout");
-const VirtualSourceStore_1 = require("./VirtualSourceStore");
 const PathFinder_1 = require("./variables-factory/PathFinder");
 const TypescriptConfigParser_1 = require("./TypescriptConfigParser");
+const TypeScriptSourceStore_1 = require("./TypeScriptSourceStore");
 class TypeScriptCheckerTool {
-    constructor(variables, compilerOptions, host, virtualSourceStore, tslintConfiguration) {
-        this.variables = variables;
-        this.finder = new PathFinder_1.PathFinder(variables);
+    constructor(sourceStore, compilerOptions, tslintConfiguration) {
+        this.sourceStore = sourceStore;
         this.compilerOptions = compilerOptions;
-        this.host = host;
+        this.host = TypeScript.createCompilerHost(compilerOptions);
         this.patchCompilerHost();
-        this.virtualSourceStore = virtualSourceStore;
         this.tslintConfiguration = tslintConfiguration;
     }
     patchCompilerHost() {
@@ -41,7 +38,7 @@ class TypeScriptCheckerTool {
             return fileContent;
         };
         this.host.getSourceFile = (fileName, languageVersion, onError, shouldCreateNewSourceFile) => {
-            return this.virtualSourceStore.getSource(fileName);
+            return this.sourceStore.getSource(fileName);
         };
     }
     static createToolAsync(variables) {
@@ -49,26 +46,21 @@ class TypeScriptCheckerTool {
             let finder = new PathFinder_1.PathFinder(variables);
             let tsconfig = TypescriptConfigParser_1.parseTypescriptConfig(variables.root, variables.typescriptConfiguration);
             let compilerOptions = tsconfig.options;
-            let definitions = tsconfig.fileNames.filter(Q => Q.endsWith('.d.ts'));
-            let virtualSourceStore = new VirtualSourceStore_1.VirtualSourceStore(compilerOptions);
-            virtualSourceStore.includeFile(finder.jsEntry);
-            virtualSourceStore.includeFiles(definitions);
-            let host = TypeScript.createCompilerHost(compilerOptions);
+            let sourceStore = new TypeScriptSourceStore_1.TypeScriptSourceStore(compilerOptions.target || TypeScript.ScriptTarget.ES3);
+            let loading = sourceStore.loadFolder(finder.jsInputFolder);
             let tslintConfiguration = undefined;
             let tslintFind = finder.findTslintConfiguration();
             if (tslintFind) {
                 tslintConfiguration = tslintFind.results;
                 Shout_1.Shout.timed('tslint:', chalk_1.default.cyan(tslintFind.path));
             }
-            yield virtualSourceStore.addExoticSources(finder.vueGlobs);
-            yield virtualSourceStore.preloadSources();
-            let tool = new TypeScriptCheckerTool(variables, compilerOptions, host, virtualSourceStore, tslintConfiguration);
+            yield loading;
+            let tool = new TypeScriptCheckerTool(sourceStore, compilerOptions, tslintConfiguration);
             return tool;
         });
     }
     typeCheck() {
-        let entryPoints = this.virtualSourceStore.entryFilePaths;
-        let tsc = TypeScript.createProgram(entryPoints, this.compilerOptions, this.host);
+        let tsc = TypeScript.createProgram(this.sourceStore.sourcePaths, this.compilerOptions, this.host);
         let linter = undefined;
         if (this.tslintConfiguration) {
             linter = new tslint.Linter({
@@ -123,7 +115,7 @@ class TypeScriptCheckerTool {
         let errors = diagnostics.map(diagnostic => {
             let error = chalk_1.default.red('TS' + diagnostic.code) + ' ';
             if (diagnostic.file && diagnostic.start) {
-                let realFileName = this.virtualSourceStore.getRealFilePath(diagnostic.file.fileName);
+                let realFileName = this.sourceStore.getFilePath(diagnostic.file.fileName);
                 let { line, character } = diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start);
                 error += chalk_1.default.red(realFileName) + ' ' + chalk_1.default.yellow(`(${line + 1},${character + 1})`) + ':\n';
             }
@@ -134,7 +126,7 @@ class TypeScriptCheckerTool {
     }
     renderLintFailure(failure) {
         let { line, character } = failure.getStartPosition().getLineAndCharacter();
-        let realFileName = this.virtualSourceStore.getRealFilePath(failure.getFileName());
+        let realFileName = this.sourceStore.getFilePath(failure.getFileName());
         let lintErrorMessage = chalk_1.default.red('TSLINT') + ' '
             + chalk_1.default.red(realFileName) + ' '
             + chalk_1.default.yellow(`(${line + 1},${character + 1})`) + ': '
@@ -155,19 +147,17 @@ class TypeScriptCheckerTool {
                 }
             }, 300);
         };
-        chokidar_1.watch(this.finder.typeCheckGlobs, {
+        chokidar_1.watch(this.sourceStore.typeCheckGlobs, {
             ignoreInitial: true
         })
             .on('add', (file) => {
-            file = upath.toUnix(file);
-            this.virtualSourceStore.addOrUpdateSourceAsync(file).then(changed => {
+            this.sourceStore.loadFile(file).then(changed => {
                 Shout_1.Shout.typescript(chalk_1.default.grey('tracking new file:', file));
                 debounce();
             });
         })
             .on('change', (file) => {
-            file = upath.toUnix(file);
-            this.virtualSourceStore.addOrUpdateSourceAsync(file).then(changed => {
+            this.sourceStore.loadFile(file).then(changed => {
                 if (changed) {
                     Shout_1.Shout.typescript(chalk_1.default.grey('updating file:', file));
                     debounce();
@@ -175,8 +165,7 @@ class TypeScriptCheckerTool {
             });
         })
             .on('unlink', (file) => {
-            file = upath.toUnix(file);
-            let deleted = this.virtualSourceStore.tryRemoveSource(file);
+            let deleted = this.sourceStore.removeFile(file);
             if (deleted) {
                 Shout_1.Shout.typescript(chalk_1.default.grey('removing file:', file));
                 debounce();

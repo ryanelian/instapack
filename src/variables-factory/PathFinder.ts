@@ -99,31 +99,6 @@ export class PathFinder {
     }
 
     /**
-     * /project/client/js/\*\*\/*.vue
-     */
-    get vueGlobs(): string {
-        return upath.join(this.jsInputFolder, '**', '*.vue');
-    }
-
-    /**
-     * /project/client/js/\*\*\/*.ts
-     */
-    get tsGlobs(): string {
-        return upath.join(this.jsInputFolder, '**', '*.ts');
-    }
-
-    /**
-     * /project/client/js/\*\*\/*.tsx
-     */
-    get tsxGlobs(): string {
-        return upath.join(this.jsInputFolder, '**', '*.tsx');
-    }
-
-    get typeCheckGlobs(): string[] {
-        return [this.tsGlobs, this.tsxGlobs, this.vueGlobs];
-    }
-
-    /**
      * /project/client/css/
      */
     get cssInputFolder(): string {

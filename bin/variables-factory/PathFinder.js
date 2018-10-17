@@ -48,18 +48,6 @@ class PathFinder {
     get jsEntry() {
         return upath.join(this.jsInputFolder, 'index.ts');
     }
-    get vueGlobs() {
-        return upath.join(this.jsInputFolder, '**', '*.vue');
-    }
-    get tsGlobs() {
-        return upath.join(this.jsInputFolder, '**', '*.ts');
-    }
-    get tsxGlobs() {
-        return upath.join(this.jsInputFolder, '**', '*.tsx');
-    }
-    get typeCheckGlobs() {
-        return [this.tsGlobs, this.tsxGlobs, this.vueGlobs];
-    }
     get cssInputFolder() {
         return upath.join(this.inputFolderPath, 'css');
     }

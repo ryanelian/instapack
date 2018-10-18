@@ -68,7 +68,7 @@
     "merge-source-map": "1.1.0",
     "node-notifier": "5.2.1",
     "postcss": "7.0.5",
-    "sass": "1.14.2",
+    "sass": "1.14.3",
     "source-map": "0.7.3",
     "tslint": "5.11.0",
     "typescript": "3.1.3",

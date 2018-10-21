@@ -11,7 +11,7 @@
   "dependencies": {
     "@types/angular": "^1.6.51",
     "@types/bootstrap": "3",
-    "@types/jquery": "^3.3.14",
+    "@types/jquery": "^3.3.21",
     "@types/luxon": "^1.4.0",
     "@types/requirejs": "^2.1.31",
     "angular": "^1.7.5",
@@ -24,7 +24,7 @@
     "jquery-validation": "^1.18.0",
     "jquery-validation-unobtrusive": "^3.2.11",
     "linq": "^3.1.0",
-    "luxon": "^1.4.3",
+    "luxon": "^1.4.4",
     "sweetalert": "^2.1.0",
     "ts-polyfill": "^3.0.1",
     "tslib": "^1.9.3"

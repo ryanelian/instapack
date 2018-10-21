@@ -10,7 +10,7 @@
     "@types/mithril": "^1.1.13",
     "@types/requirejs": "^2.1.31",
     "linq": "^3.1.0",
-    "luxon": "^1.4.3",
+    "luxon": "^1.4.4",
     "mithril": "^1.1.6",
     "noty": "^3.2.0-beta",
     "sweetalert": "^2.1.0",

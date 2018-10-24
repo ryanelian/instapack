@@ -1,6 +1,6 @@
 {
   "name": "instapack",
-  "version": "7.0.1-beta4",
+  "version": "7.0.1-rc1",
   "description": "All-in-one TypeScript and Sass compiler for web applications!",
   "keywords": [
     "typescript",
@@ -52,7 +52,7 @@
   },
   "dependencies": {
     "@babel/core": "7.1.2",
-    "autoprefixer": "9.2.1",
+    "autoprefixer": "9.3.1",
     "babel-loader": "8.0.4",
     "chalk": "2.4.1",
     "chokidar": "2.0.4",

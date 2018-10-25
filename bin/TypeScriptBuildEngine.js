@@ -89,21 +89,16 @@ class TypeScriptBuildEngine {
         if (!this.typescriptCompilerOptions.baseUrl) {
             return undefined;
         }
-        if (!this.typescriptCompilerOptions.paths) {
-            return undefined;
-        }
-        let wildcards = this.typescriptCompilerOptions.paths['*'];
-        if (!wildcards) {
-            return undefined;
-        }
-        if (!wildcards[0]) {
-            Shout_1.Shout.warning(chalk_1.default.cyan('tsconfig.json'), 'paths:', chalk_1.default.yellow('*'), 'is empty!');
-            return undefined;
-        }
         let r = new Set();
-        for (let value of wildcards) {
-            let result = this.convertTypeScriptPathToWebpackAliasPath(this.typescriptCompilerOptions.baseUrl, value);
-            r.add(result);
+        let p = this.typescriptCompilerOptions.paths;
+        if (p && p['*']) {
+            for (let value of p['*']) {
+                let result = this.convertTypeScriptPathToWebpackAliasPath(this.typescriptCompilerOptions.baseUrl, value);
+                r.add(result);
+            }
+        }
+        else {
+            r.add(this.typescriptCompilerOptions.baseUrl);
         }
         r.add('node_modules');
         return Array.from(r);

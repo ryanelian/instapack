@@ -19,6 +19,6 @@
   },
   "devDependencies": {
     "@babel/core": "^7.1.2",
-    "babel-plugin-inferno": "^6.0.0"
+    "babel-plugin-inferno": "^6.0.2"
   }
 }

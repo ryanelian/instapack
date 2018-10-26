@@ -53,6 +53,6 @@ ava_1.default('Template Loader: Simple HTML', (t) => __awaiter(this, void 0, voi
     let entry = path.join(fixtures, 'index.html');
     let stats = yield compileAsync(entry);
     let o = stats.toJson();
-    let result = o.modules[0].source;
+    let result = o.modules.filter(Q => Q.source)[0].source;
     t.is(result, 'module.exports = "<div> <h1>Hello World!</h1> </div>"');
 }));

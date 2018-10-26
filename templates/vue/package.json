@@ -10,12 +10,12 @@
     }
   },
   "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "^1.2.6",
-    "@fortawesome/free-regular-svg-icons": "^5.4.1",
-    "@fortawesome/free-solid-svg-icons": "^5.4.1",
+    "@fortawesome/fontawesome-svg-core": "^1.2.7",
+    "@fortawesome/free-regular-svg-icons": "^5.4.2",
+    "@fortawesome/free-solid-svg-icons": "^5.4.2",
     "@fortawesome/vue-fontawesome": "^0.1.1",
     "@types/bootstrap": "4",
-    "@types/jquery": "^3.3.21",
+    "@types/jquery": "^3.3.22",
     "@types/luxon": "^1.4.0",
     "@types/requirejs": "^2.1.31",
     "aspnet-validation": "^0.0.10",

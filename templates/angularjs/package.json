@@ -23,9 +23,9 @@
     "jquery": "^3.3.1",
     "jquery-validation": "^1.18.0",
     "jquery-validation-unobtrusive": "^3.2.11",
-    "linq": "^3.1.0",
-    "luxon": "^1.4.4",
-    "sweetalert": "^2.1.0",
+    "linq": "^3.1.1",
+    "luxon": "^1.4.5",
+    "sweetalert": "^2.1.2",
     "ts-polyfill": "^3.0.1",
     "tslib": "^1.9.3"
   },

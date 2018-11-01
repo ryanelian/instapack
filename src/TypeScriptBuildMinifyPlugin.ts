@@ -48,6 +48,9 @@ function minifyChunkAssets(compilation: webpack.compilation.Compilation,
 
     Shout.timed('TypeScript compilation finished! Minifying bundles...');
     for (let chunk of chunks) {
+        // console.log(chunk.hasEntryModule());
+        // console.log(chunk.files);
+
         for (let fileName of chunk.files as string[]) {
             if (fileName.endsWith('js') === false) {
                 continue;
@@ -70,8 +73,13 @@ function minifyChunkAssets(compilation: webpack.compilation.Compilation,
             }).catch(minifyError => {
                 Shout.error(`when minifying ${chalk.blue(fileName)} during JS build:`, minifyError);
                 if (ecma === 5) {
-                    Shout.warning('Only', chalk.yellow('ES5'), 'modules can be minified! Check',
-                        chalk.cyan('tsconfig.json:target'), 'or', chalk.cyan('package.json'), 'dependencies...');
+                    if (chunk.hasEntryModule() === false) {
+                        Shout.warning('Project is targeting', chalk.yellow('ES5'),
+                            'but one or more dependencies in', chalk.cyan('package.json'),
+                            'might be ES2015+');
+                    } else {
+                        Shout.warning('Possible TypeScript bug: ES5-transpiled project contains ES2015+ output?!');
+                    }
                 }
                 compilation.errors.push(minifyError);
             });

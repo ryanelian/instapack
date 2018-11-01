@@ -56,7 +56,12 @@ function minifyChunkAssets(compilation, chunks, sourceMap, ecma) {
             }).catch(minifyError => {
                 Shout_1.Shout.error(`when minifying ${chalk_1.default.blue(fileName)} during JS build:`, minifyError);
                 if (ecma === 5) {
-                    Shout_1.Shout.warning('Only', chalk_1.default.yellow('ES5'), 'modules can be minified! Check', chalk_1.default.cyan('tsconfig.json:target'), 'or', chalk_1.default.cyan('package.json'), 'dependencies...');
+                    if (chunk.hasEntryModule() === false) {
+                        Shout_1.Shout.warning('Project is targeting', chalk_1.default.yellow('ES5'), 'but one or more dependencies in', chalk_1.default.cyan('package.json'), 'might be ES2015+');
+                    }
+                    else {
+                        Shout_1.Shout.warning('Possible TypeScript bug: ES5-transpiled project contains ES2015+ output?!');
+                    }
                 }
                 compilation.errors.push(minifyError);
             });

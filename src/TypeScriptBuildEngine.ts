@@ -33,6 +33,8 @@ export class TypeScriptBuildEngine {
 
     private readonly useBabel: boolean;
 
+    private readonly languageTarget: TypeScript.ScriptTarget;
+
     /**
      * Keep track of Hot Reload wormhole file names already created.
      */
@@ -58,6 +60,7 @@ export class TypeScriptBuildEngine {
         this.typescriptCompilerOptions.noEmit = false;
         this.typescriptCompilerOptions.sourceMap = variables.sourceMap;
         this.typescriptCompilerOptions.inlineSources = variables.sourceMap;
+        this.languageTarget = this.typescriptCompilerOptions.target || TypeScript.ScriptTarget.ES3;
 
         this.useBabel = useBabel;
     }
@@ -376,7 +379,7 @@ inject();
             mode: (this.variables.production ? 'production' : 'development'),
             devtool: this.webpackConfigurationDevTool,
             optimization: {     // https://medium.com/webpack/webpack-4-mode-and-optimization-5423a6bc597a
-                minimizer: [new TypeScriptBuildMinifyPlugin()], // https://webpack.js.org/configuration/optimization/
+                minimizer: [new TypeScriptBuildMinifyPlugin(this.languageTarget)], // https://webpack.js.org/configuration/optimization/
                 noEmitOnErrors: true,   // https://dev.to/flexdinesh/upgrade-to-webpack-4---5bc5
                 splitChunks: {          // https://webpack.js.org/plugins/split-chunks-plugin/
                     cacheGroups: {
@@ -436,12 +439,7 @@ inject();
     }
 
     addCompilerBuildNotification(compiler: webpack.Compiler) {
-        let compileTarget = this.typescriptCompilerOptions.target;
-        if (!compileTarget) {
-            compileTarget = TypeScript.ScriptTarget.ES3;
-        }
-
-        let t = TypeScript.ScriptTarget[compileTarget].toUpperCase();
+        let t = TypeScript.ScriptTarget[this.languageTarget].toUpperCase();
 
         compiler.hooks.compile.tap('typescript-compile-start', compilationParams => {
             Shout.timed('Compiling', chalk.cyan('index.ts'),

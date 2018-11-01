@@ -49,7 +49,8 @@ ava_1.default('Run Minify Worker Async', (t) => __awaiter(this, void 0, void 0, 
     let input = {
         code: concat,
         fileName: 'test.js',
-        map: smgen.toJSON()
+        map: smgen.toJSON(),
+        ecma: 5
     };
     let result = yield RunWorker_1.runMinifyWorker(input);
     let minifed = (typeof result.code === 'string') && (result.code.length < input.code.length);

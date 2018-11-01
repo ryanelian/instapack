@@ -47,7 +47,8 @@ test('Run Minify Worker Async', async t => {
     let input: IMinifyWorkerInput = {
         code: concat,
         fileName: 'test.js',
-        map: smgen.toJSON()
+        map: smgen.toJSON(),
+        ecma: 5
     };
 
     let result = await runMinifyWorker(input);

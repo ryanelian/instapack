@@ -40,6 +40,7 @@ class TypeScriptBuildEngine {
         this.typescriptCompilerOptions.noEmit = false;
         this.typescriptCompilerOptions.sourceMap = variables.sourceMap;
         this.typescriptCompilerOptions.inlineSources = variables.sourceMap;
+        this.languageTarget = this.typescriptCompilerOptions.target || TypeScript.ScriptTarget.ES3;
         this.useBabel = useBabel;
     }
     convertTypeScriptPathToWebpackAliasPath(baseUrl, value) {
@@ -250,7 +251,7 @@ inject();
             mode: (this.variables.production ? 'production' : 'development'),
             devtool: this.webpackConfigurationDevTool,
             optimization: {
-                minimizer: [new TypeScriptBuildMinifyPlugin_1.TypeScriptBuildMinifyPlugin()],
+                minimizer: [new TypeScriptBuildMinifyPlugin_1.TypeScriptBuildMinifyPlugin(this.languageTarget)],
                 noEmitOnErrors: true,
                 splitChunks: {
                     cacheGroups: {
@@ -303,11 +304,7 @@ inject();
         };
     }
     addCompilerBuildNotification(compiler) {
-        let compileTarget = this.typescriptCompilerOptions.target;
-        if (!compileTarget) {
-            compileTarget = TypeScript.ScriptTarget.ES3;
-        }
-        let t = TypeScript.ScriptTarget[compileTarget].toUpperCase();
+        let t = TypeScript.ScriptTarget[this.languageTarget].toUpperCase();
         compiler.hooks.compile.tap('typescript-compile-start', compilationParams => {
             Shout_1.Shout.timed('Compiling', chalk_1.default.cyan('index.ts'), '>', chalk_1.default.yellow(t), chalk_1.default.grey('in ' + this.finder.jsInputFolder + '/'));
         });

@@ -12,6 +12,7 @@ const webpack = require("webpack");
 const MemoryFileSystem = require("memory-fs");
 const path = require("path");
 const ava_1 = require("ava");
+const Typescript = require("typescript");
 const TypeScriptBuildMinifyPlugin_1 = require("./TypeScriptBuildMinifyPlugin");
 const Shout_1 = require("./Shout");
 let root = process.cwd();
@@ -19,7 +20,7 @@ let fixtures = path.join(root, 'fixtures');
 Shout_1.Shout.error = function () { };
 Shout_1.Shout.warning = function () { };
 Shout_1.Shout.timed = function () { };
-function compileAsync(folderName, ram) {
+function compileAsync(folderName, ram, languageTarget) {
     return __awaiter(this, void 0, void 0, function* () {
         let folder = path.join(fixtures, folderName);
         let entry = path.join(folder, 'index.js');
@@ -32,7 +33,7 @@ function compileAsync(folderName, ram) {
             },
             mode: 'production',
             optimization: {
-                minimizer: [new TypeScriptBuildMinifyPlugin_1.TypeScriptBuildMinifyPlugin()]
+                minimizer: [new TypeScriptBuildMinifyPlugin_1.TypeScriptBuildMinifyPlugin(languageTarget)]
             }
         });
         compiler.outputFileSystem = ram;
@@ -48,17 +49,26 @@ function compileAsync(folderName, ram) {
 }
 ava_1.default('Build Minify Plugin: ES5', (t) => __awaiter(this, void 0, void 0, function* () {
     let ram = new MemoryFileSystem();
-    let stats = yield compileAsync('BuildMinifyPluginES5', ram);
+    let stats = yield compileAsync('BuildMinifyPluginES5', ram, Typescript.ScriptTarget.ES5);
     let o = stats.toJson();
     let outputPath = path.join(fixtures, 'BuildMinifyPluginES5', 'bundle.js');
     let output = ram.readFileSync(outputPath, 'utf8');
     let isMinified = output.includes('abc123') && output.includes('\n') === false;
     t.true(isMinified);
 }));
-ava_1.default('Build Minify Plugin: ES2015', (t) => __awaiter(this, void 0, void 0, function* () {
+ava_1.default('Build Minify Plugin: ES2015 targeting ES5 Error', (t) => __awaiter(this, void 0, void 0, function* () {
     let ram = new MemoryFileSystem();
-    let stats = yield compileAsync('BuildMinifyPluginES2015', ram);
+    let stats = yield compileAsync('BuildMinifyPluginES2015', ram, Typescript.ScriptTarget.ES5);
     let o = stats.toJson();
     let err = 'Unexpected token: keyword (const)';
     t.is(o.errors[0], err);
+}));
+ava_1.default('Build Minify Plugin: ES2015', (t) => __awaiter(this, void 0, void 0, function* () {
+    let ram = new MemoryFileSystem();
+    let stats = yield compileAsync('BuildMinifyPluginES2015', ram, Typescript.ScriptTarget.ES2015);
+    let o = stats.toJson();
+    let outputPath = path.join(fixtures, 'BuildMinifyPluginES2015', 'bundle.js');
+    let output = ram.readFileSync(outputPath, 'utf8');
+    let isMinified = output.includes('abc123') && output.includes('\n') === false;
+    t.true(isMinified);
 }));

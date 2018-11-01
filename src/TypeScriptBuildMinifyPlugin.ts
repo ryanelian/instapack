@@ -1,5 +1,6 @@
 import chalk from 'chalk';
 import webpack = require('webpack');
+import * as TypeScript from 'typescript';
 import { Source, SourceMapSource, RawSource } from 'webpack-sources';
 
 import { Shout } from './Shout';
@@ -11,7 +12,7 @@ import { runMinifyWorker } from './workers/RunWorker';
 * @param asset 
 * @param fileName 
 */
-function createMinificationInput(asset: Source, fileName: string, sourceMap: boolean) {
+function createMinificationInput(asset: Source, fileName: string, sourceMap: boolean, ecma: number) {
     let input: IMinifyWorkerInput;
 
     if (sourceMap) {
@@ -19,11 +20,13 @@ function createMinificationInput(asset: Source, fileName: string, sourceMap: boo
         input = {
             fileName: fileName,
             code: o.source,
+            ecma: ecma,
             map: o.map as any // HACK78
         }
     } else {
         input = {
             fileName: fileName,
+            ecma: ecma,
             code: asset.source()
         }
     }
@@ -37,7 +40,10 @@ function createMinificationInput(asset: Source, fileName: string, sourceMap: boo
  * @param chunks 
  * @param sourceMap 
  */
-function minifyChunkAssets(compilation: webpack.compilation.Compilation, chunks: webpack.compilation.Chunk[], sourceMap: boolean) {
+function minifyChunkAssets(compilation: webpack.compilation.Compilation,
+    chunks: webpack.compilation.Chunk[],
+    sourceMap: boolean,
+    ecma: number) {
     let tasks: Promise<void>[] = [];
 
     Shout.timed('TypeScript compilation finished! Minifying bundles...');
@@ -49,7 +55,7 @@ function minifyChunkAssets(compilation: webpack.compilation.Compilation, chunks:
 
             // Shout.timed('Minifying ' + chalk.blue(fileName) + '...');
             let asset = compilation.assets[fileName] as Source;
-            let input = createMinificationInput(asset, fileName, sourceMap);
+            let input = createMinificationInput(asset, fileName, sourceMap, ecma);
 
             let t1 = runMinifyWorker(input);
             let t2 = t1.then(minified => {
@@ -63,8 +69,10 @@ function minifyChunkAssets(compilation: webpack.compilation.Compilation, chunks:
                 compilation.assets[fileName] = output;
             }).catch(minifyError => {
                 Shout.error(`when minifying ${chalk.blue(fileName)} during JS build:`, minifyError);
-                Shout.warning('Only', chalk.yellow('ES5'), 'modules can be minified! Check',
-                    chalk.cyan('tsconfig.json:target'), 'or', chalk.cyan('package.json'), 'dependencies...');
+                if (ecma === 5) {
+                    Shout.warning('Only', chalk.yellow('ES5'), 'modules can be minified! Check',
+                        chalk.cyan('tsconfig.json:target'), 'or', chalk.cyan('package.json'), 'dependencies...');
+                }
                 compilation.errors.push(minifyError);
             });
 
@@ -76,6 +84,21 @@ function minifyChunkAssets(compilation: webpack.compilation.Compilation, chunks:
 }
 
 export class TypeScriptBuildMinifyPlugin {
+
+    private ecma: number = 5;
+
+    constructor(languageTarget: TypeScript.ScriptTarget) {
+        if (languageTarget === TypeScript.ScriptTarget.ES3 || languageTarget === TypeScript.ScriptTarget.ES5) {
+            this.ecma = 5;
+        } else if (languageTarget === TypeScript.ScriptTarget.ES2015) {
+            this.ecma = 6;
+        } else if (languageTarget === TypeScript.ScriptTarget.ES2016) {
+            this.ecma = 7;
+        } else {
+            this.ecma = 8;
+        }
+    }
+
     /**
      * Apply function prototype for registering a webpack plugin.
      * @param compiler 
@@ -90,7 +113,7 @@ export class TypeScriptBuildMinifyPlugin {
 
         compiler.hooks.compilation.tap(pluginId, compilation => {
             compilation.hooks.optimizeChunkAssets.tapPromise(pluginId, async chunks => {
-                await minifyChunkAssets(compilation, chunks, enableSourceMaps);
+                await minifyChunkAssets(compilation, chunks, enableSourceMaps, this.ecma);
             });
         });
     }

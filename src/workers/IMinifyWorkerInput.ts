@@ -7,4 +7,5 @@ export interface IMinifyWorkerInput {
     fileName: string;
     code: string;
     map?: RawSourceMap;
+    ecma: number;
 }

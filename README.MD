@@ -117,9 +117,9 @@ Scaffolds a new instapack project into your existing app folder where the comman
 
   - Includes [aspnet-validation](https://www.npmjs.com/package/aspnet-validation) for ASP.NET MVC client-side validation.
 
-- `vue-green` is identical to `vue` but **targets ES2015 / [evergreen browsers](https://www.techopedia.com/definition/31094/evergreen-browser)!**
+- `vue-green` is identical to `vue` but **targets ES2016 / [evergreen browsers](https://www.techopedia.com/definition/31094/evergreen-browser)!**
 
-- `react` for developing a web app **targeting ES2015 browsers** using [React](https://reactjs.org/) and [MobX 5](https://github.com/mobxjs/mobx) and [Semantic UI](https://semantic-ui.com/).
+- `react` for developing a web app **targeting ES2016 browsers** using [React](https://reactjs.org/) and [MobX 5](https://github.com/mobxjs/mobx) and [Semantic UI](https://semantic-ui.com/).
 
 - `preact` for developing a web app using [Preact](https://preactjs.com/). (Fast 3kB alternative to React)
 
@@ -138,6 +138,8 @@ Scaffolds a new instapack project into your existing app folder where the comman
 - (PREVIEW) `angular` for developing a web app using [the new Angular](https://angular.io/) and [Material Design](https://material.angular.io/). (Warnings: [1](https://github.com/angular/angular/issues/11580) [2](https://github.com/angular/angular/issues/21560))
 
 If no template parameter is provided, `vue` will be chosen. :vulcan_salute:
+
+> You should be able to safely target native ES2016 for the following browsers: Edge 14, Safari 10, Chrome 52, Firefox 52 ESR (March 2017).
 
 ### build [project]
 

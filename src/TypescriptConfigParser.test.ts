@@ -160,13 +160,13 @@ let fallbackTypeScriptConfig = {
         experimentalDecorators: true,
         jsx: "react",
 
-        target: "es2015",
+        target: "es2016",
         module: "esnext",
         moduleResolution: "node",
 
         lib: [
             "dom",
-            "es2015",
+            "es2016",
             "dom.iterable"
         ]
     }

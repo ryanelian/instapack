@@ -1,0 +1,16 @@
+@import "bootstrap";
+@import "noty/lib/noty";
+@import "noty/lib/themes/mint";
+@import "aspnet-validation";
+
+html {
+    height: 100%;
+}
+
+body {
+    min-height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+// if you need a sidebar, use this: https://getbootstrap.com/docs/4.0/examples/dashboard/

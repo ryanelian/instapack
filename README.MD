@@ -117,7 +117,9 @@ Scaffolds a new instapack project into your existing app folder where the comman
 
   - Includes [aspnet-validation](https://www.npmjs.com/package/aspnet-validation) for ASP.NET MVC client-side validation.
 
-- `react` for developing a web app using [React](https://reactjs.org/) and [MobX](https://github.com/mobxjs/mobx) and [Semantic UI](https://semantic-ui.com/).
+- `vue-green` is identical to `vue` but **targets ES2015 / [evergreen browsers](https://www.techopedia.com/definition/31094/evergreen-browser)!**
+
+- `react` for developing a web app **targeting ES2015 browsers** using [React](https://reactjs.org/) and [MobX 5](https://github.com/mobxjs/mobx) and [Semantic UI](https://semantic-ui.com/).
 
 - `preact` for developing a web app using [Preact](https://preactjs.com/). (Fast 3kB alternative to React)
 

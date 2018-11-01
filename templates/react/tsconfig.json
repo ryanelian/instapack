@@ -18,7 +18,7 @@
     "resolveJsonModule": true,
 
     "noEmit": true,
-    "target": "es5",
+    "target": "es2015",
     "module": "esnext",
     "moduleResolution": "node",
     "importHelpers": true,
@@ -26,11 +26,8 @@
 
     "lib": [
       "dom",
-      "es5",
-      "es2015.core",
-      "es2015.promise",
-      "es2015.collection",
-      "es2015.reflect",
+      "es2015",
+      "dom.iterable",
       "es2016.array.include",
       "es2017.string",
       "es2017.object",

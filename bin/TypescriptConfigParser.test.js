@@ -147,14 +147,13 @@ let fallbackTypeScriptConfig = {
         allowSyntheticDefaultImports: true,
         experimentalDecorators: true,
         jsx: "react",
-        target: "es5",
+        target: "es2015",
         module: "esnext",
         moduleResolution: "node",
         lib: [
             "dom",
-            "es5",
-            "es2015.core",
-            "es2015.promise"
+            "es2015",
+            "dom.iterable"
         ]
     }
 };

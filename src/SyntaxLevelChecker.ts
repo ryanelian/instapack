@@ -119,7 +119,7 @@ function is2015Syntax(node: TypeScript.Node) {
         return true;
     }
 
-    if (TypeScript.isFunctionDeclaration(node)) {
+    if (TypeScript.isFunctionDeclaration(node) || TypeScript.isFunctionExpression(node)) {
         if (node.asteriskToken) {
             // function* generator()
             return true;
@@ -156,7 +156,15 @@ function is2017Syntax(node: TypeScript.Node) {
         return true;
     }
 
-    if (node.kind === TypeScript.SyntaxKind.AwaitExpression) {
+    if (TypeScript.isAwaitExpression(node)) {
+        return true;
+    }
+
+    if (TypeScript.isFunctionLike(node) && node.parameters.hasTrailingComma) {
+        return true;
+    }
+
+    if (TypeScript.isCallExpression(node) && node.arguments.hasTrailingComma) {
         return true;
     }
 

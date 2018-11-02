@@ -311,20 +311,17 @@ ava_1.default('Level Check: ES2015 super (object)', t => {
 });
 ava_1.default('Level Check: ES2015 Generator Function Declaration', t => {
     let check = SyntaxLevelChecker_1.checkSyntaxLevel('module.js', `function * generator(){
-        yield 5; yield 6;
       };`, typescript_1.ScriptTarget.ESNext);
     t.is(check.level, typescript_1.ScriptTarget.ES2015);
 });
 ava_1.default('Level Check: ES2015 Generator Function Expression', t => {
     let check = SyntaxLevelChecker_1.checkSyntaxLevel('module.js', `var generator = function * (){
-        yield 5; yield 6;
       };`, typescript_1.ScriptTarget.ESNext);
     t.is(check.level, typescript_1.ScriptTarget.ES2015);
 });
 ava_1.default('Level Check: ES2015 Generator Shorthand Method', t => {
     let check = SyntaxLevelChecker_1.checkSyntaxLevel('module.js', `var o = {
         * generator() {
-          yield 5; yield 6;
         },
       };`, typescript_1.ScriptTarget.ESNext);
     t.is(check.level, typescript_1.ScriptTarget.ES2015);
@@ -332,9 +329,12 @@ ava_1.default('Level Check: ES2015 Generator Shorthand Method', t => {
 ava_1.default('Level Check: ES2015 Generator String-Keyed Shorthand Method', t => {
     let check = SyntaxLevelChecker_1.checkSyntaxLevel('module.js', `var o = {
         * "foo bar"() {
-          yield 5; yield 6;
         },
       };`, typescript_1.ScriptTarget.ESNext);
+    t.is(check.level, typescript_1.ScriptTarget.ES2015);
+});
+ava_1.default('Level Check: ES2015 yield', t => {
+    let check = SyntaxLevelChecker_1.checkSyntaxLevel('module.js', `yield 5; yield 6;`, typescript_1.ScriptTarget.ESNext);
     t.is(check.level, typescript_1.ScriptTarget.ES2015);
 });
 ava_1.default('Level Check: ES2016 ** operator', t => {
@@ -354,4 +354,46 @@ ava_1.default('Level Check: ES2016 Nested Rest Destructuring - Parameters', t =>
         return x === 1 && y === 2 && z + '' === '3,4';
         }`, typescript_1.ScriptTarget.ESNext);
     t.is(check.level, typescript_1.ScriptTarget.ES2016);
+});
+ava_1.default('Level Check: ES2017 Function Trailing Commas - Parameters', t => {
+    let check = SyntaxLevelChecker_1.checkSyntaxLevel('module.js', `function f(a, b, ){}`, typescript_1.ScriptTarget.ESNext);
+    t.is(check.level, typescript_1.ScriptTarget.ES2017);
+});
+ava_1.default('Level Check: ES2017 Function Trailing Commas - Parameters, Anonymous Function', t => {
+    let check = SyntaxLevelChecker_1.checkSyntaxLevel('module.js', `var f = function(a, b, ){}`, typescript_1.ScriptTarget.ESNext);
+    t.is(check.level, typescript_1.ScriptTarget.ES2017);
+});
+ava_1.default('Level Check: ES2017 Function Trailing Commas - Parameters, Arrow Function', t => {
+    let check = SyntaxLevelChecker_1.checkSyntaxLevel('module.js', `var f = (a, b, ) => {}`, typescript_1.ScriptTarget.ESNext);
+    t.is(check.level, typescript_1.ScriptTarget.ES2017);
+});
+ava_1.default('Level Check: ES2017 Function Trailing Commas - Parameters, Object Method', t => {
+    let check = SyntaxLevelChecker_1.checkSyntaxLevel('module.js', `var foo = {
+        bar(a, b, ) { }
+    }`, typescript_1.ScriptTarget.ESNext);
+    t.is(check.level, typescript_1.ScriptTarget.ES2017);
+});
+ava_1.default('Level Check: ES2017 Function Trailing Commas - Parameters, Class Method', t => {
+    let check = SyntaxLevelChecker_1.checkSyntaxLevel('module.js', `class c {
+        f(a, b, ) { }
+    }`, typescript_1.ScriptTarget.ESNext);
+    t.is(check.level, typescript_1.ScriptTarget.ES2017);
+});
+ava_1.default('Level Check: ES2017 Function Trailing Commas - Parameters, Class Constructor', t => {
+    let check = SyntaxLevelChecker_1.checkSyntaxLevel('module.js', `class c {
+        constructor(a, b, ) { }
+    }`, typescript_1.ScriptTarget.ESNext);
+    t.is(check.level, typescript_1.ScriptTarget.ES2017);
+});
+ava_1.default('Level Check: ES2017 Function Trailing Commas - Arguments', t => {
+    let check = SyntaxLevelChecker_1.checkSyntaxLevel('module.js', `Math.min(1, 2, 3,)`, typescript_1.ScriptTarget.ESNext);
+    t.is(check.level, typescript_1.ScriptTarget.ES2017);
+});
+ava_1.default('Level Check: ES2017 Async Function', t => {
+    let check = SyntaxLevelChecker_1.checkSyntaxLevel('module.js', `async function f(){}`, typescript_1.ScriptTarget.ESNext);
+    t.is(check.level, typescript_1.ScriptTarget.ES2017);
+});
+ava_1.default('Level Check: ES2017 await', t => {
+    let check = SyntaxLevelChecker_1.checkSyntaxLevel('module.js', `await Axios.post('/api/hello', JSON.stringify('world'))`, typescript_1.ScriptTarget.ESNext);
+    t.is(check.level, typescript_1.ScriptTarget.ES2017);
 });

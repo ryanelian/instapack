@@ -369,14 +369,12 @@ test('Level Check: ES2015 super (object)', t => {
 
 test('Level Check: ES2015 Generator Function Declaration', t => {
     let check = checkSyntaxLevel('module.js', `function * generator(){
-        yield 5; yield 6;
       };`, ScriptTarget.ESNext);
     t.is(check.level, ScriptTarget.ES2015);
 });
 
 test('Level Check: ES2015 Generator Function Expression', t => {
     let check = checkSyntaxLevel('module.js', `var generator = function * (){
-        yield 5; yield 6;
       };`, ScriptTarget.ESNext);
     t.is(check.level, ScriptTarget.ES2015);
 });
@@ -384,7 +382,6 @@ test('Level Check: ES2015 Generator Function Expression', t => {
 test('Level Check: ES2015 Generator Shorthand Method', t => {
     let check = checkSyntaxLevel('module.js', `var o = {
         * generator() {
-          yield 5; yield 6;
         },
       };`, ScriptTarget.ESNext);
     t.is(check.level, ScriptTarget.ES2015);
@@ -393,9 +390,13 @@ test('Level Check: ES2015 Generator Shorthand Method', t => {
 test('Level Check: ES2015 Generator String-Keyed Shorthand Method', t => {
     let check = checkSyntaxLevel('module.js', `var o = {
         * "foo bar"() {
-          yield 5; yield 6;
         },
       };`, ScriptTarget.ESNext);
+    t.is(check.level, ScriptTarget.ES2015);
+});
+
+test('Level Check: ES2015 yield', t => {
+    let check = checkSyntaxLevel('module.js', `yield 5; yield 6;`, ScriptTarget.ESNext);
     t.is(check.level, ScriptTarget.ES2015);
 });
 
@@ -420,3 +421,55 @@ test('Level Check: ES2016 Nested Rest Destructuring - Parameters', t => {
         }`, ScriptTarget.ESNext);
     t.is(check.level, ScriptTarget.ES2016);
 });
+
+test('Level Check: ES2017 Function Trailing Commas - Parameters', t => {
+    let check = checkSyntaxLevel('module.js', `function f(a, b, ){}`, ScriptTarget.ESNext);
+    t.is(check.level, ScriptTarget.ES2017);
+});
+
+test('Level Check: ES2017 Function Trailing Commas - Parameters, Anonymous Function', t => {
+    let check = checkSyntaxLevel('module.js', `var f = function(a, b, ){}`, ScriptTarget.ESNext);
+    t.is(check.level, ScriptTarget.ES2017);
+});
+
+test('Level Check: ES2017 Function Trailing Commas - Parameters, Arrow Function', t => {
+    let check = checkSyntaxLevel('module.js', `var f = (a, b, ) => {}`, ScriptTarget.ESNext);
+    t.is(check.level, ScriptTarget.ES2017);
+});
+
+test('Level Check: ES2017 Function Trailing Commas - Parameters, Object Method', t => {
+    let check = checkSyntaxLevel('module.js', `var foo = {
+        bar(a, b, ) { }
+    }`, ScriptTarget.ESNext);
+    t.is(check.level, ScriptTarget.ES2017);
+});
+
+test('Level Check: ES2017 Function Trailing Commas - Parameters, Class Method', t => {
+    let check = checkSyntaxLevel('module.js', `class c {
+        f(a, b, ) { }
+    }`, ScriptTarget.ESNext);
+    t.is(check.level, ScriptTarget.ES2017);
+});
+
+test('Level Check: ES2017 Function Trailing Commas - Parameters, Class Constructor', t => {
+    let check = checkSyntaxLevel('module.js', `class c {
+        constructor(a, b, ) { }
+    }`, ScriptTarget.ESNext);
+    t.is(check.level, ScriptTarget.ES2017);
+});
+
+test('Level Check: ES2017 Function Trailing Commas - Arguments', t => {
+    let check = checkSyntaxLevel('module.js', `Math.min(1, 2, 3,)`, ScriptTarget.ESNext);
+    t.is(check.level, ScriptTarget.ES2017);
+});
+
+test('Level Check: ES2017 Async Function', t => {
+    let check = checkSyntaxLevel('module.js', `async function f(){}`, ScriptTarget.ESNext);
+    t.is(check.level, ScriptTarget.ES2017);
+});
+
+test('Level Check: ES2017 await', t => {
+    let check = checkSyntaxLevel('module.js', `await Axios.post('/api/hello', JSON.stringify('world'))`, ScriptTarget.ESNext);
+    t.is(check.level, ScriptTarget.ES2017);
+});
+

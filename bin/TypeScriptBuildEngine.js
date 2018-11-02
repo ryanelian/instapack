@@ -106,29 +106,42 @@ class TypeScriptBuildEngine {
     }
     get jsBabelWebpackRules() {
         return {
-            test: /\.m?jsx?$/,
+            test: /\.(jsx?|mjs)$/,
             exclude: /node_modules/,
             use: {
                 loader: LoaderPaths_1.LoaderPaths.babel
             }
         };
     }
-    get typescriptWebpackRules() {
-        let tsRules = {
-            test: /\.tsx?$/,
-            use: []
+    get libGuardRules() {
+        return {
+            test: /\.m?js$/,
+            include: /node_modules/,
+            use: [{
+                    loader: LoaderPaths_1.LoaderPaths.typescript,
+                    options: {
+                        compilerOptions: this.typescriptCompilerOptions
+                    }
+                }]
         };
+    }
+    get typescriptWebpackRules() {
+        let loaders = [];
         if (this.useBabel) {
-            tsRules.use.push({
+            loaders.push({
                 loader: LoaderPaths_1.LoaderPaths.babel
             });
         }
-        tsRules.use.push({
+        loaders.push({
             loader: LoaderPaths_1.LoaderPaths.typescript,
             options: {
                 compilerOptions: this.typescriptCompilerOptions
             }
         });
+        let tsRules = {
+            test: /\.tsx?$/,
+            use: loaders
+        };
         return tsRules;
     }
     get vueWebpackRules() {
@@ -206,7 +219,8 @@ inject();
             this.typescriptWebpackRules,
             this.vueWebpackRules,
             this.templatesWebpackRules,
-            this.cssWebpackRules
+            this.cssWebpackRules,
+            this.libGuardRules
         ];
         if (this.useBabel) {
             rules.push(this.jsBabelWebpackRules);
@@ -306,7 +320,7 @@ inject();
     addCompilerBuildNotification(compiler) {
         let t = TypeScript.ScriptTarget[this.languageTarget].toUpperCase();
         compiler.hooks.compile.tap('typescript-compile-start', compilationParams => {
-            Shout_1.Shout.timed('Compiling', chalk_1.default.cyan('index.ts'), '>', chalk_1.default.yellow(t), chalk_1.default.grey('in ' + this.finder.jsInputFolder + '/'));
+            Shout_1.Shout.timed('Compiling', chalk_1.default.cyan('index.ts'), '>>', chalk_1.default.yellow(t), chalk_1.default.grey('in ' + this.finder.jsInputFolder + '/'));
         });
         compiler.hooks.done.tapPromise('display-build-results', (stats) => __awaiter(this, void 0, void 0, function* () {
             this.displayBuildResults(stats);

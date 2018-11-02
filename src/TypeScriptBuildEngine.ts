@@ -169,7 +169,7 @@ export class TypeScriptBuildEngine {
      */
     get jsBabelWebpackRules(): webpack.Rule {
         return {
-            test: /\.m?jsx?$/,
+            test: /\.(jsx?|mjs)$/,
             exclude: /node_modules/,
             use: {
                 loader: LoaderPaths.babel
@@ -177,30 +177,45 @@ export class TypeScriptBuildEngine {
         };
     }
 
+    get libGuardRules(): webpack.Rule {
+        return {
+            test: /\.m?js$/,
+            include: /node_modules/,
+            use: [{
+                loader: LoaderPaths.typescript,
+                options: {
+                    compilerOptions: this.typescriptCompilerOptions
+                }
+            }]
+        };
+    }
+
     /**
      * Gets a configured TypeScript rules for webpack.
      */
     get typescriptWebpackRules(): webpack.Rule {
-        let tsRules = {
-            test: /\.tsx?$/,
-            use: [] as webpack.Loader[]
-        };
+        let loaders: webpack.Loader[] = [];
 
         // webpack loaders are declared in reverse / right-to-left!
         // babel(typescript(source_code))
 
         if (this.useBabel) {
-            tsRules.use.push({
+            loaders.push({
                 loader: LoaderPaths.babel
             })
         }
 
-        tsRules.use.push({
+        loaders.push({
             loader: LoaderPaths.typescript,
             options: {
                 compilerOptions: this.typescriptCompilerOptions
             }
         });
+
+        let tsRules: webpack.Rule = {
+            test: /\.tsx?$/,
+            use: loaders
+        };
 
         return tsRules;
     }
@@ -309,7 +324,8 @@ inject();
             this.typescriptWebpackRules,
             this.vueWebpackRules,
             this.templatesWebpackRules,
-            this.cssWebpackRules
+            this.cssWebpackRules,
+            this.libGuardRules
         ];
 
         if (this.useBabel) {
@@ -443,7 +459,7 @@ inject();
 
         compiler.hooks.compile.tap('typescript-compile-start', compilationParams => {
             Shout.timed('Compiling', chalk.cyan('index.ts'),
-                '>', chalk.yellow(t),
+                '>>', chalk.yellow(t),
                 chalk.grey('in ' + this.finder.jsInputFolder + '/')
             );
         });

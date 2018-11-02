@@ -313,8 +313,6 @@ test('Level Check: ES2015 Destructuring Parameters - Defaults, Separate Scope', 
     t.is(check.level, ScriptTarget.ES2015);
 });
 
-// TODO: ES2015 Destructuring Parameters
-
 test('Level Check: ES2015 new.target', t => {
     let check = checkSyntaxLevel('m.js', `var passed = false;
     new function f() {

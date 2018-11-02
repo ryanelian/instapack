@@ -73,7 +73,6 @@ function is2015Syntax(node: TypeScript.Node) {
     // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment
     if (TypeScript.isBinaryExpression(node)) {
         if (node.operatorToken.kind === TypeScript.SyntaxKind.EqualsToken) {
-            // console.log(node);
             if (TypeScript.isArrayLiteralExpression(node.left)) {
                 return true;
             }
@@ -243,11 +242,6 @@ export function checkSyntaxLevel(sourcePath: string, source: string, languageTar
             level = TypeScript.ScriptTarget.ES2015;
         }
     });
-
-    // if (level > languageTarget) {
-    //     let s = source.substring(951, 1025);
-    //     console.log(s);
-    // }
 
     return {
         level: level,

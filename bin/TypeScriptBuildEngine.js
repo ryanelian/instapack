@@ -118,7 +118,7 @@ class TypeScriptBuildEngine {
             test: /\.m?js$/,
             include: /node_modules/,
             use: [{
-                    loader: LoaderPaths_1.LoaderPaths.typescript,
+                    loader: LoaderPaths_1.LoaderPaths.libGuard,
                     options: {
                         compilerOptions: this.typescriptCompilerOptions
                     }

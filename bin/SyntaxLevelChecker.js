@@ -142,7 +142,7 @@ function traverse(node, cb, depth = 0) {
         traverse(c, cb, depth + 1);
     });
 }
-function checkLevel(sourcePath, source, languageTarget) {
+function checkSyntaxLevel(sourcePath, source, languageTarget) {
     let ast = TypeScript.createSourceFile(sourcePath, source, languageTarget, true, TypeScript.ScriptKind.JS);
     let level = TypeScript.ScriptTarget.ES5;
     traverse(ast, node => {
@@ -167,4 +167,4 @@ function checkLevel(sourcePath, source, languageTarget) {
         source: ast.getSourceFile()
     };
 }
-exports.checkLevel = checkLevel;
+exports.checkSyntaxLevel = checkSyntaxLevel;

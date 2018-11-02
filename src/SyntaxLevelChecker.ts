@@ -223,7 +223,7 @@ interface IScriptLevel {
     source: TypeScript.SourceFile;
 }
 
-export function checkLevel(sourcePath: string, source: string, languageTarget: TypeScript.ScriptTarget): IScriptLevel {
+export function checkSyntaxLevel(sourcePath: string, source: string, languageTarget: TypeScript.ScriptTarget): IScriptLevel {
     let ast = TypeScript.createSourceFile(sourcePath, source, languageTarget, true, TypeScript.ScriptKind.JS);
 
     let level = TypeScript.ScriptTarget.ES5;

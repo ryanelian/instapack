@@ -125,16 +125,15 @@ function is2018Syntax(node) {
     if (TypeScript.isSpreadAssignment(node)) {
         return true;
     }
-    if (TypeScript.isFunctionDeclaration(node)) {
+    if (TypeScript.isFunctionDeclaration(node) || TypeScript.isFunctionExpression(node) || TypeScript.isMethodDeclaration(node)) {
         if (node.asteriskToken && node.modifiers) {
-            let a = node.modifiers.some(Q => Q.kind === TypeScript.SyntaxKind.AsyncKeyword);
-            return a;
+            let hasAsync = node.modifiers.some(Q => Q.kind === TypeScript.SyntaxKind.AsyncKeyword);
+            return hasAsync;
         }
     }
-    if (TypeScript.isMethodDeclaration(node)) {
-        if (node.asteriskToken && node.modifiers) {
-            let a = node.modifiers.some(Q => Q.kind === TypeScript.SyntaxKind.AsyncKeyword);
-            return a;
+    if (TypeScript.isForOfStatement(node)) {
+        if (node.awaitModifier) {
+            return true;
         }
     }
     return false;

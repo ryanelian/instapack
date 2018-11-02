@@ -181,34 +181,23 @@ function is2018Syntax(node: TypeScript.Node) {
         return true;
     }
 
+    if (TypeScript.isFunctionDeclaration(node) || TypeScript.isFunctionExpression(node) || TypeScript.isMethodDeclaration(node)) {
+        if (node.asteriskToken && node.modifiers) {
+            let hasAsync = node.modifiers.some(Q => Q.kind === TypeScript.SyntaxKind.AsyncKeyword);
+            return hasAsync;
+        }
+    }
+
+    if (TypeScript.isForOfStatement(node)) {
+        if (node.awaitModifier) {
+            return true;
+        }
+    }
+
     // /flag/s: https://tc39.github.io/ecma262/#sec-get-regexp.prototype.dotAll
     // if (TypeScript.isRegularExpressionLiteral(node)) {
     //     console.log(node);
     // }
-
-    /*
-        async function* generator() {
-            yield 42;
-        }
-     */
-    if (TypeScript.isFunctionDeclaration(node)) {
-        if (node.asteriskToken && node.modifiers) {
-            let a = node.modifiers.some(Q => Q.kind === TypeScript.SyntaxKind.AsyncKeyword);
-            return a;
-        }
-    }
-
-    /*
-        let x = {
-            async * test() { }
-        }
-     */
-    if (TypeScript.isMethodDeclaration(node)) {
-        if (node.asteriskToken && node.modifiers) {
-            let a = node.modifiers.some(Q => Q.kind === TypeScript.SyntaxKind.AsyncKeyword);
-            return a;
-        }
-    }
 
     return false
 }

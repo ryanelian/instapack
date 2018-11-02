@@ -267,3 +267,28 @@ test('Level Check: ES2015 Destructuring Assignment - Defaults', t => {
 });
 
 // TODO: ES2015 Destructuring Parameters
+
+test('Level Check: ES2015 let', t => {
+    let check = checkSyntaxLevel('module.js', `let foo = 123;`, ScriptTarget.ESNext);
+    t.is(check.level, ScriptTarget.ES2015);
+});
+
+test('Level Check: ES2015 const', t => {
+    let check = checkSyntaxLevel('module.js', `const foo = 123;`, ScriptTarget.ESNext);
+    t.is(check.level, ScriptTarget.ES2015);
+});
+
+test('Level Check: ES2015 Arrow Functions - 0 parameters', t => {
+    let check = checkSyntaxLevel('module.js', `(() => 5)`, ScriptTarget.ESNext);
+    t.is(check.level, ScriptTarget.ES2015);
+});
+
+test('Level Check: ES2015 Arrow Functions - 1 parameter, no brackets', t => {
+    let check = checkSyntaxLevel('module.js', `var b = x => x + "foo";`, ScriptTarget.ESNext);
+    t.is(check.level, ScriptTarget.ES2015);
+});
+
+test('Level Check: ES2015 Arrow Functions - Multiple Parameters', t => {
+    let check = checkSyntaxLevel('module.js', `var c = (v, w, x, y, z) => "" + v + w + x + y + z;`, ScriptTarget.ESNext);
+    t.is(check.level, ScriptTarget.ES2015);
+});

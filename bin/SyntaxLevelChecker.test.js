@@ -224,3 +224,23 @@ ava_1.default('Level Check: ES2015 Destructuring Assignment - Defaults', t => {
     [d = 0, e = 5, f = 6] = [4,,undefined];`, typescript_1.ScriptTarget.ESNext);
     t.is(check.level, typescript_1.ScriptTarget.ES2015);
 });
+ava_1.default('Level Check: ES2015 let', t => {
+    let check = SyntaxLevelChecker_1.checkSyntaxLevel('module.js', `let foo = 123;`, typescript_1.ScriptTarget.ESNext);
+    t.is(check.level, typescript_1.ScriptTarget.ES2015);
+});
+ava_1.default('Level Check: ES2015 const', t => {
+    let check = SyntaxLevelChecker_1.checkSyntaxLevel('module.js', `const foo = 123;`, typescript_1.ScriptTarget.ESNext);
+    t.is(check.level, typescript_1.ScriptTarget.ES2015);
+});
+ava_1.default('Level Check: ES2015 Arrow Functions - 0 parameters', t => {
+    let check = SyntaxLevelChecker_1.checkSyntaxLevel('module.js', `(() => 5)`, typescript_1.ScriptTarget.ESNext);
+    t.is(check.level, typescript_1.ScriptTarget.ES2015);
+});
+ava_1.default('Level Check: ES2015 Arrow Functions - 1 parameter, no brackets', t => {
+    let check = SyntaxLevelChecker_1.checkSyntaxLevel('module.js', `var b = x => x + "foo";`, typescript_1.ScriptTarget.ESNext);
+    t.is(check.level, typescript_1.ScriptTarget.ES2015);
+});
+ava_1.default('Level Check: ES2015 Arrow Functions - Multiple Parameters', t => {
+    let check = SyntaxLevelChecker_1.checkSyntaxLevel('module.js', `var c = (v, w, x, y, z) => "" + v + w + x + y + z;`, typescript_1.ScriptTarget.ESNext);
+    t.is(check.level, typescript_1.ScriptTarget.ES2015);
+});

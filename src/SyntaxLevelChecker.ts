@@ -142,6 +142,12 @@ function is2016Syntax(node: TypeScript.Node) {
         return true;
     }
 
+    if (TypeScript.isArrayBindingPattern(node)) {
+        if (TypeScript.isBindingElement(node.parent) && node.parent.dotDotDotToken) {
+            return true;
+        }
+    }
+
     return false;
 }
 

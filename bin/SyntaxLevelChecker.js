@@ -96,6 +96,11 @@ function is2016Syntax(node) {
     if (node.kind === TypeScript.SyntaxKind.AsteriskAsteriskEqualsToken) {
         return true;
     }
+    if (TypeScript.isArrayBindingPattern(node)) {
+        if (TypeScript.isBindingElement(node.parent) && node.parent.dotDotDotToken) {
+            return true;
+        }
+    }
     return false;
 }
 function is2017Syntax(node) {

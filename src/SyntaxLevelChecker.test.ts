@@ -32,18 +32,6 @@ test('Level Check: ES2015 Spread Strings in Arrays', t => {
     t.is(check.level, ScriptTarget.ES2015);
 });
 
-test('Level Check: ES2015 Spread Generator Function Calls', t => {
-    let check = checkSyntaxLevel('module.js', `var iterable = (function*(){ yield 1; yield 2; yield 3; }());
-    return Math.max(...iterable) === 3;`, ScriptTarget.ESNext);
-    t.is(check.level, ScriptTarget.ES2015);
-});
-
-test('Level Check: ES2015 Spread Generator in Arrays', t => {
-    let check = checkSyntaxLevel('module.js', `var iterable = (function*(){ yield "b"; yield "c"; yield "d"; }());
-    return ["a", ...iterable, "e"][3] === "d";`, ScriptTarget.ESNext);
-    t.is(check.level, ScriptTarget.ES2015);
-});
-
 test('Level Check: ES2015 Computed Properties', t => {
     let check = checkSyntaxLevel('module.js', `var x = 'y';
     return ({ [x]: 1 }).y === 1;`, ScriptTarget.ESNext);
@@ -146,12 +134,6 @@ test('Level Check: ES2015 Destructuring Declarations - Primitives', t => {
     t.is(check.level, ScriptTarget.ES2015);
 });
 
-test('Level Check: ES2015 Destructuring Declarations - Computed Props', t => {
-    let check = checkSyntaxLevel('module.js', `var qux = "corge";
-    var { [qux]: grault } = { corge: "garply" };`, ScriptTarget.ESNext);
-    t.is(check.level, ScriptTarget.ES2015);
-});
-
 test('Level Check: ES2015 Destructuring Declarations - Multiple var', t => {
     let check = checkSyntaxLevel('module.js', `var [a,b] = [5,6], {c,d} = {c:7,d:8};`, ScriptTarget.ESNext);
     t.is(check.level, ScriptTarget.ES2015);
@@ -227,12 +209,6 @@ test('Level Check: ES2015 Destructuring Assignment - Chain Object', t => {
     t.is(check.level, ScriptTarget.ES2015);
 });
 
-test('Level Check: ES2015 Destructuring Assignment - Computed Props', t => {
-    let check = checkSyntaxLevel('module.js', `var grault, qux = "corge";
-    ({ [qux]: grault } = { corge: "garply" });`, ScriptTarget.ESNext);
-    t.is(check.level, ScriptTarget.ES2015);
-});
-
 test('Level Check: ES2015 Destructuring Assignment - Nested', t => {
     let check = checkSyntaxLevel('module.js', `var e,f,g,h,i;
     [e, {x:f, g}] = [9, {x:10}];
@@ -266,7 +242,86 @@ test('Level Check: ES2015 Destructuring Assignment - Defaults', t => {
     t.is(check.level, ScriptTarget.ES2015);
 });
 
+test('Level Check: ES2015 Destructuring Parameters - Arrays', t => {
+    let check = checkSyntaxLevel('module.js', `function([a, , [b], c]) {
+        return a === 5 && b === 6 && c === undefined;
+      }([5, null, [6]])`, ScriptTarget.ESNext);
+    t.is(check.level, ScriptTarget.ES2015);
+});
+
+test('Level Check: ES2015 Destructuring Parameters - Strings', t => {
+    let check = checkSyntaxLevel('module.js', `function([a, b, c]) {
+        return a === "a" && b === "b" && c === undefined;
+      }("ab")`, ScriptTarget.ESNext);
+    t.is(check.level, ScriptTarget.ES2015);
+});
+
+test('Level Check: ES2015 Destructuring Parameters - Objects', t => {
+    let check = checkSyntaxLevel('module.js', `function({c, x:d, e}) {
+        return c === 7 && d === 8 && e === undefined;
+      }({c:7, x:8});`, ScriptTarget.ESNext);
+    t.is(check.level, ScriptTarget.ES2015);
+});
+
+test('Level Check: ES2015 Destructuring Parameters - Primitives', t => {
+    let check = checkSyntaxLevel('module.js', `function({toFixed}, {slice}) {
+        return toFixed === Number.prototype.toFixed
+          && slice === String.prototype.slice;
+      }(2,'')`, ScriptTarget.ESNext);
+    t.is(check.level, ScriptTarget.ES2015);
+});
+
+test('Level Check: ES2015 Destructuring Parameters - Nested', t => {
+    let check = checkSyntaxLevel('module.js', `function([e, {x:f, g}], {h, x:[i]}) {
+        return e === 9 && f === 10 && g === undefined
+          && h === 11 && i === 12;
+      }([9, {x:10}],{h:11, x:[12]});`, ScriptTarget.ESNext);
+    t.is(check.level, ScriptTarget.ES2015);
+});
+
+test('Level Check: ES2015 Destructuring Parameters - Rest', t => {
+    let check = checkSyntaxLevel('module.js', `function([a, ...b], [c, ...d]) {
+        return a === 3 && b instanceof Array && (b + "") === "4,5" &&
+           c === 6 && d instanceof Array && d.length === 0;
+      }([3, 4, 5], [6]);`, ScriptTarget.ESNext);
+    t.is(check.level, ScriptTarget.ES2015);
+});
+
+test('Level Check: ES2015 Destructuring Parameters - Empty', t => {
+    let check = checkSyntaxLevel('module.js', `function ([],{}){
+        return arguments[0] + '' === "3,4" && arguments[1].x === "foo";
+      }([3,4],{x:"foo"});`, ScriptTarget.ESNext);
+    t.is(check.level, ScriptTarget.ES2015);
+});
+
+test('Level Check: ES2015 Destructuring Parameters - Defaults', t => {
+    let check = checkSyntaxLevel('module.js', `(function({a = 1, b = 0, c = 3, x:d = 0, y:e = 5},
+        [f = 6, g = 0, h = 8]) {
+      return a === 1 && b === 2 && c === 3 && d === 4 &&
+        e === 5 && f === 6 && g === 7 && h === 8;
+    }({b:2, c:undefined, x:4},[, 7, undefined]));`, ScriptTarget.ESNext);
+    t.is(check.level, ScriptTarget.ES2015);
+});
+
+test('Level Check: ES2015 Destructuring Parameters - Defaults, Separate Scope', t => {
+    let check = checkSyntaxLevel('module.js', `(function({a=function(){
+        return typeof b === 'undefined';
+      }}){
+        var b = 1;
+        return a();
+      }({}));`, ScriptTarget.ESNext);
+    t.is(check.level, ScriptTarget.ES2015);
+});
+
 // TODO: ES2015 Destructuring Parameters
+
+test('Level Check: ES2015 new.target', t => {
+    let check = checkSyntaxLevel('module.js', `var passed = false;
+    new function f() {
+      passed = (new.target === f);
+    }();`, ScriptTarget.ESNext);
+    t.is(check.level, ScriptTarget.ES2015);
+});
 
 test('Level Check: ES2015 let', t => {
     let check = checkSyntaxLevel('module.js', `let foo = 123;`, ScriptTarget.ESNext);
@@ -291,4 +346,77 @@ test('Level Check: ES2015 Arrow Functions - 1 parameter, no brackets', t => {
 test('Level Check: ES2015 Arrow Functions - Multiple Parameters', t => {
     let check = checkSyntaxLevel('module.js', `var c = (v, w, x, y, z) => "" + v + w + x + y + z;`, ScriptTarget.ESNext);
     t.is(check.level, ScriptTarget.ES2015);
+});
+
+test('Level Check: ES2015 Class', t => {
+    let check = checkSyntaxLevel('module.js', `class C {}`, ScriptTarget.ESNext);
+    t.is(check.level, ScriptTarget.ES2015);
+});
+
+test('Level Check: ES2015 Anonymous Class Expression', t => {
+    let check = checkSyntaxLevel('module.js', `return typeof class {} === "function";`, ScriptTarget.ESNext);
+    t.is(check.level, ScriptTarget.ES2015);
+});
+
+test('Level Check: ES2015 super (object)', t => {
+    let check = checkSyntaxLevel('module.js', `var obj2 = {
+        method2() {
+         super.method1();
+        }
+      }`, ScriptTarget.ESNext);
+    t.is(check.level, ScriptTarget.ES2015);
+});
+
+test('Level Check: ES2015 Generator Function Declaration', t => {
+    let check = checkSyntaxLevel('module.js', `function * generator(){
+        yield 5; yield 6;
+      };`, ScriptTarget.ESNext);
+    t.is(check.level, ScriptTarget.ES2015);
+});
+
+test('Level Check: ES2015 Generator Function Expression', t => {
+    let check = checkSyntaxLevel('module.js', `var generator = function * (){
+        yield 5; yield 6;
+      };`, ScriptTarget.ESNext);
+    t.is(check.level, ScriptTarget.ES2015);
+});
+
+test('Level Check: ES2015 Generator Shorthand Method', t => {
+    let check = checkSyntaxLevel('module.js', `var o = {
+        * generator() {
+          yield 5; yield 6;
+        },
+      };`, ScriptTarget.ESNext);
+    t.is(check.level, ScriptTarget.ES2015);
+});
+
+test('Level Check: ES2015 Generator String-Keyed Shorthand Method', t => {
+    let check = checkSyntaxLevel('module.js', `var o = {
+        * "foo bar"() {
+          yield 5; yield 6;
+        },
+      };`, ScriptTarget.ESNext);
+    t.is(check.level, ScriptTarget.ES2015);
+});
+
+test('Level Check: ES2016 ** operator', t => {
+    let check = checkSyntaxLevel('module.js', `return 2 ** 3 === 8 && -(5 ** 2) === -25 && (-5) ** 2 === 25;`, ScriptTarget.ESNext);
+    t.is(check.level, ScriptTarget.ES2016);
+});
+
+test('Level Check: ES2016 **= assignment', t => {
+    let check = checkSyntaxLevel('module.js', `var a = 2; a **= 3;`, ScriptTarget.ESNext);
+    t.is(check.level, ScriptTarget.ES2016);
+});
+
+test('Level Check: ES2016 Nested Rest Destructuring - Declarations', t => {
+    let check = checkSyntaxLevel('module.js', `var [x, ...[y, ...z]] = [1,2,3,4];`, ScriptTarget.ESNext);
+    t.is(check.level, ScriptTarget.ES2016);
+});
+
+test('Level Check: ES2016 Nested Rest Destructuring - Parameters', t => {
+    let check = checkSyntaxLevel('module.js', `function([x, ...[y, ...z]]) {
+        return x === 1 && y === 2 && z + '' === '3,4';
+        }`, ScriptTarget.ESNext);
+    t.is(check.level, ScriptTarget.ES2016);
 });

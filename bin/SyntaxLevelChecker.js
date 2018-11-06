@@ -174,7 +174,7 @@ function checkSyntaxLevel(sourcePath, source, languageTarget) {
     });
     return {
         level: level,
-        source: ast.getSourceFile()
+        source: ast
     };
 }
 exports.checkSyntaxLevel = checkSyntaxLevel;

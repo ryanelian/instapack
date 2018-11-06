@@ -38,6 +38,7 @@ class TypeScriptBuildEngine {
         }
         this.typescriptCompilerOptions = TypescriptConfigParser_1.parseTypescriptConfig(variables.root, variables.typescriptConfiguration).options;
         this.typescriptCompilerOptions.noEmit = false;
+        this.typescriptCompilerOptions.emitDeclarationOnly = false;
         this.typescriptCompilerOptions.sourceMap = variables.sourceMap;
         this.typescriptCompilerOptions.inlineSources = variables.sourceMap;
         this.languageTarget = this.typescriptCompilerOptions.target || TypeScript.ScriptTarget.ES3;

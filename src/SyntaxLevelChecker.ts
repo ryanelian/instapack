@@ -226,7 +226,9 @@ interface IScriptLevel {
 }
 
 export function checkSyntaxLevel(sourcePath: string, source: string, languageTarget: TypeScript.ScriptTarget): IScriptLevel {
+    // let sw = process.hrtime();
     let ast = TypeScript.createSourceFile(sourcePath, source, languageTarget, true, TypeScript.ScriptKind.JS);
+    // console.log(sourcePath, prettyHrTime(process.hrtime(sw)));
 
     let level = TypeScript.ScriptTarget.ES5;
     traverse(ast, node => {
@@ -242,9 +244,10 @@ export function checkSyntaxLevel(sourcePath: string, source: string, languageTar
             level = TypeScript.ScriptTarget.ES2015;
         }
     });
+    // console.log(sourcePath, prettyHrTime(process.hrtime(sw)));
 
     return {
         level: level,
-        source: ast.getSourceFile()
+        source: ast
     };
 }

@@ -51,7 +51,7 @@
     "build": "npm run compile && npm run lint && npm run test"
   },
   "dependencies": {
-    "@babel/core": "7.1.2",
+    "@babel/core": "7.1.5",
     "autoprefixer": "9.3.1",
     "babel-loader": "8.0.4",
     "chalk": "2.4.1",

@@ -9,9 +9,9 @@
     "@types/luxon": "^1.4.1",
     "@types/requirejs": "^2.1.31",
     "axios": "^0.18.0",
-    "inferno": "^6.1.5",
+    "inferno": "^6.2.1",
     "linq": "^3.1.1",
-    "luxon": "^1.5.0",
+    "luxon": "^1.6.2",
     "noty": "^3.2.0-beta",
     "sweetalert": "^2.1.2",
     "ts-polyfill": "^3.0.1",
@@ -19,6 +19,6 @@
   },
   "devDependencies": {
     "@babel/core": "^7.1.5",
-    "babel-plugin-inferno": "^6.0.2"
+    "babel-plugin-inferno": "^6.0.3"
   }
 }

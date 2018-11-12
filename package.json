@@ -1,6 +1,6 @@
 {
   "name": "instapack",
-  "version": "7.1.0-beta2",
+  "version": "7.1.0-rc.1",
   "description": "All-in-one TypeScript and Sass compiler for web applications!",
   "keywords": [
     "typescript",

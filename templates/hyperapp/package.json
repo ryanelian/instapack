@@ -6,14 +6,14 @@
     "output": "wwwroot"
   },
   "dependencies": {
-    "@types/luxon": "^1.4.0",
+    "@types/luxon": "^1.4.1",
     "@types/requirejs": "^2.1.31",
     "axios": "^0.18.0",
     "hyperapp": "^1.2.9",
-    "linq": "^3.1.0",
-    "luxon": "^1.4.4",
+    "linq": "^3.1.1",
+    "luxon": "^1.6.2",
     "noty": "^3.2.0-beta",
-    "sweetalert": "^2.1.0",
+    "sweetalert": "^2.1.2",
     "ts-polyfill": "^3.0.1",
     "tslib": "^1.9.3"
   }

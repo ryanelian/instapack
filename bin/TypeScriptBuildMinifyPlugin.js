@@ -9,28 +9,31 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const chalk_1 = require("chalk");
+const TypeScript = require("typescript");
 const webpack_sources_1 = require("webpack-sources");
 const Shout_1 = require("./Shout");
 const RunWorker_1 = require("./workers/RunWorker");
-function createMinificationInput(asset, fileName, sourceMap) {
+function createMinificationInput(asset, fileName, sourceMap, ecma) {
     let input;
     if (sourceMap) {
         let o = asset.sourceAndMap();
         input = {
             fileName: fileName,
             code: o.source,
+            ecma: ecma,
             map: o.map
         };
     }
     else {
         input = {
             fileName: fileName,
+            ecma: ecma,
             code: asset.source()
         };
     }
     return input;
 }
-function minifyChunkAssets(compilation, chunks, sourceMap) {
+function minifyChunkAssets(compilation, chunks, sourceMap, ecma) {
     let tasks = [];
     Shout_1.Shout.timed('TypeScript compilation finished! Minifying bundles...');
     for (let chunk of chunks) {
@@ -39,7 +42,7 @@ function minifyChunkAssets(compilation, chunks, sourceMap) {
                 continue;
             }
             let asset = compilation.assets[fileName];
-            let input = createMinificationInput(asset, fileName, sourceMap);
+            let input = createMinificationInput(asset, fileName, sourceMap, ecma);
             let t1 = RunWorker_1.runMinifyWorker(input);
             let t2 = t1.then(minified => {
                 let output;
@@ -52,7 +55,14 @@ function minifyChunkAssets(compilation, chunks, sourceMap) {
                 compilation.assets[fileName] = output;
             }).catch(minifyError => {
                 Shout_1.Shout.error(`when minifying ${chalk_1.default.blue(fileName)} during JS build:`, minifyError);
-                Shout_1.Shout.warning('Only', chalk_1.default.yellow('ES5'), 'modules can be minified! Check', chalk_1.default.cyan('tsconfig.json:target'), 'or', chalk_1.default.cyan('package.json'), 'dependencies...');
+                if (ecma === 5) {
+                    if (chunk.hasEntryModule() === false) {
+                        Shout_1.Shout.warning('Project is targeting', chalk_1.default.yellow('ES5'), 'but one or more dependencies in', chalk_1.default.cyan('package.json'), 'might be ES2015+');
+                    }
+                    else {
+                        Shout_1.Shout.warning('Possible TypeScript bug: ES5-transpiled project contains ES2015+ output?!');
+                    }
+                }
                 compilation.errors.push(minifyError);
             });
             tasks.push(t2);
@@ -61,6 +71,21 @@ function minifyChunkAssets(compilation, chunks, sourceMap) {
     return Promise.all(tasks);
 }
 class TypeScriptBuildMinifyPlugin {
+    constructor(languageTarget) {
+        this.ecma = 5;
+        if (languageTarget === TypeScript.ScriptTarget.ES3 || languageTarget === TypeScript.ScriptTarget.ES5) {
+            this.ecma = 5;
+        }
+        else if (languageTarget === TypeScript.ScriptTarget.ES2015) {
+            this.ecma = 6;
+        }
+        else if (languageTarget === TypeScript.ScriptTarget.ES2016) {
+            this.ecma = 7;
+        }
+        else {
+            this.ecma = 8;
+        }
+    }
     apply(compiler) {
         let pluginId = 'typescript-build-minify';
         let enableSourceMaps = false;
@@ -69,7 +94,7 @@ class TypeScriptBuildMinifyPlugin {
         }
         compiler.hooks.compilation.tap(pluginId, compilation => {
             compilation.hooks.optimizeChunkAssets.tapPromise(pluginId, (chunks) => __awaiter(this, void 0, void 0, function* () {
-                yield minifyChunkAssets(compilation, chunks, enableSourceMaps);
+                yield minifyChunkAssets(compilation, chunks, enableSourceMaps, this.ecma);
             }));
         });
     }

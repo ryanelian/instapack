@@ -15,15 +15,14 @@ let fallbackTypeScriptConfig = {
         experimentalDecorators: true,
         jsx: "react",
 
-        target: "es5",
+        target: "es2016",
         module: "esnext",
         moduleResolution: "node",
 
         lib: [
             "dom",
-            "es5",
-            "es2015.core",
-            "es2015.promise"
+            "es2016",
+            "dom.iterable"
         ]
     }
 };
@@ -33,10 +32,10 @@ export async function tryReadTypeScriptConfigJson(folder: string) {
 
     try {
         let tsconfigJson = await fse.readJson(tsconfigJsonPath);
-        let parse = parseTypescriptConfig(folder, tsconfigJson);
-        if (parse.options.target !== TypeScript.ScriptTarget.ES5) {
-            Shout.warning('TypeScript build', chalk.cyan('target'), 'is not', chalk.yellow('ES5') + '!');
-        }
+        let tryParse = parseTypescriptConfig(folder, tsconfigJson);
+        // if (parse.options.target !== TypeScript.ScriptTarget.ES5) {
+        //     Shout.warning('TypeScript build', chalk.cyan('target'), 'is not', chalk.yellow('ES5') + '!');
+        // }
 
         return tsconfigJson;
     } catch (error) {

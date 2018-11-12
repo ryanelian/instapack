@@ -109,13 +109,14 @@ class SassBuildTool {
                     specialComments: false
                 }
             },
+            inline: false,
             sourceMap: this.variables.sourceMap,
             sourceMapInlineSources: this.variables.sourceMap
         };
         let cleanResult = new CleanCSS(cleanCssOptions).minify(postcssResult.css);
         let errors = cleanResult.errors;
         if (errors.length) {
-            let errorMessage = "Error when minifying CSS:\n" + errors.map(Q => Q.stack).join("\n\n");
+            let errorMessage = "Error when minifying CSS:\n" + errors.map(Q => '- ' + Q.toString()).join("\n");
             throw new Error(errorMessage);
         }
         let result = {

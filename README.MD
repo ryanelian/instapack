@@ -73,8 +73,6 @@ When using Visual Studio 2015 (Update 3 or above), install [the latest TypeScrip
 
 If using [the latest Visual Studio Code](https://code.visualstudio.com/), it should come with the latest TypeScript support out of the box.
 
-TypeScript project targeting `es5` is supported, which guarantees the JS output to be [runnable on browsers as early as Internet Explorer 9](http://kangax.github.io/compat-table/es5/) when armed with [polyfills](https://www.npmjs.com/package/ts-polyfill). (That said, you are advised NOT to develop solutions for [obsoleted browsers](https://www.microsoft.com/en-us/windowsforbusiness/end-of-ie-support)!)
-
 ## Design Philosophies
 
 - Zero configurations: Hyper-opinionated front-end project build system. **It just works!** :sparkling_heart:
@@ -119,7 +117,9 @@ Scaffolds a new instapack project into your existing app folder where the comman
 
   - Includes [aspnet-validation](https://www.npmjs.com/package/aspnet-validation) for ASP.NET MVC client-side validation.
 
-- `react` for developing a web app using [React](https://reactjs.org/) and [MobX](https://github.com/mobxjs/mobx) and [Semantic UI](https://semantic-ui.com/).
+- `vue-green` is identical to `vue` but **targets ES2016 / [evergreen browsers](https://www.techopedia.com/definition/31094/evergreen-browser)!**
+
+- `react` for developing a web app **targeting ES2016 browsers** using [React](https://reactjs.org/) and [MobX 5](https://github.com/mobxjs/mobx) and [Semantic UI](https://semantic-ui.com/).
 
 - `preact` for developing a web app using [Preact](https://preactjs.com/). (Fast 3kB alternative to React)
 
@@ -129,15 +129,17 @@ Scaffolds a new instapack project into your existing app folder where the comman
 
 - `mithril` for developing a web app using [Mithril](https://mithril.js.org/) and [Tachyons](http://tachyons.io/). (hyperscript, provides routing and XHR)
 
-- `vue-mobile` for developing a _[Progressive Web Application](https://developers.google.com/web/progressive-web-apps/)_ using Vue.js and [Onsen UI](https://onsen.io/vue/)! ([Cordova](https://cordova.apache.org)-compatible, [read more on FAQ ↓](#how-to-develop-a-cordova-app-using-vue-mobile-template))
+- `vue-mobile` for developing a _[Progressive Web Application](https://developers.google.com/web/progressive-web-apps/)_ using Vue.js and [Onsen UI](https://onsen.io/vue/)! (**ES2016**, [Cordova](https://cordova.apache.org)-compatible, [read more on FAQ ↓](#how-to-develop-a-cordova-app-using-vue-mobile-template))
 
 - `angularjs` for developing a *legacy* web app using [AngularJS 1.7](https://angularjs.org/) and [Bootstrap 3](http://getbootstrap.com/docs/3.3/).
 
   - Includes [jquery-validation-unobtrusive](https://github.com/aspnet/jquery-validation-unobtrusive) for ASP.NET MVC client-side validation and a simple JS concat tool.
 
-- (PREVIEW) `angular` for developing a web app using [the new Angular](https://angular.io/) and [Material Design](https://material.angular.io/). (Warnings: [1](https://github.com/angular/angular/issues/11580) [2](https://github.com/angular/angular/issues/21560))
+- (PREVIEW) `angular` for developing an **ES2016** web app using [the new Angular](https://angular.io/) and [Material Design](https://material.angular.io/). (Warnings: [1](https://github.com/angular/angular/issues/11580) [2](https://github.com/angular/angular/issues/21560))
 
 If no template parameter is provided, `vue` will be chosen. :vulcan_salute:
+
+> You should be able to safely target native ES2016 for the following browsers: Edge 14, Safari 10, Chrome 52, Firefox 52 ESR (March 2017).
 
 ### build [project]
 

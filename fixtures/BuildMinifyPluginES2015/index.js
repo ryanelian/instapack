@@ -2,4 +2,5 @@ const foo = function foo(bar) {
     return bar.length;
 }
 
-let x = foo('abc123');
+// window object required to prevent dead code elimination in the unit test!
+window.x = foo('abc123');

@@ -33,6 +33,8 @@ export class TypeScriptBuildEngine {
 
     private readonly useBabel: boolean;
 
+    private readonly languageTarget: TypeScript.ScriptTarget;
+
     /**
      * Keep track of Hot Reload wormhole file names already created.
      */
@@ -56,8 +58,10 @@ export class TypeScriptBuildEngine {
 
         this.typescriptCompilerOptions = parseTypescriptConfig(variables.root, variables.typescriptConfiguration).options;
         this.typescriptCompilerOptions.noEmit = false;
+        this.typescriptCompilerOptions.emitDeclarationOnly = false;
         this.typescriptCompilerOptions.sourceMap = variables.sourceMap;
         this.typescriptCompilerOptions.inlineSources = variables.sourceMap;
+        this.languageTarget = this.typescriptCompilerOptions.target || TypeScript.ScriptTarget.ES3;
 
         this.useBabel = useBabel;
     }
@@ -166,7 +170,7 @@ export class TypeScriptBuildEngine {
      */
     get jsBabelWebpackRules(): webpack.Rule {
         return {
-            test: /\.m?jsx?$/,
+            test: /\.(jsx?|mjs)$/,
             exclude: /node_modules/,
             use: {
                 loader: LoaderPaths.babel
@@ -174,30 +178,45 @@ export class TypeScriptBuildEngine {
         };
     }
 
+    get libGuardRules(): webpack.Rule {
+        return {
+            test: /\.m?js$/,
+            include: /node_modules/,
+            use: [{
+                loader: LoaderPaths.libGuard,
+                options: {
+                    compilerOptions: this.typescriptCompilerOptions
+                }
+            }]
+        };
+    }
+
     /**
      * Gets a configured TypeScript rules for webpack.
      */
     get typescriptWebpackRules(): webpack.Rule {
-        let tsRules = {
-            test: /\.tsx?$/,
-            use: [] as webpack.Loader[]
-        };
+        let loaders: webpack.Loader[] = [];
 
         // webpack loaders are declared in reverse / right-to-left!
         // babel(typescript(source_code))
 
         if (this.useBabel) {
-            tsRules.use.push({
+            loaders.push({
                 loader: LoaderPaths.babel
             })
         }
 
-        tsRules.use.push({
+        loaders.push({
             loader: LoaderPaths.typescript,
             options: {
                 compilerOptions: this.typescriptCompilerOptions
             }
         });
+
+        let tsRules: webpack.Rule = {
+            test: /\.tsx?$/,
+            use: loaders
+        };
 
         return tsRules;
     }
@@ -306,7 +325,8 @@ inject();
             this.typescriptWebpackRules,
             this.vueWebpackRules,
             this.templatesWebpackRules,
-            this.cssWebpackRules
+            this.cssWebpackRules,
+            this.libGuardRules
         ];
 
         if (this.useBabel) {
@@ -376,7 +396,7 @@ inject();
             mode: (this.variables.production ? 'production' : 'development'),
             devtool: this.webpackConfigurationDevTool,
             optimization: {     // https://medium.com/webpack/webpack-4-mode-and-optimization-5423a6bc597a
-                minimizer: [new TypeScriptBuildMinifyPlugin()], // https://webpack.js.org/configuration/optimization/
+                minimizer: [new TypeScriptBuildMinifyPlugin(this.languageTarget)], // https://webpack.js.org/configuration/optimization/
                 noEmitOnErrors: true,   // https://dev.to/flexdinesh/upgrade-to-webpack-4---5bc5
                 splitChunks: {          // https://webpack.js.org/plugins/split-chunks-plugin/
                     cacheGroups: {
@@ -436,16 +456,11 @@ inject();
     }
 
     addCompilerBuildNotification(compiler: webpack.Compiler) {
-        let compileTarget = this.typescriptCompilerOptions.target;
-        if (!compileTarget) {
-            compileTarget = TypeScript.ScriptTarget.ES3;
-        }
-
-        let t = TypeScript.ScriptTarget[compileTarget].toUpperCase();
+        let t = TypeScript.ScriptTarget[this.languageTarget].toUpperCase();
 
         compiler.hooks.compile.tap('typescript-compile-start', compilationParams => {
             Shout.timed('Compiling', chalk.cyan('index.ts'),
-                '>', chalk.yellow(t),
+                '>>', chalk.yellow(t),
                 chalk.grey('in ' + this.finder.jsInputFolder + '/')
             );
         });

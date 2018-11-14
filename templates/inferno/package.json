@@ -18,7 +18,7 @@
     "tslib": "^1.9.3"
   },
   "devDependencies": {
-    "@babel/core": "^7.1.5",
+    "@babel/core": "^7.1.6",
     "babel-plugin-inferno": "^6.0.3"
   }
 }

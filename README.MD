@@ -139,7 +139,7 @@ Scaffolds a new instapack project into your existing app folder where the comman
 
 If no template parameter is provided, `vue` will be chosen. :vulcan_salute:
 
-> You should be able to safely target native ES2016 for the following browsers: Edge 14, Safari 10, Chrome 52, Firefox 52 ESR (March 2017).
+> Native ES2016 templates can be safely run on these browsers: Edge 14, Safari 10, Chrome 52, Firefox 52 ESR (March 2017).
 
 ### build [project]
 

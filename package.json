@@ -69,7 +69,7 @@
     "merge-source-map": "1.1.0",
     "node-notifier": "5.3.0",
     "postcss": "7.0.5",
-    "sass": "1.14.3",
+    "sass": "1.15.0",
     "source-map": "0.7.3",
     "terser": "3.10.11",
     "tslint": "5.11.0",

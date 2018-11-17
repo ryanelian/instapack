@@ -1,6 +1,6 @@
 {
   "name": "instapack",
-  "version": "7.1.0",
+  "version": "7.1.1-beta.1",
   "description": "All-in-one TypeScript and Sass compiler for web applications!",
   "keywords": [
     "typescript",
@@ -69,11 +69,11 @@
     "merge-source-map": "1.1.0",
     "node-notifier": "5.3.0",
     "postcss": "7.0.5",
-    "sass": "1.14.3",
+    "sass": "1.15.1",
     "source-map": "0.7.3",
     "terser": "3.10.11",
     "tslint": "5.11.0",
-    "typescript": "3.1.6",
+    "typescript": "3.2.0-rc",
     "uglify-js": "3.4.8",
     "upath": "1.1.0",
     "vue-loader": "15.4.2",

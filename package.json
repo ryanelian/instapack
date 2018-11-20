@@ -71,7 +71,7 @@
     "postcss": "7.0.6",
     "sass": "1.15.1",
     "source-map": "0.7.3",
-    "terser": "3.10.11",
+    "terser": "3.10.12",
     "tslint": "5.11.0",
     "typescript": "3.2.0-rc",
     "uglify-js": "3.4.8",

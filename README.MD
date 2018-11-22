@@ -22,21 +22,9 @@ If you encounter [errors](https://github.com/npm/npm/issues/18380) during instal
 
 ### Per-Project (consistent build)
 
-`npm install instapack@[version] -D -E` or `yarn add instapack@[version] -D -E` 
+First install instapack locally in the project: `npm install instapack@[version] -D -E` or `yarn add instapack@[version] -D -E` 
 
-- Modify the project `package.json`
-
-```json
-{
-  "scripts": {
-    "build": "ipack"
-  }
-}
-```
-
-- Invoke instapack using [`npm run build`](https://docs.npmjs.com/cli/run-script) or [`yarn run build`](https://yarnpkg.com/lang/en/docs/cli/run/)
-
-- **Alternatively, invoke instapack without modifying `package.json` using:** [`npx ipack` or `npx instapack`](https://medium.com/@maybekatz/introducing-npx-an-npm-package-runner-55f7d4bd282b)
+Then invoke instapack without modifying `package.json` using: `npx ipack` or `npx instapack` or `yarn ipack` or `yarn instapack`
 
 ## Quick Start Guide
 

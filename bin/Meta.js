@@ -33,10 +33,6 @@ class Meta {
         if (this.isOutdated) {
             console.log();
             console.log(chalk_1.default.yellow('instapack'), 'is outdated. New version:', chalk_1.default.green(this.remoteVersion));
-            if (parseInt(process.versions.node[0]) < 8) {
-                console.log(chalk_1.default.red('BEFORE UPDATING:'), chalk_1.default.yellow('install the latest Node.js LTS version 8'), 'for better build performance!');
-                console.log('Download URL: ' + chalk_1.default.cyan('https://nodejs.org/en/download/'));
-            }
         }
         this.nagOnce = true;
     }

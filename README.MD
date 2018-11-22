@@ -22,9 +22,9 @@ If you encounter [errors](https://github.com/npm/npm/issues/18380) during instal
 
 ### Per-Project (consistent build)
 
-First install instapack locally in the project: `npm install instapack@[version] -D -E` or `yarn add instapack@[version] -D -E` 
+First, open command prompt in the project folder and install instapack locally: `npm install instapack@[version] -D -E` or `yarn add instapack@[version] -D -E`
 
-Then invoke instapack without modifying `package.json` using: `npx ipack` or `npx instapack` or `yarn ipack` or `yarn instapack`
+Then invoke instapack using command: `npx ipack` or `yarn ipack`
 
 ## Quick Start Guide
 

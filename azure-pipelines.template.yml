@@ -1,0 +1,72 @@
+# Node.js
+# Build a general Node.js application with npm.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/vsts/pipelines/languages/javascript
+
+jobs:
+- job: ${{ parameters.name }}
+  pool:
+    vmImage: ${{ parameters.vmImage }}
+  steps:
+  - task: NodeTool@0
+    inputs:
+      versionSpec: ${{ parameters.node_version }}
+    displayName: 'Install Node.js'
+
+  - script: >
+      npm link 
+    displayName: 'Restore Packages'
+
+  - script: >
+      npm run build
+    displayName: 'Build & Unit Test'
+
+  - script: >
+      npm install -g rimraf &&
+      ipack set package-manager npm
+    displayName: 'Prepare Full-Cycle Tests'
+      
+  - script: >
+      rimraf ./demo &&
+      mkdir demo &&
+      cd demo &&
+      ipack new vue &&
+      ipack &&
+      ipack -db
+    displayName: 'Full-Cycle Test: vue'
+
+  - script: >
+      rimraf ./demo &&
+      mkdir demo &&
+      cd demo &&
+      ipack new react &&
+      ipack &&
+      ipack -db
+    displayName: 'Full-Cycle Test: react'
+
+  - script: >
+      rimraf ./demo &&
+      mkdir demo &&
+      cd demo &&
+      ipack new preact &&
+      ipack &&
+      ipack -db
+    displayName: 'Full-Cycle Test: preact'
+
+  - script: >
+      rimraf ./demo &&
+      mkdir demo &&
+      cd demo &&
+      ipack new inferno &&
+      ipack &&
+      ipack -db
+    displayName: 'Full-Cycle Test: inferno'
+
+  - script: >
+      rimraf ./demo &&
+      mkdir demo &&
+      cd demo &&
+      ipack new hyperapp &&
+      ipack &&
+      ipack -db
+    displayName: 'Full-Cycle Test: hyperapp'

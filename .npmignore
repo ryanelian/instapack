@@ -1,7 +1,5 @@
 src/
 .vscode/
-/tsconfig.json
-tslint.json
 img/screenshot.png
 .travis.yml
 appveyor.yml

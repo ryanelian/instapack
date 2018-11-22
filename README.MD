@@ -115,8 +115,6 @@ Scaffolds a new instapack project into your existing app folder where the comman
 
 - `hyperapp` for developing a web app using [hyperapp](https://github.com/hyperapp/hyperapp). (1kB, with state management)
 
-- `mithril` for developing a web app using [Mithril](https://mithril.js.org/) and [Tachyons](http://tachyons.io/). (hyperscript, provides routing and XHR)
-
 - `vue-mobile` for developing a _[Progressive Web Application](https://developers.google.com/web/progressive-web-apps/)_ using Vue.js and [Onsen UI](https://onsen.io/vue/)! (**ES2016**, [Cordova](https://cordova.apache.org)-compatible, [read more on FAQ ↓](#how-to-develop-a-cordova-app-using-vue-mobile-template))
 
 - `angularjs` for developing a *legacy* web app using [AngularJS 1.7](https://angularjs.org/) and [Bootstrap 3](http://getbootstrap.com/docs/3.3/).

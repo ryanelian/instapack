@@ -32,7 +32,7 @@ jobs:
       cd demo &&
       ipack new vue &&
       ipack &&
-      ipack -db
+      ipack -dx
     displayName: 'Full-Cycle Test: vue'
 
   - script: >
@@ -41,7 +41,7 @@ jobs:
       cd demo &&
       ipack new react &&
       ipack &&
-      ipack -db
+      ipack -dx
     displayName: 'Full-Cycle Test: react'
 
   - script: >
@@ -50,7 +50,7 @@ jobs:
       cd demo &&
       ipack new preact &&
       ipack &&
-      ipack -db
+      ipack -dx
     displayName: 'Full-Cycle Test: preact'
 
   - script: >
@@ -59,7 +59,7 @@ jobs:
       cd demo &&
       ipack new inferno &&
       ipack &&
-      ipack -db
+      ipack -dx
     displayName: 'Full-Cycle Test: inferno'
 
   - script: >
@@ -68,5 +68,5 @@ jobs:
       cd demo &&
       ipack new hyperapp &&
       ipack &&
-      ipack -db
+      ipack -dx
     displayName: 'Full-Cycle Test: hyperapp'

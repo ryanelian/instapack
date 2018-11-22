@@ -1,6 +1,6 @@
 src/
 .vscode/
-tsconfig.json
+/tsconfig.json
 tslint.json
 img/screenshot.png
 .travis.yml

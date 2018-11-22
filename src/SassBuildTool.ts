@@ -233,6 +233,7 @@ export class SassBuildTool {
                     specialComments: false
                 }
             },
+            inline: false, // Should be handled by PostCSS...
             sourceMap: this.flags.sourceMap,
             sourceMapInlineSources: this.flags.sourceMap
         };

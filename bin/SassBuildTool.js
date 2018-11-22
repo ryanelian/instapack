@@ -156,6 +156,7 @@ class SassBuildTool {
                     specialComments: false
                 }
             },
+            inline: false,
             sourceMap: this.flags.sourceMap,
             sourceMapInlineSources: this.flags.sourceMap
         };

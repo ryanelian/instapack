@@ -49,13 +49,11 @@ Out of the box, these files will be used as the program entry points:
 
   - Spiced :hot_pepper: with [AutoPrefixer](https://github.com/postcss/autoprefixer) for applying CSS vendor-prefixes automatically!
 
-Practical guides can be read in the [books](https://github.com/ryanelian/instapack/tree/master/books) folder.
+## Docker: Multi-Stage Builds
 
-## Multi-Stage Docker Build
+When using Docker, rapidly deployable application images can be developed using highly consistent build process!
 
-Develop a deployable image using highly reproducible build process!
-
-> This is under assumption that your `Dockerfile` is located in root `/` solution folder (next to `/MyApp.sln`), with the .NET + instapack project located in `/MyApp` (`/MyApp/MyApp.csproj` and `/MyApp/package.json`)
+> This sample recipe assumes that the project `Dockerfile` is located in root `/` solution folder (next to `/MyApp.sln`), with the ASP.NET Core + instapack project located in `/MyApp` (`/MyApp/MyApp.csproj` and `/MyApp/package.json`)
 
 ```Dockerfile
 FROM node:10-alpine AS instapack
@@ -75,16 +73,13 @@ WORKDIR /app
 ENTRYPOINT ["dotnet", "MyApp.dll"]
 ```
 
-Build locally using Linux Container: `docker build --pull --tag myapp:latest .`
+Build locally using Linux container: `docker build --pull --tag myapp:latest .`
 
-Obviously, you need to fix these to match your project environment: 
-- The instapack version, 
-- The .NET Core SDK image version, (or any other language SDK)
-- The ASP.NET Core runtime image version,
-- And the project folder structure / names.
-- If applicable, `RUN yarn ipack` multiple times when developing multiple front-end projects.
+> When developing multiple front-end projects in one solution, simply run instapack multiple times in different `WORKDIR`
 
-If using GitLab CI/CD, place `.gitlab-ci.yml` next to the `Dockerfile` to automatically build the image remotely on commit and push the image to the GitLab registry:
+### Docker: GitLab CI/CD
+
+Place `.gitlab-ci.yml` next to the `Dockerfile` to automatically build the image remotely on-commit, then push the image to the GitLab registry:
 
 ```yaml
 image: docker:latest
@@ -204,7 +199,7 @@ In addition, build flags are available:
 
 - `--dev` or `-d` disables build outputs optimization and minification for **FAST build!** :fire:
 
-- `--hot` or `-h` enables Hot Reload development mode using dedicated build servers. :rotating_light: [Read more ↓](#hot-reload-development-mode-beta)
+- `--hot` or `-h` enables Hot Reload development mode using dedicated build servers. :rotating_light: [Read more ↓](#hot-reload-development-mode-preview)
 
 - `--nodebug` or `-b` disables source maps, producing undebuggable outputs. (Slightly improves build speed)
 
@@ -276,9 +271,9 @@ import jQuery from 'jquery';
 // const jQuery = window["$"];
 ```
 
-- `port1` can be set for declaring a static port number to be used by the Hot Reload server for delivering built assets. If not set, the port number will be randomized. [Read more ↓](#hot-reload-development-mode-beta)
+- `port1` can be set for declaring a static port number to be used by the Hot Reload server for delivering built assets. If not set, the port number will be randomized. [Read more ↓](#hot-reload-development-mode-preview)
 
-- `port2` can be set for declaring a static port number to be used by the Hot Reload server for broadcasting changes using WebSocket. If not set, the port number will be randomized. [Read more ↓](#hot-reload-development-mode-beta)
+- `port2` can be set for declaring a static port number to be used by the Hot Reload server for broadcasting changes using WebSocket. If not set, the port number will be randomized. [Read more ↓](#hot-reload-development-mode-preview)
 
 ## Babel Integration
 

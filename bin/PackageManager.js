@@ -14,18 +14,12 @@ class PackageManager {
     get isWindows() {
         return (Process.platform === 'win32');
     }
-    get isMac() {
-        return (Process.platform === 'darwin');
-    }
     toolExistCheckerCommand(tool) {
         if (this.isWindows) {
             return 'where ' + tool;
         }
-        else if (this.isMac) {
-            return 'which ' + tool;
-        }
         else {
-            return 'whereis ' + tool;
+            return 'which ' + tool;
         }
     }
     runWithOutputs(command) {

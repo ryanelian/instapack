@@ -13,23 +13,14 @@ export class PackageManager {
     }
 
     /**
-     * Detects if instapack is running on Mac OS.
-     */
-    get isMac() {
-        return (Process.platform === 'darwin');
-    }
-
-    /**
      * Returns OS-suitable command for detecting whether another CLI tool is available on the system. 
      * @param tool 
      */
     toolExistCheckerCommand(tool: string) {
         if (this.isWindows) {
             return 'where ' + tool;
-        } else if (this.isMac) {
-            return 'which ' + tool
         } else {
-            return 'whereis ' + tool;
+            return 'which ' + tool;
         }
     }
 

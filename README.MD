@@ -75,7 +75,7 @@ WORKDIR /app
 ENTRYPOINT ["dotnet", "MyApp.dll"]
 ```
 
-Build using Linux Container: `docker build --pull --rm -t myapp:latest .`
+Build locally using Linux Container: `docker build --pull --tag myapp:latest .`
 
 Obviously, you need to fix these to match your project environment: 
 - The instapack version, 
@@ -84,7 +84,7 @@ Obviously, you need to fix these to match your project environment:
 - And the project folder structure / names.
 - If applicable, `RUN yarn ipack` multiple times when developing multiple front-end projects.
 
-If using GitLab CI/CD, place `.gitlab-ci.yml` next to the `Dockerfile` to automatically build the image on commit and push the image to GitLab registry:
+If using GitLab CI/CD, place `.gitlab-ci.yml` next to the `Dockerfile` to automatically build the image remotely on commit and push the image to the GitLab registry:
 
 ```yaml
 image: docker:latest

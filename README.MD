@@ -51,6 +51,73 @@ Out of the box, these files will be used as the program entry points:
 
 Practical guides can be read in the [books](https://github.com/ryanelian/instapack/tree/master/books) folder.
 
+## Multi-Stage Docker Build
+
+Develop a deployable image using highly reproducible build process!
+
+> This is under assumption that your `Dockerfile` is located in root `/` solution folder (next to `/MyApp.sln`), with the .NET + instapack project located in `/MyApp` (`/MyApp/MyApp.csproj` and `/MyApp/package.json`)
+
+```Dockerfile
+FROM node:10-alpine AS instapack
+COPY . /src
+WORKDIR /src/MyApp
+RUN npx instapack@7.1.2
+
+FROM microsoft/dotnet:2.2-sdk-alpine AS build
+COPY --from=instapack /src /src
+WORKDIR /src/MyApp
+RUN dotnet restore
+RUN dotnet publish -c Release
+
+FROM microsoft/dotnet:2.2-aspnetcore-runtime-alpine AS runtime
+COPY --from=build /src/MyApp/bin/Release/netcoreapp2.2/publish /app
+WORKDIR /app
+ENTRYPOINT ["dotnet", "MyApp.dll"]
+```
+
+Build using Linux Container: `docker build --pull --rm -t myapp:latest .`
+
+Obviously, you need to fix these to match your project environment: 
+- The instapack version, 
+- The .NET Core SDK image version, (or any other language SDK)
+- The ASP.NET Core runtime image version,
+- And the project folder structure / names.
+- If applicable, `RUN yarn ipack` multiple times when developing multiple front-end projects.
+
+If using GitLab CI/CD, place `.gitlab-ci.yml` next to the `Dockerfile` to automatically build the image on commit and push the image to GitLab registry:
+
+```yaml
+image: docker:latest
+services:
+- docker:dind
+
+stages:
+- build
+- release
+
+variables:
+  TEST_IMAGE: registry.gitlab.com/yourname/MyApp:$CI_COMMIT_REF_NAME
+  RELEASE_IMAGE: registry.gitlab.com/yourname/MyApp:latest
+
+before_script:
+  - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN registry.gitlab.com
+
+build:
+  stage: build
+  script:
+    - docker build --pull -t $TEST_IMAGE .
+    - docker push $TEST_IMAGE
+
+release:
+  stage: release
+  script:
+    - docker pull $TEST_IMAGE
+    - docker tag $TEST_IMAGE $RELEASE_IMAGE
+    - docker push $RELEASE_IMAGE
+  only:
+    - master
+```
+
 ## System Requirements
 
 Currently supported Node.js is [the latest version 8 or 10 LTS](https://nodejs.org/en/download/).

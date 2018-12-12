@@ -745,7 +745,7 @@ npm install -g autorest
 autorest --reset
 ```
 
-Then add this library into the JS project dependency:
+Then add this library into the JS project dependencies:
 
 ```
 yarn add @azure/ms-rest-js

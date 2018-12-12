@@ -57,9 +57,10 @@ When using Docker, rapidly deployable application images can be developed using 
 
 ```Dockerfile
 FROM node:10-alpine AS instapack
+RUN npm install -g instapack@7.1.2
 COPY . /src
 WORKDIR /src/MyApp
-RUN npx instapack@7.1.2
+RUN ipack
 
 FROM microsoft/dotnet:2.2-sdk-alpine AS build
 COPY --from=instapack /src /src

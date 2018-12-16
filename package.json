@@ -52,13 +52,13 @@
     "build": "npm run compile && npm run lint && npm run test"
   },
   "dependencies": {
-    "@babel/core": "7.2.0",
+    "@babel/core": "7.2.2",
     "autoprefixer": "9.4.2",
     "babel-loader": "8.0.4",
     "chalk": "2.4.1",
     "chokidar": "2.0.4",
     "clean-css": "4.2.1",
-    "css-loader": "2.0.0",
+    "css-loader": "2.0.1",
     "dotenv": "6.2.0",
     "enhanced-resolve": "4.1.0",
     "express": "4.16.4",
@@ -99,7 +99,7 @@
     "@types/webpack-dev-middleware": "^2.0.2",
     "@types/webpack-sources": "^0.1.5",
     "@types/yargs": "^12.0.1",
-    "ava": "1.0.0-rc.2"
+    "ava": "1.0.1"
   },
   "resolutions": {
     "**/@types/node": "8",

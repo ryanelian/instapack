@@ -120,7 +120,7 @@ export = function (this: loader.LoaderContext, source: string) {
     let levelFrom = TypeScript.ScriptTarget[parse.level].toUpperCase();
     let levelTo = TypeScript.ScriptTarget[target].toUpperCase();
     let rel = '/' + upath.relative(this.rootContext, this.resourcePath);
-    console.log(`${chalk.yellow('LibGuard')}: Transpiling ${chalk.red(levelFrom)} >> ${chalk.yellow(levelTo)} deps! ${chalk.cyan(rel)}`);
+    console.log(`${chalk.yellow('LibGuard')}: Transpiling dependency ${chalk.red(levelFrom)} >> ${chalk.yellow(levelTo)} ${chalk.cyan(rel)}`);
 
     let result = transpileModuleAst(this.resourcePath, parse.source, options.compilerOptions);
     // console.log(result);

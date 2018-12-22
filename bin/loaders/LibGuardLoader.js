@@ -90,7 +90,7 @@ module.exports = function (source) {
     let levelFrom = TypeScript.ScriptTarget[parse.level].toUpperCase();
     let levelTo = TypeScript.ScriptTarget[target].toUpperCase();
     let rel = '/' + upath.relative(this.rootContext, this.resourcePath);
-    console.log(`${chalk_1.default.yellow('LibGuard')}: Transpiling ${chalk_1.default.red(levelFrom)} >> ${chalk_1.default.yellow(levelTo)} deps! ${chalk_1.default.cyan(rel)}`);
+    console.log(`${chalk_1.default.yellow('LibGuard')}: Transpiling dependency ${chalk_1.default.red(levelFrom)} >> ${chalk_1.default.yellow(levelTo)} ${chalk_1.default.cyan(rel)}`);
     let result = transpileModuleAst(this.resourcePath, parse.source, options.compilerOptions);
     if (this.sourceMap && result.map) {
         let sm = JSON.parse(result.map);

@@ -20,7 +20,6 @@ const express = require("express");
 const TypeScript = require("typescript");
 const vue_loader_1 = require("vue-loader");
 const PrettyUnits_1 = require("./PrettyUnits");
-const TypeScriptBuildMinifyPlugin_1 = require("./TypeScriptBuildMinifyPlugin");
 const Shout_1 = require("./Shout");
 const PathFinder_1 = require("./variables-factory/PathFinder");
 const LoaderPaths_1 = require("./loaders/LoaderPaths");
@@ -266,7 +265,6 @@ inject();
             mode: (this.variables.production ? 'production' : 'development'),
             devtool: this.webpackConfigurationDevTool,
             optimization: {
-                minimizer: [new TypeScriptBuildMinifyPlugin_1.TypeScriptBuildMinifyPlugin(this.languageTarget)],
                 noEmitOnErrors: true,
                 splitChunks: {
                     cacheGroups: {
@@ -322,6 +320,11 @@ inject();
         let t = TypeScript.ScriptTarget[this.languageTarget].toUpperCase();
         compiler.hooks.compile.tap('typescript-compile-start', compilationParams => {
             Shout_1.Shout.timed('Compiling', chalk_1.default.cyan('index.ts'), '>>', chalk_1.default.yellow(t), chalk_1.default.grey('in ' + this.finder.jsInputFolder + '/'));
+        });
+        compiler.hooks.compilation.tap('typescript-minify-notify', compilation => {
+            compilation.hooks.optimizeChunkAssets.tapPromise('typescript-minify-notify', (chunks) => __awaiter(this, void 0, void 0, function* () {
+                Shout_1.Shout.timed('TypeScript compilation finished! Minifying bundles...');
+            }));
         });
         compiler.hooks.done.tapPromise('display-build-results', (stats) => __awaiter(this, void 0, void 0, function* () {
             this.displayBuildResults(stats);

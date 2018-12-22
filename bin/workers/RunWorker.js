@@ -12,7 +12,6 @@ const WorkerFarm = require("worker-farm");
 const typeScriptBuildWorkerModulePath = require.resolve('./TypeScriptBuildWorker');
 const typeScriptCheckWorkerModulePath = require.resolve('./TypeScriptCheckWorker');
 const sassBuildWorkerModulePath = require.resolve('./SassBuildWorker');
-const jsMinifyWorkerModulePath = require.resolve('./MinifyWorker');
 function runWorkerAsync(modulePath, params) {
     return __awaiter(this, void 0, void 0, function* () {
         let worker = WorkerFarm(modulePath);
@@ -47,7 +46,3 @@ function runSassBuildWorker(variables) {
     return runWorkerAsync(sassBuildWorkerModulePath, variables);
 }
 exports.runSassBuildWorker = runSassBuildWorker;
-function runMinifyWorker(variables) {
-    return runWorkerAsync(jsMinifyWorkerModulePath, variables);
-}
-exports.runMinifyWorker = runMinifyWorker;

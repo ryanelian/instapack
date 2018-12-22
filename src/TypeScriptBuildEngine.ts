@@ -11,7 +11,6 @@ import * as TypeScript from 'typescript';
 import { VueLoaderPlugin } from 'vue-loader';
 
 import { prettyBytes, prettyMilliseconds } from './PrettyUnits';
-import { TypeScriptBuildMinifyPlugin } from './TypeScriptBuildMinifyPlugin';
 import { Shout } from './Shout';
 import { IVariables } from './variables-factory/IVariables';
 import { PathFinder } from './variables-factory/PathFinder';
@@ -396,7 +395,6 @@ inject();
             mode: (this.variables.production ? 'production' : 'development'),
             devtool: this.webpackConfigurationDevTool,
             optimization: {     // https://medium.com/webpack/webpack-4-mode-and-optimization-5423a6bc597a
-                minimizer: [new TypeScriptBuildMinifyPlugin(this.languageTarget)], // https://webpack.js.org/configuration/optimization/
                 noEmitOnErrors: true,   // https://dev.to/flexdinesh/upgrade-to-webpack-4---5bc5
                 splitChunks: {          // https://webpack.js.org/plugins/split-chunks-plugin/
                     cacheGroups: {
@@ -463,6 +461,12 @@ inject();
                 '>>', chalk.yellow(t),
                 chalk.grey('in ' + this.finder.jsInputFolder + '/')
             );
+        });
+
+        compiler.hooks.compilation.tap('typescript-minify-notify', compilation => {
+            compilation.hooks.optimizeChunkAssets.tapPromise('typescript-minify-notify', async chunks => {
+                Shout.timed('TypeScript compilation finished! Minifying bundles...');
+            });
         });
 
         compiler.hooks.done.tapPromise('display-build-results', async stats => {

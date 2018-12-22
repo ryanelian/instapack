@@ -44,7 +44,7 @@ program.command({
             describe: 'Trace diagnostic outputs for debugging instapack.'
         });
     },
-    handler: argv => {
+    handler: (argv) => {
         let subCommand = argv.project || 'all';
         echo('build', subCommand);
         ipack.build(subCommand, {
@@ -64,7 +64,7 @@ program.command({
     builder: yargs => {
         return yargs.choices('template', ipack.availableTemplates);
     },
-    handler: argv => {
+    handler: (argv) => {
         let subCommand = argv.template || 'vue';
         echo('new', subCommand);
         ipack.scaffold(subCommand);
@@ -76,7 +76,7 @@ program.command({
     builder: yargs => {
         return yargs.choices('key', UserSettingsManager_1.userSettingOptions);
     },
-    handler: argv => {
+    handler: (argv) => {
         echo('set', argv.key);
         ipack.changeUserSettings(argv.key, argv.value);
     }

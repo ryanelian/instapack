@@ -463,11 +463,13 @@ inject();
             );
         });
 
-        compiler.hooks.compilation.tap('typescript-minify-notify', compilation => {
-            compilation.hooks.optimizeChunkAssets.tapPromise('typescript-minify-notify', async chunks => {
-                Shout.timed('TypeScript compilation finished! Minifying bundles...');
+        if (this.variables.production) {
+            compiler.hooks.compilation.tap('typescript-minify-notify', compilation => {
+                compilation.hooks.afterHash.tap('typescript-minify-notify', () => {
+                    Shout.timed('TypeScript compilation finished! Minifying bundles...');
+                });
             });
-        });
+        }
 
         compiler.hooks.done.tapPromise('display-build-results', async stats => {
             this.displayBuildResults(stats);

@@ -321,11 +321,13 @@ inject();
         compiler.hooks.compile.tap('typescript-compile-start', compilationParams => {
             Shout_1.Shout.timed('Compiling', chalk_1.default.cyan('index.ts'), '>>', chalk_1.default.yellow(t), chalk_1.default.grey('in ' + this.finder.jsInputFolder + '/'));
         });
-        compiler.hooks.compilation.tap('typescript-minify-notify', compilation => {
-            compilation.hooks.optimizeChunkAssets.tapPromise('typescript-minify-notify', (chunks) => __awaiter(this, void 0, void 0, function* () {
-                Shout_1.Shout.timed('TypeScript compilation finished! Minifying bundles...');
-            }));
-        });
+        if (this.variables.production) {
+            compiler.hooks.compilation.tap('typescript-minify-notify', compilation => {
+                compilation.hooks.afterHash.tap('typescript-minify-notify', () => {
+                    Shout_1.Shout.timed('TypeScript compilation finished! Minifying bundles...');
+                });
+            });
+        }
         compiler.hooks.done.tapPromise('display-build-results', (stats) => __awaiter(this, void 0, void 0, function* () {
             this.displayBuildResults(stats);
         }));

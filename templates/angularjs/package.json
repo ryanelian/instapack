@@ -9,9 +9,9 @@
     }
   },
   "dependencies": {
-    "@types/angular": "^1.6.51",
+    "@types/angular": "^1.6.53",
     "@types/bootstrap": "3",
-    "@types/jquery": "^3.3.24",
+    "@types/jquery": "^3.3.29",
     "@types/luxon": "^1.4.1",
     "@types/requirejs": "^2.1.31",
     "angular": "^1.7.5",
@@ -19,12 +19,12 @@
     "angular-messages": "^1.7.5",
     "angular-touch": "^1.7.5",
     "angular-ui-bootstrap": "^2.5.6",
-    "bootstrap-sass": "^3.3.7",
+    "bootstrap-sass": "^3.4.0",
     "jquery": "^3.3.1",
     "jquery-validation": "^1.19.0",
     "jquery-validation-unobtrusive": "^3.2.11",
     "linq": "^3.1.1",
-    "luxon": "^1.8.2",
+    "luxon": "^1.8.3",
     "sweetalert": "^2.1.2",
     "ts-polyfill": "^3.0.1",
     "tslib": "^1.9.3"

@@ -3263,7 +3263,16 @@ loader-runner@^2.3.0:
   resolved "https://registry.yarnpkg.com/loader-runner/-/loader-runner-2.3.1.tgz#026f12fe7c3115992896ac02ba022ba92971b979"
   integrity sha512-By6ZFY7ETWOc9RFaAIb23IjJVcM4dvJC/N57nmdz9RSkMXvAXGI7SyVlAw3v8vjtDRlqThgVDVmTnr9fqMlxkw==
 
-loader-utils@1.2.1, loader-utils@^1.0.2, loader-utils@^1.1.0, loader-utils@^1.2.1:
+loader-utils@1.2.2:
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/loader-utils/-/loader-utils-1.2.2.tgz#fcfcb6b4109b2358c3df160b2254f0496b261a36"
+  integrity sha512-Xjb++b55GPoVV1ct93EodsswWEErveAqGhhwujIshShtjIKdPpdpveriwNCNsuVo1zQ1ukmPUszK44C9RD7TCg==
+  dependencies:
+    big.js "^5.2.2"
+    emojis-list "^2.0.0"
+    json5 "^1.0.1"
+
+loader-utils@^1.0.2, loader-utils@^1.1.0, loader-utils@^1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/loader-utils/-/loader-utils-1.2.1.tgz#64bbbac69aa5840d03754ba676a963dec568e844"
   integrity sha512-3Zhx4qDqBQ9U8udWB3RMJ29nLu5a3ObNOSzk87woPvge01pi0wABowgv7F79Z4mL0DGtHRi/oOndT34EVhInoQ==

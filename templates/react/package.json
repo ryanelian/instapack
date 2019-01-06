@@ -16,7 +16,7 @@
     "@types/requirejs": "^2.1.31",
     "axios": "^0.18.0",
     "linq": "^3.1.1",
-    "luxon": "^1.8.3",
+    "luxon": "^1.9.0",
     "mobx": "^5.8.0",
     "mobx-react": "^5.4.3",
     "noty": "^3.2.0-beta",

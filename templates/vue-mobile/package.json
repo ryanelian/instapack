@@ -22,6 +22,6 @@
     "tslib": "^1.9.3",
     "vue": "^2.5.21",
     "vue-class-component": "^6.3.2",
-    "vue-onsenui": "^2.6.1"
+    "vue-onsenui": "^2.6.2"
   }
 }

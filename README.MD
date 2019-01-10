@@ -14,12 +14,6 @@
 
 `npm install -g instapack`
 
-If you encounter [errors](https://github.com/npm/npm/issues/18380) during installation, try:
-
-- Using command prompt [as Administrator](https://www.howtogeek.com/194041/how-to-open-the-command-prompt-as-administrator-in-windows-8.1/) or elevated privileges (`sudo`), update npm: `npm install -g npm`, clear the npm cache: `npm cache clean --force` and then: `npm install -g instapack --no-optional`
-
-- **Or use [Yarn](https://yarnpkg.com/en/docs/install) instead:** `yarn global add instapack`
-
 ### Per-Project (consistent build)
 
 First, open command prompt in the project folder and install instapack locally: `npm install instapack@[version] -D -E` or `yarn add instapack@[version] -D -E`

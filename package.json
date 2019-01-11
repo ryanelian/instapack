@@ -75,7 +75,7 @@
     "typescript": "3.2.2",
     "upath": "1.1.0",
     "vue-loader": "15.5.1",
-    "vue-template-compiler": "2.5.21",
+    "vue-template-compiler": "2.5.22",
     "webpack": "4.28.4",
     "webpack-dev-middleware": "3.5.0",
     "webpack-hot-client": "4.1.1",

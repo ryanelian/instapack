@@ -96,6 +96,6 @@
     "@types/webpack-dev-middleware": "^2.0.2",
     "@types/webpack-sources": "^0.1.5",
     "@types/yargs": "^12.0.5",
-    "ava": "1.0.1"
+    "ava": "1.1.0"
   }
 }

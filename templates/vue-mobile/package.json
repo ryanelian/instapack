@@ -15,12 +15,12 @@
     "axios": "^0.18.0",
     "font-awesome": "^4.7.0",
     "linq": "^3.1.1",
-    "luxon": "^1.9.0",
+    "luxon": "^1.10.0",
     "onsenui": "^2.10.6",
     "pouchdb-browser": "^7.0.0",
     "ts-polyfill": "^3.0.1",
     "tslib": "^1.9.3",
-    "vue": "^2.5.21",
+    "vue": "^2.5.22",
     "vue-class-component": "^6.3.2",
     "vue-onsenui": "^2.6.2"
   }

@@ -12,7 +12,7 @@
     "@types/angular": "^1.6.53",
     "@types/bootstrap": "3",
     "@types/jquery": "^3.3.29",
-    "@types/luxon": "^1.4.1",
+    "@types/luxon": "^1.10.2",
     "@types/requirejs": "^2.1.31",
     "angular": "^1.7.6",
     "angular-animate": "^1.7.6",

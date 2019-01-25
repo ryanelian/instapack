@@ -9,7 +9,7 @@
     "output": "www"
   },
   "dependencies": {
-    "@types/luxon": "^1.4.1",
+    "@types/luxon": "^1.10.2",
     "@types/pouchdb-browser": "^6.1.2",
     "@types/requirejs": "^2.1.31",
     "axios": "^0.18.0",

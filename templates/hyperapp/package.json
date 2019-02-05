@@ -11,8 +11,7 @@
     "axios": "^0.18.0",
     "hyperapp": "^1.2.9",
     "linq": "^3.1.1",
-    "luxon": "^1.10.0",
-    "noty": "^3.2.0-beta",
+    "luxon": "^1.11.1",
     "sweetalert": "^2.1.2",
     "ts-polyfill": "^3.0.1",
     "tslib": "^1.9.3"

@@ -7,7 +7,7 @@ import VueTemplateCompiler = require('vue-template-compiler');
 export function parseTypeScriptInVueFile(raw: string): string {
     let parse = VueTemplateCompiler.parseComponent(raw);
 
-    if (!parse.script) {
+    if (!parse.script || !parse.script.start) {
         return '';
     }
 

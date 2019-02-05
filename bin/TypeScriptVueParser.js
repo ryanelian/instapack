@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const VueTemplateCompiler = require("vue-template-compiler");
 function parseTypeScriptInVueFile(raw) {
     let parse = VueTemplateCompiler.parseComponent(raw);
-    if (!parse.script) {
+    if (!parse.script || !parse.script.start) {
         return '';
     }
     if (parse.script.lang !== 'ts') {

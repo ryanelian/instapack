@@ -81,7 +81,7 @@
     "webpack-hot-client": "4.1.1",
     "webpack-sources": "1.3.0",
     "worker-farm": "1.6.0",
-    "yargs": "12.0.5"
+    "yargs": "13.1.0"
   },
   "devDependencies": {
     "@types/chokidar": "^1.7.5",

@@ -6,10 +6,10 @@
     "output": "wwwroot"
   },
   "dependencies": {
-    "@types/luxon": "^1.11.0",
+    "@types/luxon": "^1.11.1",
     "@types/requirejs": "^2.1.31",
     "axios": "^0.18.0",
-    "inferno": "^7.1.7",
+    "inferno": "^7.1.9",
     "linq": "^3.1.1",
     "luxon": "^1.11.3",
     "sweetalert": "^2.1.2",
@@ -18,6 +18,6 @@
   },
   "devDependencies": {
     "@babel/core": "^7.3.3",
-    "babel-plugin-inferno": "^6.0.4"
+    "babel-plugin-inferno": "^6.0.5"
   }
 }

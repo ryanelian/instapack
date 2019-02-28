@@ -74,7 +74,7 @@
     "tslint": "5.13.0",
     "typescript": "3.3.3333",
     "upath": "1.1.0",
-    "vue-loader": "15.6.4",
+    "vue-loader": "15.7.0",
     "vue-template-compiler": "2.6.7",
     "webpack": "4.29.6",
     "webpack-dev-middleware": "3.6.0",

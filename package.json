@@ -1,6 +1,6 @@
 {
   "name": "instapack",
-  "version": "7.2.4",
+  "version": "7.2.5-beta1",
   "description": "All-in-one TypeScript and Sass compiler for web applications!",
   "keywords": [
     "typescript",
@@ -53,12 +53,12 @@
   },
   "dependencies": {
     "@babel/core": "7.3.4",
-    "autoprefixer": "9.4.9",
+    "autoprefixer": "9.4.10",
     "babel-loader": "8.0.5",
     "chalk": "2.4.2",
     "chokidar": "2.1.2",
     "clean-css": "4.2.1",
-    "css-loader": "2.1.0",
+    "css-loader": "2.1.1",
     "dotenv": "6.2.0",
     "enhanced-resolve": "4.1.0",
     "express": "4.16.4",
@@ -71,17 +71,17 @@
     "postcss": "7.0.14",
     "sass": "1.17.2",
     "source-map": "0.7.3",
-    "tslint": "5.13.0",
+    "tslint": "5.13.1",
     "typescript": "3.3.3333",
-    "upath": "1.1.0",
-    "vue-loader": "15.6.4",
-    "vue-template-compiler": "2.6.7",
+    "upath": "1.1.1",
+    "vue-loader": "15.7.0",
+    "vue-template-compiler": "2.6.8",
     "webpack": "4.29.6",
-    "webpack-dev-middleware": "3.6.0",
+    "webpack-dev-middleware": "3.6.1",
     "webpack-hot-client": "4.1.1",
     "webpack-sources": "1.3.0",
     "worker-farm": "1.6.0",
-    "yargs": "13.2.1"
+    "yargs": "13.2.2"
   },
   "devDependencies": {
     "@types/dotenv": "^6.1.0",
@@ -95,6 +95,6 @@
     "@types/webpack-dev-middleware": "^2.0.2",
     "@types/webpack-sources": "^0.1.5",
     "@types/yargs": "^12.0.9",
-    "ava": "1.2.1"
+    "ava": "1.3.1"
   }
 }

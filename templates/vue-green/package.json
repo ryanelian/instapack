@@ -10,10 +10,10 @@
     }
   },
   "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "^1.2.15",
-    "@fortawesome/free-regular-svg-icons": "^5.7.2",
-    "@fortawesome/free-solid-svg-icons": "^5.7.2",
-    "@fortawesome/vue-fontawesome": "^0.1.5",
+    "@fortawesome/fontawesome-svg-core": "^1.2.16",
+    "@fortawesome/free-regular-svg-icons": "^5.8.0",
+    "@fortawesome/free-solid-svg-icons": "^5.8.0",
+    "@fortawesome/vue-fontawesome": "^0.1.6",
     "@types/bootstrap": "4",
     "@types/jquery": "^3.3.29",
     "@types/luxon": "^1.11.1",
@@ -28,8 +28,8 @@
     "sweetalert": "^2.1.2",
     "ts-polyfill": "^3.3.3",
     "tslib": "^1.9.3",
-    "vee-validate": "^2.1.7",
-    "vue": "^2.6.8",
+    "vee-validate": "^2.2.0",
+    "vue": "^2.6.9",
     "vue-class-component": "^7.0.1"
   }
 }

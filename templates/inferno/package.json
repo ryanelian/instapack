@@ -9,7 +9,7 @@
     "@types/luxon": "^1.11.1",
     "@types/requirejs": "^2.1.31",
     "axios": "^0.18.0",
-    "inferno": "^7.1.9",
+    "inferno": "^7.1.10",
     "linq": "^3.1.1",
     "luxon": "^1.11.4",
     "sweetalert": "^2.1.2",
@@ -17,7 +17,7 @@
     "tslib": "^1.9.3"
   },
   "devDependencies": {
-    "@babel/core": "^7.3.4",
+    "@babel/core": "^7.4.0",
     "babel-plugin-inferno": "^6.0.5"
   }
 }

@@ -29,7 +29,7 @@
     "ts-polyfill": "^3.3.3",
     "tslib": "^1.9.3",
     "vee-validate": "^2.2.0",
-    "vue": "^2.6.9",
+    "vue": "^2.6.10",
     "vue-class-component": "^7.0.1"
   }
 }

@@ -20,7 +20,7 @@
     "pouchdb-browser": "^7.0.0",
     "ts-polyfill": "^3.3.3",
     "tslib": "^1.9.3",
-    "vue": "^2.6.9",
+    "vue": "^2.6.10",
     "vue-class-component": "^7.0.1",
     "vue-onsenui": "^2.6.2"
   }

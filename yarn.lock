@@ -1354,7 +1354,26 @@ chalk@^1.1.3:
     strip-ansi "^3.0.0"
     supports-color "^2.0.0"
 
-chokidar@2.1.2, chokidar@^2.0.0, chokidar@^2.0.2, chokidar@^2.1.2:
+chokidar@2.1.3:
+  version "2.1.3"
+  resolved "https://registry.yarnpkg.com/chokidar/-/chokidar-2.1.3.tgz#b2e65fc8cbdbb0c57a7d8147ad20077800ec60db"
+  integrity sha512-Zkdgeb8pJCL4FG7fCIkD1ua1SENYGAqKQaqyMxkgVnU0IIWthjDVbSgcW5OY1IzgJ/Aatqjgl4O9iTZUeEJK5w==
+  dependencies:
+    anymatch "^2.0.0"
+    async-each "^1.0.1"
+    braces "^2.3.2"
+    glob-parent "^3.1.0"
+    inherits "^2.0.3"
+    is-binary-path "^1.0.0"
+    is-glob "^4.0.0"
+    normalize-path "^3.0.0"
+    path-is-absolute "^1.0.0"
+    readdirp "^2.2.1"
+    upath "^1.1.1"
+  optionalDependencies:
+    fsevents "^1.2.7"
+
+chokidar@^2.0.0, chokidar@^2.0.2, chokidar@^2.1.2:
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/chokidar/-/chokidar-2.1.2.tgz#9c23ea40b01638439e0513864d362aeacc5ad058"
   integrity sha512-IwXUx0FXc5ibYmPC2XeEj5mpXoV66sR+t3jqu2NS2GYwCktt3KF1/Qqjws/NkegajBA4RbZ5+DDwlOiJsxDHEg==
@@ -5467,7 +5486,7 @@ unzip-response@^2.0.1:
   resolved "https://registry.yarnpkg.com/unzip-response/-/unzip-response-2.0.1.tgz#d2f0f737d16b0615e72a6935ed04214572d56f97"
   integrity sha1-0vD3N9FrBhXnKmk17QQhRXLVb5c=
 
-upath@1.1.2, upath@^1.1.0:
+upath@1.1.2, upath@^1.1.0, upath@^1.1.1:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/upath/-/upath-1.1.2.tgz#3db658600edaeeccbe6db5e684d67ee8c2acd068"
   integrity sha512-kXpym8nmDmlCBr7nKdIx8P2jNBa+pBpIUFRnKJ4dr8htyYGJFokkr2ZvERRtUN+9SY+JqXouNgUPtv6JQva/2Q==

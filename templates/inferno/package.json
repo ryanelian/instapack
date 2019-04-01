@@ -9,9 +9,9 @@
     "@types/luxon": "^1.11.1",
     "@types/requirejs": "^2.1.31",
     "axios": "^0.18.0",
-    "inferno": "^7.1.10",
+    "inferno": "^7.1.11",
     "linq": "^3.1.1",
-    "luxon": "^1.11.4",
+    "luxon": "^1.12.0",
     "sweetalert": "^2.1.2",
     "ts-polyfill": "^3.3.3",
     "tslib": "^1.9.3"

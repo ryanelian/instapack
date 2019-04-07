@@ -53,7 +53,7 @@
   },
   "dependencies": {
     "@babel/core": "7.4.0",
-    "autoprefixer": "9.5.0",
+    "autoprefixer": "9.5.1",
     "babel-loader": "8.0.5",
     "chalk": "2.4.2",
     "chokidar": "2.1.5",

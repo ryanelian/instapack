@@ -94,7 +94,7 @@
     "@types/webpack": "^4.4.26",
     "@types/webpack-dev-middleware": "^2.0.2",
     "@types/webpack-sources": "^0.1.5",
-    "@types/yargs": "^12.0.10",
+    "@types/yargs": "^13.0.0",
     "ava": "1.4.1"
   }
 }

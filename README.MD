@@ -86,8 +86,8 @@ stages:
 - release
 
 variables:
-  TEST_IMAGE: registry.gitlab.com/yourname/MyApp:$CI_COMMIT_REF_NAME
-  RELEASE_IMAGE: registry.gitlab.com/yourname/MyApp:latest
+  TEST_IMAGE: registry.gitlab.com/$CI_PROJECT_PATH:$CI_COMMIT_REF_NAME
+  RELEASE_IMAGE: registry.gitlab.com/$CI_PROJECT_PATH:latest
 
 before_script:
   - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN registry.gitlab.com

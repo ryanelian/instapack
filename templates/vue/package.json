@@ -28,7 +28,7 @@
     "sweetalert": "^2.1.2",
     "ts-polyfill": "^3.3.3",
     "tslib": "^1.9.3",
-    "vee-validate": "^2.2.2",
+    "vee-validate": "^2.2.4",
     "vue": "^2.6.10",
     "vue-class-component": "^7.0.2"
   }

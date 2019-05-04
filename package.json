@@ -68,7 +68,7 @@
     "loader-utils": "1.2.3",
     "merge-source-map": "1.1.0",
     "node-notifier": "5.4.0",
-    "postcss": "7.0.14",
+    "postcss": "7.0.15",
     "sass": "1.19.0",
     "source-map": "0.7.3",
     "tslint": "5.16.0",

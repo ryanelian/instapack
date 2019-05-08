@@ -6,7 +6,8 @@ Get-ChildItem $PSScriptRoot -Directory | ForEach-Object {
         # Write-Output $_.FullName
         Set-Location $_.FullName;
         # https://www.npmjs.com/package/npm-check-updates
-        ncu -a -x "@types/bootstrap";
+        # version 3.1.9
+        ncu -u -x "@types/bootstrap";
     }
 }
 

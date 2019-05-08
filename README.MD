@@ -50,25 +50,27 @@ When using Docker, rapidly deployable application images can be developed using 
 > This sample recipe assumes that the project `Dockerfile` is located in root `/` solution folder (next to `/MyApp.sln`), with the ASP.NET Core + instapack project located in `/MyApp` (`/MyApp/MyApp.csproj` and `/MyApp/package.json`)
 
 ```Dockerfile
-FROM node:10-alpine AS instapack
-RUN npm install -g instapack@7.1.2
+FROM node:12-alpine AS instapack
+RUN npm install -g instapack@7.2.9
 COPY . /src
 WORKDIR /src/MyApp
 RUN ipack
 
-FROM microsoft/dotnet:2.2-sdk-alpine AS build
+FROM mcr.microsoft.com/dotnet/core/sdk:2.2 as build
 COPY --from=instapack /src /src
 WORKDIR /src/MyApp
 RUN dotnet restore
 RUN dotnet publish -c Release
 
-FROM microsoft/dotnet:2.2-aspnetcore-runtime-alpine AS runtime
+FROM mcr.microsoft.com/dotnet/core/aspnet:2.2-alpine as runtime
 COPY --from=build /src/MyApp/bin/Release/netcoreapp2.2/publish /app
 WORKDIR /app
 ENTRYPOINT ["dotnet", "MyApp.dll"]
 ```
 
-Build locally using Linux container: `docker build --pull --tag myapp:latest .`
+Build locally using Linux container: `docker build --pull --tag myapp:0.0.1 .`
+
+Run app via command: `docker run -p 12345:80 myapp:0.0.1`
 
 > When developing multiple front-end projects in one solution, simply run instapack multiple times in different `WORKDIR`
 
@@ -110,7 +112,7 @@ release:
 
 ## System Requirements
 
-Currently supported Node.js is [the latest version 8 or 10 LTS](https://nodejs.org/en/download/).
+Currently supported Node.js is [the latest version 8 or 10 or 12 LTS](https://nodejs.org/en/download/).
 
 When using [Visual Studio 2017 (Update 2 or above)](https://www.visualstudio.com/downloads/), install [the latest TypeScript SDK for Visual Studio 2017](https://www.microsoft.com/en-us/download/details.aspx?id=55258).
 

@@ -48,8 +48,12 @@ test('Template Loader: Simple HTML', async t => {
     let stats = await compileAsync(entry);
 
     let o = stats.toJson();
-    let result: string = o.modules.filter(Q => Q.source)[0].source;
-    // t.log(o.modules);
+    if (o.modules) {
+        let result = o.modules.filter(Q => Q.source)[0].source;
+        // t.log(o.modules);
 
-    t.is(result, 'module.exports = "<div> <h1>Hello World!</h1> </div>"');
+        t.is(result, 'module.exports = "<div> <h1>Hello World!</h1> </div>"');
+    } else {
+        t.fail('webpack stats.toJson().modules is undefined!')
+    }
 });

@@ -390,10 +390,12 @@ inject();
         else {
             jsOutputPath = this.finder.jsOutputFolder + '/';
         }
-        for (let asset of o.assets) {
-            if (asset.emitted) {
-                let kb = PrettyUnits_1.prettyBytes(asset.size);
-                Shout_1.Shout.timed(chalk_1.default.blue(asset.name), chalk_1.default.magenta(kb), chalk_1.default.grey('in ' + jsOutputPath));
+        if (o.assets) {
+            for (let asset of o.assets) {
+                if (asset.emitted) {
+                    let kb = PrettyUnits_1.prettyBytes(asset.size);
+                    Shout_1.Shout.timed(chalk_1.default.blue(asset.name), chalk_1.default.magenta(kb), chalk_1.default.grey('in ' + jsOutputPath));
+                }
             }
         }
         if (this.variables.hot && o.chunks) {
@@ -404,8 +406,13 @@ inject();
                 this.putWormholes(chunk.files);
             }
         }
-        let t = PrettyUnits_1.prettyMilliseconds(o.time);
-        Shout_1.Shout.timed('Finished JS build after', chalk_1.default.green(t));
+        if (o.time) {
+            let t = PrettyUnits_1.prettyMilliseconds(o.time);
+            Shout_1.Shout.timed('Finished JS build after', chalk_1.default.green(t));
+        }
+        else {
+            Shout_1.Shout.timed('Finished JS build.');
+        }
     }
     putWormholes(fileNames) {
         if (!fileNames) {

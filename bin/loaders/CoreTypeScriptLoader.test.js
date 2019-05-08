@@ -78,7 +78,14 @@ ava_1.default('Core TypeScript Loader: ES5', (t) => __awaiter(this, void 0, void
     let entry = path.join(fixtures, 'index.ts');
     let stats = yield compileAsync(entry);
     let o = stats.toJson();
-    let result = o.modules.filter(Q => Q.source)[0].source;
-    result = result.replace(/\r/g, '');
-    t.is(result, '"use strict";\nvar foo = function (bar) {\n    return bar.length;\n};\nvar x = foo(\'abcd\');\n');
+    if (o.modules) {
+        let result = o.modules.filter(Q => Q.source)[0].source;
+        if (result) {
+            result = result.replace(/\r/g, '');
+        }
+        t.is(result, '"use strict";\nvar foo = function (bar) {\n    return bar.length;\n};\nvar x = foo(\'abcd\');\n');
+    }
+    else {
+        t.fail('webpack stats.toJson().modules is undefined!');
+    }
 }));

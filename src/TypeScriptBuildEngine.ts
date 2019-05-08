@@ -546,12 +546,14 @@ inject();
             jsOutputPath = this.finder.jsOutputFolder + '/';
         }
 
-        for (let asset of o.assets) {
-            if (asset.emitted) {
-                let kb = prettyBytes(asset.size);
-                Shout.timed(chalk.blue(asset.name), chalk.magenta(kb),
-                    chalk.grey('in ' + jsOutputPath)
-                );
+        if (o.assets) {
+            for (let asset of o.assets) {
+                if (asset.emitted) {
+                    let kb = prettyBytes(asset.size);
+                    Shout.timed(chalk.blue(asset.name), chalk.magenta(kb),
+                        chalk.grey('in ' + jsOutputPath)
+                    );
+                }
             }
         }
 
@@ -565,8 +567,12 @@ inject();
             }
         }
 
-        let t = prettyMilliseconds(o.time);
-        Shout.timed('Finished JS build after', chalk.green(t));
+        if (o.time) {
+            let t = prettyMilliseconds(o.time);
+            Shout.timed('Finished JS build after', chalk.green(t));
+        } else {
+            Shout.timed('Finished JS build.');
+        }
     }
 
     /**

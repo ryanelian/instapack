@@ -656,16 +656,22 @@ Replace the `url` parameter with the correct URL of your app, then press **F5** 
 ### How to develop a Cordova app using vue-mobile template?
 
 ```powershell
-cordova create MyProject
-cd MyProject
-ipack new vue-mobile
-cordova platform add android ios browser
-npm update
-ipack -h
-cordova run browser
+npm install -g cordova phonegap
 ```
 
-Change www/index.html `<script>` and `<link>` tags to the instapack build outputs. [Adjust assets whitelist and CSP too](https://docs.microsoft.com/en-us/visualstudio/cross-platform/tools-for-cordova/security/whitelists?view=toolsforcordova-2017) if necessary.
+```powershell
+cordova create MyApp
+cd MyProject
+cordova platform add android ios browser
+```
+
+```powershell
+ipack new vue-mobile
+ipack -dw
+phonegap serve
+```
+
+Change www/index.html `<script>` and `<link>` tags to the instapack build outputs. [Adjust assets whitelist and CSP too](https://docs.microsoft.com/en-us/visualstudio/cross-platform/tools-for-cordova/security/whitelists?view=toolsforcordova-2017) if necessary (you may delete `<meta http-equiv="Content-Security-Policy"` line).
 
 > **CAUTION:** `cordova platform add` and `cordova plugin add` (or `remove`) will destroy your `node_modules`. Re-run `npm update` / `yarn upgrade` after invoking those commands!
 

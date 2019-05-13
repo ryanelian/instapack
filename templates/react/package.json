@@ -16,7 +16,7 @@
     "@types/requirejs": "^2.1.31",
     "axios": "^0.18.0",
     "linq": "^3.2.0",
-    "luxon": "^1.13.1",
+    "luxon": "^1.13.2",
     "mobx": "^5.9.4",
     "mobx-react": "^5.4.3",
     "prop-types": "^15.7.2",

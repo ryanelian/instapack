@@ -166,7 +166,9 @@ Scaffolds a new instapack project into your existing app folder where the comman
 
 - `vue-green` is identical to `vue` but **targets ES2016 / [evergreen browsers](https://www.techopedia.com/definition/31094/evergreen-browser)!**
 
-- `react` for developing a web app **targeting ES2016 browsers** using [React](https://reactjs.org/) and [MobX 5](https://github.com/mobxjs/mobx) and [Semantic UI](https://semantic-ui.com/).
+- `react` for developing a web app **targeting ES2016 browsers** using [React](https://reactjs.org/) and [MobX 5](https://github.com/mobxjs/mobx) and [Microsoft UI Fabric](https://developer.microsoft.com/en-us/fabric).
+
+- `react-semantic-ui` is identical to `react` template but ships with [Semantic UI](https://semantic-ui.com/) instead.
 
 - `preact` for developing a web app using [Preact](https://preactjs.com/). (Fast 3kB alternative to React)
 
@@ -176,11 +178,9 @@ Scaffolds a new instapack project into your existing app folder where the comman
 
 - `vue-mobile` for developing a _[Progressive Web Application](https://developers.google.com/web/progressive-web-apps/)_ using Vue.js and [Onsen UI](https://onsen.io/vue/)! (**ES2016**, [Cordova](https://cordova.apache.org)-compatible, [read more on FAQ ↓](#how-to-develop-a-cordova-app-using-vue-mobile-template))
 
-- `angularjs` for developing a *legacy* web app using [AngularJS 1.7](https://angularjs.org/) and [Bootstrap 3](http://getbootstrap.com/docs/3.3/).
+- `angularjs` for developing a *LEGACY* web app using [AngularJS 1.7](https://angularjs.org/) and [Bootstrap 3](http://getbootstrap.com/docs/3.3/).
 
   - Includes [jquery-validation-unobtrusive](https://github.com/aspnet/jquery-validation-unobtrusive) for ASP.NET MVC client-side validation and a simple JS concat tool.
-
-- (PREVIEW) `angular` for developing an **ES2016** web app using [the new Angular](https://angular.io/) and [Material Design](https://material.angular.io/). (Warnings: [1](https://github.com/angular/angular/issues/11580) [2](https://github.com/angular/angular/issues/21560))
 
 If no template parameter is provided, `vue` will be chosen. :vulcan_salute:
 

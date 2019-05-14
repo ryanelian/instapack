@@ -1,4 +1,5 @@
 import React from 'react';
+import { MessageBar, MessageBarType } from 'office-ui-fabric-react/lib/MessageBar';
 
 interface HelloProps {
     compiler: string;
@@ -7,6 +8,6 @@ interface HelloProps {
 
 export class Hello extends React.Component<HelloProps, undefined> {
     render() {
-        return <h1>Hello from {this.props.compiler} and {this.props.framework}!</h1>
+        return <MessageBar messageBarType={MessageBarType.success}>Hello from {this.props.compiler} and {this.props.framework}!</MessageBar>
     }
 }

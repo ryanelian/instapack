@@ -1,29 +1,11 @@
 import * as Process from 'process';
 import * as ChildProcess from 'child_process';
+import which = require('which');
 
 /**
  * Contains methods responsible for restoring user packages.
  */
 export class PackageManager {
-    /**
-     * Detects if instapack is running on Windows OS.
-     */
-    get isWindows() {
-        return (Process.platform === 'win32');
-    }
-
-    /**
-     * Returns OS-suitable command for detecting whether another CLI tool is available on the system. 
-     * @param tool 
-     */
-    toolExistCheckerCommand(tool: string) {
-        if (this.isWindows) {
-            return 'where ' + tool;
-        } else {
-            return 'which ' + tool;
-        }
-    }
-
     /**
      * Runs a child process that displays outputs to current command line output.
      * @param command 
@@ -35,19 +17,15 @@ export class PackageManager {
         });
     }
 
-    /**
-     * Asynchronously checks whether a CLI tool exists in the system.
-     * @param tool 
-     */
-    doesToolExists(tool: string) {
-        return new Promise<boolean>((ok, reject) => {
-            ChildProcess.exec(this.toolExistCheckerCommand(tool), (error, stdout, stderr) => {
-                if (error) {
-                    ok(false);
-                    // console.log(error);
-                } else {
-                    ok(true);
+    async whichAsync(tool: string) {
+        return new Promise<string>((ok, reject) => {
+            which(tool, (err, path) => {
+                if (err) {
+                    reject(err);
+                    return;
                 }
+
+                ok(path);
             });
         });
     }
@@ -59,13 +37,13 @@ export class PackageManager {
      * Throws if the tool is unknown.
      * @param packageManager 
      */
-    async restore(packageManager) {
+    async restore(packageManager: string) {
         if (!packageManager) {
             packageManager = 'yarn';
         }
 
         if (packageManager === 'yarn') {
-            let yarnExists = await this.doesToolExists('yarn');
+            let yarnExists = await this.whichAsync('yarn');
             if (!yarnExists) {
                 packageManager = 'npm';
             }

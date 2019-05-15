@@ -8,34 +8,24 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const Process = require("process");
 const ChildProcess = require("child_process");
+const which = require("which");
 class PackageManager {
-    get isWindows() {
-        return (Process.platform === 'win32');
-    }
-    toolExistCheckerCommand(tool) {
-        if (this.isWindows) {
-            return 'where ' + tool;
-        }
-        else {
-            return 'which ' + tool;
-        }
-    }
     runWithOutputs(command) {
         return ChildProcess.execSync(command, {
             stdio: [0, 1, 2]
         });
     }
-    doesToolExists(tool) {
-        return new Promise((ok, reject) => {
-            ChildProcess.exec(this.toolExistCheckerCommand(tool), (error, stdout, stderr) => {
-                if (error) {
-                    ok(false);
-                }
-                else {
-                    ok(true);
-                }
+    whichAsync(tool) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return new Promise((ok, reject) => {
+                which(tool, (err, path) => {
+                    if (err) {
+                        reject(err);
+                        return;
+                    }
+                    ok(path);
+                });
             });
         });
     }
@@ -45,7 +35,7 @@ class PackageManager {
                 packageManager = 'yarn';
             }
             if (packageManager === 'yarn') {
-                let yarnExists = yield this.doesToolExists('yarn');
+                let yarnExists = yield this.whichAsync('yarn');
                 if (!yarnExists) {
                     packageManager = 'npm';
                 }

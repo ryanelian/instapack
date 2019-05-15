@@ -268,7 +268,7 @@ import jQuery from 'jquery';
 // const jQuery = window["$"];
 ```
 
-- `port1` can be set for declaring a static port number to be used by the Hot Reload server. If not set, the port number will be randomized. [Read more ↓](#hot-reload-development-mode)
+- `port1` can be set for declaring a static port number to be used by the Hot Reload server. If not set or is already used, the port number will be randomized. [Read more ↓](#hot-reload-development-mode)
 
 > `port2` option is no longer being used and is deprecated.
 
@@ -293,13 +293,11 @@ Compiling a JS project using this mode will:
 - Create wormholes (script injections) in place of the usual JS output files, directed to respective scripts on the build server.
 
 ```
-[15:10:33] Compiling index.ts > ES5 in C:/VS/MyApp/client/js/
-[15:10:33] Hot Reload Server running on ports: 22001, 22002
-[15:10:34] ipack.dll.js 673 kB in http://localhost:22001/js/
-[15:10:34] ipack.js 33.6 kB in http://localhost:22001/js/
-[15:10:34] +wormhole: wwwroot/js/ipack.dll.js --> http://localhost:22001/js/ipack.dll.js
-[15:10:34] +wormhole: wwwroot/js/ipack.js --> http://localhost:22001/js/ipack.js
-[15:10:34] Finished JS build after 309 ms
+[01:24:26] Hot Reload Server running on http://localhost:28080/
+[01:24:28] ipack.dll.js 6.25 MB in http://localhost:28080/
+[01:24:28] ipack.js 62.5 kB in http://localhost:28080/
+[01:24:28] +wormhole: wwwroot/js/ipack.dll.js --> http://localhost:28080/ipack.dll.js
+[01:24:28] +wormhole: wwwroot/js/ipack.js --> http://localhost:28080/ipack.js
 ```
 
 > No changes should be required for the `<script src="...">` in the app itself!

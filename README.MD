@@ -1,4 +1,4 @@
-# instapack [<img align="right" src="https://raw.githubusercontent.com/ryanelian/instapack/master/img/icon.png" width="144" height="144" alt="icon" />](#instapack-)
+# instapack [<img align="right" src="https://raw.githubusercontent.com/ryanelian/instapack/master/img/icon.png" width="144" height="144" alt="icon" />](https://github.com/ryanelian/instapack)
 
 > All-in-one TypeScript and Sass compiler for web applications! :package: :rocket:
 

@@ -196,7 +196,7 @@ In addition, build flags are available:
 
 - `--dev` or `-d` disables build outputs optimization and minification for **FAST build!** :fire:
 
-- `--hot` or `-h` enables Hot Reload development mode using dedicated build servers. :rotating_light: [Read more ↓](#hot-reload-development-mode-preview)
+- `--hot` or `-h` enables **Hot Reload** development mode using dedicated build server. :rotating_light: [Read more ↓](#hot-reload-development-mode)
 
 - `--nodebug` or `-b` disables source maps, producing undebuggable outputs. (Slightly improves build speed)
 
@@ -268,9 +268,9 @@ import jQuery from 'jquery';
 // const jQuery = window["$"];
 ```
 
-- `port1` can be set for declaring a static port number to be used by the Hot Reload server for delivering built assets. If not set, the port number will be randomized. [Read more ↓](#hot-reload-development-mode-preview)
+- `port1` can be set for declaring a static port number to be used by the Hot Reload server. If not set, the port number will be randomized. [Read more ↓](#hot-reload-development-mode)
 
-- `port2` can be set for declaring a static port number to be used by the Hot Reload server for broadcasting changes using WebSocket. If not set, the port number will be randomized. [Read more ↓](#hot-reload-development-mode-preview)
+> `port2` option is no longer being used and is deprecated.
 
 ## Babel Integration
 
@@ -280,7 +280,7 @@ instapack version 6.4.0+ supports [`.babelrc`](https://babeljs.io/docs/usage/bab
 
 - You may use Babel instead of TypeScript to compile JSX: set TypeScript `jsx` to `preserve` then use the framework-compatible JSX plugin. For example: `@babel/plugin-transform-react-jsx`, `babel-plugin-transform-vue-jsx`, `babel-plugin-inferno`
 
-## Hot Reload Development Mode (PREVIEW)
+## Hot Reload Development Mode
 
 Hot Reload development mode allows a developer to update application code while preserving runtime states, without triggering browser refresh when not needed.
 

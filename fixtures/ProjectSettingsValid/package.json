@@ -10,7 +10,6 @@
         "externals": {
             "jquery": "$"
         },
-        "port1": 32101,
-        "port2": 32102
+        "port1": 32101
     }
 }

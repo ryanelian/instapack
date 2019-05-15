@@ -88,10 +88,5 @@ export interface IVariables {
      */
     port1: number;
 
-    /**
-     * Gets the static port number to be used by the Hot Reload server for broadcasting changes using WebSocket.
-     */
-    port2: number;
-
     typescriptConfiguration: any;
 }

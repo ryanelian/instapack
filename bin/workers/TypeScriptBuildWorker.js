@@ -10,8 +10,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 const fse = require("fs-extra");
 const TypeScriptBuildEngine_1 = require("../TypeScriptBuildEngine");
 const Shout_1 = require("../Shout");
-const PortFinder_1 = require("../PortFinder");
 const PathFinder_1 = require("../variables-factory/PathFinder");
+const portfinder = require("portfinder");
 module.exports = function (variables, finish) {
     return __awaiter(this, void 0, void 0, function* () {
         if (variables.verbose) {
@@ -23,7 +23,14 @@ module.exports = function (variables, finish) {
         let finder = new PathFinder_1.PathFinder(variables);
         let useBabel = fse.pathExists(finder.babelConfiguration);
         if (variables.hot) {
-            yield PortFinder_1.setVariablesPorts(variables);
+            let basePort = variables.port1;
+            if (!basePort) {
+                basePort = 28080;
+            }
+            let port = yield portfinder.getPortPromise({
+                port: basePort
+            });
+            variables.port1 = port;
         }
         let tool = new TypeScriptBuildEngine_1.TypeScriptBuildEngine(variables, yield useBabel);
         try {

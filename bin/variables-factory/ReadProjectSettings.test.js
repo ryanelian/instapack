@@ -25,7 +25,6 @@ ava_1.default('Project Settings: Not Found', (t) => __awaiter(this, void 0, void
         alias: {},
         externals: {},
         port1: 0,
-        port2: 0
     };
     t.deepEqual(settings, result);
 }));
@@ -41,7 +40,6 @@ ava_1.default('Project Settings: Invalid', (t) => __awaiter(this, void 0, void 0
         alias: {},
         externals: {},
         port1: 0,
-        port2: 0
     };
     t.deepEqual(settings, result);
 }));
@@ -61,7 +59,6 @@ ava_1.default('Project Settings: Valid', (t) => __awaiter(this, void 0, void 0, 
             jquery: '$'
         },
         port1: 32101,
-        port2: 32102
     };
     t.deepEqual(settings, result);
 }));

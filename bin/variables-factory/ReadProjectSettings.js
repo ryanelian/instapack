@@ -37,7 +37,6 @@ function readProjectSettingsFrom(folder) {
             alias: {},
             externals: {},
             port1: 0,
-            port2: 0,
         };
         let parse;
         try {
@@ -64,9 +63,6 @@ function readProjectSettingsFrom(folder) {
             }
             if (Number.isInteger(parse.port1)) {
                 settings.port1 = parse.port1;
-            }
-            if (Number.isInteger(parse.port2)) {
-                settings.port2 = parse.port2;
             }
             if (typeof parse.alias === 'object') {
                 for (let key in parse.alias) {

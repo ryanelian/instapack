@@ -20,7 +20,6 @@ test('Project Settings: Not Found', async t => {
         alias: {},
         externals: {},
         port1: 0,
-        port2: 0
     };
 
     t.deepEqual(settings, result);
@@ -39,7 +38,6 @@ test('Project Settings: Invalid', async t => {
         alias: {},
         externals: {},
         port1: 0,
-        port2: 0
     };
 
     t.deepEqual(settings, result);
@@ -62,7 +60,6 @@ test('Project Settings: Valid', async t => {
             jquery: '$'
         },
         port1: 32101,
-        port2: 32102
     };
 
     t.deepEqual(settings, result);

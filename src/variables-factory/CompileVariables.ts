@@ -32,7 +32,6 @@ export function compileVariables(
 
         hot: buildFlags.hot,
         port1: projectSettings.port1,
-        port2: projectSettings.port2,
         typescriptConfiguration: typescriptConfiguration
     };
 

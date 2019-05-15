@@ -19,7 +19,6 @@ function compileVariables(buildFlags, projectSettings, userSettings, dotEnv, typ
         verbose: buildFlags.verbose,
         hot: buildFlags.hot,
         port1: projectSettings.port1,
-        port2: projectSettings.port2,
         typescriptConfiguration: typescriptConfiguration
     };
     if (variables.hot) {

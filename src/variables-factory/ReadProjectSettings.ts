@@ -34,7 +34,6 @@ export async function readProjectSettingsFrom(folder: string): Promise<IProjectS
         alias: {},
         externals: {},
         port1: 0,
-        port2: 0,
     };
 
     let parse: any;
@@ -69,10 +68,6 @@ export async function readProjectSettingsFrom(folder: string): Promise<IProjectS
 
         if (Number.isInteger(parse.port1)) {
             settings.port1 = parse.port1;
-        }
-
-        if (Number.isInteger(parse.port2)) {
-            settings.port2 = parse.port2;
         }
 
         if (typeof parse.alias === 'object') {

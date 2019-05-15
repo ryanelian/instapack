@@ -21,8 +21,7 @@ ava_1.default('Compile Variables: Simple', t => {
         cssOut: 'ipack.css',
         alias: {},
         externals: {},
-        port1: 0,
-        port2: 0
+        port1: 0
     }, {
         muteNotification: false,
         packageManager: 'yarn'
@@ -49,7 +48,6 @@ ava_1.default('Compile Variables: Simple', t => {
         alias: {},
         externals: {},
         port1: 0,
-        port2: 0,
         muteNotification: false,
         packageManager: 'yarn',
         env: {
@@ -100,8 +98,7 @@ ava_1.default('Compile Variables: Overrides', t => {
         externals: {
             jquery: '$'
         },
-        port1: 20178,
-        port2: 20179
+        port1: 20178
     }, {
         muteNotification: true,
         packageManager: 'npm'
@@ -132,7 +129,6 @@ ava_1.default('Compile Variables: Overrides', t => {
             jquery: '$'
         },
         port1: 20178,
-        port2: 20179,
         muteNotification: true,
         packageManager: 'npm',
         env: {

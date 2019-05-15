@@ -4,9 +4,7 @@ import * as fse from 'fs-extra';
 import * as url from 'url';
 import chalk from 'chalk';
 import webpack = require('webpack');
-import hotClient = require('webpack-hot-client');
-import devMiddleware = require('webpack-dev-middleware');
-import express = require('express');
+import webpackDevServer = require('webpack-dev-server');
 import * as TypeScript from 'typescript';
 import { VueLoaderPlugin } from 'vue-loader';
 
@@ -49,7 +47,7 @@ export class TypeScriptBuildEngine {
         this.finder = new PathFinder(variables);
 
         if (variables.hot) {
-            this.outputPublicPath = `http://localhost:${this.variables.port1}/js/`;
+            this.outputPublicPath = `http://localhost:${this.variables.port1}/`;
         } else {
             // yay for using "js" folder in output!
             this.outputPublicPath = 'js/';
@@ -85,12 +83,6 @@ export class TypeScriptBuildEngine {
      */
     mergeTypeScriptPathAlias(): IMapLike<string> {
         let alias: IMapLike<string> = Object.assign({}, this.variables.alias);
-
-        if (this.variables.hot) {
-            let hotClientModulePath = require.resolve('webpack-hot-client/client');
-            alias['webpack-hot-client/client'] = hotClientModulePath;
-            // console.log(hotClient);
-        }
 
         if (!this.typescriptCompilerOptions.paths) {
             return alias;
@@ -615,37 +607,36 @@ inject();
 
     /**
      * Runs the hot reload server using provided webpack configuration. 
-     * Promise will also never resolve unless errored.
      * @param webpackConfiguration 
      */
-    runDevServer(webpackConfiguration: webpack.Configuration) {
-        const logLevel = 'warn';
+    async runDevServer(webpackConfiguration: webpack.Configuration) {
+        let devServerOptions: webpackDevServer.Configuration = {
+            hot: true,
+            contentBase: false,                     // don't serve static files from project folder LOL
+            port: this.variables.port1,             // for some reason, WDS not using port from listen() parameter
+            headers: {                              // CORS
+                'Access-Control-Allow-Origin': '*'
+            },
+            noInfo: true
+        };
 
+        webpackDevServer.addDevServerEntrypoints(webpackConfiguration, devServerOptions);
         const compiler = webpack(webpackConfiguration);
         this.addCompilerBuildNotification(compiler);
 
-        const client = hotClient(compiler, {
-            port: this.variables.port2,
-            logLevel: logLevel
-        });
+        const devServer = new webpackDevServer(compiler, devServerOptions);
 
-        // console.log(client);
-        let devServer = express();
+        return new Promise((ok, reject) => {
+            // 'localhost' parameter MUST be written, otherwise error callback WILL NOT work! 
+            const server = devServer.listen(this.variables.port1, 'localhost', error => {
+                if (error) {
+                    reject(error);
+                    return;
+                }
 
-        client.server.on('listening', () => {
-            devServer.use(devMiddleware(compiler, {
-                publicPath: this.outputPublicPath,
-                logLevel: logLevel,
-                headers: {
-                    'Access-Control-Allow-Origin': '*'
-                },
-            }));
-
-            let p1 = chalk.green(this.variables.port1.toString());
-            let p2 = chalk.green(this.variables.port2.toString());
-
-            devServer.listen(this.variables.port1, () => {
-                Shout.timed(chalk.yellow('Hot Reload'), `Server running on ports: ${p1}, ${p2}`);
+                let p1 = chalk.green(this.variables.port1.toString());
+                Shout.timed(chalk.yellow('Hot Reload'), `Server running on http://localhost:${p1}/`);
+                ok();
             });
         });
     }
@@ -657,7 +648,7 @@ inject();
         let webpackConfiguration = this.createWebpackConfiguration();
 
         if (this.variables.hot) {
-            this.runDevServer(webpackConfiguration);
+            await this.runDevServer(webpackConfiguration);
         } else if (this.variables.watch) {
             await this.watch(webpackConfiguration);
         } else {

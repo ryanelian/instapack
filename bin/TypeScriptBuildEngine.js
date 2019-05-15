@@ -14,9 +14,7 @@ const fse = require("fs-extra");
 const url = require("url");
 const chalk_1 = require("chalk");
 const webpack = require("webpack");
-const hotClient = require("webpack-hot-client");
-const devMiddleware = require("webpack-dev-middleware");
-const express = require("express");
+const webpackDevServer = require("webpack-dev-server");
 const TypeScript = require("typescript");
 const vue_loader_1 = require("vue-loader");
 const PrettyUnits_1 = require("./PrettyUnits");
@@ -30,7 +28,7 @@ class TypeScriptBuildEngine {
         this.variables = variables;
         this.finder = new PathFinder_1.PathFinder(variables);
         if (variables.hot) {
-            this.outputPublicPath = `http://localhost:${this.variables.port1}/js/`;
+            this.outputPublicPath = `http://localhost:${this.variables.port1}/`;
         }
         else {
             this.outputPublicPath = 'js/';
@@ -52,10 +50,6 @@ class TypeScriptBuildEngine {
     }
     mergeTypeScriptPathAlias() {
         let alias = Object.assign({}, this.variables.alias);
-        if (this.variables.hot) {
-            let hotClientModulePath = require.resolve('webpack-hot-client/client');
-            alias['webpack-hot-client/client'] = hotClientModulePath;
-        }
         if (!this.typescriptCompilerOptions.paths) {
             return alias;
         }
@@ -441,26 +435,30 @@ inject();
         return fse.outputFile(physicalFilePath, hotProxy);
     }
     runDevServer(webpackConfiguration) {
-        const logLevel = 'warn';
-        const compiler = webpack(webpackConfiguration);
-        this.addCompilerBuildNotification(compiler);
-        const client = hotClient(compiler, {
-            port: this.variables.port2,
-            logLevel: logLevel
-        });
-        let devServer = express();
-        client.server.on('listening', () => {
-            devServer.use(devMiddleware(compiler, {
-                publicPath: this.outputPublicPath,
-                logLevel: logLevel,
+        return __awaiter(this, void 0, void 0, function* () {
+            let devServerOptions = {
+                hot: true,
+                contentBase: false,
+                port: this.variables.port1,
                 headers: {
                     'Access-Control-Allow-Origin': '*'
                 },
-            }));
-            let p1 = chalk_1.default.green(this.variables.port1.toString());
-            let p2 = chalk_1.default.green(this.variables.port2.toString());
-            devServer.listen(this.variables.port1, () => {
-                Shout_1.Shout.timed(chalk_1.default.yellow('Hot Reload'), `Server running on ports: ${p1}, ${p2}`);
+                noInfo: true
+            };
+            webpackDevServer.addDevServerEntrypoints(webpackConfiguration, devServerOptions);
+            const compiler = webpack(webpackConfiguration);
+            this.addCompilerBuildNotification(compiler);
+            const devServer = new webpackDevServer(compiler, devServerOptions);
+            return new Promise((ok, reject) => {
+                const server = devServer.listen(this.variables.port1, 'localhost', error => {
+                    if (error) {
+                        reject(error);
+                        return;
+                    }
+                    let p1 = chalk_1.default.green(this.variables.port1.toString());
+                    Shout_1.Shout.timed(chalk_1.default.yellow('Hot Reload'), `Server running on http://localhost:${p1}/`);
+                    ok();
+                });
             });
         });
     }
@@ -468,7 +466,7 @@ inject();
         return __awaiter(this, void 0, void 0, function* () {
             let webpackConfiguration = this.createWebpackConfiguration();
             if (this.variables.hot) {
-                this.runDevServer(webpackConfiguration);
+                yield this.runDevServer(webpackConfiguration);
             }
             else if (this.variables.watch) {
                 yield this.watch(webpackConfiguration);

@@ -1,12 +1,10 @@
-# instapack
+# instapack [<img align="right" src="https://raw.githubusercontent.com/ryanelian/instapack/master/img/icon.png" width="144" height="144" alt="icon" />](#instapack-)
 
 > All-in-one TypeScript and Sass compiler for web applications! :package: :rocket:
 
 [![npm](https://badge.fury.io/js/instapack.svg)](https://www.npmjs.com/package/instapack)
 [![Build Status](https://ryanelian.visualstudio.com/instapack/_apis/build/status/ryanelian.instapack)](https://ryanelian.visualstudio.com/instapack/_build/latest?definitionId=1)
-[![Greenkeeper badge](https://badges.greenkeeper.io/ryanelian/instapack.svg)](https://greenkeeper.io/)
-
-<img src="https://raw.githubusercontent.com/ryanelian/instapack/master/img/screenshot.png" alt="screenshot" width="450" height="400">
+[![Greenkeeper badge](https://badges.greenkeeper.io/ryanelian/instapack.svg)](https://greenkeeper.io/) [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fryanelian%2Finstapack.svg?type=small)](https://app.fossa.com/projects/git%2Bgithub.com%2Fryanelian%2Finstapack?ref=badge_small)
 
 ## Install
 
@@ -21,6 +19,8 @@ First, open command prompt in the project folder and install instapack locally: 
 Then invoke instapack using command: `npx ipack` or `yarn ipack`
 
 ## Quick Start Guide
+
+<img src="https://raw.githubusercontent.com/ryanelian/instapack/master/img/screenshot.png" alt="screenshot" width="450" height="400" />
 
 ```powershell
 mkdir MyWebApp
@@ -774,3 +774,5 @@ let result = await api.doSomething({
 ## License
 
 [MIT](https://github.com/ryanelian/instapack/blob/master/LICENSE)
+
+Icon Design Credits: <a href="https://vecteezy.com">www.vecteezy.com</a> 

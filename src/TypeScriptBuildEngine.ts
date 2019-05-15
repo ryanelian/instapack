@@ -206,6 +206,7 @@ export class TypeScriptBuildEngine {
 
         let tsRules: webpack.Rule = {
             test: /\.tsx?$/,
+            exclude: /node_modules/,
             use: loaders
         };
 
@@ -218,6 +219,7 @@ export class TypeScriptBuildEngine {
     get vueWebpackRules(): webpack.Rule {
         return {
             test: /\.vue$/,
+            exclude: /node_modules/,
             use: [{
                 loader: LoaderPaths.vue,
                 options: {
@@ -234,6 +236,7 @@ export class TypeScriptBuildEngine {
     get templatesWebpackRules(): webpack.Rule {
         return {
             test: /\.html?$/,
+            exclude: /node_modules/,
             use: [{
                 loader: LoaderPaths.template
             }]
@@ -263,6 +266,7 @@ export class TypeScriptBuildEngine {
 
         return {
             test: /\.css$/,
+            exclude: /node_modules/,
             oneOf: [
                 { // this matches <style module>
                     resourceQuery: /module/,

@@ -2,6 +2,18 @@
 
 Here are the list of breaking changes when upgrading between instapack major (or minor) versions.
 
+## 7.3.0
+
+- `port2` option is no longer being used and is obsoleted.
+
+- JS build: Exclude `/node_modules/` path from TypeScript, Vue, HTML and CSS loaders. 
+
+  - Explanation: Secure, Contain and Protect projects against bundling *UNCOMPILED* (non-JS) libraries source code!
+
+  - **Example 1:** Imagine someone wrote a `.vue` library in CoffeeScript + Less CSS, shipped it to npm, and expects consumers to compile the thing themselves. instapack will fail to compile that library despite supporting `.vue` file.
+
+  - **Example 2:** Imagine someone wrote a `.ts` library, shipped it to npm, and expects only TypeScript users to import it as-is. He'd be right, except COMPILE ERROR! That library only can be compiled with a specific version of TypeScript `2` and failed to be compiled with the latest TypeScript `3` used by instapack for some reason.
+
 ## 7.0.0
 
 - Sass language compiler service has been swapped to the primary Dart implementation!

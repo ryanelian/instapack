@@ -51,7 +51,7 @@ When using Docker, rapidly deployable application images can be developed using 
 
 ```Dockerfile
 FROM node:12-alpine AS instapack
-RUN npm install -g instapack@7.2.9
+RUN npm install -g instapack@7.3.0
 COPY . /src
 WORKDIR /src/MyApp
 RUN ipack
@@ -274,7 +274,7 @@ import jQuery from 'jquery';
 
 ## Babel Integration
 
-instapack version 6.4.0+ supports [`.babelrc`](https://babeljs.io/docs/usage/babelrc/) in the project root folder. **Babel will be run AFTER TypeScript compilation.** Here are some use cases where this feature can be useful:
+instapack supports [`.babelrc`](https://babeljs.io/docs/usage/babelrc/) in the project root folder. **Babel will be run AFTER TypeScript compilation.** Here are some use cases where this feature can be useful:
 
 - You may use Babel instead of TypeScript to transpile JS to ES5: set TypeScript `target` to `esnext` then use [`@babel/preset-env`](https://github.com/babel/babel/tree/master/packages/babel-preset-env)
 
@@ -284,7 +284,7 @@ instapack version 6.4.0+ supports [`.babelrc`](https://babeljs.io/docs/usage/bab
 
 Hot Reload development mode allows a developer to update application code while preserving runtime states, without triggering browser refresh when not needed.
 
-instapack version 6.7.0+ supports Hot Reload for popular JS frameworks by using `--hot` or `-h` flags, which also enable `watch` and `dev` modes automatically. **Hot Reload requires browsers with [WebSocket](https://caniuse.com/#feat=websockets) feature.**
+instapack supports Hot Reload for popular JS frameworks by using `--hot` or `-h` flags, which also enable `watch` and `dev` modes automatically. **Hot Reload requires browsers with [WebSocket](https://caniuse.com/#feat=websockets) feature.**
 
 Compiling a JS project using this mode will:
 
@@ -353,7 +353,7 @@ ReactDOM.render(
 
 ## TSLint Integration
 
-instapack version 6.5.0+ supports [`tslint.json` / `tslint.yaml`](https://palantir.github.io/tslint/usage/configuration/) in the project root folder. Here are some sensible, useful [rules](https://palantir.github.io/tslint/rules/) which greatly reduce programming blunders:
+instapack supports [`tslint.json` / `tslint.yaml`](https://palantir.github.io/tslint/usage/configuration/) in the project root folder. Here are some sensible, useful [rules](https://palantir.github.io/tslint/rules/) which greatly reduce programming blunders:
 
 ```json
 {
@@ -405,7 +405,7 @@ import List from 'linq';
 
 ### ES Modules: Dynamic Import
 
-instapack version 6.4.0+ supports code-splitting using ESM dynamic `import()` syntax:
+instapack supports code-splitting using ESM dynamic `import()` syntax:
 
 ```ts
 import('lunr').then(lunr => {
@@ -512,7 +512,7 @@ let foo: string = settings.foo;
 
 ### Vue Single-File Components
 
-instapack version 6.4.0+ can compile `.vue` files:
+instapack can compile `.vue` files:
 
 ```vue
 <template>
@@ -540,7 +540,7 @@ export default class Hello extends Vue {
 
   - This file will be created for you when using the `vue` new project template!
 
-- Notice that basic `<style>` (or `<style scoped>` or `<style module>`) should work, but should *not* be used. 
+- Notice that basic `<style>` (or `<style scoped>` or `<style module>`) should work, but should *NOT* be used. 
 
   - **This particular feature is in PREVIEW state / not supported** [at least until webpack ships built-in CSS modules](https://github.com/webpack/webpack/pull/6448).
 
@@ -574,7 +574,7 @@ instapack also has a custom Node-like but standard-compliant Sass module system 
 
 ## Environment Variables
 
-instapack version 6.4.0+ supports defining variables in `process.env` global object. Variables coming from `process.env` are always strings.
+instapack supports defining variables in `process.env` global object. Variables coming from `process.env` are always strings.
 
 > Using `process.env` in your TypeScript project requires `@types/node` package installed.
 

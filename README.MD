@@ -186,8 +186,6 @@ If no template parameter is provided, `vue` will be chosen. :vulcan_salute:
 
 Most templates are armed with `axios` REST library, which plays nice with [NSwag Studio](https://github.com/RicoSuter/NSwag/releases)-generated TypeScript API clients!
 
-> Native ES2016 templates can be safely run on these browsers: Edge 14, Safari 10, Chrome 52, Firefox 52 ESR (March 2017).
-
 ### build [project]
 
 Performs compilation of selected project type. Available projects: `all`, `js`, and `css`. If no project parameter is provided, `all` will be chosen.
@@ -706,6 +704,10 @@ However, you can _eject_ the `client` folder out of the back-end project folder,
 - Every front-end project can have vastly different `tsconfig.json` and `package.json` setup.
 
 - Prevents front-end projects from screwing around with each other's code.
+
+### Is targeting ES2015 safe?
+
+As of June 2017, all major browsers (except Internet Explorer) supports ES2015. iOS 10.3 and above supports ES2015.
 
 ### My package restore / IDE is slow. Help!
 

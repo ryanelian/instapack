@@ -5,7 +5,6 @@ import 'ts-polyfill/lib/es2018-async-iterable';   // for-await-of
 import 'ts-polyfill/lib/es2018-promise';
 import 'ts-polyfill/lib/es2019-array';
 import 'ts-polyfill/lib/es2019-string';
-import 'ts-polyfill/lib/es2019-symbol';
 
 import 'bootstrap';
 import './icons';

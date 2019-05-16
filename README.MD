@@ -1,6 +1,6 @@
 # instapack [<img align="right" src="https://raw.githubusercontent.com/ryanelian/instapack/master/img/icon.png" width="144" height="144" alt="icon" />](https://github.com/ryanelian/instapack)
 
-> All-in-one TypeScript and Sass compiler for web applications! :bento: :package: :rocket:
+> All-in-one TypeScript and Sass compiler for web applications! :package: :rocket:
 
 [![npm](https://badge.fury.io/js/instapack.svg)](https://www.npmjs.com/package/instapack)
 [![Build Status](https://ryanelian.visualstudio.com/instapack/_apis/build/status/ryanelian.instapack)](https://ryanelian.visualstudio.com/instapack/_build/latest?definitionId=1)

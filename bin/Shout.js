@@ -72,7 +72,7 @@ exports.Shout = {
             return;
         }
         let message = '...';
-        let icon = upath.join(__dirname, '../img/madobe.png');
+        let icon = upath.join(__dirname, '../img/icon.png');
         if (tokens && tokens.length) {
             message = concatenateTokens(tokens);
         }

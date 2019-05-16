@@ -1,0 +1,17 @@
+{
+  "name": "aspnet",
+  "version": "1.0.0",
+  "private": true,
+  "instapack": {
+    "output": "wwwroot"
+  },
+  "dependencies": {
+    "@types/luxon": "^1.13.0",
+    "@types/requirejs": "^2.1.31",
+    "axios": "^0.18.0",
+    "linq": "^3.2.0",
+    "luxon": "^1.13.2",
+    "ts-polyfill": "^3.4.5",
+    "tslib": "^1.9.3"
+  }
+}

@@ -741,5 +741,3 @@ For more information, visit http://scoop.sh/ and https://github.com/lukesampson/
 ## License
 
 [MIT](https://github.com/ryanelian/instapack/blob/master/LICENSE)
-
-Icon Design Credits: <a href="https://vecteezy.com">www.vecteezy.com</a> 

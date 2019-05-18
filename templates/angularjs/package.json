@@ -24,12 +24,12 @@
     "jquery-validation": "^1.19.0",
     "jquery-validation-unobtrusive": "^3.2.11",
     "linq": "^3.2.0",
-    "luxon": "^1.13.2",
+    "luxon": "^1.13.3",
     "sweetalert": "^2.1.2",
     "ts-polyfill": "^3.4.5",
     "tslib": "^1.9.3"
   },
   "devDependencies": {
-    "uglify-js": "^3.5.12"
+    "uglify-js": "^3.5.13"
   }
 }

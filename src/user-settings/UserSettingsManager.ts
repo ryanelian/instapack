@@ -1,65 +1,62 @@
 import * as upath from 'upath';
 import * as OS from 'os';
 import * as fse from 'fs-extra';
-import { PackageManagerUserSettingMapper } from './mappers/PackageManagerUserSettingMapper';
-import { NotificationUserSettingMapper } from './mappers/NotificationUserSettingMapper';
 import { IUserSettings } from './IUserSettings';
-import { IUserSettingMapper } from './mappers/IUserSettingMapper';
 
-export let userSettingsFilePath: string = upath.join(OS.homedir(), 'instapack', 'settings.json');
+const userSettingsFilePath: string = upath.join(OS.homedir(), 'instapack', 'settings.json');
 
-let userSettingMappers: IMapLike<IUserSettingMapper<any>> = {
-    'package-manager': new PackageManagerUserSettingMapper(),
-    'mute-notification': new NotificationUserSettingMapper()
-};
-
-export let userSettingOptions = Object.keys(userSettingMappers);
-
-/**
- * Validates whether the input setting is correct.
- * @param key 
- * @param value 
- */
-export function validateUserSetting(key: string, value: string) {
-    if (!userSettingMappers[key]) {
-        return false;
-    }
-
-    return userSettingMappers[key].valueValidator(value);
+function convertKebabToCamelCase(s: string) {
+    return s.toLowerCase().replace(/-[a-z]/g, ss => {
+        return ss[1].toUpperCase();
+    });
 }
 
-export async function readUserSettingsFrom(file: string): Promise<IUserSettings> {
-    let settings: IUserSettings = {
-        muteNotification: false,
-        packageManager: 'yarn'
-    };
+type ValidatorFunction = (x: string) => boolean;
+
+const validators: Readonly<IMapLike<ValidatorFunction>> = Object.freeze({
+    'package-manager': (x: string) => ['yarn', 'npm', 'disabled'].includes(x),
+    'mute-notification': (x: string) => ['true', 'false'].includes(x)
+});
+
+const defaultSettings: Readonly<IUserSettings> = Object.freeze({
+    packageManager: 'yarn',
+    muteNotification: false,
+});
+
+export const userSettingsOptions = Object.freeze(Object.keys(validators));
+
+export async function getSettings() {
+    let settings: IUserSettings = Object.assign({}, defaultSettings);
 
     try {
-        let json = await fse.readJson(file);
-
-        if (json.packageManager === 'yarn' || json.packageManager === 'npm' || json.packageManager === 'disabled') {
-            settings.packageManager = json.packageManager;
-        }
-
-        if (typeof json.muteNotification === 'boolean') {
-            settings.muteNotification = json.muteNotification;
-        }
-    }
-    catch {
-        // console.log('Failed to read user settings file; creating a new one instead.');
+        let currentSettings: IUserSettings = await fse.readJson(userSettingsFilePath);
+        settings = Object.assign(settings, currentSettings);
+    } catch (error) {
     }
 
     return settings;
 }
 
-export function setUserSetting(settings: IUserSettings, key: string, value: string) {
-    let mapper = userSettingMappers[key];
-    if (!mapper) {
-        throw new Error('Mapper not registered for provided key: ' + key);
+export async function setSetting(key: string, value: string) {
+    let validator = validators[key];
+    if (!validator) {
+        throw new Error('Invalid setting key! Please refer to README.');
     }
 
-    let realKey = mapper.key;
-    let realValue = mapper.valueTransformer(value);
+    value = value.toString().toLowerCase();
+    let valid = validator(value);
+    if (!valid) {
+        throw new Error('Invalid setting value! Please refer to README.');
+    }
 
-    settings[realKey] = realValue;
+    let trueKey = convertKebabToCamelCase(key);
+    let trueValue: string | boolean | number = value;
+    try {
+        trueValue = JSON.parse(value);
+    } catch (error) {
+    }
+
+    let settings = await getSettings();
+    settings[trueKey] = trueValue;
+    await fse.outputJson(userSettingsFilePath, settings);
 }

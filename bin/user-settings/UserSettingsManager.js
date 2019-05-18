@@ -11,49 +11,55 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const upath = require("upath");
 const OS = require("os");
 const fse = require("fs-extra");
-const PackageManagerUserSettingMapper_1 = require("./mappers/PackageManagerUserSettingMapper");
-const NotificationUserSettingMapper_1 = require("./mappers/NotificationUserSettingMapper");
-exports.userSettingsFilePath = upath.join(OS.homedir(), 'instapack', 'settings.json');
-let userSettingMappers = {
-    'package-manager': new PackageManagerUserSettingMapper_1.PackageManagerUserSettingMapper(),
-    'mute-notification': new NotificationUserSettingMapper_1.NotificationUserSettingMapper()
-};
-exports.userSettingOptions = Object.keys(userSettingMappers);
-function validateUserSetting(key, value) {
-    if (!userSettingMappers[key]) {
-        return false;
-    }
-    return userSettingMappers[key].valueValidator(value);
+const userSettingsFilePath = upath.join(OS.homedir(), 'instapack', 'settings.json');
+function convertKebabToCamelCase(s) {
+    return s.toLowerCase().replace(/-[a-z]/g, ss => {
+        return ss[1].toUpperCase();
+    });
 }
-exports.validateUserSetting = validateUserSetting;
-function readUserSettingsFrom(file) {
+const validators = Object.freeze({
+    'package-manager': (x) => ['yarn', 'npm', 'disabled'].includes(x),
+    'mute-notification': (x) => ['true', 'false'].includes(x)
+});
+const defaultSettings = Object.freeze({
+    packageManager: 'yarn',
+    muteNotification: false,
+});
+exports.userSettingsOptions = Object.freeze(Object.keys(validators));
+function getSettings() {
     return __awaiter(this, void 0, void 0, function* () {
-        let settings = {
-            muteNotification: false,
-            packageManager: 'yarn'
-        };
+        let settings = Object.assign({}, defaultSettings);
         try {
-            let json = yield fse.readJson(file);
-            if (json.packageManager === 'yarn' || json.packageManager === 'npm' || json.packageManager === 'disabled') {
-                settings.packageManager = json.packageManager;
-            }
-            if (typeof json.muteNotification === 'boolean') {
-                settings.muteNotification = json.muteNotification;
-            }
+            let currentSettings = yield fse.readJson(userSettingsFilePath);
+            settings = Object.assign(settings, currentSettings);
         }
-        catch (_a) {
+        catch (error) {
         }
         return settings;
     });
 }
-exports.readUserSettingsFrom = readUserSettingsFrom;
-function setUserSetting(settings, key, value) {
-    let mapper = userSettingMappers[key];
-    if (!mapper) {
-        throw new Error('Mapper not registered for provided key: ' + key);
-    }
-    let realKey = mapper.key;
-    let realValue = mapper.valueTransformer(value);
-    settings[realKey] = realValue;
+exports.getSettings = getSettings;
+function setSetting(key, value) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let validator = validators[key];
+        if (!validator) {
+            throw new Error('Invalid setting key! Please refer to README.');
+        }
+        value = value.toString().toLowerCase();
+        let valid = validator(value);
+        if (!valid) {
+            throw new Error('Invalid setting value! Please refer to README.');
+        }
+        let trueKey = convertKebabToCamelCase(key);
+        let trueValue = value;
+        try {
+            trueValue = JSON.parse(value);
+        }
+        catch (error) {
+        }
+        let settings = yield getSettings();
+        settings[trueKey] = trueValue;
+        yield fse.outputJson(userSettingsFilePath, settings);
+    });
 }
-exports.setUserSetting = setUserSetting;
+exports.setSetting = setSetting;

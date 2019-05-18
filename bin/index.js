@@ -17,9 +17,9 @@ const PathFinder_1 = require("./variables-factory/PathFinder");
 const PackageManager_1 = require("./PackageManager");
 const Shout_1 = require("./Shout");
 const ToolOrchestrator_1 = require("./ToolOrchestrator");
-const UserSettingsManager_1 = require("./user-settings/UserSettingsManager");
 const TypescriptConfigParser_1 = require("./TypescriptConfigParser");
 const MergePackageJson_1 = require("./MergePackageJson");
+const UserSettingsManager_1 = require("./user-settings/UserSettingsManager");
 module.exports = class instapack {
     constructor(projectFolder) {
         this.projectFolder = upath.normalize(projectFolder);
@@ -43,7 +43,7 @@ module.exports = class instapack {
             }
             let projectSettings = ReadProjectSettings_1.readProjectSettingsFrom(this.projectFolder);
             let dotEnv = EnvParser_1.readDotEnvFrom(this.projectFolder);
-            let userSettings = UserSettingsManager_1.readUserSettingsFrom(UserSettingsManager_1.userSettingsFilePath);
+            let userSettings = yield UserSettingsManager_1.getSettings();
             let typescriptConfiguration = TypescriptConfigParser_1.tryReadTypeScriptConfigJson(this.projectFolder);
             let variables = CompileVariables_1.compileVariables(flags, yield projectSettings, yield userSettings, yield dotEnv, yield typescriptConfiguration);
             if (variables.muteNotification) {
@@ -101,17 +101,8 @@ module.exports = class instapack {
     }
     changeUserSettings(key, value) {
         return __awaiter(this, void 0, void 0, function* () {
-            let valid = UserSettingsManager_1.validateUserSetting(key, value);
-            if (!valid) {
-                Shout_1.Shout.error('invalid setting! Please consult README.');
-                return;
-            }
             try {
-                let file = UserSettingsManager_1.userSettingsFilePath;
-                console.log('Global settings file:', chalk_1.default.cyan(file));
-                let settings = yield UserSettingsManager_1.readUserSettingsFrom(file);
-                UserSettingsManager_1.setUserSetting(settings, key, value);
-                yield fse.outputJson(file, settings);
+                yield UserSettingsManager_1.setSetting(key, value);
                 console.log('Successfully saved the new setting!');
             }
             catch (error) {

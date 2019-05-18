@@ -74,7 +74,7 @@ program.command({
     command: 'set <key> <value>',
     describe: 'Change a global setting.',
     builder: yargs => {
-        return yargs.choices('key', UserSettingsManager_1.userSettingOptions);
+        return yargs.choices('key', UserSettingsManager_1.userSettingsOptions);
     },
     handler: (argv) => {
         echo('set', argv.key);

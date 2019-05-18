@@ -5,7 +5,7 @@ import chalk from 'chalk';
 
 import instapack = require('./index');
 import { parseCliEnvFlags } from './variables-factory/EnvParser';
-import { userSettingOptions } from './user-settings/UserSettingsManager';
+import { userSettingsOptions } from './user-settings/UserSettingsManager';
 const manifest = require('../package.json');
 
 let projectFolder = process.cwd();
@@ -87,7 +87,7 @@ program.command({
     command: 'set <key> <value>',
     describe: 'Change a global setting.',
     builder: yargs => {
-        return yargs.choices('key', userSettingOptions);
+        return yargs.choices('key', userSettingsOptions);
     },
     handler: (argv: any) => {
         echo('set', argv.key);

@@ -55,73 +55,6 @@ Out of the box, these files will be used as the program entry points:
 
   - Spiced :hot_pepper: with [AutoPrefixer](https://github.com/postcss/autoprefixer) for applying CSS vendor-prefixes automatically!
 
-## Docker: Multi-Stage Builds
-
-When using Docker, rapidly deployable application images can be developed using highly consistent build process!
-
-> This sample recipe assumes that the project `Dockerfile` is located in root `/` solution folder (next to `/MyApp.sln`), with the ASP.NET Core + instapack project located in `/MyApp` (`/MyApp/MyApp.csproj` and `/MyApp/package.json`)
-
-```Dockerfile
-FROM node:12-alpine AS instapack
-RUN npm install -g instapack@7.3.0
-COPY . /src
-WORKDIR /src/MyApp
-RUN ipack
-
-FROM mcr.microsoft.com/dotnet/core/sdk:2.2 as build
-COPY --from=instapack /src /src
-WORKDIR /src/MyApp
-RUN dotnet restore
-RUN dotnet publish -c Release
-
-FROM mcr.microsoft.com/dotnet/core/aspnet:2.2-alpine as runtime
-COPY --from=build /src/MyApp/bin/Release/netcoreapp2.2/publish /app
-WORKDIR /app
-ENTRYPOINT ["dotnet", "MyApp.dll"]
-```
-
-Build locally using Linux container: `docker build --pull --tag myapp:0.0.1 .`
-
-Run app via command: `docker run -p 12345:80 myapp:0.0.1`
-
-> When developing multiple front-end projects in one solution, simply run instapack multiple times in different `WORKDIR`
-
-### Docker: GitLab CI/CD
-
-Place `.gitlab-ci.yml` next to the `Dockerfile` to automatically build the image remotely on-commit, then push the image to the GitLab registry:
-
-```yaml
-image: docker:latest
-services:
-- docker:dind
-
-stages:
-- build
-- release
-
-variables:
-  TEST_IMAGE: registry.gitlab.com/$CI_PROJECT_PATH:$CI_COMMIT_REF_NAME
-  RELEASE_IMAGE: registry.gitlab.com/$CI_PROJECT_PATH:latest
-
-before_script:
-  - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN registry.gitlab.com
-
-build:
-  stage: build
-  script:
-    - docker build --pull -t $TEST_IMAGE .
-    - docker push $TEST_IMAGE
-
-release:
-  stage: release
-  script:
-    - docker pull $TEST_IMAGE
-    - docker tag $TEST_IMAGE $RELEASE_IMAGE
-    - docker push $RELEASE_IMAGE
-  only:
-    - master
-```
-
 ## System Requirements
 
 Currently supported Node.js is [the latest version 8 or 10 or 12 LTS](https://nodejs.org/en/download/).
@@ -636,6 +569,77 @@ Add the packages required for your project using npm / Yarn and then start hacki
 
 Also, pull requests are welcomed if you have a great starting templates and books for those projects. We'd love to expand our collections!
 
+### Is it even safe to target ES2015?
+
+As of June 2017, all major browsers (except Internet Explorer) supports ES2015. iOS 10.3 and above supports ES2015.
+
+### How to build instapack projects using Docker?
+
+This is a sample Dockerfile build recipe for building ASP.NET Core + instapack project:
+
+> This recipe assumes that the project `Dockerfile` is located in the root `/` solution folder (next to `/MyApp.sln`), with the ASP.NET Core + instapack project located in `/MyApp` (`/MyApp/MyApp.csproj` and `/MyApp/package.json`)
+
+```Dockerfile
+FROM node:12-alpine AS instapack
+RUN npm install -g instapack@7.3.0
+COPY . /src
+WORKDIR /src/MyApp
+RUN ipack
+
+FROM mcr.microsoft.com/dotnet/core/sdk:2.2 as build
+COPY --from=instapack /src /src
+WORKDIR /src/MyApp
+RUN dotnet restore
+RUN dotnet publish -c Release
+
+FROM mcr.microsoft.com/dotnet/core/aspnet:2.2-alpine as runtime
+COPY --from=build /src/MyApp/bin/Release/netcoreapp2.2/publish /app
+WORKDIR /app
+ENTRYPOINT ["dotnet", "MyApp.dll"]
+```
+
+Build locally using Linux container: `docker build --pull --tag myapp:0.0.1 .`
+
+Run app via command: `docker run -p 12345:80 myapp:0.0.1`
+
+> When developing multiple front-end projects in one solution, simply run instapack multiple times in different `WORKDIR`
+
+### How to build instapack projects on GitLab?
+
+Place `.gitlab-ci.yml` next to the `Dockerfile` to automatically build the image remotely on-commit, then push the image to the GitLab registry:
+
+```yaml
+image: docker:latest
+services:
+- docker:dind
+
+stages:
+- build
+- release
+
+variables:
+  TEST_IMAGE: registry.gitlab.com/$CI_PROJECT_PATH:$CI_COMMIT_REF_NAME
+  RELEASE_IMAGE: registry.gitlab.com/$CI_PROJECT_PATH:latest
+
+before_script:
+  - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN registry.gitlab.com
+
+build:
+  stage: build
+  script:
+    - docker build --pull -t $TEST_IMAGE .
+    - docker push $TEST_IMAGE
+
+release:
+  stage: release
+  script:
+    - docker pull $TEST_IMAGE
+    - docker tag $TEST_IMAGE $RELEASE_IMAGE
+    - docker push $RELEASE_IMAGE
+  only:
+    - master
+```
+
 ### How to debug using Visual Studio Code?
 
 Install the [VS Code extension: Debugger for Chrome](https://marketplace.visualstudio.com/items?itemName=msjsdiag.debugger-for-chrome), open the project using VS Code (`package.json` should be located on your workspace folder root).
@@ -714,10 +718,6 @@ However, you can _eject_ the `client` folder out of the back-end project folder,
 - Every front-end project can have vastly different `tsconfig.json` and `package.json` setup.
 
 - Prevents front-end projects from screwing around with each other's code.
-
-### Is targeting ES2015 safe?
-
-As of June 2017, all major browsers (except Internet Explorer) supports ES2015. iOS 10.3 and above supports ES2015.
 
 ### My package restore / IDE is slow. Help!
 

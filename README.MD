@@ -7,7 +7,7 @@
 <h1 align="center">instapack</h1>
 
 <p align="center">
-  All-in-one TypeScript and Sass compiler for web applications! :package: :rocket:
+  <i>All-in-one TypeScript and Sass compiler for web applications!</i> :package: :rocket:
 </p>
 
 <p align="center">

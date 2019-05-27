@@ -99,7 +99,7 @@ You may use `instapack` or `ipack` to invoke the command line interface.
 
 ### new [template]
 
-Scaffolds a new instapack project into your existing app folder where the command line is invoked. **All templates target ES2015 / [modern, evergreen browsers](https://www.techopedia.com/definition/31094/evergreen-browser) unless noted otherwise.** These templates are available:
+Scaffolds a new instapack project into your existing app folder where the command line is invoked. **All templates target [ES2015, compatible with modern major browsers](https://kangax.github.io/compat-table/es6/) unless noted otherwise.** These templates are available:
 
 - `empty` for a minimal clean slate.
 
@@ -127,7 +127,7 @@ Scaffolds a new instapack project into your existing app folder where the comman
 
 If no template parameter is provided, `vue` will be chosen. :vulcan_salute:
 
-Most templates are armed with `axios` REST library, which plays nice with [NSwag Studio](https://github.com/RicoSuter/NSwag/releases)-generated TypeScript API clients!
+> Most templates are armed with `axios` REST library, which plays nice with [NSwag Studio](https://github.com/RicoSuter/NSwag/releases)-generated TypeScript API clients!
 
 ### build [project]
 

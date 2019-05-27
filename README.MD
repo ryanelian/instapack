@@ -4,7 +4,7 @@
 
 [![npm](https://badge.fury.io/js/instapack.svg)](https://www.npmjs.com/package/instapack)
 [![Build Status](https://ryanelian.visualstudio.com/instapack/_apis/build/status/ryanelian.instapack)](https://ryanelian.visualstudio.com/instapack/_build/latest?definitionId=1)
-[![Greenkeeper badge](https://badges.greenkeeper.io/ryanelian/instapack.svg)](https://greenkeeper.io/) [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fryanelian%2Finstapack.svg?type=small)](https://app.fossa.com/projects/git%2Bgithub.com%2Fryanelian%2Finstapack?ref=badge_small)
+[![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=ryanelian/instapack)](https://dependabot.com) [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fryanelian%2Finstapack.svg?type=small)](https://app.fossa.com/projects/git%2Bgithub.com%2Fryanelian%2Finstapack?ref=badge_small)
 
 ## Install
 

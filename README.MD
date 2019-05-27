@@ -1,10 +1,16 @@
-# instapack [<img align="right" src="https://raw.githubusercontent.com/ryanelian/instapack/master/img/icon.png" width="144" height="144" alt="icon" />](https://github.com/ryanelian/instapack)
+[<img align="center" src="https://raw.githubusercontent.com/ryanelian/instapack/master/img/icon.png" width="144" height="144" alt="icon" />](https://github.com/ryanelian/instapack)
 
-> All-in-one TypeScript and Sass compiler for web applications! :package: :rocket:
+<h1 align="center">instapack</h1>
 
+<p align="center">
+  All-in-one TypeScript and Sass compiler for web applications! :package: :rocket:
+</p>
+
+<p align="center">
 [![npm](https://badge.fury.io/js/instapack.svg)](https://www.npmjs.com/package/instapack)
 [![Build Status](https://ryanelian.visualstudio.com/instapack/_apis/build/status/ryanelian.instapack)](https://ryanelian.visualstudio.com/instapack/_build/latest?definitionId=1)
 [![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=ryanelian/instapack)](https://dependabot.com) [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fryanelian%2Finstapack.svg?type=small)](https://app.fossa.com/projects/git%2Bgithub.com%2Fryanelian%2Finstapack?ref=badge_small)
+</p>
 
 ## Install
 
@@ -114,9 +120,7 @@ release:
 
 Currently supported Node.js is [the latest version 8 or 10 or 12 LTS](https://nodejs.org/en/download/).
 
-When using [Visual Studio 2017 (Update 2 or above)](https://www.visualstudio.com/downloads/), install [the latest TypeScript SDK for Visual Studio 2017](https://www.microsoft.com/en-us/download/details.aspx?id=55258).
-
-When using Visual Studio 2015 (Update 3 or above), install [the latest TypeScript SDK for Visual Studio 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48593).
+When using [Visual Studio 2017 or 2019](https://www.visualstudio.com/downloads/), install [the latest TypeScript SDK](https://marketplace.visualstudio.com/search?term=typescript&target=VS&category=Tools&cost=free&vsVersion=&subCategory=Programming%20Languages&sortBy=UpdatedDate).
 
 If using [the latest Visual Studio Code](https://code.visualstudio.com/), it should come with the latest TypeScript support out of the box.
 

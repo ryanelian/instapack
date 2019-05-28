@@ -11,13 +11,13 @@
     "axios": "^0.18.0",
     "inferno": "^7.1.12",
     "linq": "^3.2.0",
-    "luxon": "^1.13.3",
+    "luxon": "^1.15.0",
     "sweetalert": "^2.1.2",
-    "ts-polyfill": "^3.4.5",
+    "ts-polyfill": "^3.5.0-rc",
     "tslib": "^1.9.3"
   },
   "devDependencies": {
-    "@babel/core": "^7.4.4",
+    "@babel/core": "^7.4.5",
     "babel-plugin-inferno": "^6.0.5"
   }
 }

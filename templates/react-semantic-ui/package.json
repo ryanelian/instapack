@@ -11,12 +11,12 @@
     "@fortawesome/free-solid-svg-icons": "^5.8.2",
     "@fortawesome/react-fontawesome": "^0.1.4",
     "@types/luxon": "^1.13.0",
-    "@types/react": "^16.8.17",
+    "@types/react": "^16.8.18",
     "@types/react-dom": "^16.8.4",
     "@types/requirejs": "^2.1.31",
     "axios": "^0.18.0",
     "linq": "^3.2.0",
-    "luxon": "^1.13.3",
+    "luxon": "^1.15.0",
     "mobx": "^5.9.4",
     "mobx-react": "^5.4.4",
     "prop-types": "^15.7.2",
@@ -25,7 +25,7 @@
     "semantic-ui-css": "^2.4.1",
     "semantic-ui-react": "^0.87.1",
     "sweetalert": "^2.1.2",
-    "ts-polyfill": "^3.4.5",
+    "ts-polyfill": "^3.5.0-rc",
     "tslib": "^1.9.3"
   }
 }

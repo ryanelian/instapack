@@ -23,12 +23,12 @@
     "bootstrap": "^4.3.1",
     "jquery": "^3.4.1",
     "linq": "^3.2.0",
-    "luxon": "^1.13.3",
+    "luxon": "^1.15.0",
     "popper.js": "^1.15.0",
     "sweetalert": "^2.1.2",
-    "ts-polyfill": "^3.4.5",
+    "ts-polyfill": "^3.5.0-rc",
     "tslib": "^1.9.3",
-    "vee-validate": "^2.2.7",
+    "vee-validate": "^2.2.8",
     "vue": "^2.6.10",
     "vue-class-component": "^7.1.0"
   }

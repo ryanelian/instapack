@@ -10,8 +10,8 @@
     "@types/requirejs": "^2.1.31",
     "axios": "^0.18.0",
     "linq": "^3.2.0",
-    "luxon": "^1.13.3",
-    "ts-polyfill": "^3.4.5",
+    "luxon": "^1.15.0",
+    "ts-polyfill": "^3.5.0-rc",
     "tslib": "^1.9.3"
   }
 }

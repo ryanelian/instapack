@@ -10,9 +10,6 @@
   },
   "dependencies": {
     "@types/angular": "^1.6.54",
-    "@types/bootstrap": "3",
-    "@types/jquery": "^3.3.29",
-    "@types/luxon": "^1.13.0",
     "@types/requirejs": "^2.1.31",
     "angular": "^1.7.8",
     "angular-animate": "^1.7.8",
@@ -24,12 +21,11 @@
     "jquery-validation": "^1.19.0",
     "jquery-validation-unobtrusive": "^3.2.11",
     "linq": "^3.2.0",
-    "luxon": "^1.13.3",
     "sweetalert": "^2.1.2",
-    "ts-polyfill": "^3.4.5",
+    "ts-polyfill": "^3.5.0-rc",
     "tslib": "^1.9.3"
   },
   "devDependencies": {
-    "uglify-js": "^3.5.13"
+    "uglify-js": "^3.5.15"
   }
 }

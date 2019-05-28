@@ -4,7 +4,6 @@ const path = require('path');
 
 console.log('Concatenating and minifying these JS files:');
 let inputs = [
-    require.resolve('ts-polyfill'),
     require.resolve('jquery'),
     require.resolve('jquery-validation'),
     require.resolve('jquery-validation-unobtrusive'),

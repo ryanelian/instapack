@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://github.com/ryanelian/instapack">
-    <img align="center" src="https://raw.githubusercontent.com/ryanelian/instapack/master/img/icon.png" width="144" height="144" alt="icon" />
+    <img align="center" src="https://raw.githubusercontent.com/ryanelian/instapack/master/img/icon.png" width="144" height="144" alt="logo" />
   </a>
 </p>
 
@@ -12,7 +12,7 @@
 
 <p align="center">
   <a href="https://www.npmjs.com/package/instapack"><img alt="npm" src="https://badgen.net/npm/v/instapack?icon=npm" /></a>
-  <a href="https://github.com/ryanelian/instapack/blob/master/LICENSE"><img alt="License" src="https://badgen.net/npm/license/instapack" /></a>
+  <a href="https://github.com/ryanelian/instapack/blob/master/LICENSE"><img alt="MIT License" src="https://badgen.net/npm/license/instapack" /></a>
   <a href="https://ryanelian.visualstudio.com/instapack/_build/latest?definitionId=1"><img alt="Build Status" src="https://ryanelian.visualstudio.com/instapack/_apis/build/status/ryanelian.instapack" /></a>
   <a href="https://dependabot.com"><img alt="Dependabot Status" src="https://api.dependabot.com/badges/status?host=github&repo=ryanelian/instapack" /></a>
   <a href="https://app.fossa.com/projects/git%2Bgithub.com%2Fryanelian%2Finstapack?ref=badge_small"><img alt="FOSSA Status" src="https://app.fossa.com/api/projects/git%2Bgithub.com%2Fryanelian%2Finstapack.svg?type=small" /></a>

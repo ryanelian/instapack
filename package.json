@@ -1,6 +1,6 @@
 {
   "name": "instapack",
-  "version": "7.3.0-rc.3",
+  "version": "7.3.0",
   "description": "All-in-one TypeScript and Sass compiler for web applications!",
   "keywords": [
     "typescript",
@@ -33,7 +33,7 @@
   "author": {
     "name": "Ryan Elian",
     "email": "ryan.elian@accelist.com",
-    "url": "https://elian.plus"
+    "url": "https://github.com/ryanelian"
   },
   "main": "bin/index.js",
   "bin": {

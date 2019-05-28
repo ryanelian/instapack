@@ -526,5 +526,5 @@ test('Level Check: ES2019 optional catch binding', t => {
       catch {
         return true;
       }`, ScriptTarget.ESNext);
-    t.is(check.level, ScriptTarget.ESNext);
+    t.is(check.level, ScriptTarget.ES2019);
 });

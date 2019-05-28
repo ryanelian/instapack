@@ -232,8 +232,8 @@ export function checkSyntaxLevel(sourcePath: string, source: string, languageTar
 
     let level = TypeScript.ScriptTarget.ES5;
     traverse(ast, node => {
-        if (level < TypeScript.ScriptTarget.ESNext && is2019Syntax(node)) {
-            level = TypeScript.ScriptTarget.ESNext;
+        if (level < TypeScript.ScriptTarget.ES2019 && is2019Syntax(node)) {
+            level = TypeScript.ScriptTarget.ES2019;
         } else if (level < TypeScript.ScriptTarget.ES2018 && is2018Syntax(node)) {
             level = TypeScript.ScriptTarget.ES2018;
         } else if (level < TypeScript.ScriptTarget.ES2017 && is2017Syntax(node)) {

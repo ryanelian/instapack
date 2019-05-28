@@ -445,5 +445,5 @@ ava_1.default('Level Check: ES2019 optional catch binding', t => {
       catch {
         return true;
       }`, typescript_1.ScriptTarget.ESNext);
-    t.is(check.level, typescript_1.ScriptTarget.ESNext);
+    t.is(check.level, typescript_1.ScriptTarget.ES2019);
 });

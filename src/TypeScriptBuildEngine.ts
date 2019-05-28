@@ -407,7 +407,10 @@ inject();
             performance: {
                 hints: false    // https://webpack.js.org/configuration/performance
             },
-            plugins: plugins
+            plugins: plugins,
+            watchOptions: {
+                ignored: [/node_modules/]
+            }
         };
 
         if (wildcards && config.resolve) {

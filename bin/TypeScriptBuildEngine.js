@@ -279,7 +279,10 @@ inject();
             performance: {
                 hints: false
             },
-            plugins: plugins
+            plugins: plugins,
+            watchOptions: {
+                ignored: [/node_modules/]
+            }
         };
         if (wildcards && config.resolve) {
             config.resolve.modules = wildcards;

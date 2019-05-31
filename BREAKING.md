@@ -14,6 +14,8 @@ Here are the list of breaking changes when upgrading between instapack major (or
 
   - **Example 2:** Imagine someone wrote a `.ts` library, shipped it to npm, and expects only TypeScript users to import it as-is. He'd be right, except COMPILE ERROR! That library only can be compiled with a specific version of TypeScript `2` and failed to be compiled with the latest TypeScript `3` used by instapack for some reason.
 
+  - **Example 3:** Imagine someone shipped an unbundled JS library which automatically applies CSS when run. However, that library source code imports plain CSS files AND depends on **YOUR specific webpack configuration to do the job...** (Not independently unlike [CSS-in-JS](https://cssinjs.org))
+
 ## 7.0.0
 
 - Sass language compiler service has been swapped to the primary Dart implementation!

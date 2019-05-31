@@ -6,12 +6,12 @@
     "output": "wwwroot"
   },
   "dependencies": {
-    "@types/luxon": "^1.13.0",
+    "@types/luxon": "^1.15.1",
     "@types/requirejs": "^2.1.31",
-    "axios": "^0.18.0",
+    "axios": "^0.19.0",
     "linq": "^3.2.0",
     "luxon": "^1.15.0",
-    "ts-polyfill": "^3.5.0-rc",
+    "ts-polyfill": "^3.5.1",
     "tslib": "^1.9.3"
   }
 }

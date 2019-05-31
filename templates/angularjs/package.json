@@ -22,10 +22,10 @@
     "jquery-validation-unobtrusive": "^3.2.11",
     "linq": "^3.2.0",
     "sweetalert": "^2.1.2",
-    "ts-polyfill": "^3.5.0-rc",
+    "ts-polyfill": "^3.5.1",
     "tslib": "^1.9.3"
   },
   "devDependencies": {
-    "uglify-js": "^3.5.15"
+    "uglify-js": "^3.6.0"
   }
 }

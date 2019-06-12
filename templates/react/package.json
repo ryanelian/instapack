@@ -12,15 +12,15 @@
     "@types/requirejs": "^2.1.31",
     "axios": "^0.19.0",
     "linq": "^3.2.0",
-    "luxon": "^1.15.0",
-    "mobx": "^5.9.4",
-    "mobx-react": "^6.0.2",
-    "office-ui-fabric-react": "^7.0.0-alpha003",
+    "luxon": "^1.16.0",
+    "mobx": "^5.10.1",
+    "mobx-react": "^6.0.3",
+    "office-ui-fabric-react": "^7.0.0",
     "prop-types": "^15.7.2",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "sweetalert": "^2.1.2",
     "ts-polyfill": "^3.5.1",
-    "tslib": "^1.9.3"
+    "tslib": "^1.10.0"
   }
 }

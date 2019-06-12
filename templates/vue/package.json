@@ -10,9 +10,9 @@
     }
   },
   "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "^1.2.18",
-    "@fortawesome/free-regular-svg-icons": "^5.8.2",
-    "@fortawesome/free-solid-svg-icons": "^5.8.2",
+    "@fortawesome/fontawesome-svg-core": "^1.2.19",
+    "@fortawesome/free-regular-svg-icons": "^5.9.0",
+    "@fortawesome/free-solid-svg-icons": "^5.9.0",
     "@fortawesome/vue-fontawesome": "^0.1.6",
     "@types/bootstrap": "4",
     "@types/jquery": "^3.3.29",
@@ -23,12 +23,12 @@
     "bootstrap": "^4.3.1",
     "jquery": "^3.4.1",
     "linq": "^3.2.0",
-    "luxon": "^1.15.0",
+    "luxon": "^1.16.0",
     "popper.js": "^1.15.0",
     "sweetalert": "^2.1.2",
     "ts-polyfill": "^3.5.1",
-    "tslib": "^1.9.3",
-    "vee-validate": "^2.2.9",
+    "tslib": "^1.10.0",
+    "vee-validate": "^2.2.10",
     "vue": "^2.6.10",
     "vue-class-component": "^7.1.0"
   }

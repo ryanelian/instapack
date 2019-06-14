@@ -581,7 +581,7 @@ This is a sample Dockerfile build recipe for building ASP.NET Core + instapack p
 
 ```Dockerfile
 FROM node:12-alpine AS instapack
-RUN npm install -g instapack@7.3.0
+RUN npm install -g instapack@7.3.1
 COPY . /src
 WORKDIR /src/MyApp
 RUN ipack

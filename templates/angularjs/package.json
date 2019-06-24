@@ -18,7 +18,7 @@
     "angular-ui-bootstrap": "^2.5.6",
     "bootstrap-sass": "^3.4.1",
     "jquery": "^3.4.1",
-    "jquery-validation": "^1.19.0",
+    "jquery-validation": "^1.19.1",
     "jquery-validation-unobtrusive": "^3.2.11",
     "linq": "^3.2.0",
     "sweetalert": "^2.1.2",

@@ -41,7 +41,7 @@ class TypeScriptSourceStore {
             let tsxGlobs = upath.join(folder, '**', '*.tsx');
             let vueGlobs = upath.join(folder, '**', '*.vue');
             this._typeCheckGlobs.push(tsGlobs, tsxGlobs, vueGlobs);
-            let files = yield glob.async(this._typeCheckGlobs);
+            let files = yield glob(this._typeCheckGlobs);
             let readSources = [];
             for (const file of files) {
                 readSources.push(this.loadFile(file));

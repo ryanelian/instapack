@@ -69,7 +69,7 @@
     "node-notifier": "5.4.0",
     "portfinder": "1.0.20",
     "postcss": "7.0.17",
-    "sass": "1.21.0",
+    "sass": "1.22.2",
     "source-map": "0.7.3",
     "tslint": "5.18.0",
     "typescript": "3.5.2",

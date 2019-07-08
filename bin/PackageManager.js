@@ -21,10 +21,10 @@ class PackageManager {
             return new Promise((ok, reject) => {
                 which(tool, (err, path) => {
                     if (err) {
-                        reject(err);
+                        ok(false);
                         return;
                     }
-                    ok(path);
+                    ok(true);
                 });
             });
         });

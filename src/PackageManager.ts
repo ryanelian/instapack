@@ -1,4 +1,3 @@
-import * as Process from 'process';
 import * as ChildProcess from 'child_process';
 import which = require('which');
 
@@ -18,14 +17,14 @@ export class PackageManager {
     }
 
     async whichAsync(tool: string) {
-        return new Promise<string>((ok, reject) => {
+        return new Promise<boolean>((ok, reject) => {
             which(tool, (err, path) => {
                 if (err) {
-                    reject(err);
+                    ok(false);
                     return;
                 }
 
-                ok(path);
+                ok(true);
             });
         });
     }

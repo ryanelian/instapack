@@ -10,7 +10,7 @@
     "@types/requirejs": "^2.1.31",
     "axios": "^0.19.0",
     "linq": "^3.2.0",
-    "luxon": "^1.16.1",
+    "luxon": "^1.17.1",
     "preact": "^8.4.2",
     "sweetalert": "^2.1.2",
     "ts-polyfill": "^3.5.1",

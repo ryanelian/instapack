@@ -5217,10 +5217,10 @@ safe-regex@^1.1.0:
   resolved "https://registry.yarnpkg.com/safer-buffer/-/safer-buffer-2.1.2.tgz#44fa161b0187b9549dd84bb91802f9bd8385cd6a"
   integrity sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==
 
-sass@1.22.6:
-  version "1.22.6"
-  resolved "https://registry.yarnpkg.com/sass/-/sass-1.22.6.tgz#1192aeb55b954576c67eafd560bd17f417903ce9"
-  integrity sha512-tkOvFnETGZShLiRHylzzLai6aQLhBHTG3t15FMgWy+UsRx99ZdQcSBxwPYbiapl+2DndQtr6N4fXbCwjhon9yw==
+sass@1.22.7:
+  version "1.22.7"
+  resolved "https://registry.yarnpkg.com/sass/-/sass-1.22.7.tgz#5a1a77dc11aa659db4e782d238bf9f3d44a60546"
+  integrity sha512-ahREi0AdG7RTovSv14+yd1prQSfIvFcrDpOsth5EQf1+RM7SvOxsSttzNQaFmK1aa/k/3vyYwlYF5l0Xl+6c+g==
   dependencies:
     chokidar ">=2.0.0 <4.0.0"
 

@@ -10,12 +10,12 @@
     }
   },
   "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "^1.2.19",
-    "@fortawesome/free-regular-svg-icons": "^5.9.0",
-    "@fortawesome/free-solid-svg-icons": "^5.9.0",
+    "@fortawesome/fontawesome-svg-core": "^1.2.21",
+    "@fortawesome/free-regular-svg-icons": "^5.10.1",
+    "@fortawesome/free-solid-svg-icons": "^5.10.1",
     "@fortawesome/vue-fontawesome": "^0.1.6",
     "@types/bootstrap": "4",
-    "@types/jquery": "^3.3.30",
+    "@types/jquery": "^3.3.31",
     "@types/luxon": "^1.15.2",
     "@types/requirejs": "^2.1.31",
     "aspnet-validation": "^0.0.11",
@@ -23,12 +23,12 @@
     "bootstrap": "^4.3.1",
     "jquery": "^3.4.1",
     "linq": "^3.2.0",
-    "luxon": "^1.17.1",
+    "luxon": "^1.17.2",
     "popper.js": "^1.15.0",
     "sweetalert": "^2.1.2",
     "ts-polyfill": "^3.5.1",
     "tslib": "^1.10.0",
-    "vee-validate": "^2.2.13",
+    "vee-validate": "^2.2.15",
     "vue": "^2.6.10",
     "vue-class-component": "^7.1.0"
   }

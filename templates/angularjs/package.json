@@ -22,7 +22,7 @@
     "jquery-validation-unobtrusive": "^3.2.11",
     "linq": "^3.2.0",
     "sweetalert": "^2.1.2",
-    "ts-polyfill": "^3.5.1",
+    "ts-polyfill": "^3.5.3",
     "tslib": "^1.10.0"
   },
   "devDependencies": {

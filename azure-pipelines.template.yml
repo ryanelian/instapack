@@ -61,12 +61,3 @@ jobs:
       ipack &&
       ipack -db
     displayName: 'Full-Cycle Test: inferno'
-
-  - script: >
-      rimraf ./demo &&
-      mkdir demo &&
-      cd demo &&
-      ipack new hyperapp &&
-      ipack &&
-      ipack -db
-    displayName: 'Full-Cycle Test: hyperapp'

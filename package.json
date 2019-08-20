@@ -71,7 +71,7 @@
     "postcss": "7.0.17",
     "sass": "1.22.9",
     "source-map": "0.7.3",
-    "tslint": "5.18.0",
+    "tslint": "5.19.0",
     "typescript": "3.5.3",
     "upath": "1.1.2",
     "vue-loader": "15.7.1",

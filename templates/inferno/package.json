@@ -9,7 +9,7 @@
     "@types/luxon": "^1.15.2",
     "@types/requirejs": "^2.1.31",
     "axios": "^0.19.0",
-    "inferno": "^7.3.0",
+    "inferno": "^7.3.1",
     "linq": "^3.2.0",
     "luxon": "^1.17.2",
     "sweetalert": "^2.1.2",

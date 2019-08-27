@@ -6,13 +6,14 @@
     "output": "wwwroot",
     "alias": {
       "vue": "vue/dist/vue.esm",
+      "vee-validate": "vee-validate/dist/vee-validate.full",
       "jquery": "jquery/dist/jquery.slim"
     }
   },
   "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "^1.2.21",
-    "@fortawesome/free-regular-svg-icons": "^5.10.1",
-    "@fortawesome/free-solid-svg-icons": "^5.10.1",
+    "@fortawesome/fontawesome-svg-core": "^1.2.22",
+    "@fortawesome/free-regular-svg-icons": "^5.10.2",
+    "@fortawesome/free-solid-svg-icons": "^5.10.2",
     "@fortawesome/vue-fontawesome": "^0.1.6",
     "@types/bootstrap": "4",
     "@types/jquery": "^3.3.31",
@@ -28,7 +29,7 @@
     "sweetalert": "^2.1.2",
     "ts-polyfill": "^3.5.3",
     "tslib": "^1.10.0",
-    "vee-validate": "^2.2.15",
+    "vee-validate": "^3.0.3",
     "vue": "^2.6.10",
     "vue-class-component": "^7.1.0"
   }

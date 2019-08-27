@@ -1,12 +1,10 @@
 import Vue from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import VeeValidate from 'vee-validate';
+import { ValidationProvider, ValidationObserver } from 'vee-validate';
 import Hello from './components/Hello.vue';
 
-Vue.use(VeeValidate, {
-    classes: true
-});
-
+Vue.component('ValidationProvider', ValidationProvider);
+Vue.component('ValidationObserver', ValidationObserver);
 Vue.component('fa', FontAwesomeIcon);
 
 // components must be registered BEFORE the app root declaration

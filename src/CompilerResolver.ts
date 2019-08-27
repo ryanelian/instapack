@@ -96,9 +96,9 @@ Fix the project package.json and make sure to use the same version for both:
         );
     } catch (err) {
         if (vueVersion && vueVersion !== instapackVueCompilerVersion) {
-            Shout.warning(`instapack vue-template-compiler (${instapackVueCompilerVersion}) and project vue (${vueVersion}) version mismatch!`
+            Shout.warning(`instapack built-in vue-template-compiler (${instapackVueCompilerVersion}) and project vue (${vueVersion}) version mismatch!`
                 + chalk.grey(`
-This may introduce bugs to the application. Please install a custom vue-template-compiler version:
+This may introduce bugs to the application. Please add a custom vue-template-compiler dependency to the project:
     yarn add vue-template-compiler@${vueVersion} -D -E
                         OR
     npm install vue-template-compiler@${vueVersion} -D -E

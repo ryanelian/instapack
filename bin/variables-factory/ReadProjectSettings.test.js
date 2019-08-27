@@ -1,9 +1,10 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -13,7 +14,7 @@ const upath = require("upath");
 const ReadProjectSettings_1 = require("./ReadProjectSettings");
 let root = process.cwd();
 let fixtures = upath.join(root, 'fixtures');
-ava_1.default('Project Settings: Not Found', (t) => __awaiter(this, void 0, void 0, function* () {
+ava_1.default('Project Settings: Not Found', (t) => __awaiter(void 0, void 0, void 0, function* () {
     let folder = upath.join(fixtures, 'Empty');
     let settings = yield ReadProjectSettings_1.readProjectSettingsFrom(folder);
     let result = {
@@ -28,7 +29,7 @@ ava_1.default('Project Settings: Not Found', (t) => __awaiter(this, void 0, void
     };
     t.deepEqual(settings, result);
 }));
-ava_1.default('Project Settings: Invalid', (t) => __awaiter(this, void 0, void 0, function* () {
+ava_1.default('Project Settings: Invalid', (t) => __awaiter(void 0, void 0, void 0, function* () {
     let folder = upath.join(fixtures, 'ProjectSettingsInvalid');
     let settings = yield ReadProjectSettings_1.readProjectSettingsFrom(folder);
     let result = {
@@ -43,7 +44,7 @@ ava_1.default('Project Settings: Invalid', (t) => __awaiter(this, void 0, void 0
     };
     t.deepEqual(settings, result);
 }));
-ava_1.default('Project Settings: Valid', (t) => __awaiter(this, void 0, void 0, function* () {
+ava_1.default('Project Settings: Valid', (t) => __awaiter(void 0, void 0, void 0, function* () {
     let folder = upath.join(fixtures, 'ProjectSettingsValid');
     let settings = yield ReadProjectSettings_1.readProjectSettingsFrom(folder);
     let result = {

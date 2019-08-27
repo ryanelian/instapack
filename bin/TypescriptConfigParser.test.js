@@ -1,9 +1,10 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -95,7 +96,7 @@ ava_1.default('Parse TypeScript Configuration: OK', t => {
         && result.options.importHelpers === true
         && result.options.jsx === TypeScript.JsxEmit.React);
 });
-ava_1.default('Read tsconfig.json: Valid', (t) => __awaiter(this, void 0, void 0, function* () {
+ava_1.default('Read tsconfig.json: Valid', (t) => __awaiter(void 0, void 0, void 0, function* () {
     let r = yield TypescriptConfigParser_1.tryReadTypeScriptConfigJson(validFolder);
     t.deepEqual(r, {
         "compilerOptions": {
@@ -157,11 +158,11 @@ let fallbackTypeScriptConfig = {
         ]
     }
 };
-ava_1.default('Read tsconfig.json: Empty', (t) => __awaiter(this, void 0, void 0, function* () {
+ava_1.default('Read tsconfig.json: Empty', (t) => __awaiter(void 0, void 0, void 0, function* () {
     let r = yield TypescriptConfigParser_1.tryReadTypeScriptConfigJson(emptyFolder);
     t.deepEqual(r, fallbackTypeScriptConfig);
 }));
-ava_1.default('Read tsconfig.json: Invalid', (t) => __awaiter(this, void 0, void 0, function* () {
+ava_1.default('Read tsconfig.json: Invalid', (t) => __awaiter(void 0, void 0, void 0, function* () {
     let r = yield TypescriptConfigParser_1.tryReadTypeScriptConfigJson(invalidFolder);
     t.deepEqual(r, fallbackTypeScriptConfig);
 }));

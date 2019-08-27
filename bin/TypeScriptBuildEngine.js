@@ -17,13 +17,15 @@ const webpack = require("webpack");
 const webpackDevServer = require("webpack-dev-server");
 const TypeScript = require("typescript");
 const vue_loader_1 = require("vue-loader");
+const CompilerResolver_1 = require("./CompilerResolver");
 const PrettyUnits_1 = require("./PrettyUnits");
 const Shout_1 = require("./Shout");
 const PathFinder_1 = require("./variables-factory/PathFinder");
 const LoaderPaths_1 = require("./loaders/LoaderPaths");
 const TypescriptConfigParser_1 = require("./TypescriptConfigParser");
 class TypeScriptBuildEngine {
-    constructor(variables, useBabel) {
+    constructor(variables) {
+        this.useBabel = false;
         this.wormholes = new Set();
         this.variables = variables;
         this.finder = new PathFinder_1.PathFinder(variables);
@@ -39,7 +41,6 @@ class TypeScriptBuildEngine {
         this.typescriptCompilerOptions.sourceMap = variables.sourceMap;
         this.typescriptCompilerOptions.inlineSources = variables.sourceMap;
         this.languageTarget = this.typescriptCompilerOptions.target || TypeScript.ScriptTarget.ES3;
-        this.useBabel = useBabel;
     }
     convertTypeScriptPathToWebpackAliasPath(baseUrl, value) {
         let result = upath.join(baseUrl, value);
@@ -146,6 +147,7 @@ class TypeScriptBuildEngine {
             use: [{
                     loader: LoaderPaths_1.LoaderPaths.vue,
                     options: {
+                        compiler: this.vueTemplateCompiler,
                         transformAssetUrls: {},
                         appendExtension: true
                     }
@@ -471,6 +473,9 @@ inject();
     }
     build() {
         return __awaiter(this, void 0, void 0, function* () {
+            this.useBabel = yield fse.pathExists(this.finder.babelConfiguration);
+            let vueCompiler = yield CompilerResolver_1.resolveVueTemplateCompiler(this.finder.root);
+            this.vueTemplateCompiler = vueCompiler.compiler;
             let webpackConfiguration = this.createWebpackConfiguration();
             if (this.variables.hot) {
                 yield this.runDevServer(webpackConfiguration);

@@ -7,6 +7,7 @@ import webpack = require('webpack');
 import webpackDevServer = require('webpack-dev-server');
 import * as TypeScript from 'typescript';
 import { VueLoaderPlugin } from 'vue-loader';
+import { resolveVueTemplateCompiler } from './CompilerResolver';
 
 import { prettyBytes, prettyMilliseconds } from './PrettyUnits';
 import { Shout } from './Shout';
@@ -28,9 +29,11 @@ export class TypeScriptBuildEngine {
 
     private readonly typescriptCompilerOptions: TypeScript.CompilerOptions;
 
-    private readonly useBabel: boolean;
-
     private readonly languageTarget: TypeScript.ScriptTarget;
+
+    private useBabel: boolean = false;
+
+    private vueTemplateCompiler;
 
     /**
      * Keep track of Hot Reload wormhole file names already created.
@@ -42,7 +45,7 @@ export class TypeScriptBuildEngine {
      * @param settings 
      * @param flags 
      */
-    constructor(variables: IVariables, useBabel: boolean) {
+    constructor(variables: IVariables) {
         this.variables = variables;
         this.finder = new PathFinder(variables);
 
@@ -59,8 +62,6 @@ export class TypeScriptBuildEngine {
         this.typescriptCompilerOptions.sourceMap = variables.sourceMap;
         this.typescriptCompilerOptions.inlineSources = variables.sourceMap;
         this.languageTarget = this.typescriptCompilerOptions.target || TypeScript.ScriptTarget.ES3;
-
-        this.useBabel = useBabel;
     }
 
     /**
@@ -223,6 +224,7 @@ export class TypeScriptBuildEngine {
             use: [{
                 loader: LoaderPaths.vue,
                 options: {
+                    compiler: this.vueTemplateCompiler,
                     transformAssetUrls: {},     // remove <img> src and SVG <image> xlink:href resolution
                     appendExtension: true
                 }
@@ -652,6 +654,10 @@ inject();
      * Runs the TypeScript build engine.
      */
     async build() {
+        this.useBabel = await fse.pathExists(this.finder.babelConfiguration);
+        let vueCompiler = await resolveVueTemplateCompiler(this.finder.root);
+        this.vueTemplateCompiler = vueCompiler.compiler;
+        
         let webpackConfiguration = this.createWebpackConfiguration();
 
         if (this.variables.hot) {

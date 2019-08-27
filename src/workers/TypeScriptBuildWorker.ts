@@ -1,9 +1,6 @@
-import * as fse from 'fs-extra';
-
 import { TypeScriptBuildEngine } from "../TypeScriptBuildEngine";
 import { Shout } from "../Shout";
 import { IVariables } from "../variables-factory/IVariables";
-import { PathFinder } from "../variables-factory/PathFinder";
 import portfinder = require('portfinder');
 
 /**
@@ -19,9 +16,6 @@ export = async function (variables: IVariables, finish) {
         Shout.enableNotification = false;
     }
 
-    let finder = new PathFinder(variables);
-    let useBabel = fse.pathExists(finder.babelConfiguration);
-
     if (variables.hot) {
         let basePort = variables.port1;
         if (!basePort) {
@@ -33,8 +27,7 @@ export = async function (variables: IVariables, finish) {
         variables.port1 = port;
     }
 
-    let tool = new TypeScriptBuildEngine(variables, await useBabel);
-
+    let tool = new TypeScriptBuildEngine(variables);
     try {
         await tool.build();
         if (!variables.watch) {

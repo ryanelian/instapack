@@ -90,10 +90,7 @@ Fix the project package.json and make sure to use the same version for both:
             compilerPath: compilerPath
         };
 
-        Shout.timed(chalk.green('Vue Template Compiler'),
-            'project custom version:',
-            chalk.yellow(vueCompilerVersion)
-        );
+        Shout.timed('Using project Vue Template Compiler', chalk.green(vueCompilerVersion));
     } catch (err) {
         if (vueVersion && vueVersion !== instapackVueCompilerVersion) {
             Shout.warning(`instapack built-in vue-template-compiler (${instapackVueCompilerVersion}) and project vue (${vueVersion}) version mismatch!`

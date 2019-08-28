@@ -84,7 +84,7 @@ Fix the project package.json and make sure to use the same version for both:
                 compiler: require(compilerPath),
                 compilerPath: compilerPath
             };
-            Shout_1.Shout.timed(chalk_1.default.green('Vue Template Compiler'), 'project custom version:', chalk_1.default.yellow(vueCompilerVersion));
+            Shout_1.Shout.timed('Using project Vue Template Compiler', chalk_1.default.green(vueCompilerVersion));
         }
         catch (err) {
             if (vueVersion && vueVersion !== instapackVueCompilerVersion) {

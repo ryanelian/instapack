@@ -31,6 +31,7 @@
     "tslib": "^1.10.0",
     "vee-validate": "^3.0.3",
     "vue": "^2.6.10",
-    "vue-class-component": "^7.1.0"
+    "vue-class-component": "^7.1.0",
+    "vue-template-compiler": "^2.6.10"
   }
 }

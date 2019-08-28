@@ -487,6 +487,8 @@ export default class Hello extends Vue {
   
   - **Reduced project maintainability:** Your CSS will be scattered across obscure files in the JS project, [similar to inline CSS](https://www.lifewire.com/avoid-inline-styles-for-css-3466846).
 
+- Projects with matching `vue-template-compiler` dependency (compiler version === Vue version) will be built using that specific compiler instead of using instapack built-in `vue-template-compiler`.
+
 ### Sass @import
 
 instapack also has a custom Node-like but standard-compliant Sass module system using `@import` syntax. 

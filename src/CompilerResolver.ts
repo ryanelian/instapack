@@ -1,5 +1,4 @@
 import * as fse from 'fs-extra';
-import * as upath from 'upath';
 import { NodeJsInputFileSystem, ResolverFactory } from 'enhanced-resolve';
 import { Shout } from './Shout';
 import chalk from 'chalk';

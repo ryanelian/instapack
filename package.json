@@ -67,7 +67,7 @@
     "loader-utils": "1.2.3",
     "merge-source-map": "1.1.0",
     "node-notifier": "5.4.3",
-    "portfinder": "1.0.23",
+    "portfinder": "1.0.24",
     "postcss": "7.0.17",
     "sass": "1.22.10",
     "source-map": "0.7.3",

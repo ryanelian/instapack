@@ -72,7 +72,7 @@
     "sass": "1.22.10",
     "source-map": "0.7.3",
     "tslint": "5.19.0",
-    "typescript": "3.6.2",
+    "typescript": "3.6.3",
     "upath": "1.1.2",
     "vue-loader": "15.7.1",
     "vue-template-compiler": "2.6.10",

@@ -1,0 +1,45 @@
+{
+  "compilerOptions": {
+    "noImplicitAny": false,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+    "strictNullChecks": false,
+    "strictFunctionTypes": false,
+    "strictPropertyInitialization": false,
+    "skipLibCheck": true,
+    
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+
+    "noEmit": true,
+    "target": "es2015",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "importHelpers": true,
+    "jsx": "react",
+
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "es2015",
+      "es2016.array.include",
+      "es2017.object",
+      "es2017.string",
+      "es2018.asynciterable",
+      "es2018.promise",
+      "es2019.array",
+      "es2019.object",
+      "es2019.string",
+      "es2020.string"
+    ]
+  },
+  "exclude": [
+    "node_modules"
+  ]
+}

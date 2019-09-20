@@ -105,9 +105,11 @@ Scaffolds a new instapack project into your existing app folder where the comman
 
 - `es5` for an empty template targeting ES5 browsers (Internet Explorer 10+).
 
-- `vue` for developing a web app using [Vue.js](https://vuejs.org/v2/guide/) and [Bootstrap 4](https://getbootstrap.com/). 
+- `vue` for developing a web app using [Vue.js](https://vuejs.org/v2/guide/) and [Bootstrap 4](https://getbootstrap.com/).
 
-  - Includes [aspnet-validation](https://www.npmjs.com/package/aspnet-validation) for ASP.NET MVC client-side validation.
+- `blazor` for developing a web app using the ASP.NET Core Blazor framework, which allows SPA-like experience using C# programming language instead of JS.
+
+  - [This template allows calling instapack-built TypeScript code from C#](https://docs.microsoft.com/en-us/aspnet/core/blazor/javascript-interop?view=aspnetcore-3.0) when a third-party JS library (from npm) is required. [Read more about `namespace` configuration ↓](https://github.com/ryanelian/instapack#configurations)
 
 - `react` for developing a web app using [React](https://reactjs.org/) and [MobX 5](https://github.com/mobxjs/mobx) and [Microsoft UI Fabric](https://developer.microsoft.com/en-us/fabric).
 
@@ -121,7 +123,7 @@ Scaffolds a new instapack project into your existing app folder where the comman
 
 - `angularjs` for developing a *legacy* web app targeting ES5 browsers using [AngularJS 1.7](https://angularjs.org/) and [Bootstrap 3](http://getbootstrap.com/docs/3.3/).
 
-  - Includes [jquery-validation-unobtrusive](https://github.com/aspnet/jquery-validation-unobtrusive) for ASP.NET MVC client-side validation and a simple JS concat tool.
+  - Includes [jquery-validation-unobtrusive](https://github.com/aspnet/jquery-validation-unobtrusive) for ASP.NET MVC client-side validation and a simple JS concat tool (`concat.cmd` and `concat.js`).
 
 If no template parameter is provided, `vue` will be chosen. :vulcan_salute:
 
@@ -149,7 +151,7 @@ In addition, build flags are available:
 
 - `package-manager` allows setting default package manager to be used for restoring and integrity-checking `node_modules` prior build. Possible values: `yarn`, `npm`, `disabled` (default: `yarn`)
 
-- `mute-notification` disables toast alert on build fails in watch mode when set to `true`. Possible values: `true` and `false` (default: `false`)
+- `silent` disables voice assistant on build fails during watch mode when set to `true`. Possible values: `true` and `false` (default: `false`)
 
 ## Configurations
 
@@ -176,6 +178,10 @@ instapack puts configurations inside `package.json` to reduce project files clut
 - `jsOut` allows setting the JS output file name. By default, it is set to `ipack.js`
 
 - `cssOut` allows setting the CSS output file name. By default, it is set to `ipack.css`
+
+- `namespace` allows exposing modules exported via JS entry point (`index.ts`) to be accessed as an object in the browser `window` global object.
+
+  - For example: `namespace: "instapack"` enables accessing `export function foo()` as `window.instapack.foo()` (which then can be invoked via [Blazor JS Interop](https://docs.microsoft.com/en-us/aspnet/core/blazor/javascript-interop?view=aspnetcore-3.0): `await JsRuntime.InvokeAsync<string>("instapack.foo");`)
 
 - `alias` allows overriding module `import` calls from all files, including dependencies. [Read more ↗](https://webpack.js.org/configuration/resolve/)
 

@@ -37,6 +37,7 @@ function readProjectSettingsFrom(folder) {
             cssOut: 'ipack.css',
             alias: {},
             externals: {},
+            namespace: undefined,
             port1: 0,
         };
         let parse;
@@ -80,6 +81,9 @@ function readProjectSettingsFrom(folder) {
                         settings.externals[key] = value;
                     }
                 }
+            }
+            if (typeof parse.namespace === 'string') {
+                settings.namespace = parse.namespace;
             }
         }
         return settings;

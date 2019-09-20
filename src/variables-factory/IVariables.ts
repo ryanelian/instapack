@@ -88,5 +88,7 @@ export interface IVariables {
      */
     port1: number;
 
+    namespace: string | undefined;
+
     typescriptConfiguration: any;
 }

@@ -255,7 +255,8 @@ inject();
                 filename: this.finder.jsOutputFileName,
                 chunkFilename: this.finder.jsChunkFileName,
                 path: osOutputJsFolder,
-                publicPath: this.outputPublicPath
+                publicPath: this.outputPublicPath,
+                library: this.variables.namespace
             },
             externals: this.variables.externals,
             resolve: {

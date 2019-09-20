@@ -9,6 +9,7 @@ function compileVariables(buildFlags, projectSettings, userSettings, dotEnv, typ
         cssOut: projectSettings.cssOut,
         alias: projectSettings.alias,
         externals: projectSettings.externals,
+        namespace: projectSettings.namespace,
         env: Object.assign(dotEnv, buildFlags.env),
         packageManager: userSettings.packageManager,
         silent: userSettings.silent,
@@ -29,7 +30,7 @@ function compileVariables(buildFlags, projectSettings, userSettings, dotEnv, typ
         variables.stats = false;
     }
     if (variables.watch === false) {
-        variables.silent = false;
+        variables.silent = true;
     }
     return variables;
 }

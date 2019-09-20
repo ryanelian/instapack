@@ -25,6 +25,7 @@ test('Compile Variables: Simple', t => {
 
             alias: {},
             externals: {},
+            namespace: 'instapack',
             port1: 0
         },
         {
@@ -57,8 +58,9 @@ test('Compile Variables: Simple', t => {
 
         alias: {},
         externals: {},
+        namespace: 'instapack',
         port1: 0,
-        silent: false,
+        silent: true,
         packageManager: 'yarn',
         env: {
             foo: 'bar',
@@ -114,6 +116,7 @@ test('Compile Variables: Overrides', t => {
             externals: {
                 jquery: '$'
             },
+            namespace: "instapack",
             port1: 20178
         },
         {
@@ -150,6 +153,7 @@ test('Compile Variables: Overrides', t => {
         externals: {
             jquery: '$'
         },
+        namespace: "instapack",
         port1: 20178,
         silent: true,
         packageManager: 'npm',

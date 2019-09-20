@@ -19,6 +19,7 @@ export function compileVariables(
 
         alias: projectSettings.alias,
         externals: projectSettings.externals,
+        namespace: projectSettings.namespace,
         env: Object.assign(dotEnv, buildFlags.env),
 
         packageManager: userSettings.packageManager,
@@ -45,7 +46,7 @@ export function compileVariables(
     }
 
     if (variables.watch === false) {
-        variables.silent = false;
+        variables.silent = true;
     }
 
     return variables;

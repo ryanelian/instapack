@@ -380,7 +380,8 @@ inject();
                 filename: this.finder.jsOutputFileName,
                 chunkFilename: this.finder.jsChunkFileName,   // https://webpack.js.org/guides/code-splitting
                 path: osOutputJsFolder,
-                publicPath: this.outputPublicPath
+                publicPath: this.outputPublicPath,
+                library: this.variables.namespace
             },
             externals: this.variables.externals,
             resolve: {

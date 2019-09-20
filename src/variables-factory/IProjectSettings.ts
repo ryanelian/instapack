@@ -7,4 +7,5 @@ export interface IProjectSettings {
     port1: number;
     alias: IMapLike<string>;
     externals: IMapLike<string>;
+    namespace: string | undefined;
 }

@@ -21,6 +21,7 @@ ava_1.default('Compile Variables: Simple', t => {
         cssOut: 'ipack.css',
         alias: {},
         externals: {},
+        namespace: 'instapack',
         port1: 0
     }, {
         silent: false,
@@ -47,8 +48,9 @@ ava_1.default('Compile Variables: Simple', t => {
         cssOut: 'ipack.css',
         alias: {},
         externals: {},
+        namespace: 'instapack',
         port1: 0,
-        silent: false,
+        silent: true,
         packageManager: 'yarn',
         env: {
             foo: 'bar',
@@ -98,6 +100,7 @@ ava_1.default('Compile Variables: Overrides', t => {
         externals: {
             jquery: '$'
         },
+        namespace: "instapack",
         port1: 20178
     }, {
         silent: true,
@@ -128,6 +131,7 @@ ava_1.default('Compile Variables: Overrides', t => {
         externals: {
             jquery: '$'
         },
+        namespace: "instapack",
         port1: 20178,
         silent: true,
         packageManager: 'npm',

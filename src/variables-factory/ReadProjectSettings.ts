@@ -33,6 +33,7 @@ export async function readProjectSettingsFrom(folder: string): Promise<IProjectS
 
         alias: {},
         externals: {},
+        namespace: undefined,
         port1: 0,
     };
 
@@ -87,6 +88,10 @@ export async function readProjectSettingsFrom(folder: string): Promise<IProjectS
                     settings.externals[key] = value;
                 }
             }
+        }
+
+        if (typeof parse.namespace === 'string'){
+            settings.namespace = parse.namespace;
         }
     }
 

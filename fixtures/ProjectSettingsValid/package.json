@@ -10,6 +10,7 @@
         "externals": {
             "jquery": "$"
         },
+        "namespace": "instapack",
         "port1": 32101
     }
 }

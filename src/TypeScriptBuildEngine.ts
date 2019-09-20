@@ -15,6 +15,7 @@ import { IVariables } from './variables-factory/IVariables';
 import { PathFinder } from './variables-factory/PathFinder';
 import { LoaderPaths } from './loaders/LoaderPaths';
 import { parseTypescriptConfig } from './TypescriptConfigParser';
+import { VoiceAssistant } from './VoiceAssistant';
 
 /**
  * Contains methods for compiling a TypeScript project.
@@ -35,6 +36,8 @@ export class TypeScriptBuildEngine {
 
     private vueTemplateCompiler;
 
+    private va: VoiceAssistant;
+
     /**
      * Keep track of Hot Reload wormhole file names already created.
      */
@@ -48,6 +51,7 @@ export class TypeScriptBuildEngine {
     constructor(variables: IVariables) {
         this.variables = variables;
         this.finder = new PathFinder(variables);
+        this.va = new VoiceAssistant(variables.silent);
 
         if (variables.hot) {
             this.outputPublicPath = `http://localhost:${this.variables.port1}/`;
@@ -522,22 +526,15 @@ inject();
         if (errors.length) {
             let errorMessage = '\n' + errors.join('\n\n') + '\n';
             console.error(chalk.red(errorMessage));
-            if (errors.length === 1) {
-                Shout.notify(`You have one JS build error!`);
-            } else {
-                Shout.notify(`You have ${errors.length} JS build errors!`);
-            }
+            this.va.speak(errors.length + " JAVASCRIPT BUILD ERROR!");
+        } else {
+            this.va.rewind();
         }
 
         let warnings: string[] = o.warnings;
         if (warnings.length) {
             let warningMessage = '\n' + warnings.join('\n\n') + '\n';
             console.warn(chalk.yellow(warningMessage));
-            if (warnings.length === 1) {
-                Shout.notify(`You have one JS build warning!`);
-            } else {
-                Shout.notify(`You have ${warnings.length} JS build warnings!`);
-            }
         }
 
         let jsOutputPath;
@@ -657,7 +654,7 @@ inject();
         this.useBabel = await fse.pathExists(this.finder.babelConfiguration);
         let vueCompiler = await resolveVueTemplateCompiler(this.finder.root);
         this.vueTemplateCompiler = vueCompiler.compiler;
-        
+
         let webpackConfiguration = this.createWebpackConfiguration();
 
         if (this.variables.hot) {

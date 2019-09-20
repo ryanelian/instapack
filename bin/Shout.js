@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const chalk_1 = require("chalk");
-const notifier = require("node-notifier");
 const upath = require("upath");
 const fse = require("fs-extra");
 const PrettyUnits_1 = require("./PrettyUnits");
@@ -65,24 +64,7 @@ exports.Shout = {
         let output = chalk_1.default.magenta('Sass') + message;
         console.log(output);
     },
-    enableNotification: true,
     displayVerboseOutput: false,
-    notify: function (...tokens) {
-        if (!this.enableNotification) {
-            return;
-        }
-        let message = '...';
-        let icon = upath.join(__dirname, '../img/icon.png');
-        if (tokens && tokens.length) {
-            message = concatenateTokens(tokens);
-        }
-        notifier.notify({
-            title: 'instapack',
-            message,
-            icon,
-            sound: false
-        });
-    },
     fileOutput(filePath, content) {
         let bundle = Buffer.from(content, 'utf8');
         let info = upath.parse(filePath);

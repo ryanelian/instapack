@@ -15,12 +15,12 @@ type ValidatorFunction = (x: string) => boolean;
 
 const validators: Readonly<IMapLike<ValidatorFunction>> = Object.freeze({
     'package-manager': (x: string) => ['yarn', 'npm', 'disabled'].includes(x),
-    'mute-notification': (x: string) => ['true', 'false'].includes(x)
+    'silent': (x: string) => ['true', 'false'].includes(x)
 });
 
 const defaultSettings: Readonly<IUserSettings> = Object.freeze({
     packageManager: 'yarn',
-    muteNotification: false,
+    silent: false,
 });
 
 export const userSettingsOptions = Object.freeze(Object.keys(validators));
@@ -37,7 +37,7 @@ export async function getSettings() {
     return settings;
 }
 
-export async function setSetting(key: string, value: string) {
+export async function setSetting(key: string, value: string): Promise<string> {
     let validator = validators[key];
     if (!validator) {
         throw new Error('Invalid setting key! Please refer to README.');
@@ -59,4 +59,5 @@ export async function setSetting(key: string, value: string) {
     let settings = await getSettings();
     settings[trueKey] = trueValue;
     await fse.outputJson(userSettingsFilePath, settings);
+    return userSettingsFilePath;
 }

@@ -11,7 +11,7 @@ function compileVariables(buildFlags, projectSettings, userSettings, dotEnv, typ
         externals: projectSettings.externals,
         env: Object.assign(dotEnv, buildFlags.env),
         packageManager: userSettings.packageManager,
-        muteNotification: userSettings.muteNotification,
+        silent: userSettings.silent,
         production: buildFlags.production,
         sourceMap: buildFlags.sourceMap,
         watch: buildFlags.watch,
@@ -27,6 +27,9 @@ function compileVariables(buildFlags, projectSettings, userSettings, dotEnv, typ
     }
     if (variables.production === false || variables.watch) {
         variables.stats = false;
+    }
+    if (variables.watch === false) {
+        variables.silent = false;
     }
     return variables;
 }

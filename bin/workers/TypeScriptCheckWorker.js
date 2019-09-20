@@ -15,9 +15,6 @@ module.exports = function (variables, finish) {
         if (variables.verbose) {
             Shout_1.Shout.displayVerboseOutput = true;
         }
-        if (variables.muteNotification) {
-            Shout_1.Shout.enableNotification = false;
-        }
         let tool = yield TypeScriptCheckerTool_1.TypeScriptCheckerTool.createToolAsync(variables);
         try {
             yield tool.typeCheck();

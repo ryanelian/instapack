@@ -14,6 +14,7 @@ const chalk_1 = require("chalk");
 const Shout_1 = require("./Shout");
 const PathFinder_1 = require("./variables-factory/PathFinder");
 const RunWorker_1 = require("./workers/RunWorker");
+const VoiceAssistant_1 = require("./VoiceAssistant");
 class ToolOrchestrator {
     constructor(variables) {
         this.variables = variables;
@@ -71,11 +72,13 @@ class ToolOrchestrator {
                     if (valid) {
                         RunWorker_1.runTypeScriptBuildWorker(this.variables).catch(error => {
                             Shout_1.Shout.fatal(`during JS build:`, error);
-                            Shout_1.Shout.notify(`FATAL ERROR during JS build!`);
+                            let va = new VoiceAssistant_1.VoiceAssistant(this.variables.silent);
+                            va.speak(`JAVASCRIPT BUILD FATAL ERROR!`);
                         });
                         RunWorker_1.runTypeScriptCheckWorker(this.variables).catch(error => {
                             Shout_1.Shout.fatal(`during type-checking:`, error);
-                            Shout_1.Shout.notify(`FATAL ERROR during type-checking!`);
+                            let va = new VoiceAssistant_1.VoiceAssistant(this.variables.silent);
+                            va.speak(`TYPE CHECK FATAL ERROR!`);
                         });
                     }
                     return;
@@ -85,7 +88,8 @@ class ToolOrchestrator {
                     if (valid) {
                         RunWorker_1.runSassBuildWorker(this.variables).catch(error => {
                             Shout_1.Shout.fatal(`during CSS build:`, error);
-                            Shout_1.Shout.notify(`FATAL ERROR during CSS build!`);
+                            let va = new VoiceAssistant_1.VoiceAssistant(this.variables.silent);
+                            va.speak(`CSS BUILD FATAL ERROR!`);
                         });
                     }
                     return;

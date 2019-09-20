@@ -19,9 +19,11 @@ const Shout_1 = require("./Shout");
 const PathFinder_1 = require("./variables-factory/PathFinder");
 const TypescriptConfigParser_1 = require("./TypescriptConfigParser");
 const TypeScriptSourceStore_1 = require("./TypeScriptSourceStore");
+const VoiceAssistant_1 = require("./VoiceAssistant");
 class TypeScriptCheckerTool {
-    constructor(sourceStore, compilerOptions, tslintConfiguration) {
+    constructor(sourceStore, compilerOptions, tslintConfiguration, silent) {
         this.sourceStore = sourceStore;
+        this.va = new VoiceAssistant_1.VoiceAssistant(silent);
         this.compilerOptions = compilerOptions;
         this.host = TypeScript.createCompilerHost(compilerOptions);
         this.patchCompilerHost();
@@ -55,7 +57,7 @@ class TypeScriptCheckerTool {
                 tslintConfiguration = tslintFind.results;
                 Shout_1.Shout.timed('tslint:', chalk_1.default.cyan(tslintFind.path));
             }
-            let tool = new TypeScriptCheckerTool(sourceStore, compilerOptions, tslintConfiguration);
+            let tool = new TypeScriptCheckerTool(sourceStore, compilerOptions, tslintConfiguration, variables.silent);
             yield loading;
             return tool;
         });
@@ -94,16 +96,12 @@ class TypeScriptCheckerTool {
                 }
             }
             if (errors.length > 0) {
-                if (errors.length === 1) {
-                    Shout_1.Shout.notify(`You have one TypeScript check error!`);
-                }
-                else {
-                    Shout_1.Shout.notify(`You have ${errors.length} TypeScript check errors!`);
-                }
+                this.va.speak(errors.length + 'TYPESCRIPT COMPILE ERROR!');
                 let errorsOut = '\n' + errors.join('\n\n') + '\n';
                 console.error(errorsOut);
             }
             else {
+                this.va.rewind();
                 console.log(chalk_1.default.green('Types OK') + chalk_1.default.grey(': Successfully checked TypeScript project without errors.'));
             }
         }

@@ -49,9 +49,9 @@ export interface IVariables {
     packageManager: 'npm' | 'yarn' | 'disabled';
 
     /**
-     * Gets the user settings for disabling notification on build failure.
+     * Gets the user settings for disabling voice assistant on build failure.
      */
-    muteNotification: boolean;
+    silent: boolean;
 
     /**
      * Gets the production mode build flag, which enables minification and optimization of the build outputs. 

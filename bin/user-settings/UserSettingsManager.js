@@ -20,11 +20,11 @@ function convertKebabToCamelCase(s) {
 }
 const validators = Object.freeze({
     'package-manager': (x) => ['yarn', 'npm', 'disabled'].includes(x),
-    'mute-notification': (x) => ['true', 'false'].includes(x)
+    'silent': (x) => ['true', 'false'].includes(x)
 });
 const defaultSettings = Object.freeze({
     packageManager: 'yarn',
-    muteNotification: false,
+    silent: false,
 });
 exports.userSettingsOptions = Object.freeze(Object.keys(validators));
 function getSettings() {
@@ -61,6 +61,7 @@ function setSetting(key, value) {
         let settings = yield getSettings();
         settings[trueKey] = trueValue;
         yield fse.outputJson(userSettingsFilePath, settings);
+        return userSettingsFilePath;
     });
 }
 exports.setSetting = setSetting;

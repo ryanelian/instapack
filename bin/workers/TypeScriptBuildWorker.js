@@ -16,9 +16,6 @@ module.exports = function (variables, finish) {
         if (variables.verbose) {
             Shout_1.Shout.displayVerboseOutput = true;
         }
-        if (variables.muteNotification) {
-            Shout_1.Shout.enableNotification = false;
-        }
         if (variables.hot) {
             let basePort = variables.port1;
             if (!basePort) {

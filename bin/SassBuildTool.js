@@ -22,10 +22,12 @@ const PrettyUnits_1 = require("./PrettyUnits");
 const Shout_1 = require("./Shout");
 const PathFinder_1 = require("./variables-factory/PathFinder");
 const SassImportResolver_1 = require("./SassImportResolver");
+const VoiceAssistant_1 = require("./VoiceAssistant");
 class SassBuildTool {
     constructor(variables) {
         this.variables = variables;
         this.finder = new PathFinder_1.PathFinder(variables);
+        this.va = new VoiceAssistant_1.VoiceAssistant(variables.silent);
     }
     runSassAsync(options) {
         return new Promise((ok, reject) => {
@@ -153,6 +155,7 @@ class SassBuildTool {
                 yield Shout_1.Shout.fileOutput(cssOutputPath + '.map', s);
             }
             yield cssOutputTask;
+            this.va.rewind();
         });
     }
     buildWithStopwatch() {
@@ -164,7 +167,7 @@ class SassBuildTool {
             }
             catch (error) {
                 let render;
-                Shout_1.Shout.notify('You have one or more CSS build errors!');
+                this.va.speak('CSS COMPILE ERROR!');
                 if (error['formatted']) {
                     let formatted = 'Sass Compile' + error['formatted'].trim();
                     render = chalk_1.default.red(formatted);

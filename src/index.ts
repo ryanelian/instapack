@@ -70,14 +70,10 @@ export = class instapack {
 
         let variables = compileVariables(flags,
             await projectSettings,
-            await userSettings,
+            userSettings,
             await dotEnv,
             await typescriptConfiguration
         );
-
-        if (variables.muteNotification) {
-            Shout.enableNotification = false;
-        }
 
         if (variables.packageManager !== 'disabled') {
             let finder = new PathFinder(variables);
@@ -145,8 +141,9 @@ export = class instapack {
      */
     async changeUserSettings(key: string, value: string) {
         try {
-            await setSetting(key, value);
+            let settingsFilePath = await setSetting(key, value);
             console.log('Successfully saved the new setting!');
+            console.log(chalk.grey(settingsFilePath));
         } catch (error) {
             Shout.error('when saving new settings:', error);
         }

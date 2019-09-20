@@ -23,7 +23,7 @@ ava_1.default('Compile Variables: Simple', t => {
         externals: {},
         port1: 0
     }, {
-        muteNotification: false,
+        silent: false,
         packageManager: 'yarn'
     }, {
         hello: 'world'
@@ -48,7 +48,7 @@ ava_1.default('Compile Variables: Simple', t => {
         alias: {},
         externals: {},
         port1: 0,
-        muteNotification: false,
+        silent: false,
         packageManager: 'yarn',
         env: {
             foo: 'bar',
@@ -100,7 +100,7 @@ ava_1.default('Compile Variables: Overrides', t => {
         },
         port1: 20178
     }, {
-        muteNotification: true,
+        silent: true,
         packageManager: 'npm'
     }, {
         foo: 'zero'
@@ -129,7 +129,7 @@ ava_1.default('Compile Variables: Overrides', t => {
             jquery: '$'
         },
         port1: 20178,
-        muteNotification: true,
+        silent: true,
         packageManager: 'npm',
         env: {
             foo: 'bar'

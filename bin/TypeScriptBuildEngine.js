@@ -24,12 +24,14 @@ const Shout_1 = require("./Shout");
 const PathFinder_1 = require("./variables-factory/PathFinder");
 const LoaderPaths_1 = require("./loaders/LoaderPaths");
 const TypescriptConfigParser_1 = require("./TypescriptConfigParser");
+const VoiceAssistant_1 = require("./VoiceAssistant");
 class TypeScriptBuildEngine {
     constructor(variables) {
         this.useBabel = false;
         this.wormholes = new Set();
         this.variables = variables;
         this.finder = new PathFinder_1.PathFinder(variables);
+        this.va = new VoiceAssistant_1.VoiceAssistant(variables.silent);
         if (variables.hot) {
             this.outputPublicPath = `http://localhost:${this.variables.port1}/`;
         }
@@ -369,23 +371,15 @@ inject();
         if (errors.length) {
             let errorMessage = '\n' + errors.join('\n\n') + '\n';
             console.error(chalk_1.default.red(errorMessage));
-            if (errors.length === 1) {
-                Shout_1.Shout.notify(`You have one JS build error!`);
-            }
-            else {
-                Shout_1.Shout.notify(`You have ${errors.length} JS build errors!`);
-            }
+            this.va.speak(errors.length + " JAVASCRIPT BUILD ERROR!");
+        }
+        else {
+            this.va.rewind();
         }
         let warnings = o.warnings;
         if (warnings.length) {
             let warningMessage = '\n' + warnings.join('\n\n') + '\n';
             console.warn(chalk_1.default.yellow(warningMessage));
-            if (warnings.length === 1) {
-                Shout_1.Shout.notify(`You have one JS build warning!`);
-            }
-            else {
-                Shout_1.Shout.notify(`You have ${warnings.length} JS build warnings!`);
-            }
         }
         let jsOutputPath;
         if (this.variables.hot) {

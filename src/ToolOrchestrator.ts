@@ -5,6 +5,7 @@ import { Shout } from './Shout';
 import { IVariables } from './variables-factory/IVariables';
 import { PathFinder } from './variables-factory/PathFinder';
 import { runTypeScriptBuildWorker, runSassBuildWorker, runTypeScriptCheckWorker } from './workers/RunWorker';
+import { VoiceAssistant } from './VoiceAssistant';
 
 /**
  * Contains methods for assembling and invoking the build tasks.
@@ -90,11 +91,13 @@ export class ToolOrchestrator {
                 if (valid) {
                     runTypeScriptBuildWorker(this.variables).catch(error => {
                         Shout.fatal(`during JS build:`, error);
-                        Shout.notify(`FATAL ERROR during JS build!`);
+                        let va = new VoiceAssistant(this.variables.silent);
+                        va.speak(`JAVASCRIPT BUILD FATAL ERROR!`);
                     });
                     runTypeScriptCheckWorker(this.variables).catch(error => {
                         Shout.fatal(`during type-checking:`, error);
-                        Shout.notify(`FATAL ERROR during type-checking!`);
+                        let va = new VoiceAssistant(this.variables.silent);
+                        va.speak(`TYPE CHECK FATAL ERROR!`);
                     });
                 }
                 return;
@@ -105,7 +108,8 @@ export class ToolOrchestrator {
                 if (valid) {
                     runSassBuildWorker(this.variables).catch(error => {
                         Shout.fatal(`during CSS build:`, error);
-                        Shout.notify(`FATAL ERROR during CSS build!`);
+                        let va = new VoiceAssistant(this.variables.silent);
+                        va.speak(`CSS BUILD FATAL ERROR!`);
                     });
                 }
                 return;

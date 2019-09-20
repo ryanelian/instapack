@@ -1,5 +1,4 @@
 import chalk from 'chalk';
-import notifier = require('node-notifier');
 import * as upath from 'upath';
 import * as fse from 'fs-extra';
 import { prettyBytes } from './PrettyUnits';
@@ -79,28 +78,7 @@ export let Shout = {
         console.log(output);
     },
 
-    enableNotification: true,
-
     displayVerboseOutput: false,
-
-    notify: function (...tokens) {
-        if (!this.enableNotification) {
-            return;
-        }
-
-        let message = '...';
-        let icon = upath.join(__dirname, '../img/icon.png');
-        if (tokens && tokens.length) {
-            message = concatenateTokens(tokens);
-        }
-
-        notifier.notify({
-            title: 'instapack',
-            message,
-            icon,
-            sound: false
-        });
-    },
 
     /**
      * Logs file output and writes to output directory as a UTF-8 encoded string.

@@ -46,10 +46,7 @@ module.exports = class instapack {
             let dotEnv = EnvParser_1.readDotEnvFrom(this.projectFolder);
             let userSettings = yield UserSettingsManager_1.getSettings();
             let typescriptConfiguration = TypescriptConfigParser_1.tryReadTypeScriptConfigJson(this.projectFolder);
-            let variables = CompileVariables_1.compileVariables(flags, yield projectSettings, yield userSettings, yield dotEnv, yield typescriptConfiguration);
-            if (variables.muteNotification) {
-                Shout_1.Shout.enableNotification = false;
-            }
+            let variables = CompileVariables_1.compileVariables(flags, yield projectSettings, userSettings, yield dotEnv, yield typescriptConfiguration);
             if (variables.packageManager !== 'disabled') {
                 let finder = new PathFinder_1.PathFinder(variables);
                 let packageJsonPath = finder.packageJson;
@@ -103,8 +100,9 @@ module.exports = class instapack {
     changeUserSettings(key, value) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                yield UserSettingsManager_1.setSetting(key, value);
+                let settingsFilePath = yield UserSettingsManager_1.setSetting(key, value);
                 console.log('Successfully saved the new setting!');
+                console.log(chalk_1.default.grey(settingsFilePath));
             }
             catch (error) {
                 Shout_1.Shout.error('when saving new settings:', error);

@@ -12,10 +12,6 @@ export = async function (variables: IVariables, finish) {
         Shout.displayVerboseOutput = true;
     }
 
-    if (variables.muteNotification) {
-        Shout.enableNotification = false;
-    }
-
     let tool = new SassBuildTool(variables);
 
     try {

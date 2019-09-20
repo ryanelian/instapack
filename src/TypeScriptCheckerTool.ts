@@ -10,6 +10,7 @@ import { IVariables } from './variables-factory/IVariables';
 import { PathFinder } from './variables-factory/PathFinder';
 import { parseTypescriptConfig } from './TypescriptConfigParser';
 import { TypeScriptSourceStore } from './TypeScriptSourceStore';
+import { VoiceAssistant } from './VoiceAssistant';
 
 /**
  * Contains methods for static-checking TypeScript projects. 
@@ -35,6 +36,8 @@ export class TypeScriptCheckerTool {
      */
     sourceStore: TypeScriptSourceStore;
 
+    private va: VoiceAssistant;
+
     /**
      * Constructs a new instance of TypeScriptCheckerTool using provided instapack Settings.
      * @param settings 
@@ -42,9 +45,11 @@ export class TypeScriptCheckerTool {
     private constructor(
         sourceStore: TypeScriptSourceStore,
         compilerOptions: TypeScript.CompilerOptions,
-        tslintConfiguration: tslint.Configuration.IConfigurationFile | undefined) {
+        tslintConfiguration: tslint.Configuration.IConfigurationFile | undefined,
+        silent: boolean) {
 
         this.sourceStore = sourceStore;
+        this.va = new VoiceAssistant(silent);
 
         this.compilerOptions = compilerOptions;
         this.host = TypeScript.createCompilerHost(compilerOptions);
@@ -101,7 +106,7 @@ export class TypeScriptCheckerTool {
             Shout.timed('tslint:', chalk.cyan(tslintFind.path));
         }
 
-        let tool = new TypeScriptCheckerTool(sourceStore, compilerOptions, tslintConfiguration);
+        let tool = new TypeScriptCheckerTool(sourceStore, compilerOptions, tslintConfiguration, variables.silent);
         await loading;
         return tool;
     }
@@ -156,15 +161,11 @@ export class TypeScriptCheckerTool {
             }
 
             if (errors.length > 0) {
-                if (errors.length === 1) {
-                    Shout.notify(`You have one TypeScript check error!`);
-                } else {
-                    Shout.notify(`You have ${errors.length} TypeScript check errors!`);
-                }
-
+                this.va.speak(errors.length + 'TYPESCRIPT COMPILE ERROR!');
                 let errorsOut = '\n' + errors.join('\n\n') + '\n';
                 console.error(errorsOut);
             } else {
+                this.va.rewind();
                 console.log(chalk.green('Types OK') + chalk.grey(': Successfully checked TypeScript project without errors.'));
             }
         } finally {

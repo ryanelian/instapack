@@ -14,6 +14,7 @@ import { Shout } from './Shout';
 import { IVariables } from './variables-factory/IVariables';
 import { PathFinder } from './variables-factory/PathFinder';
 import { sassImporter } from './SassImportResolver';
+import { VoiceAssistant } from './VoiceAssistant';
 
 /**
  * Contains items returned by a CSS build sub-process.
@@ -28,8 +29,9 @@ interface CssBuildResult {
  */
 export class SassBuildTool {
 
-    variables: IVariables;
-    finder: PathFinder;
+    private variables: IVariables;
+    private finder: PathFinder;
+    private va: VoiceAssistant;
 
     /**
      * Constructs a new instance of SassBuildTool using the specified settings and build flags. 
@@ -39,6 +41,7 @@ export class SassBuildTool {
     constructor(variables: IVariables) {
         this.variables = variables;
         this.finder = new PathFinder(variables);
+        this.va = new VoiceAssistant(variables.silent);
     }
 
     /**
@@ -246,6 +249,7 @@ export class SassBuildTool {
         }
 
         await cssOutputTask;
+        this.va.rewind();
     }
 
     /**
@@ -259,7 +263,7 @@ export class SassBuildTool {
         }
         catch (error) {
             let render: string;
-            Shout.notify('You have one or more CSS build errors!');
+            this.va.speak('CSS COMPILE ERROR!');
 
             if (error['formatted']) {
                 // for node-sass compile error

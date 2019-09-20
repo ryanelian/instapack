@@ -15,9 +15,6 @@ module.exports = function (variables, finish) {
         if (variables.verbose) {
             Shout_1.Shout.displayVerboseOutput = true;
         }
-        if (variables.muteNotification) {
-            Shout_1.Shout.enableNotification = false;
-        }
         let tool = new SassBuildTool_1.SassBuildTool(variables);
         try {
             yield tool.buildWithStopwatch();

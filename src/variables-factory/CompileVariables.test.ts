@@ -28,7 +28,7 @@ test('Compile Variables: Simple', t => {
             port1: 0
         },
         {
-            muteNotification: false,
+            silent: false,
             packageManager: 'yarn'
         },
         {
@@ -58,7 +58,7 @@ test('Compile Variables: Simple', t => {
         alias: {},
         externals: {},
         port1: 0,
-        muteNotification: false,
+        silent: false,
         packageManager: 'yarn',
         env: {
             foo: 'bar',
@@ -117,7 +117,7 @@ test('Compile Variables: Overrides', t => {
             port1: 20178
         },
         {
-            muteNotification: true,
+            silent: true,
             packageManager: 'npm'
         },
         {
@@ -151,7 +151,7 @@ test('Compile Variables: Overrides', t => {
             jquery: '$'
         },
         port1: 20178,
-        muteNotification: true,
+        silent: true,
         packageManager: 'npm',
         env: {
             foo: 'bar'

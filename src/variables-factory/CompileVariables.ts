@@ -22,7 +22,7 @@ export function compileVariables(
         env: Object.assign(dotEnv, buildFlags.env),
 
         packageManager: userSettings.packageManager,
-        muteNotification: userSettings.muteNotification,
+        silent: userSettings.silent,
 
         production: buildFlags.production,
         sourceMap: buildFlags.sourceMap,
@@ -42,6 +42,10 @@ export function compileVariables(
 
     if (variables.production === false || variables.watch) {
         variables.stats = false;
+    }
+
+    if (variables.watch === false) {
+        variables.silent = false;
     }
 
     return variables;

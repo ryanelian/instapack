@@ -1,5 +1,6 @@
+// Be sure to @import or define your custom variable values before including Bootstrap CSS
 @import "bootstrap";
-@import "aspnet-validation";
+@import "bootstrap-vue";
 
 html {
     height: 100vh;
@@ -11,4 +12,5 @@ body {
     padding: 0;
 }
 
-// if you need a sidebar, use this: https://getbootstrap.com/docs/4.0/examples/dashboard/
+// if you need a sidebar, use this: https://getbootstrap.com/docs/4.3/examples/dashboard/
+// or this: https://adminlte.io/

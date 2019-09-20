@@ -1,8 +1,10 @@
 import Vue from 'vue';
+import BootstrapVue from 'bootstrap-vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { ValidationProvider, ValidationObserver } from 'vee-validate';
 import Hello from './components/Hello.vue';
 
+Vue.use(BootstrapVue);
 Vue.component('validation-provider', ValidationProvider);
 Vue.component('validation-observer', ValidationObserver);
 Vue.component('fa', FontAwesomeIcon);

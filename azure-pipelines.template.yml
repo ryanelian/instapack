@@ -61,3 +61,12 @@ jobs:
       ipack &&
       ipack -db
     displayName: 'Full-Cycle Test: inferno'
+
+  - script: >
+      rimraf ./demo &&
+      mkdir demo &&
+      cd demo &&
+      ipack new blazor &&
+      ipack &&
+      ipack -db
+    displayName: 'Full-Cycle Test: blazor'

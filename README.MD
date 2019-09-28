@@ -119,8 +119,6 @@ Scaffolds a new instapack project into your existing app folder where the comman
 
 - `inferno` for developing a web app using [Inferno](https://infernojs.org/). (Insanely fast, React-like)
 
-- `vue-mobile` for developing a _[Progressive Web Application](https://developers.google.com/web/progressive-web-apps/)_ using Vue.js and [Onsen UI](https://onsen.io/vue/)! ([Cordova](https://cordova.apache.org)-compatible, [read more on FAQ ↓](#how-to-develop-a-cordova-app-using-vue-mobile-template))
-
 - `angularjs` for developing a *legacy* web app targeting ES5 browsers using [AngularJS 1.7](https://angularjs.org/) and [Bootstrap 3](http://getbootstrap.com/docs/3.3/).
 
   - Includes [jquery-validation-unobtrusive](https://github.com/aspnet/jquery-validation-unobtrusive) for ASP.NET MVC client-side validation and a simple JS concat tool (`concat.cmd` and `concat.js`).
@@ -668,36 +666,6 @@ Create a folder `.vscode` and a file `launch.json` inside it:
 ```
 
 Replace the `url` parameter with the correct URL of your app, then press **F5** on your keyboard!
-
-### How to develop a Cordova app using vue-mobile template?
-
-```powershell
-npm install -g cordova phonegap
-```
-
-```powershell
-cordova create MyApp
-cd MyProject
-cordova platform add android ios browser
-```
-
-```powershell
-ipack new vue-mobile
-ipack -dw
-phonegap serve
-```
-
-Change www/index.html `<script>` and `<link>` tags to the instapack build outputs. [Adjust assets whitelist and CSP too](https://docs.microsoft.com/en-us/visualstudio/cross-platform/tools-for-cordova/security/whitelists?view=toolsforcordova-2017) if necessary (you may delete `<meta http-equiv="Content-Security-Policy"` line).
-
-> **CAUTION:** `cordova platform add` and `cordova plugin add` (or `remove`) will destroy your `node_modules`. Re-run `npm update` / `yarn upgrade` after invoking those commands!
-
-Later on...
-
-```
-ipack
-cordova build android
-cordova build ios
-```
 
 ### I thought files should not be bundled because of HTTP/2?
 

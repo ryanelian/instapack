@@ -372,7 +372,7 @@ inject();
         if (errors.length) {
             let errorMessage = '\n' + errors.join('\n\n') + '\n';
             console.error(chalk_1.default.red(errorMessage));
-            this.va.speak(errors.length + " JAVASCRIPT BUILD ERROR!");
+            this.va.speak(`JAVA SCRIPT BUILD: ${errors.length} ERROR!`);
         }
         else {
             this.va.rewind();

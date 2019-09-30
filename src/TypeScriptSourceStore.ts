@@ -129,6 +129,7 @@ export class TypeScriptSourceStore {
             return false;
         }
 
+        // console.log(sourcePath);
         // https://github.com/Microsoft/TypeScript/blob/master/src/compiler/program.ts
         this.sources.set(sourcePath, {
             filePath: filePath,

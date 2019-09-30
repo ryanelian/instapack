@@ -161,7 +161,7 @@ export class TypeScriptCheckerTool {
             }
 
             if (errors.length > 0) {
-                this.va.speak(errors.length + 'TYPESCRIPT COMPILE ERROR!');
+                this.va.speak(`TYPESCRIPT: ${errors.length} ERROR!`);
                 let errorsOut = '\n' + errors.join('\n\n') + '\n';
                 console.error(errorsOut);
             } else {

@@ -61,7 +61,7 @@
     "css-loader": "3.2.0",
     "dotenv": "8.1.0",
     "enhanced-resolve": "4.1.0",
-    "fast-glob": "3.0.4",
+    "fast-glob": "3.1.0",
     "fs-extra": "8.1.0",
     "html-minifier": "4.0.0",
     "loader-utils": "1.2.3",

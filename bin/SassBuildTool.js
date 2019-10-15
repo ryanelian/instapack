@@ -18,6 +18,7 @@ const postcss = require("postcss");
 const autoprefixer = require("autoprefixer");
 const CleanCSS = require('clean-css');
 const mergeSourceMap = require("merge-source-map");
+const Fiber = require("fibers");
 const PrettyUnits_1 = require("./PrettyUnits");
 const Shout_1 = require("./Shout");
 const PathFinder_1 = require("./variables-factory/PathFinder");
@@ -63,7 +64,8 @@ class SassBuildTool {
                 data: yield fse.readFile(cssInput, 'utf8'),
                 sourceMap: this.variables.sourceMap,
                 sourceMapContents: this.variables.sourceMap,
-                importer: SassImportResolver_1.sassImporter
+                importer: SassImportResolver_1.sassImporter,
+                fiber: Fiber
             };
             let sassResult = yield this.runSassAsync(sassOptions);
             let result = {

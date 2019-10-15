@@ -8,6 +8,7 @@ import autoprefixer = require('autoprefixer');
 const CleanCSS = require('clean-css');
 import { RawSourceMap } from 'source-map';
 import mergeSourceMap = require('merge-source-map');
+import Fiber = require("fibers");
 
 import { prettyHrTime } from './PrettyUnits';
 import { Shout } from './Shout';
@@ -101,7 +102,8 @@ export class SassBuildTool {
 
             sourceMap: this.variables.sourceMap,
             sourceMapContents: this.variables.sourceMap,
-            importer: sassImporter
+            importer: sassImporter,
+            fiber: Fiber
         };
 
         let sassResult = await this.runSassAsync(sassOptions);

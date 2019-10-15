@@ -493,11 +493,15 @@ export default class Hello extends Vue {
 
 - Projects with matching `vue-template-compiler` dependency (compiler version === Vue version) will be built using that specific compiler instead of using instapack built-in `vue-template-compiler`.
 
-### Sass @import
+### Sass CSS Module System
 
-instapack also has a custom Node-like but standard-compliant Sass module system using `@import` syntax. 
+https://github.com/sass/sass/blob/master/accepted/module-system.md
 
-- Aligned with [the official Sass CSS Imports specification](https://github.com/sass/language/blob/master/accepted/css-imports.md), these imports will be treated as plain CSS `@import` rule instead of being included in the compiled CSS:
+instapack also has a custom Node-like but standard-compliant Sass module system using [`@use`](https://sass-lang.com/documentation/at-rules/use), [`@forward`](https://sass-lang.com/documentation/at-rules/forward), and [`@import` syntaxes](https://sass-lang.com/documentation/at-rules/import).
+
+> **HEADS UP!** The Sass team discourages the continued use of the `@import` rule. Sass will gradually phase it out over the next few years, and eventually remove it from the language entirely. Prefer the `@use` rule instead.
+
+- Aligned with [the official Sass CSS Imports specification](https://github.com/sass/sass/blob/master/accepted/css-imports.md#handling-an-import-rule), these imports will be treated as *'plain CSS'* `@import` rules (instead of being included in the compiled CSS):
 
   - The imported URL / query path begins with `http://` or `https://`
 
@@ -509,7 +513,7 @@ instapack also has a custom Node-like but standard-compliant Sass module system 
 
 - Includes `.scss` and `.css` files relative to the source. ([Standard Sass behavior](https://jonathantneal.github.io/sass-import-resolve/))
 
-  - Includes _partial.scss files, but not _partial.css files!
+  - Includes _partial.scss files, but NOT _partial.css files!
 
 - Includes files relative to the source in a named folder, but as `index.scss` or `_index.scss` ([Standard Sass behavior](https://github.com/sass/sass/issues/690)) or `index.css`
 

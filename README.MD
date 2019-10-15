@@ -497,7 +497,7 @@ export default class Hello extends Vue {
 
 https://github.com/sass/sass/blob/master/accepted/module-system.md
 
-instapack also has a custom Node-like but standard-compliant Sass module system using [`@use`](https://sass-lang.com/documentation/at-rules/use), [`@forward`](https://sass-lang.com/documentation/at-rules/forward), and [`@import` syntaxes](https://sass-lang.com/documentation/at-rules/import).
+instapack also has a custom Node-like but standard-compliant Sass module system using [`@use`](https://sass-lang.com/documentation/at-rules/use), [`@forward`](https://sass-lang.com/documentation/at-rules/forward), and [`@import`](https://sass-lang.com/documentation/at-rules/import) syntaxes.
 
 > **HEADS UP!** The Sass team discourages the continued use of the `@import` rule. Sass will gradually phase it out over the next few years, and eventually remove it from the language entirely. Prefer the `@use` rule instead.
 

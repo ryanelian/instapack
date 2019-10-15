@@ -322,7 +322,6 @@ instapack supports [`tslint.json` / `tslint.yaml`](https://palantir.github.io/ts
     "use-isnan": true,
     "new-parens": true,
     "number-literal-format": true,
-    "return-undefined": true,
     "type-literal-delimiter": true
   }
 }

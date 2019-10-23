@@ -69,7 +69,7 @@
     "merge-source-map": "1.1.0",
     "portfinder": "1.0.24",
     "postcss": "7.0.18",
-    "sass": "1.23.0",
+    "sass": "1.23.1",
     "say": "^0.16.0",
     "source-map": "0.7.3",
     "tslint": "5.20.0",

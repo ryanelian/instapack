@@ -37,15 +37,21 @@ export class CopyBuildTool {
 
     async tryCopy(value: string, overwrite: boolean) {
         let absolutePath = upath.join(this.pathFinder.npmFolder, value);
-        let isInsideNpmFolder = absolutePath.startsWith(this.pathFinder.npmFolder);
-        if (isInsideNpmFolder === false) {
-            Shout.warning(`Copy skip: Path "${value}" is outside npm folder!`);
+        let relativePath = upath.relative(this.pathFinder.npmFolder, absolutePath);
+
+        if (!relativePath) {
+            Shout.warning(`Copy skip: copying the entire npm folder is not allowed!`);
+            return;
+        }
+
+        if (relativePath.startsWith('../')) {
+            Shout.warning(`Copy skip: Path ${chalk.cyan(value)} is outside npm folder!`);
             return;
         }
 
         let isPathExist = await fse.pathExists(absolutePath);
         if (isPathExist === false) {
-            Shout.warning(`Copy skip: Path "${value}" does not exists!`);
+            Shout.warning(`Copy skip: Path ${chalk.cyan(value)} does not exists!`);
             return;
         }
 

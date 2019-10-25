@@ -4,7 +4,7 @@ import chalk from 'chalk';
 import { Shout } from './Shout';
 import { IVariables } from './variables-factory/IVariables';
 import { PathFinder } from './variables-factory/PathFinder';
-import { runTypeScriptBuildWorker, runSassBuildWorker, runTypeScriptCheckWorker } from './workers/RunWorker';
+import { runTypeScriptBuildWorker, runSassBuildWorker, runTypeScriptCheckWorker, runCopyBuildWorker } from './workers/RunWorker';
 import { VoiceAssistant } from './VoiceAssistant';
 
 /**
@@ -84,6 +84,7 @@ export class ToolOrchestrator {
             case 'all':
                 this.build('js');
                 this.build('css');
+                this.build('copy');
                 return;
 
             case 'js': {
@@ -110,6 +111,18 @@ export class ToolOrchestrator {
                         Shout.fatal(`during CSS build:`, error);
                         let va = new VoiceAssistant(this.variables.silent);
                         va.speak(`CSS BUILD FATAL ERROR!`);
+                    });
+                }
+                return;
+            }
+
+            case 'copy': {
+                let anyCopy = Boolean(this.variables.copy[0]);
+                if (anyCopy) {
+                    runCopyBuildWorker(this.variables).catch(error => {
+                        Shout.fatal(`during Copy build task:`, error);
+                        let va = new VoiceAssistant(this.variables.silent);
+                        va.speak(`COPY TASK FATAL ERROR!`);
                     });
                 }
                 return;

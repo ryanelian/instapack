@@ -66,6 +66,7 @@ class ToolOrchestrator {
                 case 'all':
                     this.build('js');
                     this.build('css');
+                    this.build('copy');
                     return;
                 case 'js': {
                     let valid = yield this.validateJsBuildTask();
@@ -90,6 +91,17 @@ class ToolOrchestrator {
                             Shout_1.Shout.fatal(`during CSS build:`, error);
                             let va = new VoiceAssistant_1.VoiceAssistant(this.variables.silent);
                             va.speak(`CSS BUILD FATAL ERROR!`);
+                        });
+                    }
+                    return;
+                }
+                case 'copy': {
+                    let anyCopy = Boolean(this.variables.copy[0]);
+                    if (anyCopy) {
+                        RunWorker_1.runCopyBuildWorker(this.variables).catch(error => {
+                            Shout_1.Shout.fatal(`during Copy build task:`, error);
+                            let va = new VoiceAssistant_1.VoiceAssistant(this.variables.silent);
+                            va.speak(`COPY TASK FATAL ERROR!`);
                         });
                     }
                     return;

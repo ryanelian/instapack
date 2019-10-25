@@ -13,6 +13,7 @@ const WorkerFarm = require("worker-farm");
 const typeScriptBuildWorkerModulePath = require.resolve('./TypeScriptBuildWorker');
 const typeScriptCheckWorkerModulePath = require.resolve('./TypeScriptCheckWorker');
 const sassBuildWorkerModulePath = require.resolve('./SassBuildWorker');
+const copyBuildWorkerModulePath = require.resolve('./CopyBuildWorker');
 function runWorkerAsync(modulePath, params) {
     return __awaiter(this, void 0, void 0, function* () {
         let worker = WorkerFarm(modulePath);
@@ -47,3 +48,7 @@ function runSassBuildWorker(variables) {
     return runWorkerAsync(sassBuildWorkerModulePath, variables);
 }
 exports.runSassBuildWorker = runSassBuildWorker;
+function runCopyBuildWorker(variables) {
+    return runWorkerAsync(copyBuildWorkerModulePath, variables);
+}
+exports.runCopyBuildWorker = runCopyBuildWorker;

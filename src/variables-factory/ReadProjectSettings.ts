@@ -98,10 +98,9 @@ export async function readProjectSettingsFrom(folder: string): Promise<IProjectS
 
         if (Array.isArray(parse.copy)) {
             for (let value of parse.copy) {
-                if (typeof value === 'string') {
+                let isNonEmptyString = typeof value === 'string' && value;
+                if (isNonEmptyString) {
                     settings.copy.push(value);
-                } else {
-                    Shout.warning('package.json:instapack:copy non-string value ignored.');
                 }
             }
         }

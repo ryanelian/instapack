@@ -4,6 +4,7 @@ import { IVariables } from '../variables-factory/IVariables';
 const typeScriptBuildWorkerModulePath = require.resolve('./TypeScriptBuildWorker');
 const typeScriptCheckWorkerModulePath = require.resolve('./TypeScriptCheckWorker');
 const sassBuildWorkerModulePath = require.resolve('./SassBuildWorker');
+const copyBuildWorkerModulePath = require.resolve('./CopyBuildWorker');
 
 /**
  * Runs worker in separate process, returns Promise.
@@ -39,4 +40,8 @@ export function runTypeScriptCheckWorker(variables: IVariables) {
 
 export function runSassBuildWorker(variables: IVariables) {
     return runWorkerAsync<void>(sassBuildWorkerModulePath, variables);
+}
+
+export function runCopyBuildWorker(variables: IVariables) {
+    return runWorkerAsync<void>(copyBuildWorkerModulePath, variables);
 }

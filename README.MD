@@ -129,7 +129,7 @@ If no template parameter is provided, `vue` will be chosen. :vulcan_salute:
 
 ### build [project]
 
-Performs compilation of selected project type. Available projects: `all`, `js`, and `css`. If no project parameter is provided, `all` will be chosen.
+Performs compilation of selected project type. Available projects: `all`, `js`, `css` and `copy`. If no project parameter is provided, `all` will be chosen.
 
 In addition, build flags are available:
 
@@ -212,6 +212,12 @@ import jQuery from 'jquery';
 // into something similar to this...
 // const jQuery = window["$"];
 ```
+
+- `copy` accepts `string[]`, which allows copying static assets from the npm folder (`node_modules`) into project output folder as-is.
+
+  - For example: `["@fortawesome/fontawesome-free/webfonts"]` allows the CI to copy fresh icon files from the npm folder. (https://fontawesome.com/how-to-use/on-the-web/setup/using-package-managers)
+
+  - **THIS FEATURE IS IN PREVIEW AND MAY BREAK ANYTIME!** Also, currently the copy build tool will NOT overwrite for safety reason.
 
 - `port1` can be set for declaring a static port number to be used by the Hot Reload server. If not set or is already used, the port number will be randomized. [Read more ↓](#hot-reload-development-mode)
 

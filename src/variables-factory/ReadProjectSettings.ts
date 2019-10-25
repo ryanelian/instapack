@@ -1,6 +1,7 @@
 import * as fse from 'fs-extra';
 import * as upath from 'upath';
 import { IProjectSettings } from './IProjectSettings';
+import { Shout } from '../Shout';
 
 export function isValidExternals(value): boolean {
     // https://webpack.js.org/configuration/externals/#externals
@@ -33,6 +34,7 @@ export async function readProjectSettingsFrom(folder: string): Promise<IProjectS
 
         alias: {},
         externals: {},
+        copy: [],
         namespace: undefined,
         port1: 0,
     };
@@ -90,8 +92,18 @@ export async function readProjectSettingsFrom(folder: string): Promise<IProjectS
             }
         }
 
-        if (typeof parse.namespace === 'string'){
+        if (typeof parse.namespace === 'string') {
             settings.namespace = parse.namespace;
+        }
+
+        if (Array.isArray(parse.copy)) {
+            for (let value of parse.copy) {
+                if (typeof value === 'string') {
+                    settings.copy.push(value);
+                } else {
+                    Shout.warning('package.json:instapack:copy non-string value ignored.');
+                }
+            }
         }
     }
 

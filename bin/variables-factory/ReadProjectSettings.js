@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const fse = require("fs-extra");
 const upath = require("upath");
+const Shout_1 = require("../Shout");
 function isValidExternals(value) {
     if (!value) {
         return false;
@@ -37,6 +38,7 @@ function readProjectSettingsFrom(folder) {
             cssOut: 'ipack.css',
             alias: {},
             externals: {},
+            copy: [],
             namespace: undefined,
             port1: 0,
         };
@@ -84,6 +86,16 @@ function readProjectSettingsFrom(folder) {
             }
             if (typeof parse.namespace === 'string') {
                 settings.namespace = parse.namespace;
+            }
+            if (Array.isArray(parse.copy)) {
+                for (let value of parse.copy) {
+                    if (typeof value === 'string') {
+                        settings.copy.push(value);
+                    }
+                    else {
+                        Shout_1.Shout.warning('package.json:instapack:copy non-string value ignored.');
+                    }
+                }
             }
         }
         return settings;

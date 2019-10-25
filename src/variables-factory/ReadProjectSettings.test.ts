@@ -20,6 +20,7 @@ test('Project Settings: Not Found', async t => {
         alias: {},
         externals: {},
         namespace: undefined,
+        copy: [],
         port1: 0,
     };
 
@@ -39,6 +40,7 @@ test('Project Settings: Invalid', async t => {
         alias: {},
         externals: {},
         namespace: undefined,
+        copy: [],
         port1: 0,
     };
 
@@ -62,6 +64,7 @@ test('Project Settings: Valid', async t => {
             jquery: '$'
         },
         namespace: 'instapack',
+        copy: [],
         port1: 32101,
     };
 

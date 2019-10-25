@@ -20,6 +20,7 @@ export function compileVariables(
         alias: projectSettings.alias,
         externals: projectSettings.externals,
         namespace: projectSettings.namespace,
+        copy: projectSettings.copy,
         env: Object.assign(dotEnv, buildFlags.env),
 
         packageManager: userSettings.packageManager,

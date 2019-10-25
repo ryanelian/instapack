@@ -90,5 +90,7 @@ export interface IVariables {
 
     namespace: string | undefined;
 
+    copy: string[];
+
     typescriptConfiguration: any;
 }

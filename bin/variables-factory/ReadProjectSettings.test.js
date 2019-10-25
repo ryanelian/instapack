@@ -26,6 +26,7 @@ ava_1.default('Project Settings: Not Found', (t) => __awaiter(void 0, void 0, vo
         alias: {},
         externals: {},
         namespace: undefined,
+        copy: [],
         port1: 0,
     };
     t.deepEqual(settings, result);
@@ -42,6 +43,7 @@ ava_1.default('Project Settings: Invalid', (t) => __awaiter(void 0, void 0, void
         alias: {},
         externals: {},
         namespace: undefined,
+        copy: [],
         port1: 0,
     };
     t.deepEqual(settings, result);
@@ -62,6 +64,7 @@ ava_1.default('Project Settings: Valid', (t) => __awaiter(void 0, void 0, void 0
             jquery: '$'
         },
         namespace: 'instapack',
+        copy: [],
         port1: 32101,
     };
     t.deepEqual(settings, result);

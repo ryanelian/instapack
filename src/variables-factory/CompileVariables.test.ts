@@ -26,6 +26,7 @@ test('Compile Variables: Simple', t => {
             alias: {},
             externals: {},
             namespace: 'instapack',
+            copy: [],
             port1: 0
         },
         {
@@ -59,6 +60,7 @@ test('Compile Variables: Simple', t => {
         alias: {},
         externals: {},
         namespace: 'instapack',
+        copy: [],
         port1: 0,
         silent: true,
         packageManager: 'yarn',
@@ -117,6 +119,7 @@ test('Compile Variables: Overrides', t => {
                 jquery: '$'
             },
             namespace: "instapack",
+            copy: ['node_modules/@fortawesome/fontawesome-free/webfonts'],
             port1: 20178
         },
         {
@@ -154,6 +157,7 @@ test('Compile Variables: Overrides', t => {
             jquery: '$'
         },
         namespace: "instapack",
+        copy: ['node_modules/@fortawesome/fontawesome-free/webfonts'],
         port1: 20178,
         silent: true,
         packageManager: 'npm',

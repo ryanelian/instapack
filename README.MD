@@ -55,6 +55,8 @@ Out of the box, these files will be used as the program entry points:
 
   - Spiced :hot_pepper: with [AutoPrefixer](https://github.com/postcss/autoprefixer) for applying CSS vendor-prefixes automatically!
 
+- Assets (files or folders) defined in `copy` field in `package.json` copied to `wwwroot/` folder from `node_modules` folders. **THIS FEATURE IS IN PREVIEW!!** *No overwrites will be performed right now due to safety concerns.*
+
 ## System Requirements
 
 Currently supported Node.js is [the latest version 8 or 10 or 12 LTS](https://nodejs.org/en/download/).
@@ -213,11 +215,9 @@ import jQuery from 'jquery';
 // const jQuery = window["$"];
 ```
 
-- `copy` accepts `string[]`, which allows copying static assets from the npm folder (`node_modules`) into project output folder as-is.
+- `copy` accepts a map-like object `{ "from": "to" }` which allows copying static assets from the npm folder (`node_modules`) into the project output folder during build.
 
-  - For example: `["@fortawesome/fontawesome-free/webfonts"]` allows the CI to copy fresh icon files from the npm folder. (https://fontawesome.com/how-to-use/on-the-web/setup/using-package-managers)
-
-  - **THIS FEATURE IS IN PREVIEW AND MAY BREAK ANYTIME!** Also, currently the copy build tool will NOT overwrite for safety reason.
+  - For example: `{ "@fortawesome/fontawesome-free/webfonts" : "webfonts" }` allows copying `node_modules/@fortawesome/fontawesome-free/webfonts` to `wwwroot/webfonts` during CI build. (https://fontawesome.com/how-to-use/on-the-web/setup/using-package-managers)
 
 - `port1` can be set for declaring a static port number to be used by the Hot Reload server. If not set or is already used, the port number will be randomized. [Read more ↓](#hot-reload-development-mode)
 
@@ -353,12 +353,14 @@ import List from 'linq';
 
 ### ES Modules: Dynamic Import
 
-instapack supports code-splitting using ESM dynamic `import()` syntax:
+instapack supports code-splitting using ESM dynamic `import()` syntax to load on-demand modules automatically, greatly reducing the initial page load on large application:
 
 ```ts
-import('lunr').then(lunr => {
-  // similar to: import * as lunr from 'lunr'
-});
+Vue.component(
+  'my-component',
+  // The `import` function returns a Promise<T>
+  () => import('./MyComponent.vue')
+)
 ```
 
 An excerpt of build log when using dynamic import:
@@ -369,19 +371,13 @@ An excerpt of build log when using dynamic import:
 [02:41:10] ipack.js 2.76 kB
 ```
 
-- Unlike `ipack.dll.js` which must be referenced explicitly before `ipack.js`, the `lunr` module in `ipack.0.js` **will be automatically downloaded on-demand** to reduce asset size during initial page load.
+- The number `0` is an auto-generated chunk name, which can be overridden using the *magic comment* `import(/* webpackChunkName: "MyComponent" */ './MyComponent')` (generates `ipack.MyComponent.js` instead).
 
-- The `import()` method returns a `Promise` object which resolves to the downloaded module, which can be `await`-ed in TypeScript!
-
-- The number `0` is an auto-generated chunk name, which can be overridden using the *magic comment* `import(/* webpackChunkName: "lunr" */ 'lunr')` (generates `ipack.lunr.js` instead).
-
-- **This feature will be especially useful when a gigantic library is required in just one or two components, but not the whole app!**
-
-> To use this syntax within TypeScript, `module` compiler option in `tsconfig.json` must be set to `esnext` (instead of the usual `es2015`).
+> To use this syntax within TypeScript, `module` compiler option in `tsconfig.json` must be set to `esnext`
 
 ### CommonJS / Node.js require
 
-Easily imports ordinary JS modules within the project or from `node_modules`. However, **you will NOT get intellisense!** (Modules will be imported as `any` data type.)
+Easily imports ordinary JS modules within the project or from `node_modules`. However, **you WILL NOT get intellisense!** (Modules will be imported as `any` data type.)
 
 ```js
 let $ = require('jquery');

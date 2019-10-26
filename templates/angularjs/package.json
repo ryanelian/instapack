@@ -29,6 +29,6 @@
     "tslib": "^1.10.0"
   },
   "devDependencies": {
-    "uglify-js": "^3.6.1"
+    "uglify-js": "^3.6.4"
   }
 }

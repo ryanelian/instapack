@@ -1,8 +1,42 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const ava_1 = require("ava");
+const fse = require("fs-extra");
+const upath = require("upath");
 const SyntaxLevelChecker_1 = require("./SyntaxLevelChecker");
 const typescript_1 = require("typescript");
+let root = process.cwd();
+let samplesFolder = upath.join(root, 'fixtures', 'SyntaxLevelCheckSampleLibraries');
+ava_1.default('Level Check: ES5 JQuery 3.4.1', (t) => __awaiter(void 0, void 0, void 0, function* () {
+    let fileName = 'jquery-3.4.1.min.js';
+    let filePath = upath.join(samplesFolder, fileName);
+    let sourceCode = yield fse.readFile(filePath, 'utf8');
+    let check = SyntaxLevelChecker_1.checkSyntaxLevel(fileName, sourceCode, typescript_1.ScriptTarget.ESNext);
+    t.is(check.level, typescript_1.ScriptTarget.ES5);
+}));
+ava_1.default('Level Check: ES5 AngularJS 1.2.32', (t) => __awaiter(void 0, void 0, void 0, function* () {
+    let fileName = 'angular-1.2.32.min.js';
+    let filePath = upath.join(samplesFolder, fileName);
+    let sourceCode = yield fse.readFile(filePath, 'utf8');
+    let check = SyntaxLevelChecker_1.checkSyntaxLevel(fileName, sourceCode, typescript_1.ScriptTarget.ESNext);
+    t.is(check.level, typescript_1.ScriptTarget.ES5);
+}));
+ava_1.default('Level Check: ES5 Bootstrap 3.3.7', (t) => __awaiter(void 0, void 0, void 0, function* () {
+    let fileName = 'bootstrap-3.3.7.min.js';
+    let filePath = upath.join(samplesFolder, fileName);
+    let sourceCode = yield fse.readFile(filePath, 'utf8');
+    let check = SyntaxLevelChecker_1.checkSyntaxLevel(fileName, sourceCode, typescript_1.ScriptTarget.ESNext);
+    t.is(check.level, typescript_1.ScriptTarget.ES5);
+}));
 ava_1.default('Level Check: ES2015 Function Parameters', t => {
     let check = SyntaxLevelChecker_1.checkSyntaxLevel('m.js', `function (a = 1, b = 2) { return a === 3 && b === 2; }`, typescript_1.ScriptTarget.ESNext);
     t.is(check.level, typescript_1.ScriptTarget.ES2015);
@@ -294,7 +328,27 @@ ava_1.default('Level Check: ES2015 Arrow Functions - Multiple Parameters', t => 
     t.is(check.level, typescript_1.ScriptTarget.ES2015);
 });
 ava_1.default('Level Check: ES2015 Class', t => {
-    let check = SyntaxLevelChecker_1.checkSyntaxLevel('m.js', `class C {}`, typescript_1.ScriptTarget.ESNext);
+    let check = SyntaxLevelChecker_1.checkSyntaxLevel('m.js', `
+class Rectangle extends Shape {
+    constructor(height, width) {
+        this.height = height;
+        this.width = width;
+    }
+
+    get area() {
+      return this.calcArea();
+    }
+
+    set color(hexCode) {
+    }
+
+    calcArea() {
+      return this.height * this.width;
+    }
+
+    static draw(height, width) {
+    }
+}`, typescript_1.ScriptTarget.ESNext);
     t.is(check.level, typescript_1.ScriptTarget.ES2015);
 });
 ava_1.default('Level Check: ES2015 Anonymous Class Expression', t => {
@@ -446,4 +500,62 @@ ava_1.default('Level Check: ES2019 optional catch binding', t => {
         return true;
       }`, typescript_1.ScriptTarget.ESNext);
     t.is(check.level, typescript_1.ScriptTarget.ES2019);
+});
+ava_1.default('Level Check: ES2020 Big Int', t => {
+    let check = SyntaxLevelChecker_1.checkSyntaxLevel('m.js', `const theBiggestInt = 9007199254740991n;`, typescript_1.ScriptTarget.ESNext);
+    t.is(check.level, typescript_1.ScriptTarget.ES2020);
+});
+ava_1.default('Level Check: ES2020 Big Int Literal', t => {
+    let check = SyntaxLevelChecker_1.checkSyntaxLevel('m.js', `const theBiggestInt = -0x8000000000000000n;`, typescript_1.ScriptTarget.ESNext);
+    t.is(check.level, typescript_1.ScriptTarget.ES2020);
+});
+ava_1.default('Level Check: ESNext Public Instance Field', t => {
+    let check = SyntaxLevelChecker_1.checkSyntaxLevel('m.js', `
+class ClassWithInstanceField {
+    instanceField = 'instance field';
+}`, typescript_1.ScriptTarget.ESNext);
+    t.is(check.level, typescript_1.ScriptTarget.ESNext);
+});
+ava_1.default('Level Check: ESNext Optional Chaining Operator ?. on Properties', t => {
+    let check = SyntaxLevelChecker_1.checkSyntaxLevel('m.js', `var street = user.address?.street;`, typescript_1.ScriptTarget.ESNext);
+    t.is(check.level, typescript_1.ScriptTarget.ESNext);
+});
+ava_1.default('Level Check: ESNext Optional Chaining Operator ?. on Methods', t => {
+    let check = SyntaxLevelChecker_1.checkSyntaxLevel('m.js', `var fooValue = myForm.querySelector('input[name=foo]')?.value`, typescript_1.ScriptTarget.ESNext);
+    t.is(check.level, typescript_1.ScriptTarget.ESNext);
+});
+ava_1.default('Level Check: ESNext Optional Chaining Operator ?. Call Variant', t => {
+    let check = SyntaxLevelChecker_1.checkSyntaxLevel('m.js', `myForm.checkValidity?.()`, typescript_1.ScriptTarget.ESNext);
+    t.is(check.level, typescript_1.ScriptTarget.ESNext);
+});
+ava_1.default('Level Check: ESNext Null Coalescing Operator ??', t => {
+    let check = SyntaxLevelChecker_1.checkSyntaxLevel('m.js', `const headerText = response.settings.headerText ?? 'Hello, world!';`, typescript_1.ScriptTarget.ESNext);
+    t.is(check.level, typescript_1.ScriptTarget.ESNext);
+});
+ava_1.default('Level Check: ESNext @decorator on Class', t => {
+    let check = SyntaxLevelChecker_1.checkSyntaxLevel('m.js', `
+@defineElement('my-class')
+class MyClass extends HTMLElement { }
+`, typescript_1.ScriptTarget.ESNext);
+    t.is(check.level, typescript_1.ScriptTarget.ESNext);
+});
+ava_1.default('Level Check: ESNext @decorator on Properties', t => {
+    let check = SyntaxLevelChecker_1.checkSyntaxLevel('m.js', `
+class Todo {
+    id = Math.random()
+    @observable title = ""
+    @observable finished = false
+    @observable todos = []
+    @computed get unfinishedTodoCount() {
+        return this.todos.filter(todo => !todo.finished).length
+    }
+}`, typescript_1.ScriptTarget.ESNext);
+    t.is(check.level, typescript_1.ScriptTarget.ESNext);
+});
+ava_1.default('Level Check: ESNext @decorator on Methods', t => {
+    let check = SyntaxLevelChecker_1.checkSyntaxLevel('m.js', `
+class C {
+    @wrap(f) method() { }
+}`, typescript_1.ScriptTarget.ESNext);
+    t.is(check.level, typescript_1.ScriptTarget.ESNext);
 });

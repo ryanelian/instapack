@@ -146,6 +146,27 @@ function is2019Syntax(node) {
     }
     return false;
 }
+function is2020Syntax(node) {
+    if (TypeScript.isBigIntLiteral(node)) {
+        return true;
+    }
+    return false;
+}
+function isESNextSyntax(node) {
+    if (node.kind === TypeScript.SyntaxKind.QuestionQuestionToken) {
+        return true;
+    }
+    if (TypeScript.isOptionalChain(node)) {
+        return true;
+    }
+    if (TypeScript.isDecorator(node)) {
+        return true;
+    }
+    if (TypeScript.isPropertyDeclaration(node)) {
+        return true;
+    }
+    return false;
+}
 function traverse(node, cb, depth = 0) {
     cb(node);
     node.forEachChild(c => {
@@ -156,7 +177,13 @@ function checkSyntaxLevel(sourcePath, source, languageTarget) {
     let ast = TypeScript.createSourceFile(sourcePath, source, languageTarget, true, TypeScript.ScriptKind.JS);
     let level = TypeScript.ScriptTarget.ES5;
     traverse(ast, node => {
-        if (level < TypeScript.ScriptTarget.ES2019 && is2019Syntax(node)) {
+        if (level < TypeScript.ScriptTarget.ESNext && isESNextSyntax(node)) {
+            level = TypeScript.ScriptTarget.ESNext;
+        }
+        else if (level < TypeScript.ScriptTarget.ES2020 && is2020Syntax(node)) {
+            level = TypeScript.ScriptTarget.ES2020;
+        }
+        else if (level < TypeScript.ScriptTarget.ES2019 && is2019Syntax(node)) {
             level = TypeScript.ScriptTarget.ES2019;
         }
         else if (level < TypeScript.ScriptTarget.ES2018 && is2018Syntax(node)) {

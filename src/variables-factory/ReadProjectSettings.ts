@@ -1,7 +1,6 @@
 import * as fse from 'fs-extra';
 import * as upath from 'upath';
 import { IProjectSettings } from './IProjectSettings';
-import { Shout } from '../Shout';
 
 export function isValidExternals(value): boolean {
     // https://webpack.js.org/configuration/externals/#externals

@@ -211,8 +211,46 @@ function is2019Syntax(node: TypeScript.Node) {
     return false;
 }
 
+function is2020Syntax(node: TypeScript.Node) {
+    if (TypeScript.isBigIntLiteral(node)) {
+        return true;
+    }
+
+    // we don't check for globalThis because it is technically a basic syntax (polyfill available)
+    return false;
+}
+
+function isESNextSyntax(node: TypeScript.Node) {
+    if (node.kind === TypeScript.SyntaxKind.QuestionQuestionToken) {
+        return true;
+    }
+    
+    if (TypeScript.isOptionalChain(node)) {
+        return true;
+    }
+
+    if (TypeScript.isDecorator(node)) {
+        return true;
+    }
+
+    if (TypeScript.isPropertyDeclaration(node)) {
+        return true;
+    }
+
+    // Ryan: test omitted for now due to performance concerns...
+    // if (TypeScript.isNumericLiteral(node)){
+    //     let numberSource = node.getFullText();
+    //     if (numberSource.includes("_")){
+    //         return true;
+    //     }
+    // }
+
+    return false;
+}
+
 function traverse(node: TypeScript.Node, cb: (node: TypeScript.Node) => void, depth = 0) {
     // console.log(new Array(depth).join('--'), TypeScript.SyntaxKind[node.kind].toString());
+    // console.log(new Array(depth).join('//'), node.getFullText());
     cb(node);
 
     node.forEachChild(c => {
@@ -232,7 +270,11 @@ export function checkSyntaxLevel(sourcePath: string, source: string, languageTar
 
     let level = TypeScript.ScriptTarget.ES5;
     traverse(ast, node => {
-        if (level < TypeScript.ScriptTarget.ES2019 && is2019Syntax(node)) {
+        if (level < TypeScript.ScriptTarget.ESNext && isESNextSyntax(node)) {
+            level = TypeScript.ScriptTarget.ESNext;
+        } else if (level < TypeScript.ScriptTarget.ES2020 && is2020Syntax(node)) {
+            level = TypeScript.ScriptTarget.ES2020;
+        } else if (level < TypeScript.ScriptTarget.ES2019 && is2019Syntax(node)) {
             level = TypeScript.ScriptTarget.ES2019;
         } else if (level < TypeScript.ScriptTarget.ES2018 && is2018Syntax(node)) {
             level = TypeScript.ScriptTarget.ES2018;

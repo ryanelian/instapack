@@ -1,6 +1,35 @@
 import test from "ava";
+import * as fse from 'fs-extra';
+import * as upath from 'upath';
 import { checkSyntaxLevel } from "./SyntaxLevelChecker";
 import { ScriptTarget } from "typescript";
+
+let root = process.cwd();
+let samplesFolder = upath.join(root, 'fixtures', 'SyntaxLevelCheckSampleLibraries');
+
+test('Level Check: ES5 JQuery 3.4.1', async t => {
+    let fileName = 'jquery-3.4.1.min.js'; // IE9 Compatibility
+    let filePath = upath.join(samplesFolder, fileName);
+    let sourceCode = await fse.readFile(filePath, 'utf8');
+    let check = checkSyntaxLevel(fileName, sourceCode, ScriptTarget.ESNext);
+    t.is(check.level, ScriptTarget.ES5);
+});
+
+test('Level Check: ES5 AngularJS 1.2.32', async t => {
+    let fileName = 'angular-1.2.32.min.js'; // IE8 Compatibility
+    let filePath = upath.join(samplesFolder, fileName);
+    let sourceCode = await fse.readFile(filePath, 'utf8');
+    let check = checkSyntaxLevel(fileName, sourceCode, ScriptTarget.ESNext);
+    t.is(check.level, ScriptTarget.ES5);
+});
+
+test('Level Check: ES5 Bootstrap 3.3.7', async t => {
+    let fileName = 'bootstrap-3.3.7.min.js'; // IE8 Compatibility
+    let filePath = upath.join(samplesFolder, fileName);
+    let sourceCode = await fse.readFile(filePath, 'utf8');
+    let check = checkSyntaxLevel(fileName, sourceCode, ScriptTarget.ESNext);
+    t.is(check.level, ScriptTarget.ES5);
+});
 
 test('Level Check: ES2015 Function Parameters', t => {
     let check = checkSyntaxLevel('m.js', `function (a = 1, b = 2) { return a === 3 && b === 2; }`, ScriptTarget.ESNext);
@@ -347,7 +376,27 @@ test('Level Check: ES2015 Arrow Functions - Multiple Parameters', t => {
 });
 
 test('Level Check: ES2015 Class', t => {
-    let check = checkSyntaxLevel('m.js', `class C {}`, ScriptTarget.ESNext);
+    let check = checkSyntaxLevel('m.js', `
+class Rectangle extends Shape {
+    constructor(height, width) {
+        this.height = height;
+        this.width = width;
+    }
+
+    get area() {
+      return this.calcArea();
+    }
+
+    set color(hexCode) {
+    }
+
+    calcArea() {
+      return this.height * this.width;
+    }
+
+    static draw(height, width) {
+    }
+}`, ScriptTarget.ESNext);
     t.is(check.level, ScriptTarget.ES2015);
 });
 
@@ -528,3 +577,96 @@ test('Level Check: ES2019 optional catch binding', t => {
       }`, ScriptTarget.ESNext);
     t.is(check.level, ScriptTarget.ES2019);
 });
+
+test('Level Check: ES2020 Big Int', t => {
+    let check = checkSyntaxLevel('m.js', `const theBiggestInt = 9007199254740991n;`, ScriptTarget.ESNext);
+    t.is(check.level, ScriptTarget.ES2020);
+});
+
+test('Level Check: ES2020 Big Int Literal', t => {
+    let check = checkSyntaxLevel('m.js', `const theBiggestInt = -0x8000000000000000n;`, ScriptTarget.ESNext);
+    t.is(check.level, ScriptTarget.ES2020);
+});
+
+test('Level Check: ESNext Public Instance Field', t => {
+    let check = checkSyntaxLevel('m.js', `
+class ClassWithInstanceField {
+    instanceField = 'instance field';
+}`, ScriptTarget.ESNext);
+    t.is(check.level, ScriptTarget.ESNext);
+});
+
+test('Level Check: ESNext Optional Chaining Operator ?. on Properties', t => {
+    let check = checkSyntaxLevel('m.js', `var street = user.address?.street;`, ScriptTarget.ESNext);
+    t.is(check.level, ScriptTarget.ESNext);
+});
+
+test('Level Check: ESNext Optional Chaining Operator ?. on Methods', t => {
+    let check = checkSyntaxLevel('m.js', `var fooValue = myForm.querySelector('input[name=foo]')?.value`, ScriptTarget.ESNext);
+    t.is(check.level, ScriptTarget.ESNext);
+});
+
+test('Level Check: ESNext Optional Chaining Operator ?. Call Variant', t => {
+    let check = checkSyntaxLevel('m.js', `myForm.checkValidity?.()`, ScriptTarget.ESNext);
+    t.is(check.level, ScriptTarget.ESNext);
+});
+
+test('Level Check: ESNext Null Coalescing Operator ??', t => {
+    let check = checkSyntaxLevel('m.js', `const headerText = response.settings.headerText ?? 'Hello, world!';`, ScriptTarget.ESNext);
+    t.is(check.level, ScriptTarget.ESNext);
+});
+
+test('Level Check: ESNext @decorator on Class', t => {
+    let check = checkSyntaxLevel('m.js', `
+@defineElement('my-class')
+class MyClass extends HTMLElement { }
+`, ScriptTarget.ESNext);
+    t.is(check.level, ScriptTarget.ESNext);
+});
+
+test('Level Check: ESNext @decorator on Properties', t => {
+    let check = checkSyntaxLevel('m.js', `
+class Todo {
+    id = Math.random()
+    @observable title = ""
+    @observable finished = false
+    @observable todos = []
+    @computed get unfinishedTodoCount() {
+        return this.todos.filter(todo => !todo.finished).length
+    }
+}`, ScriptTarget.ESNext);
+    t.is(check.level, ScriptTarget.ESNext);
+});
+
+test('Level Check: ESNext @decorator on Methods', t => {
+    let check = checkSyntaxLevel('m.js', `
+class C {
+    @wrap(f) method() { }
+}`, ScriptTarget.ESNext);
+    t.is(check.level, ScriptTarget.ESNext);
+});
+
+// test('Level Check: ESNext Numeric Separators', t => {
+//     let check = checkSyntaxLevel('m.js', `let amount = 1_234_500;`, ScriptTarget.ESNext);
+//     t.is(check.level, ScriptTarget.ESNext);
+// });
+
+// test('Level Check: ESNext Numeric Separators (Fractional)', t => {
+//     let check = checkSyntaxLevel('m.js', `let amount = 0.000_001;`, ScriptTarget.ESNext);
+//     t.is(check.level, ScriptTarget.ESNext);
+// });
+
+// test('Level Check: ESNext Numeric Separators (Exponent)', t => {
+//     let check = checkSyntaxLevel('m.js', `let amount = 1e10_000;`, ScriptTarget.ESNext);
+//     t.is(check.level, ScriptTarget.ESNext);
+// });
+
+// test('Level Check: ESNext Numeric Separators (Binary Literals)', t => {
+//     let check = checkSyntaxLevel('m.js', `let amount = 0b1010_0001_1000_0101;`, ScriptTarget.ESNext);
+//     t.is(check.level, ScriptTarget.ESNext);
+// });
+
+// test('Level Check: ESNext Numeric Separators (Hex Literals)', t => {
+//     let check = checkSyntaxLevel('m.js', `let amount = 0xA0_B0_C0;`, ScriptTarget.ESNext);
+//     t.is(check.level, ScriptTarget.ESNext);
+// });

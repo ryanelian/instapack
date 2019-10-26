@@ -8,9 +8,9 @@
     "alias": {
       "jquery": "jquery/dist/jquery.slim"
     },
-    "copy": [
-      "@fortawesome/fontawesome-free/webfonts"
-    ]
+    "copy": {
+      "@fortawesome/fontawesome-free/webfonts": "webfonts"
+    }
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.11.2",

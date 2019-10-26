@@ -16,6 +16,7 @@ const chalk_1 = require("chalk");
 const upath = require("upath");
 const fse = require("fs-extra");
 const PathFinder_1 = require("./variables-factory/PathFinder");
+const FastGlob = require("fast-glob");
 class CopyBuildTool {
     constructor(variables) {
         this.variables = variables;
@@ -24,52 +25,106 @@ class CopyBuildTool {
     }
     buildWithStopwatch() {
         return __awaiter(this, void 0, void 0, function* () {
-            Shout_1.Shout.timed(`Copying ${this.variables.copy.length} asset(s) ${chalk_1.default.grey('to ' + this.pathFinder.outputFolderPath)} ${chalk_1.default.yellow('(non-overwrite)')}`);
+            let copyCount = Object.keys(this.variables.copy).length;
+            Shout_1.Shout.timed(`Copying ${copyCount} Assets ${chalk_1.default.grey('to ' + this.pathFinder.outputFolderPath)} ${chalk_1.default.yellow('(non-overwrite)')}`);
             let start = process.hrtime();
             try {
-                yield this.build();
+                let count = yield this.build();
+                Shout_1.Shout.timed(`Copy Assets job: Successfully copied ${count} files`);
             }
             catch (error) {
-                this.va.speak('COPY TASK ERROR!');
-                Shout_1.Shout.error('during Copy build task:', error);
+                this.va.speak('COPY ASSETS ERROR!');
+                Shout_1.Shout.error('during Copy Assets job:', error);
             }
             finally {
                 let time = PrettyUnits_1.prettyHrTime(process.hrtime(start));
-                Shout_1.Shout.timed('Finished Copy build task after', chalk_1.default.green(time));
+                Shout_1.Shout.timed('Finished Copy Assets job after', chalk_1.default.green(time));
             }
         });
     }
-    tryCopy(value, overwrite) {
+    tryCopyFile(from, to, overwrite) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let existing = yield fse.pathExists(to);
+            if (existing) {
+                let toStats = yield fse.lstat(to);
+                if (toStats.isDirectory()) {
+                    Shout_1.Shout.error(`Failed to copy file: Destination ${chalk_1.default.cyan(to)} is a directory!`);
+                    return false;
+                }
+                if (overwrite === false) {
+                    return false;
+                }
+            }
+            let targetFolderPath = upath.dirname(to);
+            try {
+                yield fse.ensureDir(targetFolderPath);
+            }
+            catch (err) {
+                Shout_1.Shout.error(`Failed to copy file: Error when creating folder: ${targetFolderPath}`, err);
+                return false;
+            }
+            if (overwrite) {
+                yield fse.copyFile(from, to);
+            }
+            else {
+                yield fse.copyFile(from, to, fse.constants.COPYFILE_EXCL);
+            }
+            return true;
+        });
+    }
+    tryCopy(value, target, overwrite) {
         return __awaiter(this, void 0, void 0, function* () {
             let absolutePath = upath.join(this.pathFinder.npmFolder, value);
             let relativePath = upath.relative(this.pathFinder.npmFolder, absolutePath);
             if (!relativePath) {
                 Shout_1.Shout.warning(`Copy skip: copying the entire npm folder is not allowed!`);
-                return;
+                return 0;
             }
             if (relativePath.startsWith('../')) {
-                Shout_1.Shout.warning(`Copy skip: Path ${chalk_1.default.cyan(value)} is outside npm folder!`);
-                return;
+                Shout_1.Shout.warning(`Copy skip: Path for ${chalk_1.default.cyan(value)} is outside npm folder!`);
+                return 0;
             }
-            let isPathExist = yield fse.pathExists(absolutePath);
-            if (isPathExist === false) {
-                Shout_1.Shout.warning(`Copy skip: Path ${chalk_1.default.cyan(value)} does not exists!`);
-                return;
+            let isPathExists = yield fse.pathExists(absolutePath);
+            if (isPathExists === false) {
+                Shout_1.Shout.warning(`Copy skip: Path for ${chalk_1.default.cyan(value)} does not exists!`);
+                return 0;
             }
-            let folderOrFileName = upath.basename(absolutePath);
-            let targetPath = upath.join(this.pathFinder.outputFolderPath, folderOrFileName);
-            yield fse.copy(absolutePath, targetPath, {
-                overwrite: overwrite
-            });
+            let stats = yield fse.lstat(absolutePath);
+            let targetPath = upath.join(this.pathFinder.outputFolderPath, target);
+            if (stats.isDirectory()) {
+                let globPath = upath.join(absolutePath, '**');
+                let files = yield FastGlob(globPath);
+                let copyTasks = files.map(Q => {
+                    let relativeFilePath = upath.relative(absolutePath, Q);
+                    let targetFilePath = upath.join(targetPath, relativeFilePath);
+                    return this.tryCopyFile(Q, targetFilePath, overwrite);
+                });
+                let finish = yield Promise.all(copyTasks);
+                return finish.filter(Q => Q).length;
+            }
+            else if (stats.isFile()) {
+                yield this.tryCopyFile(absolutePath, targetPath, overwrite);
+                return 1;
+            }
+            else {
+                Shout_1.Shout.warning(`Copy skip: Path for ${chalk_1.default.cyan(value)} is neither a folder nor a file?!`);
+                return 0;
+            }
         });
     }
     build() {
         return __awaiter(this, void 0, void 0, function* () {
             let copyTasks = [];
-            for (let value of this.variables.copy) {
-                copyTasks.push(this.tryCopy(value, false));
+            for (let value in this.variables.copy) {
+                let copyTo = this.variables.copy[value];
+                copyTasks.push(this.tryCopy(value, copyTo, false));
             }
-            yield Promise.all(copyTasks);
+            let success = yield Promise.all(copyTasks);
+            let count = 0;
+            for (let n of success) {
+                count += n;
+            }
+            return count;
         });
     }
 }

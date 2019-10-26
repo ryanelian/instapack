@@ -8,5 +8,5 @@ export interface IProjectSettings {
     alias: IMapLike<string>;
     externals: IMapLike<string>;
     namespace: string | undefined;
-    copy: string[];
+    copy: IMapLike<string>;
 }

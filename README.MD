@@ -55,7 +55,9 @@ Out of the box, these files will be used as the program entry points:
 
   - Spiced :hot_pepper: with [AutoPrefixer](https://github.com/postcss/autoprefixer) for applying CSS vendor-prefixes automatically!
 
-- Assets (files or folders) defined in `copy` field in `package.json` copied to `wwwroot/` folder from `node_modules` folders. **THIS FEATURE IS IN PREVIEW!!** *No overwrites will be performed right now due to safety concerns.*
+- Assets (files or folders) defined in `copy` field in `package.json` copied to `wwwroot/` folder from `node_modules` folders.
+
+  - This is a BETA feature inspired from [Visual Studio LibMan](https://docs.microsoft.com/en-us/aspnet/core/client-side/libman/libman-vs?view=aspnetcore-3.0). [Read more about `copy` settings ↓](#configurations)
 
 ## System Requirements
 
@@ -215,9 +217,13 @@ import jQuery from 'jquery';
 // const jQuery = window["$"];
 ```
 
-- `copy` accepts a map-like object `{ "from": "to" }` which allows copying static assets from the npm folder (`node_modules`) into the project output folder during build.
+- `copy` accepts a map-like object `{ "from": "to" }` which allows copying static assets from the npm folder (`node_modules`) into the project output folder during build. *No overwrites will be performed right now due to safety concerns.*
+
+  - If `from` is a folder, then all files inside that folder will be copied into `to` folder.
 
   - For example: `{ "@fortawesome/fontawesome-free/webfonts" : "webfonts" }` allows copying `node_modules/@fortawesome/fontawesome-free/webfonts` to `wwwroot/webfonts` during CI build. (https://fontawesome.com/how-to-use/on-the-web/setup/using-package-managers)
+
+  - If `from` is a file, then `to` must be the destination file name. For example: `{ "jquery/dist/jquery.min.js": "js/jquery.min.js" }` creates `wwwroot/js/jquery.min.js`
 
 - `port1` can be set for declaring a static port number to be used by the Hot Reload server. If not set or is already used, the port number will be randomized. [Read more ↓](#hot-reload-development-mode)
 

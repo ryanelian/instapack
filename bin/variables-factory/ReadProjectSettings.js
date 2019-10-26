@@ -37,7 +37,7 @@ function readProjectSettingsFrom(folder) {
             cssOut: 'ipack.css',
             alias: {},
             externals: {},
-            copy: [],
+            copy: {},
             namespace: undefined,
             port1: 0,
         };
@@ -70,7 +70,7 @@ function readProjectSettingsFrom(folder) {
             if (typeof parse.alias === 'object') {
                 for (let key in parse.alias) {
                     let value = parse.alias[key];
-                    if (typeof value === 'string') {
+                    if (typeof value === 'string' && value) {
                         settings.alias[key] = value;
                     }
                 }
@@ -86,11 +86,11 @@ function readProjectSettingsFrom(folder) {
             if (typeof parse.namespace === 'string') {
                 settings.namespace = parse.namespace;
             }
-            if (Array.isArray(parse.copy)) {
-                for (let value of parse.copy) {
-                    let isNonEmptyString = typeof value === 'string' && value;
-                    if (isNonEmptyString) {
-                        settings.copy.push(value);
+            if (typeof parse.copy === 'object') {
+                for (let key in parse.copy) {
+                    let value = parse.copy[key];
+                    if (typeof value === 'string' && value) {
+                        settings.copy[key] = value;
                     }
                 }
             }

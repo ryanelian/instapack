@@ -22,7 +22,7 @@ ava_1.default('Compile Variables: Simple', t => {
         alias: {},
         externals: {},
         namespace: 'instapack',
-        copy: [],
+        copy: {},
         port1: 0
     }, {
         silent: false,
@@ -50,7 +50,7 @@ ava_1.default('Compile Variables: Simple', t => {
         alias: {},
         externals: {},
         namespace: 'instapack',
-        copy: [],
+        copy: {},
         port1: 0,
         silent: true,
         packageManager: 'yarn',
@@ -103,7 +103,7 @@ ava_1.default('Compile Variables: Overrides', t => {
             jquery: '$'
         },
         namespace: "instapack",
-        copy: ['node_modules/@fortawesome/fontawesome-free/webfonts'],
+        copy: { 'node_modules/@fortawesome/fontawesome-free/webfonts': "webfonts" },
         port1: 20178
     }, {
         silent: true,
@@ -135,7 +135,7 @@ ava_1.default('Compile Variables: Overrides', t => {
             jquery: '$'
         },
         namespace: "instapack",
-        copy: ['node_modules/@fortawesome/fontawesome-free/webfonts'],
+        copy: { 'node_modules/@fortawesome/fontawesome-free/webfonts': "webfonts" },
         port1: 20178,
         silent: true,
         packageManager: 'npm',

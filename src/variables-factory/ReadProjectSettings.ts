@@ -33,7 +33,7 @@ export async function readProjectSettingsFrom(folder: string): Promise<IProjectS
 
         alias: {},
         externals: {},
-        copy: [],
+        copy: {},
         namespace: undefined,
         port1: 0,
     };
@@ -76,7 +76,7 @@ export async function readProjectSettingsFrom(folder: string): Promise<IProjectS
             for (let key in parse.alias) {
                 let value = parse.alias[key];
                 // https://webpack.js.org/configuration/resolve/#resolve-alias
-                if (typeof value === 'string') {
+                if (typeof value === 'string' && value) {
                     settings.alias[key] = value;
                 }
             }
@@ -95,11 +95,11 @@ export async function readProjectSettingsFrom(folder: string): Promise<IProjectS
             settings.namespace = parse.namespace;
         }
 
-        if (Array.isArray(parse.copy)) {
-            for (let value of parse.copy) {
-                let isNonEmptyString = typeof value === 'string' && value;
-                if (isNonEmptyString) {
-                    settings.copy.push(value);
+        if (typeof parse.copy === 'object') {
+            for (let key in parse.copy) {
+                let value = parse.copy[key];
+                if (typeof value === 'string' && value) {
+                    settings.copy[key] = value;
                 }
             }
         }

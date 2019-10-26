@@ -117,12 +117,12 @@ export class ToolOrchestrator {
             }
 
             case 'copy': {
-                let anyCopy = Boolean(this.variables.copy[0]);
-                if (anyCopy) {
+                let copyCount = Object.keys(this.variables.copy).length;
+                if (copyCount) {
                     runCopyBuildWorker(this.variables).catch(error => {
-                        Shout.fatal(`during Copy build task:`, error);
+                        Shout.fatal(`during Copy Assets job:`, error);
                         let va = new VoiceAssistant(this.variables.silent);
-                        va.speak(`COPY TASK FATAL ERROR!`);
+                        va.speak(`COPY ASSETS FATAL ERROR!`);
                     });
                 }
                 return;

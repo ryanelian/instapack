@@ -96,12 +96,12 @@ class ToolOrchestrator {
                     return;
                 }
                 case 'copy': {
-                    let anyCopy = Boolean(this.variables.copy[0]);
-                    if (anyCopy) {
+                    let copyCount = Object.keys(this.variables.copy).length;
+                    if (copyCount) {
                         RunWorker_1.runCopyBuildWorker(this.variables).catch(error => {
-                            Shout_1.Shout.fatal(`during Copy build task:`, error);
+                            Shout_1.Shout.fatal(`during Copy Assets job:`, error);
                             let va = new VoiceAssistant_1.VoiceAssistant(this.variables.silent);
-                            va.speak(`COPY TASK FATAL ERROR!`);
+                            va.speak(`COPY ASSETS FATAL ERROR!`);
                         });
                     }
                     return;

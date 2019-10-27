@@ -83,6 +83,9 @@ class CopyBuildTool {
         return true;
     }
     findCommonParentFolderPath(files) {
+        if (!files[0]) {
+            return '';
+        }
         let tokenMatrix = files.map(Q => Q.split('/'));
         let commonPath = [];
         let i = 0;

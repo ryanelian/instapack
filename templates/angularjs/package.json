@@ -7,9 +7,15 @@
     "externals": {
       "jquery": "$"
     },
-    "copy": {
-      "bootstrap-sass/assets/fonts": "fonts"
-    }
+    "copy": [
+      {
+        "library": "bootstrap-sass",
+        "files": [
+          "assets/fonts"
+        ],
+        "destination": "assets/fonts"
+      }
+    ]
   },
   "dependencies": {
     "@types/angular": "^1.6.56",

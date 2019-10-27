@@ -12,7 +12,8 @@
       {
         "library": "@fortawesome/fontawesome-free",
         "files": [
-          "webfonts"
+          "webfonts",
+          "!webfonts/fa-brands*"
         ],
         "destination": "webfonts"
       }

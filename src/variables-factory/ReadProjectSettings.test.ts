@@ -1,7 +1,7 @@
 import test from "ava";
 import * as upath from 'upath';
 
-import { isValidExternals, readProjectSettingsFrom } from "./ReadProjectSettings";
+import { readProjectSettingsFrom } from "./ReadProjectSettings";
 import { IProjectSettings } from "./IProjectSettings";
 
 let root = process.cwd();
@@ -20,7 +20,7 @@ test('Project Settings: Not Found', async t => {
         alias: {},
         externals: {},
         namespace: undefined,
-        copy: {},
+        copy: [],
         port1: 0,
     };
 
@@ -40,7 +40,7 @@ test('Project Settings: Invalid', async t => {
         alias: {},
         externals: {},
         namespace: undefined,
-        copy: {},
+        copy: [],
         port1: 0,
     };
 
@@ -64,55 +64,9 @@ test('Project Settings: Valid', async t => {
             jquery: '$'
         },
         namespace: 'instapack',
-        copy: {},
+        copy: [],
         port1: 32101,
     };
 
     t.deepEqual(settings, result);
-});
-
-test('Valid Externals: Simple String', t => {
-    let a = isValidExternals('$');
-    t.is(a, true);
-});
-
-test('Valid Externals: undefined', t => {
-    let a = isValidExternals(undefined);
-    t.is(a, false);
-});
-
-test('Valid Externals: null', t => {
-    let a = isValidExternals(null);
-    t.is(a, false);
-});
-
-test('Valid Externals: number', t => {
-    let a = isValidExternals(12345);
-    t.is(a, false);
-});
-
-test('Valid Externals: boolean', t => {
-    let a = isValidExternals(true);
-    t.is(a, false);
-});
-
-test('Valid Externals: Array of String', t => {
-    let a = isValidExternals(['./math', 'subtract']);
-    t.is(a, true);
-});
-
-test('Valid Externals: Array of NOT String', t => {
-    let a = isValidExternals([0, 1]);
-    t.is(a, false);
-});
-
-test('Valid Externals: Object', t => {
-    let a = isValidExternals({
-        lodash: {
-            commonjs: 'lodash',
-            amd: 'lodash',
-            root: '_' // indicates global variable
-        }
-    });
-    t.is(a, true);
 });

@@ -1,26 +1,21 @@
 import * as fse from 'fs-extra';
 import * as upath from 'upath';
 import { IProjectSettings } from './IProjectSettings';
+import Ajv = require('ajv');
+const settingsJsonSchemaPath = require.resolve('../../schemas/instapack-settings.json');
 
-export function isValidExternals(value): boolean {
-    // https://webpack.js.org/configuration/externals/#externals
+async function tryReadPackageJsonInstapackSettings(path: string): Promise<unknown> {
+    try {
+        let packageJson = await fse.readJson(path);
+        let x = packageJson.instapack;
+        if (!x) {
+            return {};
+        }
 
-    if (!value) {
-        return false;
+        return x;
+    } catch (ex) {
+        return {};
     }
-
-    if (typeof value === 'string') {
-        return true;
-    }
-
-    if (Array.isArray(value)) {
-        return value.every(item => typeof item === 'string');
-    } else if (typeof value === 'object') {
-        // properties should be object or array of string, too lazy to validate
-        return true;
-    }
-
-    return false;
 }
 
 export async function readProjectSettingsFrom(folder: string): Promise<IProjectSettings> {
@@ -33,77 +28,29 @@ export async function readProjectSettingsFrom(folder: string): Promise<IProjectS
 
         alias: {},
         externals: {},
-        copy: {},
+        copy: [],
         namespace: undefined,
         port1: 0,
     };
 
-    let parse: any;
+    let ajv = new Ajv();
+    let settingsJsonSchema = await fse.readJson(settingsJsonSchemaPath);
+    let validate = ajv.compile(settingsJsonSchema);
 
-    try {
-        let jsonPath = upath.join(folder, 'package.json');
-        // console.log('Loading settings ' + chalk.cyan(json));
-        let json = await fse.readJson(jsonPath);
-        parse = json.instapack;
-    } catch (ex) {
-        // console.log('Failed to load settings. Using default settings.');
+    let packageJsonPath = upath.join(folder, 'package.json');
+    // console.log('Loading settings ' + chalk.cyan(json));
+
+    let x = await tryReadPackageJsonInstapackSettings(packageJsonPath);
+    // console.log(x);
+
+    let valid = validate(x);
+    if (valid === false) {
+        console.error('Abort build: Invalid instapack project settings in ' + packageJsonPath);
+        console.error(validate.errors);
+        throw new Error('Invalid instapack project settings!');
     }
 
-    if (parse) {
-        if (typeof parse.input === 'string') {
-            settings.input = parse.input;
-        }
-
-        if (typeof parse.output === 'string') {
-            settings.output = parse.output;
-        }
-
-        if (typeof parse.jsOut === 'string') {
-            let s = upath.addExt(parse.jsOut, '.js');
-            settings.jsOut = s;
-        }
-
-        if (typeof parse.cssOut === 'string') {
-            let s = upath.addExt(parse.cssOut, '.css');
-            settings.cssOut = s;
-        }
-
-        if (Number.isInteger(parse.port1)) {
-            settings.port1 = parse.port1;
-        }
-
-        if (typeof parse.alias === 'object') {
-            for (let key in parse.alias) {
-                let value = parse.alias[key];
-                // https://webpack.js.org/configuration/resolve/#resolve-alias
-                if (typeof value === 'string' && value) {
-                    settings.alias[key] = value;
-                }
-            }
-        }
-
-        if (typeof parse.externals === 'object') {
-            for (let key in parse.externals) {
-                let value = parse.externals[key];
-                if (isValidExternals(value)) {
-                    settings.externals[key] = value;
-                }
-            }
-        }
-
-        if (typeof parse.namespace === 'string') {
-            settings.namespace = parse.namespace;
-        }
-
-        if (typeof parse.copy === 'object') {
-            for (let key in parse.copy) {
-                let value = parse.copy[key];
-                if (typeof value === 'string' && value) {
-                    settings.copy[key] = value;
-                }
-            }
-        }
-    }
-
+    Object.assign(settings, x);
+    // console.log(settings);
     return settings;
 }

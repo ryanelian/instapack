@@ -6,7 +6,13 @@ export interface IProjectSettings {
     cssOut: string;
     port1: number;
     alias: IMapLike<string>;
-    externals: IMapLike<string>;
+    externals: IMapLike<string | string[] | IMapLike<string | string[]>>;
     namespace: string | undefined;
-    copy: IMapLike<string>;
+    copy: ICopyOption[];
+}
+
+export interface ICopyOption {
+    library: string;
+    files: string[];
+    destination: string;
 }

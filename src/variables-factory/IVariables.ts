@@ -36,7 +36,7 @@ export interface IVariables {
     /**
      * Rewrites dependency imports to a global object. For example: {'jquery': '$'}
      */
-    externals: IMapLike<string>;
+    externals: IMapLike<string | string[] | IMapLike<string | string[]>>;
 
     /**
      * Gets the user-supplied environment variables from CLI or .env file.

@@ -1,0 +1,128 @@
+{
+    "definitions": {
+        "ArrayOfStringValues": {
+            "type": "array",
+            "items": {
+                "description": "A non-empty string",
+                "type": "string",
+                "minLength": 1,
+                "pattern": "^(.*)$"
+            }
+        }
+    },
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://github.com/ryanelian/instapack/settings.json",
+    "type": "object",
+    "properties": {
+        "input": {
+            "$id": "#/properties/input",
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^(.*)$"
+        },
+        "output": {
+            "$id": "#/properties/output",
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^(.*)$"
+        },
+        "jsOut": {
+            "$id": "#/properties/jsOut",
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^(.*)$"
+        },
+        "cssOut": {
+            "$id": "#/properties/cssOut",
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^(.*)$"
+        },
+        "port1": {
+            "$id": "#/properties/port1",
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^(.*)$"
+        },
+        "namespace": {
+            "$id": "#/properties/namespace",
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^(.*)$"
+        },
+        "alias": {
+            "$id": "#/properties/alias",
+            "type": "object",
+            "additionalProperties": {
+                "oneOf": [
+                    {
+                        "type": "string",
+                        "minLength": 1,
+                        "pattern": "^(.*)$"
+                    }
+                ]
+            }
+        },
+        "externals": {
+            "$id": "#/properties/externals",
+            "type": "object",
+            "additionalProperties": {
+                "anyOf": [
+                    {
+                        "type": "string",
+                        "minLength": 1,
+                        "pattern": "^(.*)$"
+                    },
+                    {
+                        "$ref": "#/definitions/ArrayOfStringValues"
+                    },
+                    {
+                        "type": "object",
+                        "additionalProperties": {
+                            "anyOf": [
+                                {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "pattern": "^(.*)$"
+                                },
+                                {
+                                    "$ref": "#/definitions/ArrayOfStringValues"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        "copy": {
+            "$id": "#/properties/copy",
+            "type": "array",
+            "items": {
+                "$id": "#/properties/copy/items",
+                "type": "object",
+                "properties": {
+                    "library": {
+                        "$id": "#/properties/copy/items/properties/library",
+                        "type": "string",
+                        "minLength": 1,
+                        "pattern": "^(.*)$"
+                    },
+                    "files": {
+                        "$id": "#/properties/copy/items/properties/files",
+                        "anyOf": [
+                            {
+                                "$ref": "#/definitions/ArrayOfStringValues"
+                            }
+                        ]
+                    },
+                    "destination": {
+                        "$id": "#/properties/copy/items/properties/destination",
+                        "type": "string",
+                        "minLength": 1,
+                        "pattern": "^(.*)$"
+                    }
+                }
+            }
+        }
+    }
+}

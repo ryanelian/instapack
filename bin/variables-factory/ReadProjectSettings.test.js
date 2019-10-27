@@ -26,7 +26,7 @@ ava_1.default('Project Settings: Not Found', (t) => __awaiter(void 0, void 0, vo
         alias: {},
         externals: {},
         namespace: undefined,
-        copy: {},
+        copy: [],
         port1: 0,
     };
     t.deepEqual(settings, result);
@@ -43,7 +43,7 @@ ava_1.default('Project Settings: Invalid', (t) => __awaiter(void 0, void 0, void
         alias: {},
         externals: {},
         namespace: undefined,
-        copy: {},
+        copy: [],
         port1: 0,
     };
     t.deepEqual(settings, result);
@@ -64,46 +64,8 @@ ava_1.default('Project Settings: Valid', (t) => __awaiter(void 0, void 0, void 0
             jquery: '$'
         },
         namespace: 'instapack',
-        copy: {},
+        copy: [],
         port1: 32101,
     };
     t.deepEqual(settings, result);
 }));
-ava_1.default('Valid Externals: Simple String', t => {
-    let a = ReadProjectSettings_1.isValidExternals('$');
-    t.is(a, true);
-});
-ava_1.default('Valid Externals: undefined', t => {
-    let a = ReadProjectSettings_1.isValidExternals(undefined);
-    t.is(a, false);
-});
-ava_1.default('Valid Externals: null', t => {
-    let a = ReadProjectSettings_1.isValidExternals(null);
-    t.is(a, false);
-});
-ava_1.default('Valid Externals: number', t => {
-    let a = ReadProjectSettings_1.isValidExternals(12345);
-    t.is(a, false);
-});
-ava_1.default('Valid Externals: boolean', t => {
-    let a = ReadProjectSettings_1.isValidExternals(true);
-    t.is(a, false);
-});
-ava_1.default('Valid Externals: Array of String', t => {
-    let a = ReadProjectSettings_1.isValidExternals(['./math', 'subtract']);
-    t.is(a, true);
-});
-ava_1.default('Valid Externals: Array of NOT String', t => {
-    let a = ReadProjectSettings_1.isValidExternals([0, 1]);
-    t.is(a, false);
-});
-ava_1.default('Valid Externals: Object', t => {
-    let a = ReadProjectSettings_1.isValidExternals({
-        lodash: {
-            commonjs: 'lodash',
-            amd: 'lodash',
-            root: '_'
-        }
-    });
-    t.is(a, true);
-});

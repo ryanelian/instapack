@@ -2,7 +2,7 @@ import * as fse from 'fs-extra';
 import * as upath from 'upath';
 import { IProjectSettings } from './IProjectSettings';
 import Ajv = require('ajv');
-const settingsJsonSchemaPath = require.resolve('../../schemas/instapack-settings.json');
+const settingsJsonSchemaPath = require.resolve('../../schemas/settings.json');
 
 async function tryReadPackageJsonInstapackSettings(path: string): Promise<unknown> {
     try {
@@ -45,7 +45,7 @@ export async function readProjectSettingsFrom(folder: string): Promise<IProjectS
 
     let valid = validate(x);
     if (valid === false) {
-        console.error('Abort build: Invalid instapack project settings in ' + packageJsonPath);
+        console.error('Build abort: Invalid instapack project settings in ' + packageJsonPath);
         console.error(validate.errors);
         throw new Error('Invalid instapack project settings!');
     }

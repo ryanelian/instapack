@@ -117,8 +117,7 @@ export class ToolOrchestrator {
             }
 
             case 'copy': {
-                let copyCount = Object.keys(this.variables.copy).length;
-                if (copyCount) {
+                if (this.variables.copy.length) {
                     runCopyBuildWorker(this.variables).catch(error => {
                         Shout.fatal(`during Copy Assets job:`, error);
                         let va = new VoiceAssistant(this.variables.silent);

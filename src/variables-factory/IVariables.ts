@@ -1,3 +1,5 @@
+import { ICopyOption } from "./IProjectSettings";
+
 /**
  * Contains all flags and settings for the instapack build tool.
  */
@@ -90,7 +92,7 @@ export interface IVariables {
 
     namespace: string | undefined;
 
-    copy: IMapLike<string>;
+    copy: ICopyOption[];
 
     typescriptConfiguration: any;
 }

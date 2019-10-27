@@ -25,8 +25,11 @@ class CopyBuildTool {
     }
     buildWithStopwatch() {
         return __awaiter(this, void 0, void 0, function* () {
-            let copyCount = Object.keys(this.variables.copy).length;
-            Shout_1.Shout.timed(`Copying ${copyCount} Assets ${chalk_1.default.grey('to ' + this.pathFinder.outputFolderPath)} ${chalk_1.default.yellow('(non-overwrite)')}`);
+            let message = `Copying assets from ${this.variables.copy.length} libraries ${chalk_1.default.grey('to ' + this.pathFinder.outputFolderPath)}`;
+            if (true) {
+                message += chalk_1.default.yellow(' (non-overwrite)');
+            }
+            Shout_1.Shout.timed(message);
             let start = process.hrtime();
             try {
                 let count = yield this.build();
@@ -44,16 +47,9 @@ class CopyBuildTool {
     }
     tryCopyFile(from, to, overwrite) {
         return __awaiter(this, void 0, void 0, function* () {
-            let existing = yield fse.pathExists(to);
-            if (existing) {
-                let toStats = yield fse.lstat(to);
-                if (toStats.isDirectory()) {
-                    Shout_1.Shout.error(`Failed to copy file: Destination ${chalk_1.default.cyan(to)} is a directory!`);
-                    return false;
-                }
-                if (overwrite === false) {
-                    return false;
-                }
+            let exists = yield fse.pathExists(to);
+            if (exists && overwrite === false) {
+                return false;
             }
             let targetFolderPath = upath.dirname(to);
             try {
@@ -63,61 +59,118 @@ class CopyBuildTool {
                 Shout_1.Shout.error(`Failed to copy file: Error when creating folder: ${targetFolderPath}`, err);
                 return false;
             }
-            if (overwrite) {
-                yield fse.copyFile(from, to);
+            try {
+                if (overwrite) {
+                    yield fse.copyFile(from, to);
+                }
+                else {
+                    yield fse.copyFile(from, to, fse.constants.COPYFILE_EXCL);
+                }
+                return true;
             }
-            else {
-                yield fse.copyFile(from, to, fse.constants.COPYFILE_EXCL);
+            catch (err) {
+                Shout_1.Shout.error(`Failed to copy file to: ${to}`, err);
+                return false;
             }
-            return true;
         });
     }
-    tryCopy(value, target, overwrite) {
+    scanStringMatrixVerticalEquality(matrix, column, value) {
+        for (let list of matrix) {
+            if (list[column] !== value) {
+                return false;
+            }
+        }
+        return true;
+    }
+    findCommonParentFolderPath(files) {
+        let tokenMatrix = files.map(Q => Q.split('/'));
+        let commonPath = [];
+        let i = 0;
+        do {
+            let sample = tokenMatrix[0][i];
+            if (!sample) {
+                break;
+            }
+            let match = this.scanStringMatrixVerticalEquality(tokenMatrix, i, sample);
+            if (match === false) {
+                break;
+            }
+            commonPath.push(sample);
+            i++;
+        } while (tokenMatrix[0][i]);
+        return upath.join(...commonPath);
+    }
+    tryCopy(job, overwrite) {
         return __awaiter(this, void 0, void 0, function* () {
-            let absolutePath = upath.join(this.pathFinder.npmFolder, value);
-            let relativePath = upath.relative(this.pathFinder.npmFolder, absolutePath);
-            if (!relativePath) {
-                Shout_1.Shout.warning(`Copy skip: copying the entire npm folder is not allowed!`);
-                return 0;
+            let libraryPath = upath.join(this.pathFinder.npmFolder, job.library);
+            let targetPath = upath.join(this.pathFinder.outputFolderPath, job.destination);
+            let tasks = [];
+            let globs = [];
+            for (let file of job.files) {
+                let absoluteFilePath = upath.join(libraryPath, file);
+                let relativeFilePath = upath.relative(libraryPath, absoluteFilePath);
+                if (relativeFilePath.startsWith('../')) {
+                    Shout_1.Shout.warning(`Copy skip: ${chalk_1.default.cyan(file)} is outside library ${chalk_1.default.cyan(job.library)} folder!`);
+                    continue;
+                }
+                try {
+                    let fileStats = yield fse.lstat(absoluteFilePath);
+                    if (fileStats.isFile()) {
+                        let targetFilePath = upath.join(targetPath, file);
+                        let task = this.tryCopyFile(absoluteFilePath, targetFilePath, overwrite);
+                        tasks.push(task);
+                    }
+                    else if (fileStats.isDirectory()) {
+                        let globbedPath = upath.join(FastGlob.escapePath(relativeFilePath), '**');
+                        globs.push(globbedPath);
+                    }
+                    else {
+                        Shout_1.Shout.warning(`Copy skip: ${absoluteFilePath} is neither a file nor a folder?!`);
+                    }
+                }
+                catch (e) {
+                    if (FastGlob.isDynamicPattern(relativeFilePath)) {
+                        globs.push(relativeFilePath);
+                    }
+                }
             }
-            if (relativePath.startsWith('../')) {
-                Shout_1.Shout.warning(`Copy skip: Path for ${chalk_1.default.cyan(value)} is outside npm folder!`);
-                return 0;
+            let assets = yield FastGlob(globs, {
+                cwd: libraryPath
+            });
+            let commonPath = this.findCommonParentFolderPath(assets);
+            for (let asset of assets) {
+                let absoluteFilePath = upath.join(libraryPath, asset);
+                let relativeFilePath = upath.relative(commonPath, asset);
+                let targetFilePath = upath.join(targetPath, relativeFilePath);
+                let task = this.tryCopyFile(absoluteFilePath, targetFilePath, overwrite);
+                tasks.push(task);
             }
-            let isPathExists = yield fse.pathExists(absolutePath);
-            if (isPathExists === false) {
-                Shout_1.Shout.warning(`Copy skip: Path for ${chalk_1.default.cyan(value)} does not exists!`);
-                return 0;
-            }
-            let stats = yield fse.lstat(absolutePath);
-            let targetPath = upath.join(this.pathFinder.outputFolderPath, target);
-            if (stats.isDirectory()) {
-                let globPath = upath.join(absolutePath, '**');
-                let files = yield FastGlob(globPath);
-                let copyTasks = files.map(Q => {
-                    let relativeFilePath = upath.relative(absolutePath, Q);
-                    let targetFilePath = upath.join(targetPath, relativeFilePath);
-                    return this.tryCopyFile(Q, targetFilePath, overwrite);
-                });
-                let finish = yield Promise.all(copyTasks);
-                return finish.filter(Q => Q).length;
-            }
-            else if (stats.isFile()) {
-                yield this.tryCopyFile(absolutePath, targetPath, overwrite);
-                return 1;
-            }
-            else {
-                Shout_1.Shout.warning(`Copy skip: Path for ${chalk_1.default.cyan(value)} is neither a folder nor a file?!`);
-                return 0;
-            }
+            let success = yield Promise.all(tasks);
+            return success.filter(Q => Q).length;
         });
     }
     build() {
         return __awaiter(this, void 0, void 0, function* () {
+            let packageJson = yield fse.readJson(this.pathFinder.packageJson);
+            let dependencies = new Set();
+            if (packageJson.dependencies) {
+                for (let dependency in packageJson.dependencies) {
+                    dependencies.add(dependency);
+                }
+            }
+            if (packageJson.devDependencies) {
+                for (let dependency in packageJson.devDependencies) {
+                    dependencies.add(dependency);
+                }
+            }
             let copyTasks = [];
-            for (let value in this.variables.copy) {
-                let copyTo = this.variables.copy[value];
-                copyTasks.push(this.tryCopy(value, copyTo, false));
+            for (let job of this.variables.copy) {
+                if (dependencies.has(job.library)) {
+                    copyTasks.push(this.tryCopy(job, false));
+                }
+                else {
+                    Shout_1.Shout.error(`Copy skip: Project package.json has no ${chalk_1.default.cyan(job.library)} dependency!`);
+                }
             }
             let success = yield Promise.all(copyTasks);
             let count = 0;

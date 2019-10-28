@@ -55,7 +55,7 @@ program.command({
             stats: Boolean(argv.stats),
             hot: Boolean(argv.hot),
             verbose: Boolean(argv.verbose)
-        }).catch(console.error.bind(global));
+        }).catch(err => console.error(err));
     }
 });
 program.command({
@@ -67,7 +67,8 @@ program.command({
     handler: (argv) => {
         let subCommand = argv.template || 'vue';
         echo('new', subCommand);
-        ipack.scaffold(subCommand).catch(console.error.bind(global));
+        ipack.scaffold(subCommand)
+            .catch(err => console.error(err));
     }
 });
 program.command({
@@ -78,7 +79,8 @@ program.command({
     },
     handler: (argv) => {
         echo('set', argv.key);
-        ipack.changeUserSettings(argv.key, argv.value).catch(console.error.bind(global));
+        ipack.changeUserSettings(argv.key, argv.value)
+            .catch(err => console.error(err));
     }
 });
 let parse = program.strict().help().argv;

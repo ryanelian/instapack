@@ -293,16 +293,14 @@ Hot Reload for Vue.js project using Single-File Components format (`.vue`) has b
 Install package: https://github.com/gaearon/react-hot-loader
 
 ```
-yarn add react-hot-loader -D
+yarn add react-hot-loader @hot-loader/react-dom
 ```
 
 Create a `.babelrc` in the project root folder:
 
 ```json
 {
-    "plugins": [
-        "react-hot-loader/babel"
-    ]
+  "plugins": ["react-hot-loader/babel"]
 }
 ```
 
@@ -311,16 +309,18 @@ Refactor your root component as a *hot-exported* module:
 ```tsx
 // client/js/components/App.tsx
 import React from 'react';
-import { hot } from "react-hot-loader"
+import { hot } from 'react-hot-loader/root';
 import { Hello } from "./Hello";
 
-export let App = () => <Hello compiler="instapack" framework="React" />;
-export let HotApp = hot(module)(App);
+export const App = () => <Hello compiler="instapack" framework="React" />;
+export const HotApp = hot(App);
 ```
 
 Import that module, then render:
 
 ```tsx
+import 'react-hot-loader';  // import before React and react-dom!
+
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { HotApp } from './components/App';
@@ -329,6 +329,18 @@ ReactDOM.render(
     <HotApp />,
     document.getElementById('app')
 );
+```
+
+Then add `alias` field to instapack settings in `package.json`
+
+```json
+{
+  "instapack": {
+    "alias": {
+      "react-dom": "@hot-loader/react-dom"
+    }
+  }
+}
 ```
 
 ## TSLint Integration
@@ -621,19 +633,19 @@ This is a sample Dockerfile build recipe for building ASP.NET Core + instapack p
 
 ```Dockerfile
 FROM node:12-alpine AS instapack
-RUN npm install -g instapack@7.3.1
+RUN npm install -g instapack
 COPY . /src
 WORKDIR /src/MyApp
 RUN ipack
 
-FROM mcr.microsoft.com/dotnet/core/sdk:2.2 as build
+FROM mcr.microsoft.com/dotnet/core/sdk:3.0 as build
 COPY --from=instapack /src /src
 WORKDIR /src/MyApp
 RUN dotnet restore
 RUN dotnet publish -c Release
 
-FROM mcr.microsoft.com/dotnet/core/aspnet:2.2-alpine as runtime
-COPY --from=build /src/MyApp/bin/Release/netcoreapp2.2/publish /app
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.0 as runtime
+COPY --from=build /src/MyApp/bin/Release/netcoreapp3.0/publish /app
 WORKDIR /app
 ENTRYPOINT ["dotnet", "MyApp.dll"]
 ```

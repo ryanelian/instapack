@@ -49,7 +49,7 @@ function readProjectSettingsFrom(folder) {
         let x = yield tryReadPackageJsonInstapackSettings(packageJsonPath);
         let valid = validate(x);
         if (valid === false) {
-            console.error('Build abort: Invalid instapack project settings in ' + packageJsonPath);
+            console.error('Abort Build: Invalid instapack project settings in ' + packageJsonPath);
             console.error(validate.errors);
             throw new Error('Invalid instapack project settings!');
         }

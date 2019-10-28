@@ -197,7 +197,7 @@ instapack puts configurations inside `package.json` to reduce project files clut
 
   - This technique also allows referencing non-module, old-school IIFE JS loaded via `<script>` which provides excellent interop with older libraries!
 
-Example:
+**Example:**
 
 ```json
 {
@@ -229,7 +229,9 @@ import jQuery from 'jquery';
 
   - The copy output preserves the folder structure of the origin folders up to the topmost common directory path. (For example, copying `node_modules/library/a/b/c.txt` and `node_modules/library/a/d/f.txt` will result in `wwwroot/target/b/c.txt` and `wwwroot/target/d/f.txt` to be created)
 
-Example: Copy all files inside `node_modules/@fortawesome/fontawesome-free/webfonts` folder except files in that folder prefixed with `fa-brands` into project output sub-folder `wwwroot/webfonts`
+**Example:** 
+
+> Copy all files inside `node_modules/@fortawesome/fontawesome-free/webfonts` folder, except files in that folder prefixed with `fa-brands` into project output sub-folder `wwwroot/webfonts`
 
 ```json
 {

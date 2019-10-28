@@ -22,7 +22,7 @@ export class CopyBuildTool {
     }
 
     async buildWithStopwatch() {
-        let message = `Copying assets from ${this.variables.copy.length} libraries ${chalk.grey('to ' + this.pathFinder.outputFolderPath)}`;
+        let message = `Copying ${this.variables.copy.length} library assets ${chalk.grey('to ' + this.pathFinder.outputFolderPath)}`;
         if (true) {
             message += chalk.yellow(' (non-overwrite)');
         }
@@ -85,7 +85,7 @@ export class CopyBuildTool {
         if (!files[0]) {
             return '';
         }
-        
+
         let tokenMatrix = files.map(Q => Q.split('/'));
         // "/a/b/c" --> [a,b,c]
 
@@ -125,25 +125,18 @@ export class CopyBuildTool {
             // need to do this to squash folder navigations ('../')
             let relativeFilePath = upath.relative(libraryPath, absoluteFilePath);
             if (relativeFilePath.startsWith('../')) {
-                // For example:
-                // library path :   /project/node_modules/jquery
-                // file         :   ../wtf
-                // file path    :   /project/node_modules/wtf
-                // valid file path: /project/node_modules/jquery/valid
                 Shout.warning(`Copy skip: ${chalk.cyan(file)} is outside library ${chalk.cyan(job.library)} folder!`);
                 continue;
             }
 
             try {
                 // there is a small but very real chance that we have glob-like path entered by user...
-                // for example: '/project/node_modules/something/(actual_{folder}_[yo])/sad
+                // for example: '/project/node_modules/something/!(an|actual)_{folder}_[yo]/wtf
                 // that file or folder must not be treated as glob! (escaped)
 
                 let fileStats = await fse.lstat(absoluteFilePath);
                 if (fileStats.isFile()) {
-                    let targetFilePath = upath.join(targetPath, file);
-                    let task = this.tryCopyFile(absoluteFilePath, targetFilePath, overwrite);
-                    tasks.push(task);
+                    globs.push(FastGlob.escapePath(relativeFilePath));
                 } else if (fileStats.isDirectory()) {
                     let globbedPath = upath.join(FastGlob.escapePath(relativeFilePath), '**');
                     globs.push(globbedPath);
@@ -161,9 +154,10 @@ export class CopyBuildTool {
         let assets = await FastGlob(globs, {
             cwd: libraryPath
         }); // folder/something.svg
-        let commonPath = this.findCommonParentFolderPath(assets); // folder
 
+        let commonPath = this.findCommonParentFolderPath(assets); // folder
         // console.log('COMMON PATH:', commonPath);
+        
         for (let asset of assets) {
             let absoluteFilePath = upath.join(libraryPath, asset); // /project/node_modules/library/folder/something.svg
             let relativeFilePath = upath.relative(commonPath, asset); // something.svg

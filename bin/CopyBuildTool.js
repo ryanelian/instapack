@@ -25,7 +25,7 @@ class CopyBuildTool {
     }
     buildWithStopwatch() {
         return __awaiter(this, void 0, void 0, function* () {
-            let message = `Copying assets from ${this.variables.copy.length} libraries ${chalk_1.default.grey('to ' + this.pathFinder.outputFolderPath)}`;
+            let message = `Copying ${this.variables.copy.length} library assets ${chalk_1.default.grey('to ' + this.pathFinder.outputFolderPath)}`;
             if (true) {
                 message += chalk_1.default.yellow(' (non-overwrite)');
             }
@@ -119,9 +119,7 @@ class CopyBuildTool {
                 try {
                     let fileStats = yield fse.lstat(absoluteFilePath);
                     if (fileStats.isFile()) {
-                        let targetFilePath = upath.join(targetPath, file);
-                        let task = this.tryCopyFile(absoluteFilePath, targetFilePath, overwrite);
-                        tasks.push(task);
+                        globs.push(FastGlob.escapePath(relativeFilePath));
                     }
                     else if (fileStats.isDirectory()) {
                         let globbedPath = upath.join(FastGlob.escapePath(relativeFilePath), '**');

@@ -33,20 +33,9 @@ ava_1.default('Project Settings: Not Found', (t) => __awaiter(void 0, void 0, vo
 }));
 ava_1.default('Project Settings: Invalid', (t) => __awaiter(void 0, void 0, void 0, function* () {
     let folder = upath.join(fixtures, 'ProjectSettingsInvalid');
-    let settings = yield ReadProjectSettings_1.readProjectSettingsFrom(folder);
-    let result = {
-        root: upath.toUnix(folder),
-        input: 'client',
-        output: 'wwwroot',
-        jsOut: 'ipack.js',
-        cssOut: 'ipack.css',
-        alias: {},
-        externals: {},
-        namespace: undefined,
-        copy: [],
-        port1: 0,
-    };
-    t.deepEqual(settings, result);
+    yield t.throwsAsync(() => __awaiter(void 0, void 0, void 0, function* () {
+        yield ReadProjectSettings_1.readProjectSettingsFrom(folder);
+    }));
 }));
 ava_1.default('Project Settings: Valid', (t) => __awaiter(void 0, void 0, void 0, function* () {
     let folder = upath.join(fixtures, 'ProjectSettingsValid');

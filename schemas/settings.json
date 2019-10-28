@@ -40,9 +40,7 @@
         },
         "port1": {
             "$id": "#/properties/port1",
-            "type": "string",
-            "minLength": 1,
-            "pattern": "^(.*)$"
+            "type": "integer"
         },
         "namespace": {
             "$id": "#/properties/namespace",

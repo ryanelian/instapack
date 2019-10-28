@@ -54,6 +54,8 @@ function readProjectSettingsFrom(folder) {
             throw new Error('Invalid instapack project settings!');
         }
         Object.assign(settings, x);
+        settings.cssOut = upath.addExt(settings.cssOut, '.css');
+        settings.jsOut = upath.addExt(settings.jsOut, '.js');
         return settings;
     });
 }

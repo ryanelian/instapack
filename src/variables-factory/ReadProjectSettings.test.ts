@@ -28,23 +28,24 @@ test('Project Settings: Not Found', async t => {
 });
 
 test('Project Settings: Invalid', async t => {
+    // let result: IProjectSettings = {
+    //     root: upath.toUnix(folder),
+    //     input: 'client',
+    //     output: 'wwwroot',
+    //     jsOut: 'ipack.js',
+    //     cssOut: 'ipack.css',
+
+    //     alias: {},
+    //     externals: {},
+    //     namespace: undefined,
+    //     copy: [],
+    //     port1: 0,
+    // };
+
     let folder = upath.join(fixtures, 'ProjectSettingsInvalid');
-    let settings = await readProjectSettingsFrom(folder);
-    let result: IProjectSettings = {
-        root: upath.toUnix(folder),
-        input: 'client',
-        output: 'wwwroot',
-        jsOut: 'ipack.js',
-        cssOut: 'ipack.css',
-
-        alias: {},
-        externals: {},
-        namespace: undefined,
-        copy: [],
-        port1: 0,
-    };
-
-    t.deepEqual(settings, result);
+    await t.throwsAsync(async () => {
+        await readProjectSettingsFrom(folder);
+    });
 });
 
 test('Project Settings: Valid', async t => {

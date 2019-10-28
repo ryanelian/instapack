@@ -55,7 +55,9 @@ Out of the box, these files will be used as the program entry points:
 
   - Spiced :hot_pepper: with [AutoPrefixer](https://github.com/postcss/autoprefixer) for applying CSS vendor-prefixes automatically!
 
-- Assets (files or folders) defined in `copy` field in `package.json` copied to `wwwroot/` folder from `node_modules` folders. [Read more about `copy` settings ↓](#configurations)
+- Assets (files or folders) declared in `copy` settings in `package.json` will be copied to `wwwroot` sub-folder from `node_modules` packages.
+
+> `client`, `wwwroot`, `ipack.js`, and `ipack.css` can be renamed in project settings. [Read more ↓](#configurations)
 
 ## System Requirements
 

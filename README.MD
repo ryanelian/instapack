@@ -217,17 +217,17 @@ import jQuery from 'jquery';
 // const jQuery = window["$"];
 ```
 
-- `copy` allows copying static assets from the npm folder (`node_modules`) into the project output folder during build.
+- `copy` allows copying static assets from the npm folder (`node_modules`) into the project output folder (e.g. `wwwroot`) during build.
 
   - **This is a PREVIEW feature** inspired from [Visual Studio LibMan](https://docs.microsoft.com/en-us/aspnet/core/client-side/libman/libman-vs?view=aspnetcore-3.0). *No overwrites will be performed right now due to safety concerns.*
 
-  - `library` accepts a package name. The package MUST be installed in the project `package.json` and cannot be implicit / sub-dependency of other packages.
+  - `library` accepts a package name. The package MUST be installed in the project `package.json` and cannot be transient implicit / merely a sub-dependency of other packages.
 
   - `files` accepts a list of file names OR folder names OR glob patterns.
 
-  - `destination` accepts a sub-folder path inside project output directory (i.e. `wwwroot`).
+  - `destination` accepts a sub-folder path inside the project output directory.
 
-  - The copy output preserves the folder structure of the origin folders up to the topmost common directory path. (For example, copying `node_modules/library/a/b/c.txt` and `node_modules/library/a/d/f.txt` will result in `wwwroot/target/b/c.txt` and `wwwroot/target/d/f.txt` to be created)
+  - The copy output preserves the folder structure of the origin folders up to the topmost common directory path. (For example, copying `node_modules/library/a/b/c.txt` and `node_modules/library/a/d/f.txt` will result in `wwwroot/destination/b/c.txt` and `wwwroot/destination/d/f.txt` to be created)
 
 **Example:** 
 

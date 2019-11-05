@@ -174,6 +174,7 @@ class TypeScriptBuildEngine {
             loader: LoaderPaths_1.LoaderPaths.css,
             options: {
                 modules: true,
+                localIdentName: '[local]_[hash:base64:5]',
                 url: false
             }
         };

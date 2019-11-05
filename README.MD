@@ -527,13 +527,11 @@ export default class Hello extends Vue {
 
   - This file will be created for you when using the `vue` new project template!
 
-- Notice that basic `<style>` (or `<style scoped>` or `<style module>`) should work, but should *NOT* be used. 
+- Notice that basic `<style>` (or `<style scoped>` or `<style module>`) should work, but should *NOT* be used. **Instead of coding your CSS in a JS project, you should write CSS using instapack Sass compiler instead!**
 
-  - **This particular feature is in PREVIEW state / not supported** [at least until webpack ships built-in CSS modules](https://github.com/webpack/webpack/pull/6448).
+  - **This particular feature is NOT SUPPORTED!** There are numerous reported issues related to CSS in Vue SFC (such as NOT working in an Async Components).
 
   - **Limitations:** You cannot use Sass. The CSS will not be auto-prefixed and minified.
-  
-  - **Reduced project maintainability:** Your CSS will be scattered across obscure files in the JS project, [similar to inline CSS](https://www.lifewire.com/avoid-inline-styles-for-css-3466846).
 
 - Projects with matching `vue-template-compiler` dependency (compiler version === Vue version) will be built using that specific compiler instead of using instapack built-in `vue-template-compiler`.
 

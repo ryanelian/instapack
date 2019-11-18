@@ -2,7 +2,7 @@ import { loader } from 'webpack';
 import * as TypeScript from 'typescript';
 import { getOptions } from 'loader-utils';
 import { RawSourceMap } from 'source-map';
-import chalk from 'chalk';
+import chalk = require('chalk');
 import { checkSyntaxLevel } from '../SyntaxLevelChecker';
 import * as upath from 'upath';
 

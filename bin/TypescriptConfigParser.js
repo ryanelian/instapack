@@ -13,7 +13,7 @@ const fse = require("fs-extra");
 const upath = require("upath");
 const TypeScript = require("typescript");
 const Shout_1 = require("./Shout");
-const chalk_1 = require("chalk");
+const chalk = require("chalk");
 let fallbackTypeScriptConfig = {
     compilerOptions: {
         alwaysStrict: true,
@@ -42,7 +42,7 @@ function tryReadTypeScriptConfigJson(folder) {
             return tsconfigJson;
         }
         catch (error) {
-            Shout_1.Shout.error('when reading', chalk_1.default.cyan(tsconfigJsonPath), error);
+            Shout_1.Shout.error('when reading', chalk.cyan(tsconfigJsonPath), error);
             Shout_1.Shout.warning('Using the default fallback TypeScript configuration!');
             return fallbackTypeScriptConfig;
         }

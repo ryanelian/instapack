@@ -1,7 +1,7 @@
 import * as fse from 'fs-extra';
 import { NodeJsInputFileSystem, ResolverFactory } from 'enhanced-resolve';
 import { Shout } from './Shout';
-import chalk from 'chalk';
+import chalk = require('chalk');
 
 /**
  * Invoke enhanced-resolve custom resolver as a Promise.

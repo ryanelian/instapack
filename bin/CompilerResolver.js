@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const fse = require("fs-extra");
 const enhanced_resolve_1 = require("enhanced-resolve");
 const Shout_1 = require("./Shout");
-const chalk_1 = require("chalk");
+const chalk = require("chalk");
 function resolveAsync(customResolver, lookupStartPath, request) {
     return new Promise((ok, reject) => {
         customResolver.resolve({}, lookupStartPath, request, {}, (error, resolution) => {
@@ -70,7 +70,7 @@ function resolveVueTemplateCompiler(projectBasePath) {
             }
             if (vueVersion !== vueCompilerVersion) {
                 Shout_1.Shout.warning(`Project vue (${vueVersion}) and vue-template-compiler (${vueCompilerVersion}) version mismatch!`
-                    + chalk_1.default.grey(`
+                    + chalk.grey(`
 Fix the project package.json and make sure to use the same version for both:
     yarn add vue-template-compiler@${vueVersion} -D -E
                         OR
@@ -84,12 +84,12 @@ Fix the project package.json and make sure to use the same version for both:
                 compiler: require(compilerPath),
                 compilerPath: compilerPath
             };
-            Shout_1.Shout.timed('Using project Vue Template Compiler', chalk_1.default.green(vueCompilerVersion));
+            Shout_1.Shout.timed('Using project Vue Template Compiler', chalk.green(vueCompilerVersion));
         }
         catch (err) {
             if (vueVersion && vueVersion !== instapackVueCompilerVersion) {
                 Shout_1.Shout.warning(`instapack built-in vue-template-compiler (${instapackVueCompilerVersion}) and project vue (${vueVersion}) version mismatch!`
-                    + chalk_1.default.grey(`
+                    + chalk.grey(`
 This may introduce bugs to the application. Please add a custom vue-template-compiler dependency to the project:
     yarn add vue-template-compiler@${vueVersion} -D -E
                         OR

@@ -1,6 +1,6 @@
 import * as TypeScript from 'typescript';
 import * as tslint from 'tslint';
-import chalk from 'chalk';
+import chalk = require('chalk');
 import * as fse from 'fs-extra';
 import { watch } from 'chokidar';
 

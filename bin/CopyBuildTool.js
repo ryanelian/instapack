@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const Shout_1 = require("./Shout");
 const VoiceAssistant_1 = require("./VoiceAssistant");
 const PrettyUnits_1 = require("./PrettyUnits");
-const chalk_1 = require("chalk");
+const chalk = require("chalk");
 const upath = require("upath");
 const fse = require("fs-extra");
 const PathFinder_1 = require("./variables-factory/PathFinder");
@@ -25,9 +25,9 @@ class CopyBuildTool {
     }
     buildWithStopwatch() {
         return __awaiter(this, void 0, void 0, function* () {
-            let message = `Copying ${this.variables.copy.length} library assets ${chalk_1.default.grey('to ' + this.pathFinder.outputFolderPath)}`;
+            let message = `Copying ${this.variables.copy.length} library assets ${chalk.grey('to ' + this.pathFinder.outputFolderPath)}`;
             if (true) {
-                message += chalk_1.default.yellow(' (non-overwrite)');
+                message += chalk.yellow(' (non-overwrite)');
             }
             Shout_1.Shout.timed(message);
             let start = process.hrtime();
@@ -41,7 +41,7 @@ class CopyBuildTool {
             }
             finally {
                 let time = PrettyUnits_1.prettyHrTime(process.hrtime(start));
-                Shout_1.Shout.timed('Finished Copy Assets job after', chalk_1.default.green(time));
+                Shout_1.Shout.timed('Finished Copy Assets job after', chalk.green(time));
             }
         });
     }
@@ -113,7 +113,7 @@ class CopyBuildTool {
                 let absoluteFilePath = upath.join(libraryPath, file);
                 let relativeFilePath = upath.relative(libraryPath, absoluteFilePath);
                 if (relativeFilePath.startsWith('../')) {
-                    Shout_1.Shout.warning(`Copy skip: ${chalk_1.default.cyan(file)} is outside library ${chalk_1.default.cyan(job.library)} folder!`);
+                    Shout_1.Shout.warning(`Copy skip: ${chalk.cyan(file)} is outside library ${chalk.cyan(job.library)} folder!`);
                     continue;
                 }
                 try {
@@ -170,7 +170,7 @@ class CopyBuildTool {
                     copyTasks.push(this.tryCopy(job, false));
                 }
                 else {
-                    Shout_1.Shout.error(`Copy skip: Project package.json has no ${chalk_1.default.cyan(job.library)} dependency!`);
+                    Shout_1.Shout.error(`Copy skip: Project package.json has no ${chalk.cyan(job.library)} dependency!`);
                 }
             }
             let success = yield Promise.all(copyTasks);

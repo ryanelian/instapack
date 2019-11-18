@@ -2,7 +2,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const program = require("yargs");
-const chalk_1 = require("chalk");
+const chalk = require("chalk");
 const instapack = require("./index");
 const EnvParser_1 = require("./variables-factory/EnvParser");
 const UserSettingsManager_1 = require("./user-settings/UserSettingsManager");
@@ -14,7 +14,7 @@ function echo(command, subCommand) {
     if (!subCommand) {
         subCommand = '';
     }
-    console.log(chalk_1.default.yellow(manifest.name) + ' ' + chalk_1.default.green(manifest.version) + ' ' + command + ' ' + subCommand);
+    console.log(chalk.yellow(manifest.name) + ' ' + chalk.green(manifest.version) + ' ' + command + ' ' + subCommand);
     console.log();
 }
 program.command({

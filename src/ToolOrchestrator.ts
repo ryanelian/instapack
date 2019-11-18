@@ -1,5 +1,5 @@
 import * as fse from 'fs-extra';
-import chalk from 'chalk';
+import chalk = require('chalk');
 
 import { Shout } from './Shout';
 import { IVariables } from './variables-factory/IVariables';

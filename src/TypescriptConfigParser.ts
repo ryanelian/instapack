@@ -2,7 +2,7 @@ import * as fse from 'fs-extra';
 import * as upath from 'upath';
 import * as TypeScript from 'typescript';
 import { Shout } from './Shout';
-import chalk from 'chalk';
+import chalk = require('chalk');
 
 let fallbackTypeScriptConfig = {
     compilerOptions: {

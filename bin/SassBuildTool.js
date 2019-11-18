@@ -11,7 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const fse = require("fs-extra");
 const upath = require("upath");
-const chalk_1 = require("chalk");
+const chalk = require("chalk");
 const sass = require("sass");
 const chokidar_1 = require("chokidar");
 const postcss = require("postcss");
@@ -64,9 +64,9 @@ class SassBuildTool {
                 data: yield fse.readFile(cssInput, 'utf8'),
                 sourceMap: this.variables.sourceMap,
                 sourceMapContents: this.variables.sourceMap,
-                importer: SassImportResolver_1.sassImporter,
-                fiber: Fiber
+                importer: SassImportResolver_1.sassImporter
             };
+            sassOptions['fiber'] = Fiber;
             let sassResult = yield this.runSassAsync(sassOptions);
             let result = {
                 css: sassResult.css.toString('utf8')
@@ -162,7 +162,7 @@ class SassBuildTool {
     }
     buildWithStopwatch() {
         return __awaiter(this, void 0, void 0, function* () {
-            Shout_1.Shout.timed('Compiling', chalk_1.default.cyan('index.scss'), chalk_1.default.grey('in ' + this.finder.cssInputFolder + '/'));
+            Shout_1.Shout.timed('Compiling', chalk.cyan('index.scss'), chalk.grey('in ' + this.finder.cssInputFolder + '/'));
             let start = process.hrtime();
             try {
                 yield this.build();
@@ -172,7 +172,7 @@ class SassBuildTool {
                 this.va.speak('CSS COMPILE ERROR!');
                 if (error['formatted']) {
                     let formatted = 'Sass Compile' + error['formatted'].trim();
-                    render = chalk_1.default.red(formatted);
+                    render = chalk.red(formatted);
                     console.error('\n' + render + '\n');
                 }
                 else {
@@ -181,7 +181,7 @@ class SassBuildTool {
             }
             finally {
                 let time = PrettyUnits_1.prettyHrTime(process.hrtime(start));
-                Shout_1.Shout.timed('Finished CSS build after', chalk_1.default.green(time));
+                Shout_1.Shout.timed('Finished CSS build after', chalk.green(time));
             }
         });
     }
@@ -197,15 +197,15 @@ class SassBuildTool {
             ignoreInitial: true
         })
             .on('add', file => {
-            Shout_1.Shout.sass(chalk_1.default.grey('tracking new file:', file));
+            Shout_1.Shout.sass(chalk.grey('tracking new file:', file));
             debounce();
         })
             .on('change', file => {
-            Shout_1.Shout.sass(chalk_1.default.grey('updating file:', file));
+            Shout_1.Shout.sass(chalk.grey('updating file:', file));
             debounce();
         })
             .on('unlink', file => {
-            Shout_1.Shout.sass(chalk_1.default.grey('removing file:', file));
+            Shout_1.Shout.sass(chalk.grey('removing file:', file));
             debounce();
         });
     }

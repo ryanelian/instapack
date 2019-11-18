@@ -1,5 +1,6 @@
 import * as upath from 'upath';
 import { NodeJsInputFileSystem, ResolverFactory } from 'enhanced-resolve';
+import { ImporterReturnType } from 'sass';
 
 /**
  * Invoke enhanced-resolve custom resolver as a Promise.
@@ -102,13 +103,7 @@ export async function sassImport(source: string, request: string): Promise<strin
     // Standard+: when using node-sass includePaths option set to the node_modules folder. (Older instapack behavior)
 }
 
-interface SassImporterCallbackParameter {
-    file: string
-}
-
-type SassImporterCallback = (args: SassImporterCallbackParameter | Error) => {}
-
-export function sassImporter(request: string, source: string, done: SassImporterCallback) {
+export function sassImporter(request: string, source: string, done: (data: ImporterReturnType) => void) {
     sassImport(source, request).then(resolution => {
         // console.log(source, '+', request, '=', resolution); console.log();
         done({

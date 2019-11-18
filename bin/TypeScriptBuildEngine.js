@@ -13,7 +13,7 @@ const upath = require("upath");
 const path = require("path");
 const fse = require("fs-extra");
 const url = require("url");
-const chalk_1 = require("chalk");
+const chalk = require("chalk");
 const webpack = require("webpack");
 const webpackDevServer = require("webpack-dev-server");
 const TypeScript = require("typescript");
@@ -58,7 +58,7 @@ class TypeScriptBuildEngine {
             return alias;
         }
         if (!this.typescriptCompilerOptions.baseUrl) {
-            Shout_1.Shout.warning(chalk_1.default.cyan('tsconfig.json'), 'paths are defined, but baseUrl is not!', chalk_1.default.grey('(Ignoring)'));
+            Shout_1.Shout.warning(chalk.cyan('tsconfig.json'), 'paths are defined, but baseUrl is not!', chalk.grey('(Ignoring)'));
             return alias;
         }
         for (let key in this.typescriptCompilerOptions.paths) {
@@ -67,11 +67,11 @@ class TypeScriptBuildEngine {
             }
             let values = this.typescriptCompilerOptions.paths[key];
             if (values.length > 1) {
-                Shout_1.Shout.warning(chalk_1.default.cyan('tsconfig.json'), 'paths:', chalk_1.default.yellow(key), 'resolves to more than one path!', chalk_1.default.grey('(Using the first one.)'));
+                Shout_1.Shout.warning(chalk.cyan('tsconfig.json'), 'paths:', chalk.yellow(key), 'resolves to more than one path!', chalk.grey('(Using the first one.)'));
             }
             let value = values[0];
             if (!value) {
-                Shout_1.Shout.warning(chalk_1.default.cyan('tsconfig.json'), 'paths:', chalk_1.default.yellow(key), 'is empty!');
+                Shout_1.Shout.warning(chalk.cyan('tsconfig.json'), 'paths:', chalk.yellow(key), 'is empty!');
                 continue;
             }
             if (key.endsWith('/*')) {
@@ -327,7 +327,7 @@ inject();
     addCompilerBuildNotification(compiler) {
         let t = TypeScript.ScriptTarget[this.languageTarget].toUpperCase();
         compiler.hooks.compile.tap('typescript-compile-start', compilationParams => {
-            Shout_1.Shout.timed('Compiling', chalk_1.default.cyan('index.ts'), '>>', chalk_1.default.yellow(t), chalk_1.default.grey('in ' + this.finder.jsInputFolder + '/'));
+            Shout_1.Shout.timed('Compiling', chalk.cyan('index.ts'), '>>', chalk.yellow(t), chalk.grey('in ' + this.finder.jsInputFolder + '/'));
         });
         if (this.variables.production) {
             compiler.hooks.compilation.tap('typescript-minify-notify', compilation => {
@@ -372,7 +372,7 @@ inject();
         let errors = o.errors;
         if (errors.length) {
             let errorMessage = '\n' + errors.join('\n\n') + '\n';
-            console.error(chalk_1.default.red(errorMessage));
+            console.error(chalk.red(errorMessage));
             this.va.speak(`JAVA SCRIPT BUILD: ${errors.length} ERROR!`);
         }
         else {
@@ -381,7 +381,7 @@ inject();
         let warnings = o.warnings;
         if (warnings.length) {
             let warningMessage = '\n' + warnings.join('\n\n') + '\n';
-            console.warn(chalk_1.default.yellow(warningMessage));
+            console.warn(chalk.yellow(warningMessage));
         }
         let jsOutputPath;
         if (this.variables.hot) {
@@ -394,7 +394,7 @@ inject();
             for (let asset of o.assets) {
                 if (asset.emitted) {
                     let kb = PrettyUnits_1.prettyBytes(asset.size);
-                    Shout_1.Shout.timed(chalk_1.default.blue(asset.name), chalk_1.default.magenta(kb), chalk_1.default.grey('in ' + jsOutputPath));
+                    Shout_1.Shout.timed(chalk.blue(asset.name), chalk.magenta(kb), chalk.grey('in ' + jsOutputPath));
                 }
             }
         }
@@ -408,7 +408,7 @@ inject();
         }
         if (o.time) {
             let t = PrettyUnits_1.prettyMilliseconds(o.time);
-            Shout_1.Shout.timed('Finished JS build after', chalk_1.default.green(t));
+            Shout_1.Shout.timed('Finished JS build after', chalk.green(t));
         }
         else {
             Shout_1.Shout.timed('Finished JS build.');
@@ -436,7 +436,7 @@ inject();
         let physicalFilePath = upath.join(this.finder.jsOutputFolder, fileName);
         let relativeFilePath = upath.relative(this.finder.root, physicalFilePath);
         let hotUri = url.resolve(this.outputPublicPath, fileName);
-        Shout_1.Shout.timed(`+wormhole: ${chalk_1.default.cyan(relativeFilePath)} --> ${chalk_1.default.cyan(hotUri)}`);
+        Shout_1.Shout.timed(`+wormhole: ${chalk.cyan(relativeFilePath)} --> ${chalk.cyan(hotUri)}`);
         let hotProxy = this.createWormholeToHotScript(hotUri);
         return fse.outputFile(physicalFilePath, hotProxy);
     }
@@ -461,8 +461,8 @@ inject();
                         reject(error);
                         return;
                     }
-                    let p1 = chalk_1.default.green(this.variables.port1.toString());
-                    Shout_1.Shout.timed(chalk_1.default.yellow('Hot Reload'), `Server running on http://localhost:${p1}/`);
+                    let p1 = chalk.green(this.variables.port1.toString());
+                    Shout_1.Shout.timed(chalk.yellow('Hot Reload'), `Server running on http://localhost:${p1}/`);
                     ok();
                 });
             });

@@ -2,7 +2,7 @@ import * as upath from 'upath';
 import * as path from 'path';
 import * as fse from 'fs-extra';
 import * as url from 'url';
-import chalk from 'chalk';
+import chalk = require('chalk');
 import webpack = require('webpack');
 import webpackDevServer = require('webpack-dev-server');
 import * as TypeScript from 'typescript';

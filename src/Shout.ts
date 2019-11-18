@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import chalk = require('chalk');
 import * as upath from 'upath';
 import * as fse from 'fs-extra';
 import { prettyBytes } from './PrettyUnits';

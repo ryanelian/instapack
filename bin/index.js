@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 const fse = require("fs-extra");
 const upath = require("upath");
-const chalk_1 = require("chalk");
+const chalk = require("chalk");
 const ReadProjectSettings_1 = require("./variables-factory/ReadProjectSettings");
 const EnvParser_1 = require("./variables-factory/EnvParser");
 const CompileVariables_1 = require("./variables-factory/CompileVariables");
@@ -61,7 +61,7 @@ module.exports = class instapack {
                     }
                 }
                 else {
-                    Shout_1.Shout.warning('unable to find', chalk_1.default.cyan(packageJsonPath), chalk_1.default.grey('skipping package restore...'));
+                    Shout_1.Shout.warning('unable to find', chalk.cyan(packageJsonPath), chalk.grey('skipping package restore...'));
                 }
             }
             let tm = new ToolOrchestrator_1.ToolOrchestrator(variables);
@@ -74,7 +74,7 @@ module.exports = class instapack {
             let templateFolder = upath.join(__dirname, '../templates', template);
             let exist = yield fse.pathExists(templateFolder);
             if (!exist) {
-                Shout_1.Shout.error('Unable to find new project template for:', chalk_1.default.cyan(template));
+                Shout_1.Shout.error('Unable to find new project template for:', chalk.cyan(template));
                 return;
             }
             let mergedPackageJson;
@@ -85,16 +85,16 @@ module.exports = class instapack {
                 let templatePackageJson = yield fse.readJson(templatePackageJsonPath);
                 mergedPackageJson = MergePackageJson_1.mergePackageJson(projectPackageJson, templatePackageJson);
             }
-            console.log('Initializing new project using template:', chalk_1.default.cyan(template));
+            console.log('Initializing new project using template:', chalk.cyan(template));
             console.log('Scaffolding project into your web app...');
             yield fse.copy(templateFolder, this.projectFolder);
             if (mergedPackageJson) {
-                console.log(`Merging ${chalk_1.default.blue('package.json')}...`);
+                console.log(`Merging ${chalk.blue('package.json')}...`);
                 yield fse.writeJson(projectPackageJsonPath, mergedPackageJson, {
                     spaces: 2
                 });
             }
-            console.log(chalk_1.default.green('Scaffold completed.'), 'To build the app, type:', chalk_1.default.yellow('ipack'));
+            console.log(chalk.green('Scaffold completed.'), 'To build the app, type:', chalk.yellow('ipack'));
         });
     }
     changeUserSettings(key, value) {
@@ -102,7 +102,7 @@ module.exports = class instapack {
             try {
                 let settingsFilePath = yield UserSettingsManager_1.setSetting(key, value);
                 console.log('Successfully saved the new setting!');
-                console.log(chalk_1.default.grey(settingsFilePath));
+                console.log(chalk.grey(settingsFilePath));
             }
             catch (error) {
                 Shout_1.Shout.error('when saving new settings:', error);

@@ -1,6 +1,6 @@
 import * as fse from 'fs-extra';
 import * as upath from 'upath';
-import chalk from 'chalk';
+import chalk = require('chalk');
 
 import { ICommandLineFlags } from "./variables-factory/ICommandLineFlags";
 import { readProjectSettingsFrom } from './variables-factory/ReadProjectSettings';

@@ -1,7 +1,7 @@
 "use strict";
 const TypeScript = require("typescript");
 const loader_utils_1 = require("loader-utils");
-const chalk_1 = require("chalk");
+const chalk = require("chalk");
 const SyntaxLevelChecker_1 = require("../SyntaxLevelChecker");
 const upath = require("upath");
 function transpileModuleAst(resourcePath, source, options) {
@@ -90,7 +90,7 @@ module.exports = function (source) {
     let levelFrom = TypeScript.ScriptTarget[parse.level].toUpperCase();
     let levelTo = TypeScript.ScriptTarget[target].toUpperCase();
     let rel = '/' + upath.relative(this.rootContext, this.resourcePath);
-    console.log(`${chalk_1.default.yellow('LibGuard')}: Transpiling dependency ${chalk_1.default.red(levelFrom)} >> ${chalk_1.default.yellow(levelTo)} ${chalk_1.default.cyan(rel)}`);
+    console.log(`${chalk.yellow('LibGuard')}: Transpiling dependency ${chalk.red(levelFrom)} >> ${chalk.yellow(levelTo)} ${chalk.cyan(rel)}`);
     let result = transpileModuleAst(this.resourcePath, parse.source, options.compilerOptions);
     if (this.sourceMap && result.map) {
         let sm = JSON.parse(result.map);

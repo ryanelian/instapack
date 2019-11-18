@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const fse = require("fs-extra");
-const chalk_1 = require("chalk");
+const chalk = require("chalk");
 const Shout_1 = require("./Shout");
 const PathFinder_1 = require("./variables-factory/PathFinder");
 const RunWorker_1 = require("./workers/RunWorker");
@@ -22,21 +22,21 @@ class ToolOrchestrator {
     }
     outputBuildInformation() {
         if (this.variables.production) {
-            Shout_1.Shout.timed(chalk_1.default.yellow("Production"), "Mode: Build optimizations are enabled.");
+            Shout_1.Shout.timed(chalk.yellow("Production"), "Mode: Build optimizations are enabled.");
         }
         else {
-            Shout_1.Shout.timed(chalk_1.default.yellow("Development"), "Mode: Build optimizations are", chalk_1.default.red("DISABLED!"), chalk_1.default.grey("(Fast build)"));
+            Shout_1.Shout.timed(chalk.yellow("Development"), "Mode: Build optimizations are", chalk.red("DISABLED!"), chalk.grey("(Fast build)"));
         }
         if (this.variables.watch) {
-            Shout_1.Shout.timed(chalk_1.default.yellow("Watch"), "Mode: Source code will be automatically compiled on changes.");
+            Shout_1.Shout.timed(chalk.yellow("Watch"), "Mode: Source code will be automatically compiled on changes.");
         }
-        let smState = chalk_1.default.yellow(this.variables.sourceMap ? 'Enabled' : 'Disabled');
+        let smState = chalk.yellow(this.variables.sourceMap ? 'Enabled' : 'Disabled');
         if (!this.variables.production && this.variables.watch) {
-            smState = smState + ' ' + chalk_1.default.grey('(Inlined JS)');
+            smState = smState + ' ' + chalk.grey('(Inlined JS)');
         }
         Shout_1.Shout.timed('Source Maps:', smState);
         if (this.variables.stats) {
-            Shout_1.Shout.timed('JS build stats:', chalk_1.default.cyan(this.finder.statsJsonFilePath));
+            Shout_1.Shout.timed('JS build stats:', chalk.cyan(this.finder.statsJsonFilePath));
         }
     }
     validateJsBuildTask() {
@@ -44,7 +44,7 @@ class ToolOrchestrator {
             let entry = this.finder.jsEntry;
             let checkEntry = fse.pathExists(entry);
             if ((yield checkEntry) === false) {
-                Shout_1.Shout.timed('Entry file', chalk_1.default.cyan(entry), 'was not found.', chalk_1.default.red('Aborting JS build!'));
+                Shout_1.Shout.timed('Entry file', chalk.cyan(entry), 'was not found.', chalk.red('Aborting JS build!'));
                 return false;
             }
             return true;
@@ -55,7 +55,7 @@ class ToolOrchestrator {
             let entry = this.finder.cssEntry;
             let exist = yield fse.pathExists(entry);
             if (!exist) {
-                Shout_1.Shout.timed('Entry file', chalk_1.default.cyan(entry), 'was not found.', chalk_1.default.red('Aborting CSS build!'));
+                Shout_1.Shout.timed('Entry file', chalk.cyan(entry), 'was not found.', chalk.red('Aborting CSS build!'));
             }
             return exist;
         });

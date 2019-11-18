@@ -1,6 +1,6 @@
 import * as fse from 'fs-extra';
 import * as upath from 'upath';
-import chalk from 'chalk';
+import chalk = require('chalk');
 import sass = require('sass');
 import { watch } from 'chokidar';
 import postcss = require('postcss');
@@ -102,9 +102,11 @@ export class SassBuildTool {
 
             sourceMap: this.variables.sourceMap,
             sourceMapContents: this.variables.sourceMap,
-            importer: sassImporter,
-            fiber: Fiber
+            importer: sassImporter
         };
+
+        // enable calling asynchronous importers from the synchronous code path
+        sassOptions['fiber'] = Fiber;
 
         let sassResult = await this.runSassAsync(sassOptions);
 

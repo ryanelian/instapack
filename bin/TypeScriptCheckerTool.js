@@ -11,7 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const TypeScript = require("typescript");
 const tslint = require("tslint");
-const chalk_1 = require("chalk");
+const chalk = require("chalk");
 const fse = require("fs-extra");
 const chokidar_1 = require("chokidar");
 const PrettyUnits_1 = require("./PrettyUnits");
@@ -55,7 +55,7 @@ class TypeScriptCheckerTool {
             let tslintFind = finder.findTslintConfiguration();
             if (tslintFind) {
                 tslintConfiguration = tslintFind.results;
-                Shout_1.Shout.timed('tslint:', chalk_1.default.cyan(tslintFind.path));
+                Shout_1.Shout.timed('tslint:', chalk.cyan(tslintFind.path));
             }
             let tool = new TypeScriptCheckerTool(sourceStore, compilerOptions, tslintConfiguration, variables.silent);
             yield loading;
@@ -70,7 +70,7 @@ class TypeScriptCheckerTool {
                 fix: false
             }, tsc);
         }
-        Shout_1.Shout.timed('Type-checking using TypeScript', chalk_1.default.green(TypeScript.version));
+        Shout_1.Shout.timed('Type-checking using TypeScript', chalk.green(TypeScript.version));
         let start = process.hrtime();
         try {
             let errors = [];
@@ -102,21 +102,21 @@ class TypeScriptCheckerTool {
             }
             else {
                 this.va.rewind();
-                console.log(chalk_1.default.green('Types OK') + chalk_1.default.grey(': Successfully checked TypeScript project without errors.'));
+                console.log(chalk.green('Types OK') + chalk.grey(': Successfully checked TypeScript project without errors.'));
             }
         }
         finally {
             let time = PrettyUnits_1.prettyHrTime(process.hrtime(start));
-            Shout_1.Shout.timed('Finished type-check after', chalk_1.default.green(time));
+            Shout_1.Shout.timed('Finished type-check after', chalk.green(time));
         }
     }
     renderDiagnostics(diagnostics) {
         let errors = diagnostics.map(diagnostic => {
-            let error = chalk_1.default.red('TS' + diagnostic.code) + ' ';
+            let error = chalk.red('TS' + diagnostic.code) + ' ';
             if (diagnostic.file && diagnostic.start) {
                 let realFileName = this.sourceStore.getFilePath(diagnostic.file.fileName);
                 let { line, character } = diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start);
-                error += chalk_1.default.red(realFileName) + ' ' + chalk_1.default.yellow(`(${line + 1},${character + 1})`) + ':\n';
+                error += chalk.red(realFileName) + ' ' + chalk.yellow(`(${line + 1},${character + 1})`) + ':\n';
             }
             error += TypeScript.flattenDiagnosticMessageText(diagnostic.messageText, "\n");
             return error;
@@ -126,10 +126,10 @@ class TypeScriptCheckerTool {
     renderLintFailure(failure) {
         let { line, character } = failure.getStartPosition().getLineAndCharacter();
         let realFileName = this.sourceStore.getFilePath(failure.getFileName());
-        let lintErrorMessage = chalk_1.default.red('TSLINT') + ' '
-            + chalk_1.default.red(realFileName) + ' '
-            + chalk_1.default.yellow(`(${line + 1},${character + 1})`) + ': '
-            + chalk_1.default.grey(failure.getRuleName()) + '\n'
+        let lintErrorMessage = chalk.red('TSLINT') + ' '
+            + chalk.red(realFileName) + ' '
+            + chalk.yellow(`(${line + 1},${character + 1})`) + ': '
+            + chalk.grey(failure.getRuleName()) + '\n'
             + failure.getFailure();
         return lintErrorMessage;
     }
@@ -151,14 +151,14 @@ class TypeScriptCheckerTool {
         })
             .on('add', (file) => {
             this.sourceStore.loadFile(file).then(changed => {
-                Shout_1.Shout.typescript(chalk_1.default.grey('tracking new file:', file));
+                Shout_1.Shout.typescript(chalk.grey('tracking new file:', file));
                 debounce();
             });
         })
             .on('change', (file) => {
             this.sourceStore.loadFile(file).then(changed => {
                 if (changed) {
-                    Shout_1.Shout.typescript(chalk_1.default.grey('updating file:', file));
+                    Shout_1.Shout.typescript(chalk.grey('updating file:', file));
                     debounce();
                 }
             });
@@ -166,7 +166,7 @@ class TypeScriptCheckerTool {
             .on('unlink', (file) => {
             let deleted = this.sourceStore.removeFile(file);
             if (deleted) {
-                Shout_1.Shout.typescript(chalk_1.default.grey('removing file:', file));
+                Shout_1.Shout.typescript(chalk.grey('removing file:', file));
                 debounce();
             }
         });

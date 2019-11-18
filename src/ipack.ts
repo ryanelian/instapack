@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import program = require('yargs');
-import chalk from 'chalk';
+import chalk = require('chalk');
 
 import instapack = require('./index');
 import { parseCliEnvFlags } from './variables-factory/EnvParser';

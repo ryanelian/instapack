@@ -2,7 +2,7 @@ import { IVariables } from "./variables-factory/IVariables";
 import { Shout } from "./Shout";
 import { VoiceAssistant } from "./VoiceAssistant";
 import { prettyHrTime } from "./PrettyUnits";
-import chalk from "chalk";
+import chalk = require('chalk');
 import * as upath from 'upath';
 import * as fse from 'fs-extra';
 import { PathFinder } from "./variables-factory/PathFinder";

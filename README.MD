@@ -343,40 +343,33 @@ Then add `alias` field to instapack settings in `package.json`
 }
 ```
 
-## TSLint Integration
+## ESLint Integration
 
-instapack supports [`tslint.json` / `tslint.yaml`](https://palantir.github.io/tslint/usage/configuration/) in the project root folder. Here are some sensible, useful [rules](https://palantir.github.io/tslint/rules/) which greatly reduce programming blunders:
+instapack 8.0.0 supports [ESLint configuration](https://eslint.org/docs/user-guide/configuring), applied directly to TypeScript source code during type-check phase. Source code will be linted only when it can be compiled correctly.
+
+Here is an example `.eslintrc.json` placed in the project root (next to `tsconfig.json`). [typescript-eslint](https://github.com/typescript-eslint/typescript-eslint) dependencies are required to be installed in the project:
+
+```
+npm install eslint typescript @typescript-eslint/eslint-plugin @typescript-eslint/parser -D
+```
 
 ```json
 {
-  "rules": {
-    "no-non-null-assertion": true,
-    "ban-comma-operator": true,
-    "curly": true,
-    "no-conditional-assignment": true,
-    "no-duplicate-super": true,
-    "no-duplicate-switch-case": true,
-    "no-dynamic-delete": true,
-    "no-eval": true,
-    "no-for-in-array": true,
-    "no-object-literal-type-assertion": true,
-    "no-shadowed-variable": true,
-    "no-sparse-arrays": true,
-    "no-string-throw": true,
-    "no-unbound-method": true,
-    "no-unsafe-finally": true,
-    "no-var-keyword": true,
-    "switch-default": true,
-    "triple-equals": true,
-    "use-isnan": true,
-    "new-parens": true,
-    "number-literal-format": true,
-    "type-literal-delimiter": true
+  "parser": "@typescript-eslint/parser",
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "parserOptions": {
+    "ecmaVersion": 2020,
+    "sourceType": "module"
+  },
+  "env": {
+    "browser": true
   }
 }
 ```
-
-> Source file will be linted only when it can be compiled correctly.
 
 ## Module Systems
 

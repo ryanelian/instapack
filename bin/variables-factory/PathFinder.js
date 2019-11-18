@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const upath = require("upath");
-const tslint_1 = require("tslint");
 class PathFinder {
     constructor(variables) {
         this.variables = variables;
@@ -17,21 +16,6 @@ class PathFinder {
     }
     get tsConfigJson() {
         return upath.join(this.root, 'tsconfig.json');
-    }
-    findTslintConfiguration() {
-        let yaml = upath.join(this.root, 'tslint.yaml');
-        let json = upath.join(this.root, 'tslint.json');
-        let tslintFind = tslint_1.Configuration.findConfiguration(null, this.root);
-        if (tslintFind.path && tslintFind.results) {
-            let tslintPath = upath.toUnix(tslintFind.path);
-            if (tslintPath === json || tslintPath === yaml) {
-                return {
-                    path: tslintPath,
-                    results: tslintFind.results
-                };
-            }
-        }
-        return undefined;
     }
     get babelConfiguration() {
         return upath.join(this.root, '.babelrc');

@@ -1,5 +1,4 @@
 import * as upath from 'upath';
-import { Configuration } from 'tslint';
 import { IVariables } from './IVariables';
 
 /**
@@ -43,24 +42,6 @@ export class PathFinder {
      */
     get tsConfigJson(): string {
         return upath.join(this.root, 'tsconfig.json');
-    }
-
-    findTslintConfiguration() {
-        let yaml = upath.join(this.root, 'tslint.yaml');
-        let json = upath.join(this.root, 'tslint.json');
-
-        let tslintFind = Configuration.findConfiguration(null, this.root);
-        if (tslintFind.path && tslintFind.results) {
-            let tslintPath = upath.toUnix(tslintFind.path);
-            if (tslintPath === json || tslintPath === yaml) {
-                return {
-                    path: tslintPath,
-                    results: tslintFind.results
-                };
-            }
-        }
-
-        return undefined;
     }
 
     /**

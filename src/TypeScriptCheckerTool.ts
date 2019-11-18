@@ -1,5 +1,5 @@
 import * as TypeScript from 'typescript';
-import * as tslint from 'tslint';
+import * as eslint from 'eslint';
 import chalk = require('chalk');
 import * as fse from 'fs-extra';
 import { watch } from 'chokidar';
@@ -27,9 +27,9 @@ export class TypeScriptCheckerTool {
     private readonly host: TypeScript.CompilerHost;
 
     /**
-     * Gets tslint Configuration object, if exists.
+     * Gets the ESLint service, if available.
      */
-    private readonly tslintConfiguration: tslint.Configuration.IConfigurationFile | undefined;
+    private readonly linter: eslint.CLIEngine;
 
     /**
      * Gets the TypeScript cache management object.
@@ -45,7 +45,6 @@ export class TypeScriptCheckerTool {
     private constructor(
         sourceStore: TypeScriptSourceStore,
         compilerOptions: TypeScript.CompilerOptions,
-        tslintConfiguration: tslint.Configuration.IConfigurationFile | undefined,
         silent: boolean) {
 
         this.sourceStore = sourceStore;
@@ -55,7 +54,9 @@ export class TypeScriptCheckerTool {
         this.host = TypeScript.createCompilerHost(compilerOptions);
         this.patchCompilerHost();
 
-        this.tslintConfiguration = tslintConfiguration;
+        this.linter = new eslint.CLIEngine({
+            cwd: process.cwd()
+        });
     }
 
     /**
@@ -99,14 +100,7 @@ export class TypeScriptCheckerTool {
         let sourceStore = new TypeScriptSourceStore(compilerOptions.target || TypeScript.ScriptTarget.ES3);
         let loading = sourceStore.loadFolder(finder.jsInputFolder);
 
-        let tslintConfiguration: tslint.Configuration.IConfigurationFile | undefined = undefined;
-        let tslintFind = finder.findTslintConfiguration();
-        if (tslintFind) {
-            tslintConfiguration = tslintFind.results;
-            Shout.timed('tslint:', chalk.cyan(tslintFind.path));
-        }
-
-        let tool = new TypeScriptCheckerTool(sourceStore, compilerOptions, tslintConfiguration, variables.silent);
+        let tool = new TypeScriptCheckerTool(sourceStore, compilerOptions, variables.silent);
         await loading;
         return tool;
     }
@@ -117,16 +111,7 @@ export class TypeScriptCheckerTool {
     typeCheck() {
         // console.log(this.sourceStore.sourcePaths);
         let tsc = TypeScript.createProgram(this.sourceStore.sourcePaths, this.compilerOptions, this.host);
-
-        // https://palantir.github.io/tslint/usage/type-checking/
-        let linter: tslint.Linter | undefined = undefined;
-        if (this.tslintConfiguration) {
-            linter = new tslint.Linter({
-                fix: false
-            }, tsc);
-        }
-
-        Shout.timed('Type-checking using TypeScript', chalk.green(TypeScript.version));
+        Shout.timed('Type-checking using TypeScript ' + chalk.green(TypeScript.version));
         let start = process.hrtime();
 
         try {
@@ -144,19 +129,45 @@ export class TypeScriptCheckerTool {
                     errors.push(error);
                 }
 
-                // https://palantir.github.io/tslint/usage/library/
-                // "Please ensure that the TypeScript source files compile correctly before running the linter."
-                if (newErrors.length === 0 && linter) {
-                    linter.lint(source.fileName, source.text, this.tslintConfiguration);
-                }
-            }
+                // import ASTConvert = require('@typescript-eslint/typescript-estree/dist/ast-converter');
+                // https://github.com/typescript-eslint/typescript-eslint/tree/master/packages/typescript-estree#api
+                // let txt = source.getFullText();
+                // let ast = ASTConvert.astConverter(source, {
+                //     tsconfigRootDir: process.cwd(),
+                //     filePath: source.fileName,
+                //     code: txt,
+                //     tokens: [],
+                //     comment: true,
+                //     comments: [],
+                //     jsx: true,
+                //     useJSXTextNode: true,
 
-            if (linter) {
-                let lintResult = linter.getResult();
-                // console.log(lintResult);
-                for (let failure of lintResult.failures) {
-                    let lintErrorMessage = this.renderLintFailure(failure);
-                    errors.push(lintErrorMessage);
+                //     range: false,
+                //     loc: false,
+                //     strict: false,
+                //     log: console.log,
+                //     projects: [],
+                //     errorOnUnknownASTType: false,
+                //     errorOnTypeScriptSyntacticAndSemanticIssues: false,
+                //     extraFileExtensions: [],
+                //     preserveNodeMaps: undefined,
+                //     createDefaultProgram: false,
+                // }, false);
+                // let eslintSource = new eslint.SourceCode(txt, ast.estree as eslint.AST.Program);
+
+                if (newErrors.length === 0) {
+                    try {
+                        // we need to do this because Linter cannot find rules dynamically, only CLIEngine!
+                        let eslintReport = this.linter.executeOnText(source.getFullText(), source.fileName);
+
+                        for (let result of eslintReport.results) {
+                            for (let lintError of result.messages) {
+                                let renderLintErrorMessage = this.renderLintErrorMessage(source.fileName, lintError);
+                                errors.push(renderLintErrorMessage);
+                            }
+                        }
+                    } catch (ex) {
+                    }
                 }
             }
 
@@ -196,18 +207,16 @@ export class TypeScriptCheckerTool {
     }
 
     /**
-     * Converts tslint failure object to instapack-formatted error message. 
-     * @param failure 
+     * Converts ESLint error object to instapack-formatted error message. 
+     * @param fileName 
+     * @param lintError 
      */
-    renderLintFailure(failure: tslint.RuleFailure): string {
-        let { line, character } = failure.getStartPosition().getLineAndCharacter();
-        let realFileName = this.sourceStore.getFilePath(failure.getFileName());
-
-        let lintErrorMessage = chalk.red('TSLINT') + ' '
-            + chalk.red(realFileName) + ' '
-            + chalk.yellow(`(${line + 1},${character + 1})`) + ': '
-            + chalk.grey(failure.getRuleName()) + '\n'
-            + failure.getFailure();
+    renderLintErrorMessage(fileName: string, lintError: eslint.Linter.LintMessage): string {
+        let lintErrorMessage = chalk.red('ESLint') + ' '
+            + chalk.red(fileName) + ' '
+            + chalk.yellow(`(${lintError.line},${lintError.column})`) + ': '
+            + chalk.grey(lintError.ruleId) + '\n'
+            + lintError.message;
 
         return lintErrorMessage;
     }

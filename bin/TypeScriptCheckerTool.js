@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const TypeScript = require("typescript");
-const tslint = require("tslint");
+const eslint = require("eslint");
 const chalk = require("chalk");
 const fse = require("fs-extra");
 const chokidar_1 = require("chokidar");
@@ -21,13 +21,15 @@ const TypescriptConfigParser_1 = require("./TypescriptConfigParser");
 const TypeScriptSourceStore_1 = require("./TypeScriptSourceStore");
 const VoiceAssistant_1 = require("./VoiceAssistant");
 class TypeScriptCheckerTool {
-    constructor(sourceStore, compilerOptions, tslintConfiguration, silent) {
+    constructor(sourceStore, compilerOptions, silent) {
         this.sourceStore = sourceStore;
         this.va = new VoiceAssistant_1.VoiceAssistant(silent);
         this.compilerOptions = compilerOptions;
         this.host = TypeScript.createCompilerHost(compilerOptions);
         this.patchCompilerHost();
-        this.tslintConfiguration = tslintConfiguration;
+        this.linter = new eslint.CLIEngine({
+            cwd: process.cwd()
+        });
     }
     patchCompilerHost() {
         let rawFileCache = {};
@@ -51,26 +53,14 @@ class TypeScriptCheckerTool {
             let compilerOptions = tsconfig.options;
             let sourceStore = new TypeScriptSourceStore_1.TypeScriptSourceStore(compilerOptions.target || TypeScript.ScriptTarget.ES3);
             let loading = sourceStore.loadFolder(finder.jsInputFolder);
-            let tslintConfiguration = undefined;
-            let tslintFind = finder.findTslintConfiguration();
-            if (tslintFind) {
-                tslintConfiguration = tslintFind.results;
-                Shout_1.Shout.timed('tslint:', chalk.cyan(tslintFind.path));
-            }
-            let tool = new TypeScriptCheckerTool(sourceStore, compilerOptions, tslintConfiguration, variables.silent);
+            let tool = new TypeScriptCheckerTool(sourceStore, compilerOptions, variables.silent);
             yield loading;
             return tool;
         });
     }
     typeCheck() {
         let tsc = TypeScript.createProgram(this.sourceStore.sourcePaths, this.compilerOptions, this.host);
-        let linter = undefined;
-        if (this.tslintConfiguration) {
-            linter = new tslint.Linter({
-                fix: false
-            }, tsc);
-        }
-        Shout_1.Shout.timed('Type-checking using TypeScript', chalk.green(TypeScript.version));
+        Shout_1.Shout.timed('Type-checking using TypeScript ' + chalk.green(TypeScript.version));
         let start = process.hrtime();
         try {
             let errors = [];
@@ -84,15 +74,18 @@ class TypeScriptCheckerTool {
                 for (let error of newErrors) {
                     errors.push(error);
                 }
-                if (newErrors.length === 0 && linter) {
-                    linter.lint(source.fileName, source.text, this.tslintConfiguration);
-                }
-            }
-            if (linter) {
-                let lintResult = linter.getResult();
-                for (let failure of lintResult.failures) {
-                    let lintErrorMessage = this.renderLintFailure(failure);
-                    errors.push(lintErrorMessage);
+                if (newErrors.length === 0) {
+                    try {
+                        let eslintReport = this.linter.executeOnText(source.getFullText(), source.fileName);
+                        for (let result of eslintReport.results) {
+                            for (let lintError of result.messages) {
+                                let renderLintErrorMessage = this.renderLintErrorMessage(source.fileName, lintError);
+                                errors.push(renderLintErrorMessage);
+                            }
+                        }
+                    }
+                    catch (ex) {
+                    }
                 }
             }
             if (errors.length > 0) {
@@ -123,14 +116,12 @@ class TypeScriptCheckerTool {
         });
         return errors;
     }
-    renderLintFailure(failure) {
-        let { line, character } = failure.getStartPosition().getLineAndCharacter();
-        let realFileName = this.sourceStore.getFilePath(failure.getFileName());
-        let lintErrorMessage = chalk.red('TSLINT') + ' '
-            + chalk.red(realFileName) + ' '
-            + chalk.yellow(`(${line + 1},${character + 1})`) + ': '
-            + chalk.grey(failure.getRuleName()) + '\n'
-            + failure.getFailure();
+    renderLintErrorMessage(fileName, lintError) {
+        let lintErrorMessage = chalk.red('ESLint') + ' '
+            + chalk.red(fileName) + ' '
+            + chalk.yellow(`(${lintError.line},${lintError.column})`) + ': '
+            + chalk.grey(lintError.ruleId) + '\n'
+            + lintError.message;
         return lintErrorMessage;
     }
     watch() {

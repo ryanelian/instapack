@@ -33,7 +33,7 @@ function is2015Syntax(node: TypeScript.Node) {
     }
 
     if (TypeScript.isNumericLiteral(node)) {
-        let bitflag = node['numericLiteralFlags'];
+        const bitflag = node['numericLiteralFlags'];
         if (bitflag) {
             if (bitflag & (1 << 8)) {
                 // internal flag: Octal
@@ -182,7 +182,7 @@ function is2018Syntax(node: TypeScript.Node) {
 
     if (TypeScript.isFunctionDeclaration(node) || TypeScript.isFunctionExpression(node) || TypeScript.isMethodDeclaration(node)) {
         if (node.asteriskToken && node.modifiers) {
-            let hasAsync = node.modifiers.some(Q => Q.kind === TypeScript.SyntaxKind.AsyncKeyword);
+            const hasAsync = node.modifiers.some(Q => Q.kind === TypeScript.SyntaxKind.AsyncKeyword);
             return hasAsync;
         }
     }
@@ -265,7 +265,7 @@ interface IScriptLevel {
 
 export function checkSyntaxLevel(sourcePath: string, source: string, languageTarget: TypeScript.ScriptTarget): IScriptLevel {
     // let sw = process.hrtime();
-    let ast = TypeScript.createSourceFile(sourcePath, source, languageTarget, true, TypeScript.ScriptKind.JS);
+    const ast = TypeScript.createSourceFile(sourcePath, source, languageTarget, true, TypeScript.ScriptKind.JS);
     // console.log(sourcePath, prettyHrTime(process.hrtime(sw)));
 
     let level = TypeScript.ScriptTarget.ES5;

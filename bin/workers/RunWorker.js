@@ -16,9 +16,9 @@ const sassBuildWorkerModulePath = require.resolve('./SassBuildWorker');
 const copyBuildWorkerModulePath = require.resolve('./CopyBuildWorker');
 function runWorkerAsync(modulePath, params) {
     return __awaiter(this, void 0, void 0, function* () {
-        let worker = WorkerFarm(modulePath);
+        const worker = WorkerFarm(modulePath);
         try {
-            let p = new Promise((ok, reject) => {
+            const p = new Promise((ok, reject) => {
                 worker(params, (error, result) => {
                     if (error) {
                         reject(error);

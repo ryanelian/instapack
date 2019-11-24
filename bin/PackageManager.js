@@ -36,7 +36,7 @@ class PackageManager {
                 packageManager = 'yarn';
             }
             if (packageManager === 'yarn') {
-                let yarnExists = yield this.whichAsync('yarn');
+                const yarnExists = yield this.whichAsync('yarn');
                 if (!yarnExists) {
                     packageManager = 'npm';
                 }

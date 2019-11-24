@@ -14,20 +14,19 @@ const upath = require("upath");
 const DotEnv = require("dotenv");
 function readDotEnvFrom(folder) {
     return __awaiter(this, void 0, void 0, function* () {
-        let file = upath.join(folder, '.env');
+        const file = upath.join(folder, '.env');
         if ((yield fse.pathExists(file)) === false) {
             return {};
         }
-        ;
-        let dotEnvRaw = yield fse.readFile(file, 'utf8');
+        const dotEnvRaw = yield fse.readFile(file, 'utf8');
         return DotEnv.parse(dotEnvRaw);
     });
 }
 exports.readDotEnvFrom = readDotEnvFrom;
 function parseCliEnvFlags(yargsEnv) {
-    let env = {};
+    const env = {};
     if (yargsEnv && typeof yargsEnv === 'object' && Array.isArray(yargsEnv) === false) {
-        for (let key in yargsEnv) {
+        for (const key in yargsEnv) {
             env[key] = yargsEnv[key].toString();
         }
     }

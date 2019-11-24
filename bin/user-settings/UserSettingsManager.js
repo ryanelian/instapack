@@ -31,7 +31,7 @@ function getSettings() {
     return __awaiter(this, void 0, void 0, function* () {
         let settings = Object.assign({}, defaultSettings);
         try {
-            let currentSettings = yield fse.readJson(userSettingsFilePath);
+            const currentSettings = yield fse.readJson(userSettingsFilePath);
             settings = Object.assign(settings, currentSettings);
         }
         catch (error) {
@@ -42,23 +42,23 @@ function getSettings() {
 exports.getSettings = getSettings;
 function setSetting(key, value) {
     return __awaiter(this, void 0, void 0, function* () {
-        let validator = validators[key];
+        const validator = validators[key];
         if (!validator) {
             throw new Error('Invalid setting key! Please refer to README.');
         }
         value = value.toString().toLowerCase();
-        let valid = validator(value);
+        const valid = validator(value);
         if (!valid) {
             throw new Error('Invalid setting value! Please refer to README.');
         }
-        let trueKey = convertKebabToCamelCase(key);
+        const trueKey = convertKebabToCamelCase(key);
         let trueValue = value;
         try {
             trueValue = JSON.parse(value);
         }
         catch (error) {
         }
-        let settings = yield getSettings();
+        const settings = yield getSettings();
         settings[trueKey] = trueValue;
         yield fse.outputJson(userSettingsFilePath, settings);
         return userSettingsFilePath;

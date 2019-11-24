@@ -10,23 +10,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 const TypeScriptBuildEngine_1 = require("../TypeScriptBuildEngine");
 const Shout_1 = require("../Shout");
-const portfinder = require("portfinder");
 module.exports = function (variables, finish) {
     return __awaiter(this, void 0, void 0, function* () {
         if (variables.verbose) {
             Shout_1.Shout.displayVerboseOutput = true;
         }
-        if (variables.hot) {
-            let basePort = variables.port1;
-            if (!basePort) {
-                basePort = 28080;
-            }
-            let port = yield portfinder.getPortPromise({
-                port: basePort
-            });
-            variables.port1 = port;
-        }
-        let tool = new TypeScriptBuildEngine_1.TypeScriptBuildEngine(variables);
+        const tool = new TypeScriptBuildEngine_1.TypeScriptBuildEngine(variables);
         try {
             yield tool.build();
             if (!variables.watch) {

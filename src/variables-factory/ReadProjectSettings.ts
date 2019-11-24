@@ -1,13 +1,13 @@
 import * as fse from 'fs-extra';
 import * as upath from 'upath';
-import { IProjectSettings } from './IProjectSettings';
+import { ProjectSettings } from './ProjectSettings';
 import Ajv = require('ajv');
 const settingsJsonSchemaPath = require.resolve('../../schemas/settings.json');
 
 async function tryReadPackageJsonInstapackSettings(path: string): Promise<unknown> {
     try {
-        let packageJson = await fse.readJson(path);
-        let x = packageJson.instapack;
+        const packageJson = await fse.readJson(path);
+        const x = packageJson.instapack;
         if (!x) {
             return {};
         }
@@ -18,8 +18,8 @@ async function tryReadPackageJsonInstapackSettings(path: string): Promise<unknow
     }
 }
 
-export async function readProjectSettingsFrom(folder: string): Promise<IProjectSettings> {
-    let settings: IProjectSettings = {
+export async function readProjectSettingsFrom(folder: string): Promise<ProjectSettings> {
+    const settings: ProjectSettings = {
         root: upath.toUnix(folder),
         input: 'client',
         output: 'wwwroot',
@@ -33,17 +33,17 @@ export async function readProjectSettingsFrom(folder: string): Promise<IProjectS
         port1: 0,
     };
 
-    let ajv = new Ajv();
-    let settingsJsonSchema = await fse.readJson(settingsJsonSchemaPath);
-    let validate = ajv.compile(settingsJsonSchema);
+    const ajv = new Ajv();
+    const settingsJsonSchema = await fse.readJson(settingsJsonSchemaPath);
+    const validate = ajv.compile(settingsJsonSchema);
 
-    let packageJsonPath = upath.join(folder, 'package.json');
+    const packageJsonPath = upath.join(folder, 'package.json');
     // console.log('Loading settings ' + chalk.cyan(json));
 
-    let x = await tryReadPackageJsonInstapackSettings(packageJsonPath);
+    const x = await tryReadPackageJsonInstapackSettings(packageJsonPath);
     // console.log(x);
 
-    let valid = validate(x);
+    const valid = validate(x);
     if (valid === false) {
         console.error('Abort Build: Invalid instapack project settings in ' + packageJsonPath);
         console.error(validate.errors);

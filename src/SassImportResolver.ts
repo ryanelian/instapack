@@ -31,12 +31,12 @@ export async function sassImport(source: string, request: string): Promise<strin
     // source               :   "E:/VS/MyProject/client/css/index.scss"
     // request / @import    :   "@ryan/something"
 
-    let lookupStartPath = upath.dirname(source);        // E:/VS/MyProject/client/css/
-    let requestFileName = upath.basename(request);      // something
-    let requestDir = upath.dirname(request);            // @ryan/
+    const lookupStartPath = upath.dirname(source);        // E:/VS/MyProject/client/css/
+    const requestFileName = upath.basename(request);      // something
+    const requestDir = upath.dirname(request);            // @ryan/
 
     if (requestFileName.startsWith('_') === false) {
-        let partialFolderLookups = [lookupStartPath];
+        const partialFolderLookups = [lookupStartPath];
         if (requestDir !== '.') {
             // upath.dirname('test') === '.'
             // upath.dirname('test/') === '.' && upath.basename('test/') === 'test'
@@ -44,7 +44,7 @@ export async function sassImport(source: string, request: string): Promise<strin
             partialFolderLookups.push('node_modules');
         }
 
-        let partialSassResolver = ResolverFactory.createResolver({
+        const partialSassResolver = ResolverFactory.createResolver({
             fileSystem: new NodeJsInputFileSystem(),
             extensions: ['.scss'],
             modules: partialFolderLookups,
@@ -52,19 +52,19 @@ export async function sassImport(source: string, request: string): Promise<strin
             descriptionFiles: []
         });
 
-        let partialFileName = '_' + upath.addExt(requestFileName, '.scss');     // _something.scss
-        let partialRequest = upath.join(requestDir, partialFileName);           // @ryan/_something.scss
+        const partialFileName = '_' + upath.addExt(requestFileName, '.scss');     // _something.scss
+        const partialRequest = upath.join(requestDir, partialFileName);           // @ryan/_something.scss
 
         // 3: E:/VS/MyProject/client/css/@ryan/_something.scss      (Standard)
         // 8: E:/VS/MyProject/node_modules/@ryan/_something.scss    (Standard+)
         try {
             return await resolveAsync(partialSassResolver, lookupStartPath, partialRequest);
-        } catch (error) {
-
+        } catch (ex) {
+            // continue module resolution
         }
     }
 
-    let sassResolver = ResolverFactory.createResolver({
+    const sassResolver = ResolverFactory.createResolver({
         fileSystem: new NodeJsInputFileSystem(),
         extensions: ['.scss'],
         modules: [lookupStartPath, 'node_modules'],
@@ -81,11 +81,11 @@ export async function sassImport(source: string, request: string): Promise<strin
     // 7: E:/VS/MyProject/node_modules/@ryan/something/index.scss       (Standard+)
     try {
         return await resolveAsync(sassResolver, lookupStartPath, request);
-    } catch (error) {
-
+    } catch (ex) {
+        // continue module resolution
     }
 
-    let cssResolver = ResolverFactory.createResolver({
+    const cssResolver = ResolverFactory.createResolver({
         fileSystem: new NodeJsInputFileSystem(),
         extensions: ['.css'],
         modules: [lookupStartPath, 'node_modules'],

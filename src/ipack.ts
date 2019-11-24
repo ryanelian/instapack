@@ -2,14 +2,15 @@
 
 import program = require('yargs');
 import chalk = require('chalk');
+import * as fse from 'fs-extra';
 
 import instapack = require('./index');
 import { parseCliEnvFlags } from './variables-factory/EnvParser';
 import { userSettingsOptions } from './user-settings/UserSettingsManager';
-const manifest = require('../package.json');
 
-let projectFolder = process.cwd();
-let ipack = new instapack(projectFolder);
+const manifest = fse.readJsonSync(require.resolve('../package.json'));
+const projectFolder = process.cwd();
+const ipack = new instapack(projectFolder);
 program.version(manifest.version);
 
 /**
@@ -17,7 +18,7 @@ program.version(manifest.version);
  * @param command 
  * @param subCommand 
  */
-function echo(command: string, subCommand: string) {
+function echo(command: string, subCommand: string): void {
     if (!subCommand) {
         subCommand = '';
     }
@@ -53,14 +54,17 @@ program.command({
                 describe: 'Trace diagnostic outputs for debugging instapack.'
             });
     },
-    handler: (argv: any) => {
-        let subCommand = argv.project || 'all';
+    handler: (argv) => {
+        let subCommand = 'all';
+        if (typeof argv.project === 'string') {
+            subCommand = argv.project;
+        }
 
         echo('build', subCommand);
         ipack.build(subCommand, {
-            production: !Boolean(argv.dev),
+            production: !argv.dev,
             watch: Boolean(argv.watch),
-            sourceMap: !Boolean(argv.nodebug),
+            sourceMap: !argv.nodebug,
             env: parseCliEnvFlags(argv.env),
             stats: Boolean(argv.stats),
             hot: Boolean(argv.hot),
@@ -75,8 +79,11 @@ program.command({
     builder: yargs => {
         return yargs.choices('template', ipack.availableTemplates);
     },
-    handler: (argv: any) => {
-        let subCommand = argv.template || 'vue';
+    handler: (argv) => {
+        let subCommand = 'vue';
+        if (typeof argv.template === 'string') {
+            subCommand = argv.template;
+        }
 
         echo('new', subCommand);
         ipack.scaffold(subCommand)
@@ -90,11 +97,15 @@ program.command({
     builder: yargs => {
         return yargs.choices('key', userSettingsOptions);
     },
-    handler: (argv: any) => {
-        echo('set', argv.key);
-        ipack.changeUserSettings(argv.key, argv.value)
-            .catch(err => console.error(err));
+    handler: (argv) => {
+        if (typeof argv.key === 'string' && typeof argv.value === 'string') {
+            echo('set', argv.key);
+            ipack.changeUserSettings(argv.key, argv.value)
+                .catch(err => console.error(err));
+        } else {
+            throw new Error(`Argument 'key' and 'value' must be string`);
+        }
     }
 });
 
-let parse = program.strict().help().argv;
+program.strict().help().argv;

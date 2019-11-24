@@ -2,7 +2,7 @@ import * as fse from 'fs-extra';
 import chalk = require('chalk');
 
 import { Shout } from './Shout';
-import { IVariables } from './variables-factory/IVariables';
+import { BuildVariables } from './variables-factory/BuildVariables';
 import { PathFinder } from './variables-factory/PathFinder';
 import { runTypeScriptBuildWorker, runSassBuildWorker, runTypeScriptCheckWorker, runCopyBuildWorker } from './workers/RunWorker';
 import { VoiceAssistant } from './VoiceAssistant';
@@ -12,7 +12,7 @@ import { VoiceAssistant } from './VoiceAssistant';
  */
 export class ToolOrchestrator {
 
-    private variables: IVariables;
+    private variables: BuildVariables;
     private finder: PathFinder;
 
     /**
@@ -20,7 +20,7 @@ export class ToolOrchestrator {
      * @param settings 
      * @param flags 
      */
-    constructor(variables: IVariables) {
+    constructor(variables: BuildVariables) {
         this.variables = variables;
         this.finder = new PathFinder(this.variables);
     }
@@ -55,8 +55,8 @@ export class ToolOrchestrator {
      * If not, display validation error messages.
      */
     async validateJsBuildTask() {
-        let entry = this.finder.jsEntry;
-        let checkEntry = fse.pathExists(entry);
+        const entry = this.finder.jsEntry;
+        const checkEntry = fse.pathExists(entry);
 
         if (await checkEntry === false) {
             Shout.timed('Entry file', chalk.cyan(entry), 'was not found.', chalk.red('Aborting JS build!'));
@@ -71,8 +71,8 @@ export class ToolOrchestrator {
      * If not, display validation error messages.
      */
     async validateCssBuildTask() {
-        let entry = this.finder.cssEntry;
-        let exist = await fse.pathExists(entry);
+        const entry = this.finder.cssEntry;
+        const exist = await fse.pathExists(entry);
         if (!exist) {
             Shout.timed('Entry file', chalk.cyan(entry), 'was not found.', chalk.red('Aborting CSS build!'));
         }
@@ -88,16 +88,16 @@ export class ToolOrchestrator {
                 return;
 
             case 'js': {
-                let valid = await this.validateJsBuildTask();
+                const valid = await this.validateJsBuildTask();
                 if (valid) {
                     runTypeScriptBuildWorker(this.variables).catch(error => {
                         Shout.fatal(`during JS build:`, error);
-                        let va = new VoiceAssistant(this.variables.silent);
+                        const va = new VoiceAssistant(this.variables.silent);
                         va.speak(`JAVASCRIPT BUILD FATAL ERROR!`);
                     });
                     runTypeScriptCheckWorker(this.variables).catch(error => {
                         Shout.fatal(`during type-checking:`, error);
-                        let va = new VoiceAssistant(this.variables.silent);
+                        const va = new VoiceAssistant(this.variables.silent);
                         va.speak(`TYPE CHECK FATAL ERROR!`);
                     });
                 }
@@ -105,11 +105,11 @@ export class ToolOrchestrator {
             }
 
             case 'css': {
-                let valid = await this.validateCssBuildTask();
+                const valid = await this.validateCssBuildTask();
                 if (valid) {
                     runSassBuildWorker(this.variables).catch(error => {
                         Shout.fatal(`during CSS build:`, error);
-                        let va = new VoiceAssistant(this.variables.silent);
+                        const va = new VoiceAssistant(this.variables.silent);
                         va.speak(`CSS BUILD FATAL ERROR!`);
                     });
                 }
@@ -120,7 +120,7 @@ export class ToolOrchestrator {
                 if (this.variables.copy.length) {
                     runCopyBuildWorker(this.variables).catch(error => {
                         Shout.fatal(`during Copy Assets job:`, error);
-                        let va = new VoiceAssistant(this.variables.silent);
+                        const va = new VoiceAssistant(this.variables.silent);
                         va.speak(`COPY ASSETS FATAL ERROR!`);
                     });
                 }

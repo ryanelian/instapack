@@ -1,17 +1,17 @@
-export interface IProjectSettings {
+export interface ProjectSettings {
     root: string;
     input: string;
     output: string;
     jsOut: string;
     cssOut: string;
     port1: number;
-    alias: IMapLike<string>;
-    externals: IMapLike<string | string[] | IMapLike<string | string[]>>;
+    alias: MapLikeObject<string>;
+    externals: MapLikeObject<string | string[] | MapLikeObject<string | string[]>>;
     namespace: string | undefined;
-    copy: ICopyOption[];
+    copy: CopyOption[];
 }
 
-export interface ICopyOption {
+export interface CopyOption {
     library: string;
     files: string[];
     destination: string;

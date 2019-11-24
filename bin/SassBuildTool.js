@@ -16,7 +16,7 @@ const sass = require("sass");
 const chokidar_1 = require("chokidar");
 const postcss = require("postcss");
 const autoprefixer = require("autoprefixer");
-const CleanCSS = require('clean-css');
+const CleanCSS = require("clean-css");
 const mergeSourceMap = require("merge-source-map");
 const Fiber = require("fibers");
 const PrettyUnits_1 = require("./PrettyUnits");
@@ -49,16 +49,16 @@ class SassBuildTool {
         return upath.join(this.finder.root, '(intermediate)', '(postcss-output).css');
     }
     fixSassGeneratedSourceMap(sm) {
-        let folder = upath.basename(this.virtualSassOutputFilePath);
+        const folder = upath.basename(this.virtualSassOutputFilePath);
         sm.sources = sm.sources.map(s => {
-            let absolute = upath.join(folder, s);
+            const absolute = upath.join(folder, s);
             return '/' + upath.relative(this.finder.root, absolute);
         });
     }
     compileSassProject(virtualSassOutputPath) {
         return __awaiter(this, void 0, void 0, function* () {
-            let cssInput = this.finder.cssEntry;
-            let sassOptions = {
+            const cssInput = this.finder.cssEntry;
+            const sassOptions = {
                 file: cssInput,
                 outFile: virtualSassOutputPath,
                 data: yield fse.readFile(cssInput, 'utf8'),
@@ -67,13 +67,13 @@ class SassBuildTool {
                 importer: SassImportResolver_1.sassImporter
             };
             sassOptions['fiber'] = Fiber;
-            let sassResult = yield this.runSassAsync(sassOptions);
-            let result = {
+            const sassResult = yield this.runSassAsync(sassOptions);
+            const result = {
                 css: sassResult.css.toString('utf8')
             };
             if (this.variables.sourceMap && sassResult.map) {
-                let sms = sassResult.map.toString('utf8');
-                let sm = JSON.parse(sms);
+                const sms = sassResult.map.toString('utf8');
+                const sm = JSON.parse(sms);
                 this.fixSassGeneratedSourceMap(sm);
                 result.map = sm;
             }
@@ -82,7 +82,7 @@ class SassBuildTool {
     }
     runPostCSS(virtualSassOutputPath, virtualPostcssOutputPath, sassResult) {
         return __awaiter(this, void 0, void 0, function* () {
-            let postcssOptions = {
+            const postcssOptions = {
                 from: virtualSassOutputPath,
                 to: virtualPostcssOutputPath
             };
@@ -92,15 +92,15 @@ class SassBuildTool {
                     prev: false
                 };
             }
-            let postcssResult = yield postcss([
+            const postcssResult = yield postcss([
                 autoprefixer()
             ]).process(sassResult.css, postcssOptions);
-            let result = {
+            const result = {
                 css: postcssResult.css
             };
             if (this.variables.sourceMap && sassResult.map && postcssResult.map) {
-                let sm2 = postcssResult.map.toJSON();
-                let abs = upath.resolve(upath.dirname(virtualPostcssOutputPath), sm2.sources[0]);
+                const sm2 = postcssResult.map.toJSON();
+                const abs = upath.resolve(upath.dirname(virtualPostcssOutputPath), sm2.sources[0]);
                 sm2.sources[0] = '/' + upath.relative(this.variables.root, abs);
                 result.map = mergeSourceMap(sassResult.map, sm2);
             }
@@ -108,7 +108,7 @@ class SassBuildTool {
         });
     }
     runCleanCSS(cssOutputPath, postcssResult) {
-        let cleanCssOptions = {
+        const cleanCssOptions = {
             level: {
                 1: {
                     specialComments: false
@@ -118,30 +118,30 @@ class SassBuildTool {
             sourceMap: this.variables.sourceMap,
             sourceMapInlineSources: this.variables.sourceMap
         };
-        let cleanResult = new CleanCSS(cleanCssOptions).minify(postcssResult.css);
-        let errors = cleanResult.errors;
+        const cleanResult = new CleanCSS(cleanCssOptions).minify(postcssResult.css);
+        const errors = cleanResult.errors;
         if (errors.length) {
-            let errorMessage = "Error when minifying CSS:\n" + errors.map(Q => '- ' + Q.toString()).join("\n");
+            const errorMessage = "Error when minifying CSS:\n" + errors.map(Q => '- ' + Q.toString()).join("\n");
             throw new Error(errorMessage);
         }
-        let result = {
+        const result = {
             css: cleanResult.styles
         };
         if (this.variables.sourceMap && postcssResult.map && cleanResult.sourceMap) {
-            let sm3 = cleanResult.sourceMap.toJSON();
+            const sm3 = cleanResult.sourceMap.toJSON();
             sm3.sources[0] = '/(intermediate)/(postcss-output).css';
             sm3.file = upath.basename(cssOutputPath);
             result.map = mergeSourceMap(postcssResult.map, sm3);
-            let sourceMapFileName = upath.basename(cssOutputPath) + '.map';
+            const sourceMapFileName = upath.basename(cssOutputPath) + '.map';
             result.css += `\n/*# sourceMappingURL=${sourceMapFileName} */`;
         }
         return result;
     }
     build() {
         return __awaiter(this, void 0, void 0, function* () {
-            let sassOutputPath = this.virtualSassOutputFilePath;
-            let sassResult = yield this.compileSassProject(sassOutputPath);
-            let cssOutputPath = this.finder.cssOutputFilePath;
+            const sassOutputPath = this.virtualSassOutputFilePath;
+            const sassResult = yield this.compileSassProject(sassOutputPath);
+            const cssOutputPath = this.finder.cssOutputFilePath;
             let postcssOutputPath = cssOutputPath;
             if (this.variables.production) {
                 postcssOutputPath = this.virtualPostcssOutputFilePath;
@@ -150,10 +150,10 @@ class SassBuildTool {
             if (this.variables.production) {
                 cssResult = this.runCleanCSS(cssOutputPath, cssResult);
             }
-            let cssOutputTask = Shout_1.Shout.fileOutput(cssOutputPath, cssResult.css);
+            const cssOutputTask = Shout_1.Shout.fileOutput(cssOutputPath, cssResult.css);
             if (cssResult.map) {
                 cssResult.map.sourceRoot = 'instapack://';
-                let s = JSON.stringify(cssResult.map);
+                const s = JSON.stringify(cssResult.map);
                 yield Shout_1.Shout.fileOutput(cssOutputPath + '.map', s);
             }
             yield cssOutputTask;
@@ -163,7 +163,7 @@ class SassBuildTool {
     buildWithStopwatch() {
         return __awaiter(this, void 0, void 0, function* () {
             Shout_1.Shout.timed('Compiling', chalk.cyan('index.scss'), chalk.grey('in ' + this.finder.cssInputFolder + '/'));
-            let start = process.hrtime();
+            const start = process.hrtime();
             try {
                 yield this.build();
             }
@@ -171,7 +171,7 @@ class SassBuildTool {
                 let render;
                 this.va.speak('CSS COMPILE ERROR!');
                 if (error['formatted']) {
-                    let formatted = 'Sass Compile' + error['formatted'].trim();
+                    const formatted = 'Sass Compile' + error['formatted'].trim();
                     render = chalk.red(formatted);
                     console.error('\n' + render + '\n');
                 }
@@ -180,14 +180,14 @@ class SassBuildTool {
                 }
             }
             finally {
-                let time = PrettyUnits_1.prettyHrTime(process.hrtime(start));
+                const time = PrettyUnits_1.prettyHrTime(process.hrtime(start));
                 Shout_1.Shout.timed('Finished CSS build after', chalk.green(time));
             }
         });
     }
     watch() {
         let debounced;
-        let debounce = () => {
+        const debounce = () => {
             clearTimeout(debounced);
             debounced = setTimeout(() => {
                 this.buildWithStopwatch();

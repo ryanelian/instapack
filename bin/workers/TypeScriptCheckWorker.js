@@ -15,9 +15,9 @@ module.exports = function (variables, finish) {
         if (variables.verbose) {
             Shout_1.Shout.displayVerboseOutput = true;
         }
-        let tool = yield TypeScriptCheckerTool_1.TypeScriptCheckerTool.createToolAsync(variables);
+        const tool = yield TypeScriptCheckerTool_1.TypeScriptCheckerTool.createToolAsync(variables);
         try {
-            yield tool.typeCheck();
+            tool.typeCheck();
             if (variables.watch) {
                 tool.watch();
             }

@@ -3,15 +3,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const ava_1 = require("ava");
 const MergePackageJson_1 = require("./MergePackageJson");
 ava_1.default('Object: Sort by Keys', t => {
-    let x = {
+    const x = {
         z: 123,
         a: 123
     };
-    let y = MergePackageJson_1.objectSortByKeys(x);
+    const y = MergePackageJson_1.objectSortByKeys(x);
     t.is(JSON.stringify(y), '{"a":123,"z":123}');
 });
 ava_1.default('Merge package.json', t => {
-    let result = MergePackageJson_1.mergePackageJson({
+    const result = MergePackageJson_1.mergePackageJson({
         name: 'my-project',
         "instapack": {
             "input": "src"

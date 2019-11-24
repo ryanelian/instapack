@@ -1,4 +1,4 @@
-import { IVariables } from "./variables-factory/IVariables";
+import { BuildVariables } from "./variables-factory/BuildVariables";
 import { Shout } from "./Shout";
 import { VoiceAssistant } from "./VoiceAssistant";
 import { prettyHrTime } from "./PrettyUnits";
@@ -7,29 +7,30 @@ import * as upath from 'upath';
 import * as fse from 'fs-extra';
 import { PathFinder } from "./variables-factory/PathFinder";
 import FastGlob = require("fast-glob");
-import { ICopyOption } from "./variables-factory/IProjectSettings";
+import { CopyOption } from "./variables-factory/ProjectSettings";
 
 export class CopyBuildTool {
 
-    variables: IVariables;
+    variables: BuildVariables;
     va: VoiceAssistant;
     pathFinder: PathFinder;
 
-    constructor(variables: IVariables) {
+    constructor(variables: BuildVariables) {
         this.variables = variables;
         this.va = new VoiceAssistant(variables.silent);
         this.pathFinder = new PathFinder(variables);
     }
 
-    async buildWithStopwatch() {
+    async buildWithStopwatch(): Promise<void> {
         let message = `Copying ${this.variables.copy.length} library assets ${chalk.grey('to ' + this.pathFinder.outputFolderPath)}`;
-        if (true) {
+        const overwriteMode = true;
+        if (overwriteMode) {
             message += chalk.yellow(' (non-overwrite)');
         }
         Shout.timed(message);
-        let start = process.hrtime();
+        const start = process.hrtime();
         try {
-            let count = await this.build();
+            const count = await this.build();
             Shout.timed(`Copy Assets job: Successfully copied ${count} files`);
         }
         catch (error) {
@@ -37,18 +38,18 @@ export class CopyBuildTool {
             Shout.error('during Copy Assets job:', error);
         }
         finally {
-            let time = prettyHrTime(process.hrtime(start));
+            const time = prettyHrTime(process.hrtime(start));
             Shout.timed('Finished Copy Assets job after', chalk.green(time));
         }
     }
 
     async tryCopyFile(from: string, to: string, overwrite: boolean): Promise<boolean> {
-        let exists = await fse.pathExists(to);
+        const exists = await fse.pathExists(to);
         if (exists && overwrite === false) {
             return false;
         }
 
-        let targetFolderPath = upath.dirname(to);
+        const targetFolderPath = upath.dirname(to);
         try {
             await fse.ensureDir(targetFolderPath);
         } catch (err) {
@@ -72,7 +73,7 @@ export class CopyBuildTool {
     }
 
     scanStringMatrixVerticalEquality(matrix: string[][], column: number, value: string): boolean {
-        for (let list of matrix) {
+        for (const list of matrix) {
             if (list[column] !== value) {
                 return false;
             }
@@ -86,14 +87,14 @@ export class CopyBuildTool {
             return '';
         }
 
-        let tokenMatrix = files.map(Q => Q.split('/'));
+        const tokenMatrix = files.map(Q => Q.split('/'));
         // "/a/b/c" --> [a,b,c]
 
-        let commonPath: string[] = [];
+        const commonPath: string[] = [];
 
         let i = 0;
         do {
-            let sample = tokenMatrix[0][i];
+            const sample = tokenMatrix[0][i];
             // console.log(sample);
             // [[a,b,c], [d,e,f]] --> 'a' or 'b' or 'c'
 
@@ -101,7 +102,7 @@ export class CopyBuildTool {
                 break;
             }
 
-            let match = this.scanStringMatrixVerticalEquality(tokenMatrix, i, sample);
+            const match = this.scanStringMatrixVerticalEquality(tokenMatrix, i, sample);
             if (match === false) {
                 break;
             }
@@ -113,17 +114,17 @@ export class CopyBuildTool {
         return upath.join(...commonPath);
     }
 
-    async tryCopy(job: ICopyOption, overwrite: boolean): Promise<number> {
-        let libraryPath = upath.join(this.pathFinder.npmFolder, job.library);
-        let targetPath = upath.join(this.pathFinder.outputFolderPath, job.destination);
+    async tryCopy(job: CopyOption, overwrite: boolean): Promise<number> {
+        const libraryPath = upath.join(this.pathFinder.npmFolder, job.library);
+        const targetPath = upath.join(this.pathFinder.outputFolderPath, job.destination);
 
-        let tasks: Promise<boolean>[] = [];
-        let globs: string[] = [];
+        const tasks: Promise<boolean>[] = [];
+        const globs: string[] = [];
 
-        for (let file of job.files) {
-            let absoluteFilePath = upath.join(libraryPath, file);
+        for (const file of job.files) {
+            const absoluteFilePath = upath.join(libraryPath, file);
             // need to do this to squash folder navigations ('../')
-            let relativeFilePath = upath.relative(libraryPath, absoluteFilePath);
+            const relativeFilePath = upath.relative(libraryPath, absoluteFilePath);
             if (relativeFilePath.startsWith('../')) {
                 Shout.warning(`Copy skip: ${chalk.cyan(file)} is outside library ${chalk.cyan(job.library)} folder!`);
                 continue;
@@ -134,11 +135,11 @@ export class CopyBuildTool {
                 // for example: '/project/node_modules/something/!(an|actual)_{folder}_[yo]/wtf
                 // that file or folder must not be treated as glob! (escaped)
 
-                let fileStats = await fse.lstat(absoluteFilePath);
+                const fileStats = await fse.lstat(absoluteFilePath);
                 if (fileStats.isFile()) {
                     globs.push(FastGlob.escapePath(relativeFilePath));
                 } else if (fileStats.isDirectory()) {
-                    let globbedPath = upath.join(FastGlob.escapePath(relativeFilePath), '**');
+                    const globbedPath = upath.join(FastGlob.escapePath(relativeFilePath), '**');
                     globs.push(globbedPath);
                 } else {
                     Shout.warning(`Copy skip: ${absoluteFilePath} is neither a file nor a folder?!`);
@@ -151,44 +152,44 @@ export class CopyBuildTool {
             }
         }
 
-        let assets = await FastGlob(globs, {
+        const assets = await FastGlob(globs, {
             cwd: libraryPath
         }); // folder/something.svg
 
-        let commonPath = this.findCommonParentFolderPath(assets); // folder
+        const commonPath = this.findCommonParentFolderPath(assets); // folder
         // console.log('COMMON PATH:', commonPath);
-        
-        for (let asset of assets) {
-            let absoluteFilePath = upath.join(libraryPath, asset); // /project/node_modules/library/folder/something.svg
-            let relativeFilePath = upath.relative(commonPath, asset); // something.svg
-            let targetFilePath = upath.join(targetPath, relativeFilePath); // /project/wwwroot/target/something.svg
+
+        for (const asset of assets) {
+            const absoluteFilePath = upath.join(libraryPath, asset); // /project/node_modules/library/folder/something.svg
+            const relativeFilePath = upath.relative(commonPath, asset); // something.svg
+            const targetFilePath = upath.join(targetPath, relativeFilePath); // /project/wwwroot/target/something.svg
             // console.log(relativeFilePath);
             // console.log(absoluteFilePath);
             // console.log(targetFilePath);
-            let task = this.tryCopyFile(absoluteFilePath, targetFilePath, overwrite);
+            const task = this.tryCopyFile(absoluteFilePath, targetFilePath, overwrite);
             tasks.push(task)
         }
 
-        let success = await Promise.all(tasks);
+        const success = await Promise.all(tasks);
         return success.filter(Q => Q).length;
     }
 
-    async build() {
-        let packageJson = await fse.readJson(this.pathFinder.packageJson);
-        let dependencies = new Set<string>();
+    async build(): Promise<number> {
+        const packageJson = await fse.readJson(this.pathFinder.packageJson);
+        const dependencies = new Set<string>();
         if (packageJson.dependencies) {
-            for (let dependency in packageJson.dependencies) {
+            for (const dependency in packageJson.dependencies) {
                 dependencies.add(dependency);
             }
         }
         if (packageJson.devDependencies) {
-            for (let dependency in packageJson.devDependencies) {
+            for (const dependency in packageJson.devDependencies) {
                 dependencies.add(dependency);
             }
         }
 
-        let copyTasks: Promise<number>[] = [];
-        for (let job of this.variables.copy) {
+        const copyTasks: Promise<number>[] = [];
+        for (const job of this.variables.copy) {
             if (dependencies.has(job.library)) {
                 copyTasks.push(this.tryCopy(job, false));
             } else {
@@ -196,9 +197,9 @@ export class CopyBuildTool {
             }
         }
 
-        let success = await Promise.all(copyTasks);
+        const success = await Promise.all(copyTasks);
         let count = 0;
-        for (let n of success) {
+        for (const n of success) {
             count += n;
         }
         return count;

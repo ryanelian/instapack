@@ -41,8 +41,8 @@ class ToolOrchestrator {
     }
     validateJsBuildTask() {
         return __awaiter(this, void 0, void 0, function* () {
-            let entry = this.finder.jsEntry;
-            let checkEntry = fse.pathExists(entry);
+            const entry = this.finder.jsEntry;
+            const checkEntry = fse.pathExists(entry);
             if ((yield checkEntry) === false) {
                 Shout_1.Shout.timed('Entry file', chalk.cyan(entry), 'was not found.', chalk.red('Aborting JS build!'));
                 return false;
@@ -52,8 +52,8 @@ class ToolOrchestrator {
     }
     validateCssBuildTask() {
         return __awaiter(this, void 0, void 0, function* () {
-            let entry = this.finder.cssEntry;
-            let exist = yield fse.pathExists(entry);
+            const entry = this.finder.cssEntry;
+            const exist = yield fse.pathExists(entry);
             if (!exist) {
                 Shout_1.Shout.timed('Entry file', chalk.cyan(entry), 'was not found.', chalk.red('Aborting CSS build!'));
             }
@@ -69,27 +69,27 @@ class ToolOrchestrator {
                     this.build('copy');
                     return;
                 case 'js': {
-                    let valid = yield this.validateJsBuildTask();
+                    const valid = yield this.validateJsBuildTask();
                     if (valid) {
                         RunWorker_1.runTypeScriptBuildWorker(this.variables).catch(error => {
                             Shout_1.Shout.fatal(`during JS build:`, error);
-                            let va = new VoiceAssistant_1.VoiceAssistant(this.variables.silent);
+                            const va = new VoiceAssistant_1.VoiceAssistant(this.variables.silent);
                             va.speak(`JAVASCRIPT BUILD FATAL ERROR!`);
                         });
                         RunWorker_1.runTypeScriptCheckWorker(this.variables).catch(error => {
                             Shout_1.Shout.fatal(`during type-checking:`, error);
-                            let va = new VoiceAssistant_1.VoiceAssistant(this.variables.silent);
+                            const va = new VoiceAssistant_1.VoiceAssistant(this.variables.silent);
                             va.speak(`TYPE CHECK FATAL ERROR!`);
                         });
                     }
                     return;
                 }
                 case 'css': {
-                    let valid = yield this.validateCssBuildTask();
+                    const valid = yield this.validateCssBuildTask();
                     if (valid) {
                         RunWorker_1.runSassBuildWorker(this.variables).catch(error => {
                             Shout_1.Shout.fatal(`during CSS build:`, error);
-                            let va = new VoiceAssistant_1.VoiceAssistant(this.variables.silent);
+                            const va = new VoiceAssistant_1.VoiceAssistant(this.variables.silent);
                             va.speak(`CSS BUILD FATAL ERROR!`);
                         });
                     }
@@ -99,7 +99,7 @@ class ToolOrchestrator {
                     if (this.variables.copy.length) {
                         RunWorker_1.runCopyBuildWorker(this.variables).catch(error => {
                             Shout_1.Shout.fatal(`during Copy Assets job:`, error);
-                            let va = new VoiceAssistant_1.VoiceAssistant(this.variables.silent);
+                            const va = new VoiceAssistant_1.VoiceAssistant(this.variables.silent);
                             va.speak(`COPY ASSETS FATAL ERROR!`);
                         });
                     }

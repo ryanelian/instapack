@@ -42,7 +42,7 @@ export class PackageManager {
         }
 
         if (packageManager === 'yarn') {
-            let yarnExists = await this.whichAsync('yarn');
+            const yarnExists = await this.whichAsync('yarn');
             if (!yarnExists) {
                 packageManager = 'npm';
             }

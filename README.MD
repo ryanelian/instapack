@@ -252,6 +252,34 @@ import jQuery from 'jquery';
 
 - `port1` can be set for declaring a static port number to be used by the Hot Reload server. If not set or is already used, the port number will be randomized. [Read more ↓](#hot-reload-development-mode)
 
+## ESLint Integration
+
+instapack 8.0.0 supports [ESLint configuration](https://eslint.org/docs/user-guide/configuring), applied directly to TypeScript source code during type-check phase. Source code will be linted only when it can be compiled correctly.
+
+Here is an example `.eslintrc.json` placed in the project root (next to `tsconfig.json`). [typescript-eslint](https://github.com/typescript-eslint/typescript-eslint) dependencies are required to be installed in the project:
+
+```
+npm install eslint typescript @typescript-eslint/eslint-plugin @typescript-eslint/parser -D
+```
+
+```json
+{
+    "parser": "@typescript-eslint/parser",
+    "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/eslint-recommended",
+        "plugin:@typescript-eslint/recommended"
+    ],
+    "parserOptions": {
+        "sourceType": "module"
+    },
+    "env": {
+        "browser": true,
+        "commonjs": true
+    }
+}
+```
+
 ## Babel Integration
 
 instapack supports [`.babelrc`](https://babeljs.io/docs/usage/babelrc/) in the project root folder. **Babel will be run AFTER TypeScript compilation.** Here are some use cases where this feature can be useful:
@@ -264,7 +292,7 @@ instapack supports [`.babelrc`](https://babeljs.io/docs/usage/babelrc/) in the p
 
 Hot Reload development mode allows a developer to update application code while preserving runtime states, without triggering browser refresh when not needed.
 
-instapack supports Hot Reload for popular JS frameworks by using `--hot` or `-h` flags, which also enable `watch` and `dev` modes automatically. **Hot Reload requires browsers with [WebSocket](https://caniuse.com/#feat=websockets) feature.**
+instapack supports Hot Reload for popular JS frameworks by using `--serve` or `-s` flags, which also enables `watch` and `dev` modes automatically.
 
 Compiling a JS project using this mode will:
 
@@ -343,41 +371,13 @@ Then add `alias` field to instapack settings in `package.json`
 }
 ```
 
-## ESLint Integration
-
-instapack 8.0.0 supports [ESLint configuration](https://eslint.org/docs/user-guide/configuring), applied directly to TypeScript source code during type-check phase. Source code will be linted only when it can be compiled correctly.
-
-Here is an example `.eslintrc.json` placed in the project root (next to `tsconfig.json`). [typescript-eslint](https://github.com/typescript-eslint/typescript-eslint) dependencies are required to be installed in the project:
-
-```
-npm install eslint typescript @typescript-eslint/eslint-plugin @typescript-eslint/parser -D
-```
-
-```json
-{
-  "parser": "@typescript-eslint/parser",
-  "extends": [
-    "eslint:recommended",
-    "plugin:@typescript-eslint/eslint-recommended",
-    "plugin:@typescript-eslint/recommended"
-  ],
-  "parserOptions": {
-    "ecmaVersion": 2020,
-    "sourceType": "module"
-  },
-  "env": {
-    "browser": true
-  }
-}
-```
-
 ## Module Systems
 
 ### TypeScript / ES Modules
 
 [Imports and exports](https://www.typescriptlang.org/docs/handbook/modules.html) other `.ts` / `.tsx` files in the project or normal JS modules from `node_modules`. This technique allows the ease of development using intellisense for modules with type definitions:
 
-- The module has `"typings": "something.d.ts"` in its `package.json`. For example: `vue`, `linq`
+- The module has `types` or `typings` field pointing to TypeScript declaration files (`*.d.ts`) in its `package.json`. For example: `vue`, `linq`
 
 - The module has [@types](https://microsoft.github.io/TypeSearch/) installed. For example, `react` and `@types/react`
 
@@ -413,7 +413,7 @@ An excerpt of build log when using dynamic import:
 
 ### CommonJS / Node.js require
 
-Easily imports ordinary JS modules within the project or from `node_modules`. However, **you WILL NOT get intellisense!** (Modules will be imported as `any` data type.)
+Imports Node.js modules within the project or from `node_modules`. However, **you WILL NOT get intellisense!** (Modules will be imported as `any` data type.)
 
 ```js
 let $ = require('jquery');
@@ -444,51 +444,16 @@ declare module "*.html" {
 }
 ```
 
-**DEPRECATION WARNING:** HTML modules with special extension `.vue.html` will be compiled to [parameter objects for Vue.js `ComponentOptions`](https://vuejs.org/v2/guide/render-function.html#Template-Compilation). This behavior will be removed in future instapack versions due to improved `.vue` toolings.
-
-```ts
-// vue-html-shim.d.ts
-
-declare module "*.vue.html" {
-    import { CreateElement, VNode } from 'vue';
-
-    export const render: (createElement: CreateElement) => VNode;
-    export const staticRenderFns: ((createElement: CreateElement) => VNode)[];
-}
-```
-
-```ts
-import Vue from 'vue';
-import Component from 'vue-class-component';
-import { render, staticRenderFns } from './MyComponent.vue.html';
-
-@Component({
-    render: render,
-    staticRenderFns: staticRenderFns
-})
-export class MyComponent extends Vue {
-}
-```
-
 ### JSON Modules
 
-instapack 7.0.0 with TypeScript 3.1.0 supports strongly-typed, static JSON file imports in the TypeScript project using the `import` syntax:
-
-```json
-{
-  "foo": "bar"
-}
-```
+Imports strongly-typed, static JSON file in the TypeScript project using the `import` syntax:
 
 ```ts
-import * as settings from './settings.json';
-
-let foo: string = settings.foo;
+// ESM syntax
+import settings from './settings.json';
 ```
 
 > Requires `resolveJsonModule` compiler option in `tsconfig.json` to be set to `true`
-
-> Earlier instapack versions may import JSON file using `require` syntax instead.
 
 ### Vue Single-File Components
 

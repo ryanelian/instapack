@@ -4,11 +4,11 @@ import * as TypeScript from 'typescript';
 import { parseTypescriptConfig, tryReadTypeScriptConfigJson } from "./TypescriptConfigParser";
 import { Shout } from "./Shout";
 
-let root = process.cwd();
-let fixtures = path.join(root, 'fixtures');
-let validFolder = path.join(fixtures, 'TypeScriptConfigValid');
-let emptyFolder = path.join(fixtures, 'TypeScriptConfigEmpty');
-let invalidFolder = path.join(fixtures, 'TypeScriptConfigInvalid');
+const root = process.cwd();
+const fixtures = path.join(root, 'fixtures');
+const validFolder = path.join(fixtures, 'TypeScriptConfigValid');
+const emptyFolder = path.join(fixtures, 'TypeScriptConfigEmpty');
+const invalidFolder = path.join(fixtures, 'TypeScriptConfigInvalid');
 
 Shout.error = function () { };
 Shout.warning = function () { };
@@ -32,7 +32,7 @@ test('Parse TypeScript Configuration: Error', t => {
 });
 
 test('Parse TypeScript Configuration: OK', t => {
-    let result = parseTypescriptConfig(validFolder, {
+    const result = parseTypescriptConfig(validFolder, {
         "compilerOptions": {
             "noImplicitAny": false,
             "noImplicitThis": true,
@@ -102,7 +102,7 @@ test('Parse TypeScript Configuration: OK', t => {
 });
 
 test('Read tsconfig.json: Valid', async t => {
-    let r = await tryReadTypeScriptConfigJson(validFolder);
+    const r = await tryReadTypeScriptConfigJson(validFolder);
     t.deepEqual(r, {
         "compilerOptions": {
             "noImplicitAny": false,
@@ -149,7 +149,7 @@ test('Read tsconfig.json: Valid', async t => {
     });
 });
 
-let fallbackTypeScriptConfig = {
+const fallbackTypeScriptConfig = {
     compilerOptions: {
         alwaysStrict: true,
         skipLibCheck: true,
@@ -173,11 +173,11 @@ let fallbackTypeScriptConfig = {
 };
 
 test('Read tsconfig.json: Empty', async t => {
-    let r = await tryReadTypeScriptConfigJson(emptyFolder);
+    const r = await tryReadTypeScriptConfigJson(emptyFolder);
     t.deepEqual(r, fallbackTypeScriptConfig);
 });
 
 test('Read tsconfig.json: Invalid', async t => {
-    let r = await tryReadTypeScriptConfigJson(invalidFolder);
+    const r = await tryReadTypeScriptConfigJson(invalidFolder);
     t.deepEqual(r, fallbackTypeScriptConfig);
 });

@@ -7,7 +7,7 @@ import { prettyBytes } from './PrettyUnits';
  * Converts a number into a string. If the number is less than 10, adds 0 as prefix.
  * @param x 
  */
-function padZeroToDoubleDigits(x: number) {
+function padZeroToDoubleDigits(x: number): string {
     let s = '';
     if (x < 10) {
         s += '0';
@@ -19,14 +19,14 @@ function padZeroToDoubleDigits(x: number) {
 /**
  * Returns the current time, formatted to HHMMSS string.
  */
-function nowFormatted() {
-    let t = new Date();
+function nowFormatted(): string {
+    const t = new Date();
     return padZeroToDoubleDigits(t.getHours()) + ':' + padZeroToDoubleDigits(t.getMinutes()) + ':' + padZeroToDoubleDigits(t.getSeconds());
 }
 
-function concatenateTokens(tokens: any[]) {
+function concatenateTokens(tokens: unknown[]): string {
     let message = '';
-    for (let token of tokens) {
+    for (const token of tokens) {
         if (token instanceof Error) {
             if (token.stack) {
                 message += '\n' + chalk.red(token.stack);
@@ -40,41 +40,41 @@ function concatenateTokens(tokens: any[]) {
     return message;
 }
 
-export let Shout = {
+export const Shout = {
 
-    timed: function (...tokens) {
-        let message = concatenateTokens(tokens);
-        let output = `[${chalk.grey(nowFormatted())}]` + message;
+    timed: function (...tokens): void {
+        const message = concatenateTokens(tokens);
+        const output = `[${chalk.grey(nowFormatted())}]` + message;
         console.log(output);
     },
 
-    error: function (...tokens) {
-        let message = concatenateTokens(tokens);
-        let output = '\n' + chalk.red('ERROR') + message + '\n';
+    error: function (...tokens): void {
+        const message = concatenateTokens(tokens);
+        const output = '\n' + chalk.red('ERROR') + message + '\n';
         console.error(output);
     },
 
-    fatal: function (...tokens) {
-        let message = concatenateTokens(tokens);
-        let output = '\n' + chalk.red('FATAL ERROR') + message + '\n';
+    fatal: function (...tokens): void {
+        const message = concatenateTokens(tokens);
+        const output = '\n' + chalk.red('FATAL ERROR') + message + '\n';
         console.error(output);
     },
 
-    warning: function (...tokens) {
-        let message = concatenateTokens(tokens);
-        let output = chalk.yellow('WARNING') + message;
+    warning: function (...tokens): void {
+        const message = concatenateTokens(tokens);
+        const output = chalk.yellow('WARNING') + message;
         console.warn(output);
     },
 
-    typescript: function (...tokens) {
-        let message = concatenateTokens(tokens);
-        let output = chalk.blue('TypeScript') + message;
+    typescript: function (...tokens): void {
+        const message = concatenateTokens(tokens);
+        const output = chalk.blue('TypeScript') + message;
         console.log(output);
     },
 
-    sass: function (...tokens) {
-        let message = concatenateTokens(tokens);
-        let output = chalk.magenta('Sass') + message;
+    sass: function (...tokens): void {
+        const message = concatenateTokens(tokens);
+        const output = chalk.magenta('Sass') + message;
         console.log(output);
     },
 
@@ -85,10 +85,10 @@ export let Shout = {
      * @param filePath 
      * @param content 
      */
-    fileOutput(filePath: string, content: string) {
-        let bundle = Buffer.from(content, 'utf8');
-        let info = upath.parse(filePath);
-        let size = prettyBytes(bundle.byteLength);
+    fileOutput(filePath: string, content: string): Promise<void> {
+        const bundle = Buffer.from(content, 'utf8');
+        const info = upath.parse(filePath);
+        const size = prettyBytes(bundle.byteLength);
 
         Shout.timed(chalk.blue(info.base), chalk.magenta(size), chalk.grey('in ' + info.dir + '/'));
         return fse.outputFile(filePath, bundle);

@@ -1,18 +1,18 @@
 import { Shout } from "../Shout";
 import { SassBuildTool } from "../SassBuildTool";
-import { IVariables } from "../variables-factory/IVariables";
+import { BuildVariables } from "../variables-factory/BuildVariables";
 
 /**
  * Accepts build task command as input parameter then run Sass build tool.
  * If watch mode is detected, do not send task completion signal to worker farm.
  */
-export = async function (variables: IVariables, finish) {
+export = async function (variables: BuildVariables, finish) {
 
     if (variables.verbose) {
         Shout.displayVerboseOutput = true;
     }
 
-    let tool = new SassBuildTool(variables);
+    const tool = new SassBuildTool(variables);
 
     try {
         await tool.buildWithStopwatch();

@@ -2,7 +2,7 @@ import * as fse from 'fs-extra';
 import * as upath from 'upath';
 import chalk = require('chalk');
 
-import { ICommandLineFlags } from "./variables-factory/ICommandLineFlags";
+import { CommandLineFlags } from "./variables-factory/CommandLineFlags";
 import { readProjectSettingsFrom } from './variables-factory/ReadProjectSettings';
 import { readDotEnvFrom } from './variables-factory/EnvParser';
 import { compileVariables } from './variables-factory/CompileVariables';
@@ -17,7 +17,7 @@ import { getSettings, setSetting } from './user-settings/UserSettingsManager';
 /**
  * Exposes methods for developing a web app client project.
  */
-export = class instapack {
+export = class InstapackProgram {
 
     readonly projectFolder: string;
 
@@ -31,19 +31,19 @@ export = class instapack {
     /**
      * Gets a list of string which contains tasks available for the build method.
      */
-    get availableBuildTasks() {
+    get availableBuildTasks(): string[] {
         return ['all', 'js', 'css'];
     }
 
     /**
      * Gets a list of string which contains templates available for the scaffold method.
      */
-    get availableTemplates() {
-        let templatesFolder = upath.join(__dirname, '..', 'templates');
+    get availableTemplates(): string[] {
+        const templatesFolder = upath.join(__dirname, '..', 'templates');
 
-        let ar = fse.readdirSync(templatesFolder);
-        let templates = ar.filter(Q => {
-            let test = upath.join(templatesFolder, Q);
+        const ar = fse.readdirSync(templatesFolder);
+        const templates = ar.filter(Q => {
+            const test = upath.join(templatesFolder, Q);
             return fse.lstatSync(test).isDirectory();
         });
 
@@ -57,18 +57,18 @@ export = class instapack {
      * @param taskName 
      * @param flags 
      */
-    async build(taskName: string, flags: ICommandLineFlags) {
+    async build(taskName: string, flags: CommandLineFlags): Promise<void> {
         if (flags.verbose) {
             Shout.displayVerboseOutput = true;
         }
 
         // parallel IO
-        let projectSettings = readProjectSettingsFrom(this.projectFolder);
-        let dotEnv = readDotEnvFrom(this.projectFolder);
-        let userSettings = await getSettings();
-        let typescriptConfiguration = tryReadTypeScriptConfigJson(this.projectFolder);
+        const projectSettings = readProjectSettingsFrom(this.projectFolder);
+        const dotEnv = readDotEnvFrom(this.projectFolder);
+        const userSettings = await getSettings();
+        const typescriptConfiguration = tryReadTypeScriptConfigJson(this.projectFolder);
 
-        let variables = compileVariables(flags,
+        const variables = compileVariables(flags,
             await projectSettings,
             userSettings,
             await dotEnv,
@@ -76,12 +76,12 @@ export = class instapack {
         );
 
         if (variables.packageManager !== 'disabled') {
-            let finder = new PathFinder(variables);
-            let packageJsonPath = finder.packageJson;
-            let packageJsonExists = await fse.pathExists(packageJsonPath);
+            const finder = new PathFinder(variables);
+            const packageJsonPath = finder.packageJson;
+            const packageJsonExists = await fse.pathExists(packageJsonPath);
             if (packageJsonExists) {
                 try {
-                    let pm = new PackageManager();
+                    const pm = new PackageManager();
                     await pm.restore(variables.packageManager);
                 } catch (error) {
                     Shout.error('when restoring package:', error);
@@ -91,7 +91,7 @@ export = class instapack {
             }
         }
 
-        let tm = new ToolOrchestrator(variables);
+        const tm = new ToolOrchestrator(variables);
         tm.outputBuildInformation();
         tm.build(taskName);
     }
@@ -100,22 +100,22 @@ export = class instapack {
      * Performs new web app client project scaffolding using a template shipped in templates folder.
      * @param template 
      */
-    async scaffold(template: string) {
-        let templateFolder = upath.join(__dirname, '../templates', template);
+    async scaffold(template: string): Promise<void> {
+        const templateFolder = upath.join(__dirname, '../templates', template);
 
-        let exist = await fse.pathExists(templateFolder);
+        const exist = await fse.pathExists(templateFolder);
         if (!exist) {
             Shout.error('Unable to find new project template for:', chalk.cyan(template));
             return;
         }
 
-        let mergedPackageJson: any;
-        let projectPackageJsonPath = upath.join(this.projectFolder, 'package.json');
-        let templatePackageJsonPath = upath.join(templateFolder, 'package.json');
+        let mergedPackageJson: unknown;
+        const projectPackageJsonPath = upath.join(this.projectFolder, 'package.json');
+        const templatePackageJsonPath = upath.join(templateFolder, 'package.json');
         if (await fse.pathExists(projectPackageJsonPath) && await fse.pathExists(templatePackageJsonPath)) {
             // would override, should merge fields instead: instapack, dependencies, and devDependencies
-            let projectPackageJson = await fse.readJson(projectPackageJsonPath);
-            let templatePackageJson = await fse.readJson(templatePackageJsonPath);
+            const projectPackageJson = await fse.readJson(projectPackageJsonPath);
+            const templatePackageJson = await fse.readJson(templatePackageJsonPath);
 
             mergedPackageJson = mergePackageJson(projectPackageJson, templatePackageJson);
         }
@@ -139,9 +139,9 @@ export = class instapack {
      * @param key 
      * @param value 
      */
-    async changeUserSettings(key: string, value: string) {
+    async changeUserSettings(key: string, value: string): Promise<void> {
         try {
-            let settingsFilePath = await setSetting(key, value);
+            const settingsFilePath = await setSetting(key, value);
             console.log('Successfully saved the new setting!');
             console.log(chalk.grey(settingsFilePath));
         } catch (error) {

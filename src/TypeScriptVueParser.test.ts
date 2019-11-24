@@ -2,7 +2,7 @@ import test from "ava";
 import { parseTypeScriptInVueFile } from "./TypeScriptVueParser";
 
 test('Parse TypeScript in Vue: Common', t => {
-    let result = parseTypeScriptInVueFile(`<template>
+    const result = parseTypeScriptInVueFile(`<template>
 <h1>Hello from {{ compiler }} and {{ framework }}!</h1>
 </template>
 
@@ -38,7 +38,7 @@ export default class Hello extends Vue {
 });
 
 test('Parse TypeScript in Vue: No lang', t => {
-    let result = parseTypeScriptInVueFile(`<template>
+    const result = parseTypeScriptInVueFile(`<template>
 <h1>Hello from {{ compiler }} and {{ framework }}!</h1>
 </template>
 
@@ -59,7 +59,7 @@ export default class Hello extends Vue {
 });
 
 test('Parse TypeScript in Vue: lang="coffee"', t => {
-    let result = parseTypeScriptInVueFile(`<template>
+    const result = parseTypeScriptInVueFile(`<template>
 <h1>Hello from {{ compiler }} and {{ framework }}!</h1>
 </template>
 
@@ -80,7 +80,7 @@ export default class Hello extends Vue {
 });
 
 test('Parse TypeScript in Vue: No Script', t => {
-    let result = parseTypeScriptInVueFile(`<template>
+    const result = parseTypeScriptInVueFile(`<template>
 <h1>Hello from {{ compiler }} and {{ framework }}!</h1>
 </template>`);
 
@@ -88,13 +88,13 @@ test('Parse TypeScript in Vue: No Script', t => {
 });
 
 test('Parse TypeScript in Vue: Empty', t => {
-    let result = parseTypeScriptInVueFile(``);
+    const result = parseTypeScriptInVueFile(``);
 
     t.is(result, ``);
 });
 
 test('Parse TypeScript in Vue: Malformed', t => {
-    let result = parseTypeScriptInVueFile(`<template
+    const result = parseTypeScriptInVueFile(`<template
     <script`);
 
     t.is(result, ``);

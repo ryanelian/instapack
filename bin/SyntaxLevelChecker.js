@@ -26,7 +26,7 @@ function is2015Syntax(node) {
         return true;
     }
     if (TypeScript.isNumericLiteral(node)) {
-        let bitflag = node['numericLiteralFlags'];
+        const bitflag = node['numericLiteralFlags'];
         if (bitflag) {
             if (bitflag & (1 << 8)) {
                 return true;
@@ -127,7 +127,7 @@ function is2018Syntax(node) {
     }
     if (TypeScript.isFunctionDeclaration(node) || TypeScript.isFunctionExpression(node) || TypeScript.isMethodDeclaration(node)) {
         if (node.asteriskToken && node.modifiers) {
-            let hasAsync = node.modifiers.some(Q => Q.kind === TypeScript.SyntaxKind.AsyncKeyword);
+            const hasAsync = node.modifiers.some(Q => Q.kind === TypeScript.SyntaxKind.AsyncKeyword);
             return hasAsync;
         }
     }
@@ -174,7 +174,7 @@ function traverse(node, cb, depth = 0) {
     });
 }
 function checkSyntaxLevel(sourcePath, source, languageTarget) {
-    let ast = TypeScript.createSourceFile(sourcePath, source, languageTarget, true, TypeScript.ScriptKind.JS);
+    const ast = TypeScript.createSourceFile(sourcePath, source, languageTarget, true, TypeScript.ScriptKind.JS);
     let level = TypeScript.ScriptTarget.ES5;
     traverse(ast, node => {
         if (level < TypeScript.ScriptTarget.ESNext && isESNextSyntax(node)) {

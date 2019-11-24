@@ -3,12 +3,16 @@ import { NodeJsInputFileSystem, ResolverFactory } from 'enhanced-resolve';
 import { Shout } from './Shout';
 import chalk = require('chalk');
 
+interface EnhancedResolver {
+    resolve: (context: {}, lookupStartPath: string, request: string, resolveContext: {}, callback: (error: Error, resolution: string) => void) => void;
+}
+
 /**
  * Invoke enhanced-resolve custom resolver as a Promise.
  * @param lookupStartPath 
  * @param request 
  */
-function resolveAsync(customResolver, lookupStartPath: string, request: string) {
+function resolveAsync(customResolver: EnhancedResolver, lookupStartPath: string, request: string): Promise<string> {
     return new Promise<string>((ok, reject) => {
         customResolver.resolve({}, lookupStartPath, request, {}, (error: Error, resolution: string) => {
             if (error) {
@@ -21,29 +25,29 @@ function resolveAsync(customResolver, lookupStartPath: string, request: string) 
     });
 }
 
-export interface ICompilerRoute {
-    compiler: any;
+export interface CompilerRoute {
+    compiler: unknown;
     compilerPath: string;
 }
 
-let vueCompilerResolveCache: IMapLike<ICompilerRoute> = {};
+const vueCompilerResolveCache: MapLikeObject<CompilerRoute> = {};
 
-async function tryGetProjectVueVersion(resolver, projectBasePath: string): Promise<string | undefined> {
+async function tryGetProjectVueVersion(resolver: EnhancedResolver, projectBasePath: string): Promise<string | undefined> {
     try {
-        let vueJsonPath = await resolveAsync(resolver, projectBasePath, 'vue/package.json');
-        let vueJson = await fse.readJson(vueJsonPath);
-        let vueVersion = vueJson['version'];
+        const vueJsonPath = await resolveAsync(resolver, projectBasePath, 'vue/package.json');
+        const vueJson = await fse.readJson(vueJsonPath);
+        const vueVersion = vueJson['version'];
         return vueVersion;
     } catch (error) {
         return undefined;
     }
 }
 
-async function tryGetProjectVueCompilerVersion(resolver, projectBasePath: string): Promise<string | undefined> {
+async function tryGetProjectVueCompilerVersion(resolver: EnhancedResolver, projectBasePath: string): Promise<string | undefined> {
     try {
-        let vueCompilerJsonPath = await resolveAsync(resolver, projectBasePath, 'vue-template-compiler/package.json');
-        let vueCompilerJson = await fse.readJson(vueCompilerJsonPath);
-        let vueCompilerVersion = vueCompilerJson['version'];
+        const vueCompilerJsonPath = await resolveAsync(resolver, projectBasePath, 'vue-template-compiler/package.json');
+        const vueCompilerJson = await fse.readJson(vueCompilerJsonPath);
+        const vueCompilerVersion = vueCompilerJson['version'];
 
         return vueCompilerVersion;
     } catch (error) {
@@ -51,21 +55,21 @@ async function tryGetProjectVueCompilerVersion(resolver, projectBasePath: string
     }
 }
 
-export async function resolveVueTemplateCompiler(projectBasePath: string): Promise<ICompilerRoute> {
+export async function resolveVueTemplateCompiler(projectBasePath: string): Promise<CompilerRoute> {
     if (vueCompilerResolveCache[projectBasePath]) {
         return vueCompilerResolveCache[projectBasePath];
     }
 
-    let resolver = ResolverFactory.createResolver({
+    const resolver = ResolverFactory.createResolver({
         fileSystem: new NodeJsInputFileSystem()
     });
 
-    let compilerRoute: ICompilerRoute;
-    let instapackVueCompilerVersion: string = require('vue-template-compiler/package.json')['version'];
-    let vueVersion = await tryGetProjectVueVersion(resolver, projectBasePath);
+    let compilerRoute: CompilerRoute;
+    const instapackVueCompilerVersion: string = require('vue-template-compiler/package.json')['version'];
+    const vueVersion = await tryGetProjectVueVersion(resolver, projectBasePath);
 
     try {
-        let vueCompilerVersion = await tryGetProjectVueCompilerVersion(resolver, projectBasePath);
+        const vueCompilerVersion = await tryGetProjectVueCompilerVersion(resolver, projectBasePath);
 
         if (!vueVersion || !vueCompilerVersion) {
             throw new Error('Project Vue / Vue Template Compiler packages are not found.');
@@ -83,7 +87,7 @@ Fix the project package.json and make sure to use the same version for both:
             throw new Error('Project vue and vue-template-compiler version mismatched!');
         }
 
-        let compilerPath = await resolveAsync(resolver, projectBasePath, 'vue-template-compiler');
+        const compilerPath = await resolveAsync(resolver, projectBasePath, 'vue-template-compiler');
         compilerRoute = {
             compiler: require(compilerPath),
             compilerPath: compilerPath

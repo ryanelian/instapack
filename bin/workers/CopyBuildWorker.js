@@ -15,7 +15,7 @@ module.exports = function (variables, finish) {
         if (variables.verbose) {
             Shout_1.Shout.displayVerboseOutput = true;
         }
-        let tool = new CopyBuildTool_1.CopyBuildTool(variables);
+        const tool = new CopyBuildTool_1.CopyBuildTool(variables);
         try {
             yield tool.buildWithStopwatch();
             finish(null);

@@ -25,7 +25,7 @@ class TypeScriptSourceStore {
         return Array.from(this.sources.keys());
     }
     getFilePath(sourcePath) {
-        let s = this.sources.get(sourcePath);
+        const s = this.sources.get(sourcePath);
         if (s) {
             return s.filePath;
         }
@@ -38,12 +38,12 @@ class TypeScriptSourceStore {
     }
     loadFolder(folder) {
         return __awaiter(this, void 0, void 0, function* () {
-            let tsGlobs = upath.join(folder, '**', '*.ts');
-            let tsxGlobs = upath.join(folder, '**', '*.tsx');
-            let vueGlobs = upath.join(folder, '**', '*.vue');
+            const tsGlobs = upath.join(folder, '**', '*.ts');
+            const tsxGlobs = upath.join(folder, '**', '*.tsx');
+            const vueGlobs = upath.join(folder, '**', '*.vue');
             this._typeCheckGlobs.push(tsGlobs, tsxGlobs, vueGlobs);
-            let files = yield glob(this._typeCheckGlobs);
-            let readSources = [];
+            const files = yield glob(this._typeCheckGlobs);
+            const readSources = [];
             for (const file of files) {
                 readSources.push(this.loadFile(file));
             }
@@ -52,16 +52,16 @@ class TypeScriptSourceStore {
     }
     loadFile(filePath) {
         return __awaiter(this, void 0, void 0, function* () {
-            let raw = yield fse.readFile(filePath, 'utf8');
+            const raw = yield fse.readFile(filePath, 'utf8');
             return this.parseThenStoreSource(filePath, raw);
         });
     }
     loadFileSync(filePath) {
-        let raw = fse.readFileSync(filePath, 'utf8');
+        const raw = fse.readFileSync(filePath, 'utf8');
         return this.parseThenStoreSource(filePath, raw);
     }
     calculateFileVersion(content) {
-        let hash = crypto_1.createHash('sha512');
+        const hash = crypto_1.createHash('sha512');
         hash.update(content);
         return hash.digest('hex');
     }
@@ -72,8 +72,8 @@ class TypeScriptSourceStore {
             sourcePath = upath.addExt(filePath, '.ts');
             raw = TypeScriptVueParser_1.parseTypeScriptInVueFile(raw);
         }
-        let version = this.calculateFileVersion(raw);
-        let previousSource = this.sources.get(sourcePath);
+        const version = this.calculateFileVersion(raw);
+        const previousSource = this.sources.get(sourcePath);
         if (previousSource && previousSource.version === version) {
             return false;
         }
@@ -89,7 +89,7 @@ class TypeScriptSourceStore {
         if (s1) {
             return s1.source;
         }
-        let filePath = this.getFilePath(sourcePath);
+        const filePath = this.getFilePath(sourcePath);
         this.loadFileSync(filePath);
         const s2 = this.sources.get(sourcePath);
         if (!s2) {

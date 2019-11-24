@@ -1,21 +1,21 @@
 import { Shout } from "../Shout";
 import { TypeScriptCheckerTool } from "../TypeScriptCheckerTool";
-import { IVariables } from "../variables-factory/IVariables";
+import { BuildVariables } from "../variables-factory/BuildVariables";
 
 /**
  * Accepts build task command as input parameter then run TypeScript check tool.
  * If watch mode is detected, do not send task completion signal to worker farm.
  */
-export = async function (variables: IVariables, finish) {
+export = async function (variables: BuildVariables, finish): Promise<void> {
 
     if (variables.verbose) {
         Shout.displayVerboseOutput = true;
     }
 
-    let tool = await TypeScriptCheckerTool.createToolAsync(variables);
+    const tool = await TypeScriptCheckerTool.createToolAsync(variables);
 
     try {
-        await tool.typeCheck();
+        tool.typeCheck();
         if (variables.watch) {
             tool.watch();
         } else {

@@ -1,9 +1,9 @@
-import { ICopyOption } from "./IProjectSettings";
+import { CopyOption } from "./ProjectSettings";
 
 /**
  * Contains all flags and settings for the instapack build tool.
  */
-export interface IVariables {
+export interface BuildVariables {
 
     /**
      * Gets the project root folder path.
@@ -33,17 +33,17 @@ export interface IVariables {
     /**
      * Replaces dependency imports to another dependency. For example: {'vue': 'vue/dist/vue.esm'}
      */
-    alias: IMapLike<string>;
+    alias: MapLikeObject<string>;
 
     /**
      * Rewrites dependency imports to a global object. For example: {'jquery': '$'}
      */
-    externals: IMapLike<string | string[] | IMapLike<string | string[]>>;
+    externals: MapLikeObject<string | string[] | MapLikeObject<string | string[]>>;
 
     /**
      * Gets the user-supplied environment variables from CLI or .env file.
      */
-    env: IMapLike<string>;
+    env: MapLikeObject<string>;
 
     /**
      * Gets the user settings for the package manager used for automatic project restore prior builds. 
@@ -92,7 +92,7 @@ export interface IVariables {
 
     namespace: string | undefined;
 
-    copy: ICopyOption[];
+    copy: CopyOption[];
 
     typescriptConfiguration: any;
 }

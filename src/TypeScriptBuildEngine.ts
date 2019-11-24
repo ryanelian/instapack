@@ -5,13 +5,14 @@ import * as url from 'url';
 import chalk = require('chalk');
 import webpack = require('webpack');
 import webpackDevServer = require('webpack-dev-server');
+import portfinder = require('portfinder');
 import * as TypeScript from 'typescript';
 import { VueLoaderPlugin } from 'vue-loader';
 import { resolveVueTemplateCompiler } from './CompilerResolver';
 
 import { prettyBytes, prettyMilliseconds } from './PrettyUnits';
 import { Shout } from './Shout';
-import { IVariables } from './variables-factory/IVariables';
+import { BuildVariables } from './variables-factory/BuildVariables';
 import { PathFinder } from './variables-factory/PathFinder';
 import { LoaderPaths } from './loaders/LoaderPaths';
 import { parseTypescriptConfig } from './TypescriptConfigParser';
@@ -22,19 +23,19 @@ import { VoiceAssistant } from './VoiceAssistant';
  */
 export class TypeScriptBuildEngine {
 
-    private readonly variables: IVariables;
+    private readonly variables: BuildVariables;
 
     private readonly finder: PathFinder;
 
-    private readonly outputPublicPath: string;
+    private outputPublicPath = 'js/';
 
     private readonly typescriptCompilerOptions: TypeScript.CompilerOptions;
 
     private readonly languageTarget: TypeScript.ScriptTarget;
 
-    private useBabel: boolean = false;
+    private useBabel = false;
 
-    private vueTemplateCompiler;
+    private vueTemplateCompiler: unknown;
 
     private va: VoiceAssistant;
 
@@ -48,18 +49,10 @@ export class TypeScriptBuildEngine {
      * @param settings 
      * @param flags 
      */
-    constructor(variables: IVariables) {
+    constructor(variables: BuildVariables) {
         this.variables = variables;
         this.finder = new PathFinder(variables);
         this.va = new VoiceAssistant(variables.silent);
-
-        if (variables.hot) {
-            this.outputPublicPath = `http://localhost:${this.variables.port1}/`;
-        } else {
-            // yay for using "js" folder in output!
-            this.outputPublicPath = 'js/';
-        }
-
         this.typescriptCompilerOptions = parseTypescriptConfig(variables.root, variables.typescriptConfiguration).options;
         this.typescriptCompilerOptions.noEmit = false;
         this.typescriptCompilerOptions.emitDeclarationOnly = false;
@@ -86,8 +79,8 @@ export class TypeScriptBuildEngine {
     /**
      * Translates tsconfig.json paths into webpack-compatible aliases!
      */
-    mergeTypeScriptPathAlias(): IMapLike<string> {
-        let alias: IMapLike<string> = Object.assign({}, this.variables.alias);
+    mergeTypeScriptPathAlias(): MapLikeObject<string> {
+        const alias: MapLikeObject<string> = Object.assign({}, this.variables.alias);
 
         if (!this.typescriptCompilerOptions.paths) {
             return alias;
@@ -107,7 +100,7 @@ export class TypeScriptBuildEngine {
             }
 
             // technical limitation: 1 alias = 1 path, not multiple paths...
-            let values = this.typescriptCompilerOptions.paths[key];
+            const values = this.typescriptCompilerOptions.paths[key];
             if (values.length > 1) {
                 Shout.warning(chalk.cyan('tsconfig.json'),
                     'paths:', chalk.yellow(key), 'resolves to more than one path!',
@@ -115,7 +108,7 @@ export class TypeScriptBuildEngine {
                 );
             }
 
-            let value = values[0];
+            const value = values[0];
             if (!value) {
                 Shout.warning(chalk.cyan('tsconfig.json'), 'paths:', chalk.yellow(key), 'is empty!');
                 continue;
@@ -125,7 +118,7 @@ export class TypeScriptBuildEngine {
             if (key.endsWith('/*')) {
                 key = key.substr(0, key.length - 2);
             }
-            let result = this.convertTypeScriptPathToWebpackAliasPath(this.typescriptCompilerOptions.baseUrl, value);
+            const result = this.convertTypeScriptPathToWebpackAliasPath(this.typescriptCompilerOptions.baseUrl, value);
             // console.log(key, " ", result);
 
             // don't let the merge overrides user-defined aliases!
@@ -145,12 +138,12 @@ export class TypeScriptBuildEngine {
             return undefined;
         }
 
-        let r = new Set<string>();
-        let p = this.typescriptCompilerOptions.paths;
+        const r = new Set<string>();
+        const p = this.typescriptCompilerOptions.paths;
 
         if (p && p['*']) {
-            for (let value of p['*']) {
-                let result = this.convertTypeScriptPathToWebpackAliasPath(this.typescriptCompilerOptions.baseUrl, value);
+            for (const value of p['*']) {
+                const result = this.convertTypeScriptPathToWebpackAliasPath(this.typescriptCompilerOptions.baseUrl, value);
                 r.add(result);
             }
         } else {
@@ -191,7 +184,7 @@ export class TypeScriptBuildEngine {
      * Gets a configured TypeScript rules for webpack.
      */
     get typescriptWebpackRules(): webpack.Rule {
-        let loaders: webpack.Loader[] = [];
+        const loaders: webpack.Loader[] = [];
 
         // webpack loaders are declared in reverse / right-to-left!
         // babel(typescript(source_code))
@@ -209,7 +202,7 @@ export class TypeScriptBuildEngine {
             }
         });
 
-        let tsRules: webpack.Rule = {
+        const tsRules: webpack.Rule = {
             test: /\.tsx?$/,
             exclude: /node_modules/,
             use: loaders
@@ -244,7 +237,10 @@ export class TypeScriptBuildEngine {
             test: /\.html?$/,
             exclude: /node_modules/,
             use: [{
-                loader: LoaderPaths.template
+                loader: LoaderPaths.template,
+                options: {
+                    attrs: false
+                }
             }]
         };
     }
@@ -253,10 +249,10 @@ export class TypeScriptBuildEngine {
      * Gets CSS rules for webpack to prevent explosion during vue compile.
      */
     get cssWebpackRules(): webpack.Rule {
-        let vueStyleLoader = {
+        const vueStyleLoader = {
             loader: LoaderPaths.vueStyle
         };
-        let cssModulesLoader = {
+        const cssModulesLoader = {
             loader: LoaderPaths.css,
             options: {
                 modules: true,
@@ -264,7 +260,7 @@ export class TypeScriptBuildEngine {
                 url: false
             }
         };
-        let cssLoader = {
+        const cssLoader = {
             loader: LoaderPaths.css,
             options: {
                 url: false
@@ -305,8 +301,8 @@ inject();
     /**
      * Returns webpack plugins array.
      */
-    createWebpackPlugins() {
-        let plugins: webpack.Plugin[] = [];
+    createWebpackPlugins(): webpack.Plugin[] {
+        const plugins: webpack.Plugin[] = [];
 
         plugins.push(new VueLoaderPlugin());
 
@@ -323,7 +319,7 @@ inject();
      * @param useBabel 
      */
     createWebpackRules(): webpack.Rule[] {
-        let rules = [
+        const rules = [
             this.typescriptWebpackRules,
             this.vueWebpackRules,
             this.templatesWebpackRules,
@@ -341,7 +337,7 @@ inject();
     /**
      * Get the suitable webpack configuration dev tool for the job, according to instapack settings.
      */
-    get webpackConfigurationDevTool() {
+    get webpackConfigurationDevTool(): boolean | 'source-map' | 'eval-source-map' {
         if (this.variables.sourceMap === false) {
             return false;
         }
@@ -361,27 +357,27 @@ inject();
     /**
      * Returns webpack configuration from blended instapack settings and build flags.
      */
-    createWebpackConfiguration() {
-        let alias = this.mergeTypeScriptPathAlias();
-        let wildcards = this.getWildcardModules();
+    createWebpackConfiguration(): webpack.Configuration {
+        const alias = this.mergeTypeScriptPathAlias();
+        const wildcards = this.getWildcardModules();
         // console.log(alias);
         // console.log(wildcards);
 
-        let rules = this.createWebpackRules();
-        let plugins = this.createWebpackPlugins();
+        const rules = this.createWebpackRules();
+        const plugins = this.createWebpackPlugins();
 
         // webpack configuration errors if using UNIX path in Windows!
-        let osEntry = path.normalize(this.finder.jsEntry);
-        let osOutputJsFolder = path.normalize(this.finder.jsOutputFolder);
+        const osEntry = path.normalize(this.finder.jsEntry);
+        const osOutputJsFolder = path.normalize(this.finder.jsOutputFolder);
         // apparently we don't need to normalize paths for alias and wildcards.
 
-        let config: webpack.Configuration = {
+        const config: webpack.Configuration = {
             entry: [osEntry],
             output: {
                 filename: this.finder.jsOutputFileName,
                 chunkFilename: this.finder.jsChunkFileName,   // https://webpack.js.org/guides/code-splitting
                 path: osOutputJsFolder,
-                publicPath: this.outputPublicPath,
+                publicPath: 'js/',
                 library: this.variables.namespace
             },
             externals: this.variables.externals,
@@ -460,10 +456,10 @@ inject();
         };
     }
 
-    addCompilerBuildNotification(compiler: webpack.Compiler) {
-        let t = TypeScript.ScriptTarget[this.languageTarget].toUpperCase();
+    addCompilerBuildNotification(compiler: webpack.Compiler): void {
+        const t = TypeScript.ScriptTarget[this.languageTarget].toUpperCase();
 
-        compiler.hooks.compile.tap('typescript-compile-start', compilationParams => {
+        compiler.hooks.compile.tap('typescript-compile-start', () => {
             Shout.timed('Compiling', chalk.cyan('index.ts'),
                 '>>', chalk.yellow(t),
                 chalk.grey('in ' + this.finder.jsInputFolder + '/')
@@ -483,8 +479,8 @@ inject();
         });
     }
 
-    buildOnce(webpackConfiguration: webpack.Configuration) {
-        let compiler = webpack(webpackConfiguration);
+    buildOnce(webpackConfiguration: webpack.Configuration): Promise<webpack.Stats> {
+        const compiler = webpack(webpackConfiguration);
         this.addCompilerBuildNotification(compiler);
 
         return new Promise<webpack.Stats>((ok, reject) => {
@@ -498,15 +494,15 @@ inject();
         });
     }
 
-    watch(webpackConfiguration: webpack.Configuration) {
-        let compiler = webpack(webpackConfiguration);
+    watch(webpackConfiguration: webpack.Configuration): Promise<void> {
+        const compiler = webpack(webpackConfiguration);
         this.addCompilerBuildNotification(compiler);
 
         return new Promise<void>((ok, reject) => {
             compiler.watch({
                 ignored: /node_modules/,
                 aggregateTimeout: 300
-            }, (err, stats) => {
+            }, (err) => {
                 if (err) {
                     reject(err);
                 }
@@ -521,44 +517,37 @@ inject();
      * @param stats 
      */
     displayBuildResults(stats: webpack.Stats): void {
-        let o = stats.toJson(this.statsSerializeEssentialOption);
+        const o = stats.toJson(this.statsSerializeEssentialOption);
         // console.log(o);
 
-        let errors: string[] = o.errors;
+        const errors: string[] = o.errors;
         if (errors.length) {
-            let errorMessage = '\n' + errors.join('\n\n') + '\n';
+            const errorMessage = '\n' + errors.join('\n\n') + '\n';
             console.error(chalk.red(errorMessage));
             this.va.speak(`JAVA SCRIPT BUILD: ${errors.length} ERROR!`);
         } else {
             this.va.rewind();
         }
 
-        let warnings: string[] = o.warnings;
+        const warnings: string[] = o.warnings;
         if (warnings.length) {
-            let warningMessage = '\n' + warnings.join('\n\n') + '\n';
+            const warningMessage = '\n' + warnings.join('\n\n') + '\n';
             console.warn(chalk.yellow(warningMessage));
         }
 
-        let jsOutputPath;
-        if (this.variables.hot) {
-            jsOutputPath = this.outputPublicPath;
-        } else {
-            jsOutputPath = this.finder.jsOutputFolder + '/';
-        }
-
         if (o.assets) {
-            for (let asset of o.assets) {
+            for (const asset of o.assets) {
                 if (asset.emitted) {
-                    let kb = prettyBytes(asset.size);
+                    const kb = prettyBytes(asset.size);
                     Shout.timed(chalk.blue(asset.name), chalk.magenta(kb),
-                        chalk.grey('in ' + jsOutputPath)
+                        chalk.grey('in ' + this.outputPublicPath)
                     );
                 }
             }
         }
 
         if (this.variables.hot && o.chunks) {
-            for (let chunk of o.chunks) {
+            for (const chunk of o.chunks) {
                 if (chunk.initial === false) {
                     continue;
                 }
@@ -568,7 +557,7 @@ inject();
         }
 
         if (o.time) {
-            let t = prettyMilliseconds(o.time);
+            const t = prettyMilliseconds(o.time);
             Shout.timed('Finished JS build after', chalk.green(t));
         } else {
             Shout.timed('Finished JS build.');
@@ -579,12 +568,12 @@ inject();
      * Create physical wormhole scripts for initial chunk files, once each. 
      * @param fileNames 
      */
-    putWormholes(fileNames: string[]) {
+    putWormholes(fileNames: string[]): void {
         if (!fileNames) {
             return;
         }
 
-        for (let file of fileNames) {
+        for (const file of fileNames) {
             if (file.includes('.hot-update.js')) {
                 continue;
             }
@@ -604,24 +593,38 @@ inject();
     /**
      * Create physical wormhole script in place of output file.
      */
-    putWormhole(fileName: string) {
-        let physicalFilePath = upath.join(this.finder.jsOutputFolder, fileName);
-        let relativeFilePath = upath.relative(this.finder.root, physicalFilePath);
-        let hotUri = url.resolve(this.outputPublicPath, fileName);
+    putWormhole(fileName: string): Promise<void> {
+        const physicalFilePath = upath.join(this.finder.jsOutputFolder, fileName);
+        const relativeFilePath = upath.relative(this.finder.root, physicalFilePath);
+        const hotUri = url.resolve(this.outputPublicPath, fileName);
         Shout.timed(`+wormhole: ${chalk.cyan(relativeFilePath)} --> ${chalk.cyan(hotUri)}`);
-        let hotProxy = this.createWormholeToHotScript(hotUri);
+        const hotProxy = this.createWormholeToHotScript(hotUri);
         return fse.outputFile(physicalFilePath, hotProxy);
     }
 
     /**
-     * Runs the hot reload server using provided webpack configuration. 
+     * Runs the hot reload server using provided webpack configuration.
      * @param webpackConfiguration 
      */
-    async runDevServer(webpackConfiguration: webpack.Configuration) {
-        let devServerOptions: webpackDevServer.Configuration = {
+    async runDevServer(webpackConfiguration: webpack.Configuration): Promise<void> {
+        let basePort = 28080;
+        if (this.variables.port1) {
+            basePort = this.variables.port1;
+        }
+        const port = await portfinder.getPortPromise({
+            port: basePort
+        });
+        this.outputPublicPath = `http://localhost:${port}/`;
+
+        if (!webpackConfiguration.output) {
+            throw new Error('Unexpected undefined value: webpack configuration output object.');
+        }
+        webpackConfiguration.output.publicPath = this.outputPublicPath;
+
+        const devServerOptions: webpackDevServer.Configuration = {
             hot: true,
             contentBase: false,                     // don't serve static files from project folder LOL
-            port: this.variables.port1,             // for some reason, WDS not using port from listen() parameter
+            port: port,                             // for some reason, WDS not using port from listen() parameter
             headers: {                              // CORS
                 'Access-Control-Allow-Origin': '*'
             },
@@ -634,16 +637,15 @@ inject();
 
         const devServer = new webpackDevServer(compiler, devServerOptions);
 
-        return new Promise((ok, reject) => {
+        return new Promise<void>((ok, reject) => {
             // 'localhost' parameter MUST be written, otherwise error callback WILL NOT work! 
-            const server = devServer.listen(this.variables.port1, 'localhost', error => {
+            devServer.listen(port, 'localhost', error => {
                 if (error) {
                     reject(error);
                     return;
                 }
 
-                let p1 = chalk.green(this.variables.port1.toString());
-                Shout.timed(chalk.yellow('Hot Reload'), `Server running on http://localhost:${p1}/`);
+                Shout.timed(chalk.yellow('Hot Reload'), `Server running on http://localhost:${chalk.green(port)}/`);
                 ok();
             });
         });
@@ -652,19 +654,19 @@ inject();
     /**
      * Runs the TypeScript build engine.
      */
-    async build() {
+    async build(): Promise<void> {
         this.useBabel = await fse.pathExists(this.finder.babelConfiguration);
-        let vueCompiler = await resolveVueTemplateCompiler(this.finder.root);
+        const vueCompiler = await resolveVueTemplateCompiler(this.finder.root);
         this.vueTemplateCompiler = vueCompiler.compiler;
 
-        let webpackConfiguration = this.createWebpackConfiguration();
+        const webpackConfiguration = this.createWebpackConfiguration();
 
         if (this.variables.hot) {
             await this.runDevServer(webpackConfiguration);
         } else if (this.variables.watch) {
             await this.watch(webpackConfiguration);
         } else {
-            let stats = await this.buildOnce(webpackConfiguration);
+            const stats = await this.buildOnce(webpackConfiguration);
             if (this.variables.stats) {
                 await fse.outputJson(this.finder.statsJsonFilePath, stats.toJson());
             }

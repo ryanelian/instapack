@@ -1,16 +1,16 @@
-import { IVariables } from "./IVariables";
-import { ICommandLineFlags } from "./ICommandLineFlags";
-import { IProjectSettings } from "./IProjectSettings";
-import { IUserSettings } from "../user-settings/IUserSettings";
+import { BuildVariables } from "./BuildVariables";
+import { CommandLineFlags } from "./CommandLineFlags";
+import { ProjectSettings } from "./ProjectSettings";
+import { UserSettings } from "../user-settings/UserSettings";
 
 export function compileVariables(
-    buildFlags: ICommandLineFlags,
-    projectSettings: IProjectSettings,
-    userSettings: IUserSettings,
+    buildFlags: CommandLineFlags,
+    projectSettings: ProjectSettings,
+    userSettings: UserSettings,
     dotEnv: NodeJS.ProcessEnv,
-    typescriptConfiguration: any): IVariables {
+    typescriptConfiguration: unknown): BuildVariables {
 
-    let variables: IVariables = {
+    const variables: BuildVariables = {
         root: projectSettings.root,
         input: projectSettings.input,
         output: projectSettings.output,

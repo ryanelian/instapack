@@ -15,9 +15,9 @@ const path = require("path");
 const TypescriptConfigParser_1 = require("../TypescriptConfigParser");
 const ava_1 = require("ava");
 const LoaderPaths_1 = require("./LoaderPaths");
-let root = process.cwd();
-let fixtures = path.join(root, 'fixtures', 'CoreTypeScriptLoader');
-let tsconfigJson = {
+const root = process.cwd();
+const fixtures = path.join(root, 'fixtures', 'CoreTypeScriptLoader');
+const tsconfigJson = {
     compilerOptions: {
         alwaysStrict: true,
         skipLibCheck: true,
@@ -37,10 +37,10 @@ let tsconfigJson = {
         ]
     }
 };
-let tsconfig = TypescriptConfigParser_1.parseTypescriptConfig(fixtures, tsconfigJson);
+const tsconfig = TypescriptConfigParser_1.parseTypescriptConfig(fixtures, tsconfigJson);
 function compileAsync(entry) {
     return __awaiter(this, void 0, void 0, function* () {
-        let compiler = webpack({
+        const compiler = webpack({
             context: fixtures,
             entry: [entry],
             output: {
@@ -63,7 +63,7 @@ function compileAsync(entry) {
             },
             mode: 'development'
         });
-        let ram = new memoryFS();
+        const ram = new memoryFS();
         compiler.outputFileSystem = ram;
         return yield new Promise((ok, reject) => {
             compiler.run((err, stats) => {
@@ -76,9 +76,9 @@ function compileAsync(entry) {
     });
 }
 ava_1.default('Core TypeScript Loader: ES5', (t) => __awaiter(void 0, void 0, void 0, function* () {
-    let entry = path.join(fixtures, 'index.ts');
-    let stats = yield compileAsync(entry);
-    let o = stats.toJson();
+    const entry = path.join(fixtures, 'index.ts');
+    const stats = yield compileAsync(entry);
+    const o = stats.toJson();
     if (o.modules) {
         let result = o.modules.filter(Q => Q.source)[0].source;
         if (result) {

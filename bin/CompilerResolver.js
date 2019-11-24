@@ -25,13 +25,13 @@ function resolveAsync(customResolver, lookupStartPath, request) {
         });
     });
 }
-let vueCompilerResolveCache = {};
+const vueCompilerResolveCache = {};
 function tryGetProjectVueVersion(resolver, projectBasePath) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            let vueJsonPath = yield resolveAsync(resolver, projectBasePath, 'vue/package.json');
-            let vueJson = yield fse.readJson(vueJsonPath);
-            let vueVersion = vueJson['version'];
+            const vueJsonPath = yield resolveAsync(resolver, projectBasePath, 'vue/package.json');
+            const vueJson = yield fse.readJson(vueJsonPath);
+            const vueVersion = vueJson['version'];
             return vueVersion;
         }
         catch (error) {
@@ -42,9 +42,9 @@ function tryGetProjectVueVersion(resolver, projectBasePath) {
 function tryGetProjectVueCompilerVersion(resolver, projectBasePath) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            let vueCompilerJsonPath = yield resolveAsync(resolver, projectBasePath, 'vue-template-compiler/package.json');
-            let vueCompilerJson = yield fse.readJson(vueCompilerJsonPath);
-            let vueCompilerVersion = vueCompilerJson['version'];
+            const vueCompilerJsonPath = yield resolveAsync(resolver, projectBasePath, 'vue-template-compiler/package.json');
+            const vueCompilerJson = yield fse.readJson(vueCompilerJsonPath);
+            const vueCompilerVersion = vueCompilerJson['version'];
             return vueCompilerVersion;
         }
         catch (error) {
@@ -57,14 +57,14 @@ function resolveVueTemplateCompiler(projectBasePath) {
         if (vueCompilerResolveCache[projectBasePath]) {
             return vueCompilerResolveCache[projectBasePath];
         }
-        let resolver = enhanced_resolve_1.ResolverFactory.createResolver({
+        const resolver = enhanced_resolve_1.ResolverFactory.createResolver({
             fileSystem: new enhanced_resolve_1.NodeJsInputFileSystem()
         });
         let compilerRoute;
-        let instapackVueCompilerVersion = require('vue-template-compiler/package.json')['version'];
-        let vueVersion = yield tryGetProjectVueVersion(resolver, projectBasePath);
+        const instapackVueCompilerVersion = require('vue-template-compiler/package.json')['version'];
+        const vueVersion = yield tryGetProjectVueVersion(resolver, projectBasePath);
         try {
-            let vueCompilerVersion = yield tryGetProjectVueCompilerVersion(resolver, projectBasePath);
+            const vueCompilerVersion = yield tryGetProjectVueCompilerVersion(resolver, projectBasePath);
             if (!vueVersion || !vueCompilerVersion) {
                 throw new Error('Project Vue / Vue Template Compiler packages are not found.');
             }
@@ -79,7 +79,7 @@ Fix the project package.json and make sure to use the same version for both:
                 Shout_1.Shout.warning('Fallback to instapack default built-in Vue Template Compiler...');
                 throw new Error('Project vue and vue-template-compiler version mismatched!');
             }
-            let compilerPath = yield resolveAsync(resolver, projectBasePath, 'vue-template-compiler');
+            const compilerPath = yield resolveAsync(resolver, projectBasePath, 'vue-template-compiler');
             compilerRoute = {
                 compiler: require(compilerPath),
                 compilerPath: compilerPath

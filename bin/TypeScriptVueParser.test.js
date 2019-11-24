@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const ava_1 = require("ava");
 const TypeScriptVueParser_1 = require("./TypeScriptVueParser");
 ava_1.default('Parse TypeScript in Vue: Common', t => {
-    let result = TypeScriptVueParser_1.parseTypeScriptInVueFile(`<template>
+    const result = TypeScriptVueParser_1.parseTypeScriptInVueFile(`<template>
 <h1>Hello from {{ compiler }} and {{ framework }}!</h1>
 </template>
 
@@ -37,7 +37,7 @@ export default class Hello extends Vue {
 `);
 });
 ava_1.default('Parse TypeScript in Vue: No lang', t => {
-    let result = TypeScriptVueParser_1.parseTypeScriptInVueFile(`<template>
+    const result = TypeScriptVueParser_1.parseTypeScriptInVueFile(`<template>
 <h1>Hello from {{ compiler }} and {{ framework }}!</h1>
 </template>
 
@@ -56,7 +56,7 @@ export default class Hello extends Vue {
     t.is(result, ``);
 });
 ava_1.default('Parse TypeScript in Vue: lang="coffee"', t => {
-    let result = TypeScriptVueParser_1.parseTypeScriptInVueFile(`<template>
+    const result = TypeScriptVueParser_1.parseTypeScriptInVueFile(`<template>
 <h1>Hello from {{ compiler }} and {{ framework }}!</h1>
 </template>
 
@@ -75,17 +75,17 @@ export default class Hello extends Vue {
     t.is(result, ``);
 });
 ava_1.default('Parse TypeScript in Vue: No Script', t => {
-    let result = TypeScriptVueParser_1.parseTypeScriptInVueFile(`<template>
+    const result = TypeScriptVueParser_1.parseTypeScriptInVueFile(`<template>
 <h1>Hello from {{ compiler }} and {{ framework }}!</h1>
 </template>`);
     t.is(result, ``);
 });
 ava_1.default('Parse TypeScript in Vue: Empty', t => {
-    let result = TypeScriptVueParser_1.parseTypeScriptInVueFile(``);
+    const result = TypeScriptVueParser_1.parseTypeScriptInVueFile(``);
     t.is(result, ``);
 });
 ava_1.default('Parse TypeScript in Vue: Malformed', t => {
-    let result = TypeScriptVueParser_1.parseTypeScriptInVueFile(`<template
+    const result = TypeScriptVueParser_1.parseTypeScriptInVueFile(`<template
     <script`);
     t.is(result, ``);
 });

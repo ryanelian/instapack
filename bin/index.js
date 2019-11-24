@@ -21,7 +21,7 @@ const ToolOrchestrator_1 = require("./ToolOrchestrator");
 const TypescriptConfigParser_1 = require("./TypescriptConfigParser");
 const MergePackageJson_1 = require("./MergePackageJson");
 const UserSettingsManager_1 = require("./user-settings/UserSettingsManager");
-module.exports = class instapack {
+module.exports = class InstapackProgram {
     constructor(projectFolder) {
         this.projectFolder = upath.normalize(projectFolder);
     }
@@ -29,10 +29,10 @@ module.exports = class instapack {
         return ['all', 'js', 'css'];
     }
     get availableTemplates() {
-        let templatesFolder = upath.join(__dirname, '..', 'templates');
-        let ar = fse.readdirSync(templatesFolder);
-        let templates = ar.filter(Q => {
-            let test = upath.join(templatesFolder, Q);
+        const templatesFolder = upath.join(__dirname, '..', 'templates');
+        const ar = fse.readdirSync(templatesFolder);
+        const templates = ar.filter(Q => {
+            const test = upath.join(templatesFolder, Q);
             return fse.lstatSync(test).isDirectory();
         });
         return templates;
@@ -42,18 +42,18 @@ module.exports = class instapack {
             if (flags.verbose) {
                 Shout_1.Shout.displayVerboseOutput = true;
             }
-            let projectSettings = ReadProjectSettings_1.readProjectSettingsFrom(this.projectFolder);
-            let dotEnv = EnvParser_1.readDotEnvFrom(this.projectFolder);
-            let userSettings = yield UserSettingsManager_1.getSettings();
-            let typescriptConfiguration = TypescriptConfigParser_1.tryReadTypeScriptConfigJson(this.projectFolder);
-            let variables = CompileVariables_1.compileVariables(flags, yield projectSettings, userSettings, yield dotEnv, yield typescriptConfiguration);
+            const projectSettings = ReadProjectSettings_1.readProjectSettingsFrom(this.projectFolder);
+            const dotEnv = EnvParser_1.readDotEnvFrom(this.projectFolder);
+            const userSettings = yield UserSettingsManager_1.getSettings();
+            const typescriptConfiguration = TypescriptConfigParser_1.tryReadTypeScriptConfigJson(this.projectFolder);
+            const variables = CompileVariables_1.compileVariables(flags, yield projectSettings, userSettings, yield dotEnv, yield typescriptConfiguration);
             if (variables.packageManager !== 'disabled') {
-                let finder = new PathFinder_1.PathFinder(variables);
-                let packageJsonPath = finder.packageJson;
-                let packageJsonExists = yield fse.pathExists(packageJsonPath);
+                const finder = new PathFinder_1.PathFinder(variables);
+                const packageJsonPath = finder.packageJson;
+                const packageJsonExists = yield fse.pathExists(packageJsonPath);
                 if (packageJsonExists) {
                     try {
-                        let pm = new PackageManager_1.PackageManager();
+                        const pm = new PackageManager_1.PackageManager();
                         yield pm.restore(variables.packageManager);
                     }
                     catch (error) {
@@ -64,25 +64,25 @@ module.exports = class instapack {
                     Shout_1.Shout.warning('unable to find', chalk.cyan(packageJsonPath), chalk.grey('skipping package restore...'));
                 }
             }
-            let tm = new ToolOrchestrator_1.ToolOrchestrator(variables);
+            const tm = new ToolOrchestrator_1.ToolOrchestrator(variables);
             tm.outputBuildInformation();
             tm.build(taskName);
         });
     }
     scaffold(template) {
         return __awaiter(this, void 0, void 0, function* () {
-            let templateFolder = upath.join(__dirname, '../templates', template);
-            let exist = yield fse.pathExists(templateFolder);
+            const templateFolder = upath.join(__dirname, '../templates', template);
+            const exist = yield fse.pathExists(templateFolder);
             if (!exist) {
                 Shout_1.Shout.error('Unable to find new project template for:', chalk.cyan(template));
                 return;
             }
             let mergedPackageJson;
-            let projectPackageJsonPath = upath.join(this.projectFolder, 'package.json');
-            let templatePackageJsonPath = upath.join(templateFolder, 'package.json');
+            const projectPackageJsonPath = upath.join(this.projectFolder, 'package.json');
+            const templatePackageJsonPath = upath.join(templateFolder, 'package.json');
             if ((yield fse.pathExists(projectPackageJsonPath)) && (yield fse.pathExists(templatePackageJsonPath))) {
-                let projectPackageJson = yield fse.readJson(projectPackageJsonPath);
-                let templatePackageJson = yield fse.readJson(templatePackageJsonPath);
+                const projectPackageJson = yield fse.readJson(projectPackageJsonPath);
+                const templatePackageJson = yield fse.readJson(templatePackageJsonPath);
                 mergedPackageJson = MergePackageJson_1.mergePackageJson(projectPackageJson, templatePackageJson);
             }
             console.log('Initializing new project using template:', chalk.cyan(template));
@@ -100,7 +100,7 @@ module.exports = class instapack {
     changeUserSettings(key, value) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let settingsFilePath = yield UserSettingsManager_1.setSetting(key, value);
+                const settingsFilePath = yield UserSettingsManager_1.setSetting(key, value);
                 console.log('Successfully saved the new setting!');
                 console.log(chalk.grey(settingsFilePath));
             }

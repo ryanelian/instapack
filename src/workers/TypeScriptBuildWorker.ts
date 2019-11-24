@@ -1,29 +1,17 @@
 import { TypeScriptBuildEngine } from "../TypeScriptBuildEngine";
 import { Shout } from "../Shout";
-import { IVariables } from "../variables-factory/IVariables";
-import portfinder = require('portfinder');
+import { BuildVariables } from "../variables-factory/BuildVariables";
 
 /**
  * Accepts build task command as input parameter then run TypeScript build tool.
  */
-export = async function (variables: IVariables, finish) {
+export = async function (variables: BuildVariables, finish): Promise<void> {
 
     if (variables.verbose) {
         Shout.displayVerboseOutput = true;
     }
 
-    if (variables.hot) {
-        let basePort = variables.port1;
-        if (!basePort) {
-            basePort = 28080;
-        }
-        let port = await portfinder.getPortPromise({
-            port: basePort
-        });
-        variables.port1 = port;
-    }
-
-    let tool = new TypeScriptBuildEngine(variables);
+    const tool = new TypeScriptBuildEngine(variables);
     try {
         await tool.build();
         if (!variables.watch) {

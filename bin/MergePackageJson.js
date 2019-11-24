@@ -1,16 +1,16 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 function objectSortByKeys(input) {
-    let output = {};
-    let keys = Object.keys(input).sort();
-    for (let key of keys) {
+    const output = {};
+    const keys = Object.keys(input).sort();
+    for (const key of keys) {
         output[key] = input[key];
     }
     return output;
 }
 exports.objectSortByKeys = objectSortByKeys;
 function mergePackageJson(projectPackageJson, templatePackageJson) {
-    let packageJson = JSON.parse(JSON.stringify(projectPackageJson));
+    const packageJson = JSON.parse(JSON.stringify(projectPackageJson));
     if (templatePackageJson.instapack) {
         packageJson.instapack = templatePackageJson.instapack;
     }
@@ -21,7 +21,7 @@ function mergePackageJson(projectPackageJson, templatePackageJson) {
         packageJson.devDependencies = {};
     }
     if (templatePackageJson.dependencies) {
-        for (let packageName in templatePackageJson.dependencies) {
+        for (const packageName in templatePackageJson.dependencies) {
             if (packageJson.devDependencies[packageName]) {
                 packageJson.devDependencies[packageName] = templatePackageJson.dependencies[packageName];
             }
@@ -31,7 +31,7 @@ function mergePackageJson(projectPackageJson, templatePackageJson) {
         }
     }
     if (templatePackageJson.devDependencies) {
-        for (let packageName in templatePackageJson.devDependencies) {
+        for (const packageName in templatePackageJson.devDependencies) {
             if (packageJson.dependencies[packageName]) {
                 packageJson.dependencies[packageName] = templatePackageJson.devDependencies[packageName];
             }

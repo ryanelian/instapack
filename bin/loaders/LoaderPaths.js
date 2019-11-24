@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.LoaderPaths = {
     typescript: require.resolve('./CoreTypeScriptLoader'),
-    template: require.resolve('./TemplateLoader'),
+    template: require.resolve('html-loader'),
     babel: require.resolve('babel-loader'),
     vue: require.resolve('vue-loader'),
     vueStyle: require.resolve('vue-style-loader'),

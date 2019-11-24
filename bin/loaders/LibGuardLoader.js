@@ -6,7 +6,7 @@ const SyntaxLevelChecker_1 = require("../SyntaxLevelChecker");
 const upath = require("upath");
 function transpileModuleAst(resourcePath, source, options) {
     resourcePath = upath.toUnix(resourcePath);
-    let transpileOptions = TypeScript.getDefaultCompilerOptions();
+    const transpileOptions = TypeScript.getDefaultCompilerOptions();
     transpileOptions.isolatedModules = true;
     transpileOptions.noLib = true;
     transpileOptions.noResolve = true;
@@ -30,7 +30,7 @@ function transpileModuleAst(resourcePath, source, options) {
     transpileOptions.moduleResolution = options.moduleResolution;
     transpileOptions.sourceMap = options.sourceMap;
     transpileOptions.inlineSources = options.inlineSources;
-    let result = {
+    const result = {
         output: undefined,
         map: undefined
     };
@@ -41,8 +41,8 @@ function transpileModuleAst(resourcePath, source, options) {
             }
             return undefined;
         },
-        writeFile: (name, text) => { },
-        getDefaultLibFileName: (opts) => "lib.d.ts",
+        writeFile: () => { },
+        getDefaultLibFileName: () => "lib.d.ts",
         useCaseSensitiveFileNames: () => false,
         getCanonicalFileName: fileName => fileName,
         getCurrentDirectory: () => "",
@@ -51,8 +51,8 @@ function transpileModuleAst(resourcePath, source, options) {
         readFile: (fileName) => {
             throw new Error(`transpileModule should not readFile (${fileName})`);
         },
-        directoryExists: (path) => true,
-        getDirectories: (path) => []
+        directoryExists: () => true,
+        getDirectories: () => []
     };
     const program = TypeScript.createProgram([resourcePath], transpileOptions, host);
     const emit = program.emit(undefined, (name, text) => {
@@ -72,28 +72,28 @@ function transpileModuleAst(resourcePath, source, options) {
     return result;
 }
 module.exports = function (source) {
-    let options = loader_utils_1.getOptions(this);
+    const options = loader_utils_1.getOptions(this);
     if (!options.compilerOptions) {
         this.emitError(new Error('TypeScript compiler options was not provided to LibGuard Loader!'));
         return;
     }
-    let target = options.compilerOptions.target || TypeScript.ScriptTarget.ES5;
+    const target = options.compilerOptions.target || TypeScript.ScriptTarget.ES5;
     if (target === TypeScript.ScriptTarget.ESNext) {
         this.callback(null, source);
         return;
     }
-    let parse = SyntaxLevelChecker_1.checkSyntaxLevel(this.resourcePath, source, target);
+    const parse = SyntaxLevelChecker_1.checkSyntaxLevel(this.resourcePath, source, target);
     if (parse.level <= target) {
         this.callback(null, source);
         return;
     }
-    let levelFrom = TypeScript.ScriptTarget[parse.level].toUpperCase();
-    let levelTo = TypeScript.ScriptTarget[target].toUpperCase();
-    let rel = '/' + upath.relative(this.rootContext, this.resourcePath);
+    const levelFrom = TypeScript.ScriptTarget[parse.level].toUpperCase();
+    const levelTo = TypeScript.ScriptTarget[target].toUpperCase();
+    const rel = '/' + upath.relative(this.rootContext, this.resourcePath);
     console.log(`${chalk.yellow('LibGuard')}: Transpiling dependency ${chalk.red(levelFrom)} >> ${chalk.yellow(levelTo)} ${chalk.cyan(rel)}`);
-    let result = transpileModuleAst(this.resourcePath, parse.source, options.compilerOptions);
+    const result = transpileModuleAst(this.resourcePath, parse.source, options.compilerOptions);
     if (this.sourceMap && result.map) {
-        let sm = JSON.parse(result.map);
+        const sm = JSON.parse(result.map);
         sm.sources = [this.resourcePath];
         this.callback(null, result.output, sm);
     }

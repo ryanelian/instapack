@@ -1,12 +1,12 @@
 /**
  * Defines build flags to be passed when invoking instapack using the Command Line Interface.
  */
-export interface ICommandLineFlags {
+export interface CommandLineFlags {
     production: boolean;
     sourceMap: boolean;
     watch: boolean;
     stats: boolean;
     verbose: boolean;
     hot: boolean;
-    env: IMapLike<string>;
+    env: MapLikeObject<string>;
 }

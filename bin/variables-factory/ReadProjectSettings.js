@@ -16,8 +16,8 @@ const settingsJsonSchemaPath = require.resolve('../../schemas/settings.json');
 function tryReadPackageJsonInstapackSettings(path) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            let packageJson = yield fse.readJson(path);
-            let x = packageJson.instapack;
+            const packageJson = yield fse.readJson(path);
+            const x = packageJson.instapack;
             if (!x) {
                 return {};
             }
@@ -30,7 +30,7 @@ function tryReadPackageJsonInstapackSettings(path) {
 }
 function readProjectSettingsFrom(folder) {
     return __awaiter(this, void 0, void 0, function* () {
-        let settings = {
+        const settings = {
             root: upath.toUnix(folder),
             input: 'client',
             output: 'wwwroot',
@@ -42,12 +42,12 @@ function readProjectSettingsFrom(folder) {
             namespace: undefined,
             port1: 0,
         };
-        let ajv = new Ajv();
-        let settingsJsonSchema = yield fse.readJson(settingsJsonSchemaPath);
-        let validate = ajv.compile(settingsJsonSchema);
-        let packageJsonPath = upath.join(folder, 'package.json');
-        let x = yield tryReadPackageJsonInstapackSettings(packageJsonPath);
-        let valid = validate(x);
+        const ajv = new Ajv();
+        const settingsJsonSchema = yield fse.readJson(settingsJsonSchemaPath);
+        const validate = ajv.compile(settingsJsonSchema);
+        const packageJsonPath = upath.join(folder, 'package.json');
+        const x = yield tryReadPackageJsonInstapackSettings(packageJsonPath);
+        const valid = validate(x);
         if (valid === false) {
             console.error('Abort Build: Invalid instapack project settings in ' + packageJsonPath);
             console.error(validate.errors);

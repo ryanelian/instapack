@@ -6,14 +6,14 @@ import chalk = require('chalk');
 import { checkSyntaxLevel } from '../SyntaxLevelChecker';
 import * as upath from 'upath';
 
-interface ILibGuardLoaderOptions {
+interface LibGuardLoaderOptions {
     compilerOptions?: TypeScript.CompilerOptions;
 }
 
 function transpileModuleAst(resourcePath: string, source: TypeScript.SourceFile, options: TypeScript.CompilerOptions) {
     resourcePath = upath.toUnix(resourcePath);
 
-    let transpileOptions = TypeScript.getDefaultCompilerOptions();
+    const transpileOptions = TypeScript.getDefaultCompilerOptions();
     transpileOptions.isolatedModules = true;
     transpileOptions.noLib = true;
     transpileOptions.noResolve = true;
@@ -44,7 +44,7 @@ function transpileModuleAst(resourcePath: string, source: TypeScript.SourceFile,
     transpileOptions.inlineSources = options.inlineSources;
     // console.log(transpileOptions);
 
-    let result: {
+    const result: {
         output: string | undefined;
         map: string | undefined;
     } = {
@@ -60,8 +60,8 @@ function transpileModuleAst(resourcePath: string, source: TypeScript.SourceFile,
 
             return undefined;
         },
-        writeFile: (name, text) => { },
-        getDefaultLibFileName: (opts) => "lib.d.ts",
+        writeFile: () => { },
+        getDefaultLibFileName: () => "lib.d.ts",
         useCaseSensitiveFileNames: () => false,
         getCanonicalFileName: fileName => fileName,
         getCurrentDirectory: () => "",
@@ -70,8 +70,8 @@ function transpileModuleAst(resourcePath: string, source: TypeScript.SourceFile,
         readFile: (fileName) => {
             throw new Error(`transpileModule should not readFile (${fileName})`);
         },
-        directoryExists: (path) => true,
-        getDirectories: (path) => []
+        directoryExists: () => true,
+        getDirectories: () => []
     };
 
     const program = TypeScript.createProgram([resourcePath], transpileOptions, host);
@@ -94,22 +94,22 @@ function transpileModuleAst(resourcePath: string, source: TypeScript.SourceFile,
     return result;
 }
 
-export = function (this: loader.LoaderContext, source: string) {
-    let options: ILibGuardLoaderOptions = getOptions(this);
+export = function (this: loader.LoaderContext, source: string): void {
+    const options: LibGuardLoaderOptions = getOptions(this);
 
     if (!options.compilerOptions) {
         this.emitError(new Error('TypeScript compiler options was not provided to LibGuard Loader!'));
         return;
     }
 
-    let target = options.compilerOptions.target || TypeScript.ScriptTarget.ES5;
+    const target = options.compilerOptions.target || TypeScript.ScriptTarget.ES5;
     if (target === TypeScript.ScriptTarget.ESNext) {
         // skip the whole validation-by-parse since ESNext means no transpilation
         this.callback(null, source);
         return;
     }
 
-    let parse = checkSyntaxLevel(this.resourcePath, source, target);
+    const parse = checkSyntaxLevel(this.resourcePath, source, target);
     // console.log(parse.level, this.resourcePath);
 
     if (parse.level <= target) {
@@ -117,16 +117,16 @@ export = function (this: loader.LoaderContext, source: string) {
         return;
     }
 
-    let levelFrom = TypeScript.ScriptTarget[parse.level].toUpperCase();
-    let levelTo = TypeScript.ScriptTarget[target].toUpperCase();
-    let rel = '/' + upath.relative(this.rootContext, this.resourcePath);
+    const levelFrom = TypeScript.ScriptTarget[parse.level].toUpperCase();
+    const levelTo = TypeScript.ScriptTarget[target].toUpperCase();
+    const rel = '/' + upath.relative(this.rootContext, this.resourcePath);
     console.log(`${chalk.yellow('LibGuard')}: Transpiling dependency ${chalk.red(levelFrom)} >> ${chalk.yellow(levelTo)} ${chalk.cyan(rel)}`);
 
-    let result = transpileModuleAst(this.resourcePath, parse.source, options.compilerOptions);
+    const result = transpileModuleAst(this.resourcePath, parse.source, options.compilerOptions);
     // console.log(result);
     if (this.sourceMap && result.map) {
         // console.log(this.resourcePath);
-        let sm: RawSourceMap = JSON.parse(result.map);
+        const sm: RawSourceMap = JSON.parse(result.map);
         sm.sources = [this.resourcePath];
         // HACK78
         this.callback(null, result.output, sm as any);

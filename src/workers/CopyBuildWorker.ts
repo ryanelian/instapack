@@ -1,14 +1,14 @@
 import { Shout } from "../Shout";
-import { IVariables } from "../variables-factory/IVariables";
+import { BuildVariables } from "../variables-factory/BuildVariables";
 import { CopyBuildTool } from "../CopyBuildTool";
 
-export = async function (variables: IVariables, finish) {
+export = async function (variables: BuildVariables, finish) {
 
     if (variables.verbose) {
         Shout.displayVerboseOutput = true;
     }
 
-    let tool = new CopyBuildTool(variables);
+    const tool = new CopyBuildTool(variables);
 
     try {
         await tool.buildWithStopwatch();

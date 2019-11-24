@@ -2,17 +2,17 @@ import test from "ava";
 import { objectSortByKeys, mergePackageJson } from "./MergePackageJson";
 
 test('Object: Sort by Keys', t => {
-    let x = {
+    const x = {
         z: 123,
         a: 123
     };
 
-    let y = objectSortByKeys(x);
+    const y = objectSortByKeys(x);
     t.is(JSON.stringify(y), '{"a":123,"z":123}');
 });
 
 test('Merge package.json', t => {
-    let result = mergePackageJson(
+    const result = mergePackageJson(
         {
             name: 'my-project',
             "instapack": {

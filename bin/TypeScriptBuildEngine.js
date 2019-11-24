@@ -16,6 +16,7 @@ const url = require("url");
 const chalk = require("chalk");
 const webpack = require("webpack");
 const webpackDevServer = require("webpack-dev-server");
+const portfinder = require("portfinder");
 const TypeScript = require("typescript");
 const vue_loader_1 = require("vue-loader");
 const CompilerResolver_1 = require("./CompilerResolver");
@@ -27,17 +28,12 @@ const TypescriptConfigParser_1 = require("./TypescriptConfigParser");
 const VoiceAssistant_1 = require("./VoiceAssistant");
 class TypeScriptBuildEngine {
     constructor(variables) {
+        this.outputPublicPath = 'js/';
         this.useBabel = false;
         this.wormholes = new Set();
         this.variables = variables;
         this.finder = new PathFinder_1.PathFinder(variables);
         this.va = new VoiceAssistant_1.VoiceAssistant(variables.silent);
-        if (variables.hot) {
-            this.outputPublicPath = `http://localhost:${this.variables.port1}/`;
-        }
-        else {
-            this.outputPublicPath = 'js/';
-        }
         this.typescriptCompilerOptions = TypescriptConfigParser_1.parseTypescriptConfig(variables.root, variables.typescriptConfiguration).options;
         this.typescriptCompilerOptions.noEmit = false;
         this.typescriptCompilerOptions.emitDeclarationOnly = false;
@@ -53,7 +49,7 @@ class TypeScriptBuildEngine {
         return result;
     }
     mergeTypeScriptPathAlias() {
-        let alias = Object.assign({}, this.variables.alias);
+        const alias = Object.assign({}, this.variables.alias);
         if (!this.typescriptCompilerOptions.paths) {
             return alias;
         }
@@ -65,11 +61,11 @@ class TypeScriptBuildEngine {
             if (key === '*') {
                 continue;
             }
-            let values = this.typescriptCompilerOptions.paths[key];
+            const values = this.typescriptCompilerOptions.paths[key];
             if (values.length > 1) {
                 Shout_1.Shout.warning(chalk.cyan('tsconfig.json'), 'paths:', chalk.yellow(key), 'resolves to more than one path!', chalk.grey('(Using the first one.)'));
             }
-            let value = values[0];
+            const value = values[0];
             if (!value) {
                 Shout_1.Shout.warning(chalk.cyan('tsconfig.json'), 'paths:', chalk.yellow(key), 'is empty!');
                 continue;
@@ -77,7 +73,7 @@ class TypeScriptBuildEngine {
             if (key.endsWith('/*')) {
                 key = key.substr(0, key.length - 2);
             }
-            let result = this.convertTypeScriptPathToWebpackAliasPath(this.typescriptCompilerOptions.baseUrl, value);
+            const result = this.convertTypeScriptPathToWebpackAliasPath(this.typescriptCompilerOptions.baseUrl, value);
             if (!alias[key]) {
                 alias[key] = result;
             }
@@ -88,11 +84,11 @@ class TypeScriptBuildEngine {
         if (!this.typescriptCompilerOptions.baseUrl) {
             return undefined;
         }
-        let r = new Set();
-        let p = this.typescriptCompilerOptions.paths;
+        const r = new Set();
+        const p = this.typescriptCompilerOptions.paths;
         if (p && p['*']) {
-            for (let value of p['*']) {
-                let result = this.convertTypeScriptPathToWebpackAliasPath(this.typescriptCompilerOptions.baseUrl, value);
+            for (const value of p['*']) {
+                const result = this.convertTypeScriptPathToWebpackAliasPath(this.typescriptCompilerOptions.baseUrl, value);
                 r.add(result);
             }
         }
@@ -124,7 +120,7 @@ class TypeScriptBuildEngine {
         };
     }
     get typescriptWebpackRules() {
-        let loaders = [];
+        const loaders = [];
         if (this.useBabel) {
             loaders.push({
                 loader: LoaderPaths_1.LoaderPaths.babel
@@ -136,7 +132,7 @@ class TypeScriptBuildEngine {
                 compilerOptions: this.typescriptCompilerOptions
             }
         });
-        let tsRules = {
+        const tsRules = {
             test: /\.tsx?$/,
             exclude: /node_modules/,
             use: loaders
@@ -162,15 +158,18 @@ class TypeScriptBuildEngine {
             test: /\.html?$/,
             exclude: /node_modules/,
             use: [{
-                    loader: LoaderPaths_1.LoaderPaths.template
+                    loader: LoaderPaths_1.LoaderPaths.template,
+                    options: {
+                        attrs: false
+                    }
                 }]
         };
     }
     get cssWebpackRules() {
-        let vueStyleLoader = {
+        const vueStyleLoader = {
             loader: LoaderPaths_1.LoaderPaths.vueStyle
         };
-        let cssModulesLoader = {
+        const cssModulesLoader = {
             loader: LoaderPaths_1.LoaderPaths.css,
             options: {
                 modules: true,
@@ -178,7 +177,7 @@ class TypeScriptBuildEngine {
                 url: false
             }
         };
-        let cssLoader = {
+        const cssLoader = {
             loader: LoaderPaths_1.LoaderPaths.css,
             options: {
                 url: false
@@ -211,7 +210,7 @@ inject();
 `;
     }
     createWebpackPlugins() {
-        let plugins = [];
+        const plugins = [];
         plugins.push(new vue_loader_1.VueLoaderPlugin());
         if (Object.keys(this.variables.env).length > 0) {
             plugins.push(new webpack.EnvironmentPlugin(this.variables.env));
@@ -219,7 +218,7 @@ inject();
         return plugins;
     }
     createWebpackRules() {
-        let rules = [
+        const rules = [
             this.typescriptWebpackRules,
             this.vueWebpackRules,
             this.templatesWebpackRules,
@@ -244,19 +243,19 @@ inject();
         return 'eval-source-map';
     }
     createWebpackConfiguration() {
-        let alias = this.mergeTypeScriptPathAlias();
-        let wildcards = this.getWildcardModules();
-        let rules = this.createWebpackRules();
-        let plugins = this.createWebpackPlugins();
-        let osEntry = path.normalize(this.finder.jsEntry);
-        let osOutputJsFolder = path.normalize(this.finder.jsOutputFolder);
-        let config = {
+        const alias = this.mergeTypeScriptPathAlias();
+        const wildcards = this.getWildcardModules();
+        const rules = this.createWebpackRules();
+        const plugins = this.createWebpackPlugins();
+        const osEntry = path.normalize(this.finder.jsEntry);
+        const osOutputJsFolder = path.normalize(this.finder.jsOutputFolder);
+        const config = {
             entry: [osEntry],
             output: {
                 filename: this.finder.jsOutputFileName,
                 chunkFilename: this.finder.jsChunkFileName,
                 path: osOutputJsFolder,
-                publicPath: this.outputPublicPath,
+                publicPath: 'js/',
                 library: this.variables.namespace
             },
             externals: this.variables.externals,
@@ -325,8 +324,8 @@ inject();
         };
     }
     addCompilerBuildNotification(compiler) {
-        let t = TypeScript.ScriptTarget[this.languageTarget].toUpperCase();
-        compiler.hooks.compile.tap('typescript-compile-start', compilationParams => {
+        const t = TypeScript.ScriptTarget[this.languageTarget].toUpperCase();
+        compiler.hooks.compile.tap('typescript-compile-start', () => {
             Shout_1.Shout.timed('Compiling', chalk.cyan('index.ts'), '>>', chalk.yellow(t), chalk.grey('in ' + this.finder.jsInputFolder + '/'));
         });
         if (this.variables.production) {
@@ -341,7 +340,7 @@ inject();
         }));
     }
     buildOnce(webpackConfiguration) {
-        let compiler = webpack(webpackConfiguration);
+        const compiler = webpack(webpackConfiguration);
         this.addCompilerBuildNotification(compiler);
         return new Promise((ok, reject) => {
             compiler.run((err, stats) => {
@@ -353,13 +352,13 @@ inject();
         });
     }
     watch(webpackConfiguration) {
-        let compiler = webpack(webpackConfiguration);
+        const compiler = webpack(webpackConfiguration);
         this.addCompilerBuildNotification(compiler);
         return new Promise((ok, reject) => {
             compiler.watch({
                 ignored: /node_modules/,
                 aggregateTimeout: 300
-            }, (err, stats) => {
+            }, (err) => {
                 if (err) {
                     reject(err);
                 }
@@ -368,38 +367,31 @@ inject();
         });
     }
     displayBuildResults(stats) {
-        let o = stats.toJson(this.statsSerializeEssentialOption);
-        let errors = o.errors;
+        const o = stats.toJson(this.statsSerializeEssentialOption);
+        const errors = o.errors;
         if (errors.length) {
-            let errorMessage = '\n' + errors.join('\n\n') + '\n';
+            const errorMessage = '\n' + errors.join('\n\n') + '\n';
             console.error(chalk.red(errorMessage));
             this.va.speak(`JAVA SCRIPT BUILD: ${errors.length} ERROR!`);
         }
         else {
             this.va.rewind();
         }
-        let warnings = o.warnings;
+        const warnings = o.warnings;
         if (warnings.length) {
-            let warningMessage = '\n' + warnings.join('\n\n') + '\n';
+            const warningMessage = '\n' + warnings.join('\n\n') + '\n';
             console.warn(chalk.yellow(warningMessage));
         }
-        let jsOutputPath;
-        if (this.variables.hot) {
-            jsOutputPath = this.outputPublicPath;
-        }
-        else {
-            jsOutputPath = this.finder.jsOutputFolder + '/';
-        }
         if (o.assets) {
-            for (let asset of o.assets) {
+            for (const asset of o.assets) {
                 if (asset.emitted) {
-                    let kb = PrettyUnits_1.prettyBytes(asset.size);
-                    Shout_1.Shout.timed(chalk.blue(asset.name), chalk.magenta(kb), chalk.grey('in ' + jsOutputPath));
+                    const kb = PrettyUnits_1.prettyBytes(asset.size);
+                    Shout_1.Shout.timed(chalk.blue(asset.name), chalk.magenta(kb), chalk.grey('in ' + this.outputPublicPath));
                 }
             }
         }
         if (this.variables.hot && o.chunks) {
-            for (let chunk of o.chunks) {
+            for (const chunk of o.chunks) {
                 if (chunk.initial === false) {
                     continue;
                 }
@@ -407,7 +399,7 @@ inject();
             }
         }
         if (o.time) {
-            let t = PrettyUnits_1.prettyMilliseconds(o.time);
+            const t = PrettyUnits_1.prettyMilliseconds(o.time);
             Shout_1.Shout.timed('Finished JS build after', chalk.green(t));
         }
         else {
@@ -418,7 +410,7 @@ inject();
         if (!fileNames) {
             return;
         }
-        for (let file of fileNames) {
+        for (const file of fileNames) {
             if (file.includes('.hot-update.js')) {
                 continue;
             }
@@ -433,19 +425,31 @@ inject();
         }
     }
     putWormhole(fileName) {
-        let physicalFilePath = upath.join(this.finder.jsOutputFolder, fileName);
-        let relativeFilePath = upath.relative(this.finder.root, physicalFilePath);
-        let hotUri = url.resolve(this.outputPublicPath, fileName);
+        const physicalFilePath = upath.join(this.finder.jsOutputFolder, fileName);
+        const relativeFilePath = upath.relative(this.finder.root, physicalFilePath);
+        const hotUri = url.resolve(this.outputPublicPath, fileName);
         Shout_1.Shout.timed(`+wormhole: ${chalk.cyan(relativeFilePath)} --> ${chalk.cyan(hotUri)}`);
-        let hotProxy = this.createWormholeToHotScript(hotUri);
+        const hotProxy = this.createWormholeToHotScript(hotUri);
         return fse.outputFile(physicalFilePath, hotProxy);
     }
     runDevServer(webpackConfiguration) {
         return __awaiter(this, void 0, void 0, function* () {
-            let devServerOptions = {
+            let basePort = 28080;
+            if (this.variables.port1) {
+                basePort = this.variables.port1;
+            }
+            const port = yield portfinder.getPortPromise({
+                port: basePort
+            });
+            this.outputPublicPath = `http://localhost:${port}/`;
+            if (!webpackConfiguration.output) {
+                throw new Error('Unexpected undefined value: webpack configuration output object.');
+            }
+            webpackConfiguration.output.publicPath = this.outputPublicPath;
+            const devServerOptions = {
                 hot: true,
                 contentBase: false,
-                port: this.variables.port1,
+                port: port,
                 headers: {
                     'Access-Control-Allow-Origin': '*'
                 },
@@ -456,13 +460,12 @@ inject();
             this.addCompilerBuildNotification(compiler);
             const devServer = new webpackDevServer(compiler, devServerOptions);
             return new Promise((ok, reject) => {
-                const server = devServer.listen(this.variables.port1, 'localhost', error => {
+                devServer.listen(port, 'localhost', error => {
                     if (error) {
                         reject(error);
                         return;
                     }
-                    let p1 = chalk.green(this.variables.port1.toString());
-                    Shout_1.Shout.timed(chalk.yellow('Hot Reload'), `Server running on http://localhost:${p1}/`);
+                    Shout_1.Shout.timed(chalk.yellow('Hot Reload'), `Server running on http://localhost:${chalk.green(port)}/`);
                     ok();
                 });
             });
@@ -471,9 +474,9 @@ inject();
     build() {
         return __awaiter(this, void 0, void 0, function* () {
             this.useBabel = yield fse.pathExists(this.finder.babelConfiguration);
-            let vueCompiler = yield CompilerResolver_1.resolveVueTemplateCompiler(this.finder.root);
+            const vueCompiler = yield CompilerResolver_1.resolveVueTemplateCompiler(this.finder.root);
             this.vueTemplateCompiler = vueCompiler.compiler;
-            let webpackConfiguration = this.createWebpackConfiguration();
+            const webpackConfiguration = this.createWebpackConfiguration();
             if (this.variables.hot) {
                 yield this.runDevServer(webpackConfiguration);
             }
@@ -481,7 +484,7 @@ inject();
                 yield this.watch(webpackConfiguration);
             }
             else {
-                let stats = yield this.buildOnce(webpackConfiguration);
+                const stats = yield this.buildOnce(webpackConfiguration);
                 if (this.variables.stats) {
                     yield fse.outputJson(this.finder.statsJsonFilePath, stats.toJson());
                 }

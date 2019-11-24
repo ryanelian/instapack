@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const ava_1 = require("ava");
 const CompileVariables_1 = require("./CompileVariables");
 ava_1.default('Compile Variables: Simple', t => {
-    let result = CompileVariables_1.compileVariables({
+    const result = CompileVariables_1.compileVariables({
         env: {
             foo: 'bar'
         },
@@ -41,7 +41,7 @@ ava_1.default('Compile Variables: Simple', t => {
             moduleResolution: "node"
         }
     });
-    let expected = {
+    const expected = {
         root: __dirname,
         input: 'client',
         output: 'wwwroot',
@@ -80,7 +80,7 @@ ava_1.default('Compile Variables: Simple', t => {
     t.deepEqual(result, expected);
 });
 ava_1.default('Compile Variables: Overrides', t => {
-    let result = CompileVariables_1.compileVariables({
+    const result = CompileVariables_1.compileVariables({
         env: {
             foo: 'bar',
         },
@@ -126,7 +126,7 @@ ava_1.default('Compile Variables: Overrides', t => {
             moduleResolution: "node"
         }
     });
-    let expected = {
+    const expected = {
         root: __dirname,
         input: 'src',
         output: 'www',

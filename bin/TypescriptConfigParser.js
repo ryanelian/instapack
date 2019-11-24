@@ -14,7 +14,7 @@ const upath = require("upath");
 const TypeScript = require("typescript");
 const Shout_1 = require("./Shout");
 const chalk = require("chalk");
-let fallbackTypeScriptConfig = {
+const fallbackTypeScriptConfig = {
     compilerOptions: {
         alwaysStrict: true,
         skipLibCheck: true,
@@ -35,10 +35,10 @@ let fallbackTypeScriptConfig = {
 };
 function tryReadTypeScriptConfigJson(folder) {
     return __awaiter(this, void 0, void 0, function* () {
-        let tsconfigJsonPath = upath.join(folder, 'tsconfig.json');
+        const tsconfigJsonPath = upath.join(folder, 'tsconfig.json');
         try {
-            let tsconfigJson = yield fse.readJson(tsconfigJsonPath);
-            let tryParse = parseTypescriptConfig(folder, tsconfigJson);
+            const tsconfigJson = yield fse.readJson(tsconfigJsonPath);
+            const tryParse = parseTypescriptConfig(folder, tsconfigJson);
             return tsconfigJson;
         }
         catch (error) {
@@ -50,8 +50,8 @@ function tryReadTypeScriptConfigJson(folder) {
 }
 exports.tryReadTypeScriptConfigJson = tryReadTypeScriptConfigJson;
 function parseTypescriptConfig(folder, json) {
-    let o = JSON.parse(JSON.stringify(json));
-    let tsconfig = TypeScript.parseJsonConfigFileContent(o, TypeScript.sys, folder);
+    const o = JSON.parse(JSON.stringify(json));
+    const tsconfig = TypeScript.parseJsonConfigFileContent(o, TypeScript.sys, folder);
     if (tsconfig.errors.length) {
         throw Error(tsconfig.errors[0].messageText.toString());
     }

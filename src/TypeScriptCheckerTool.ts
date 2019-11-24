@@ -6,7 +6,7 @@ import { watch } from 'chokidar';
 
 import { prettyHrTime } from './PrettyUnits';
 import { Shout } from './Shout';
-import { IVariables } from './variables-factory/IVariables';
+import { BuildVariables } from './variables-factory/BuildVariables';
 import { PathFinder } from './variables-factory/PathFinder';
 import { parseTypescriptConfig } from './TypescriptConfigParser';
 import { TypeScriptSourceStore } from './TypeScriptSourceStore';
@@ -62,13 +62,13 @@ export class TypeScriptCheckerTool {
     /**
      * Modify TypeScript compiler host to use instapack's in-memory source cache.
      */
-    private patchCompilerHost() {
-        let rawFileCache: IMapLike<string | undefined> = {};
-        this.host.readFile = (fileName) => {
+    private patchCompilerHost(): void {
+        const rawFileCache: MapLikeObject<string | undefined> = {};
+        this.host.readFile = (fileName): string => {
             // Apparently this is being used by TypeScript to read package.json in node_modules...
             // Probably to find .d.ts files?
 
-            let s = rawFileCache[fileName];
+            const s = rawFileCache[fileName];
             if (s) {
                 // console.log('READ (cache) ' + fileName);
                 return s;
@@ -77,12 +77,12 @@ export class TypeScriptCheckerTool {
             // package.json in node_modules should never change. Cache the contents once and re-use.
             // console.log('READ ' + fileName);
 
-            let fileContent = fse.readFileSync(fileName, 'utf8');
+            const fileContent = fse.readFileSync(fileName, 'utf8');
             rawFileCache[fileName] = fileContent;
             return fileContent;
         }
 
-        this.host.getSourceFile = (fileName, languageVersion, onError, shouldCreateNewSourceFile) => {
+        this.host.getSourceFile = (fileName): TypeScript.SourceFile => {
             return this.sourceStore.getSource(fileName);
         }
     }
@@ -91,16 +91,16 @@ export class TypeScriptCheckerTool {
      * Create TypeScript checker tool which targets JS source input folder.
      * @param variables 
      */
-    static async createToolAsync(variables: IVariables): Promise<TypeScriptCheckerTool> {
-        let finder = new PathFinder(variables);
+    static async createToolAsync(variables: BuildVariables): Promise<TypeScriptCheckerTool> {
+        const finder = new PathFinder(variables);
 
-        let tsconfig = parseTypescriptConfig(variables.root, variables.typescriptConfiguration);
-        let compilerOptions = tsconfig.options;
+        const tsconfig = parseTypescriptConfig(variables.root, variables.typescriptConfiguration);
+        const compilerOptions = tsconfig.options;
 
-        let sourceStore = new TypeScriptSourceStore(compilerOptions.target || TypeScript.ScriptTarget.ES3);
-        let loading = sourceStore.loadFolder(finder.jsInputFolder);
+        const sourceStore = new TypeScriptSourceStore(compilerOptions.target || TypeScript.ScriptTarget.ES3);
+        const loading = sourceStore.loadFolder(finder.jsInputFolder);
 
-        let tool = new TypeScriptCheckerTool(sourceStore, compilerOptions, variables.silent);
+        const tool = new TypeScriptCheckerTool(sourceStore, compilerOptions, variables.silent);
         await loading;
         return tool;
     }
@@ -108,24 +108,24 @@ export class TypeScriptCheckerTool {
     /**
      * Performs TypeScript compile-time checks and lints against the project.
      */
-    typeCheck() {
+    typeCheck(): void {
         // console.log(this.sourceStore.sourcePaths);
-        let tsc = TypeScript.createProgram(this.sourceStore.sourcePaths, this.compilerOptions, this.host);
+        const tsc = TypeScript.createProgram(this.sourceStore.sourcePaths, this.compilerOptions, this.host);
         Shout.timed('Type-checking using TypeScript ' + chalk.green(TypeScript.version));
-        let start = process.hrtime();
+        const start = process.hrtime();
 
         try {
-            let errors: string[] = [];
-            for (let source of tsc.getSourceFiles()) {
+            const errors: string[] = [];
+            for (const source of tsc.getSourceFiles()) {
                 if (source.fileName.endsWith('.d.ts')) {
                     continue;
                 }
 
-                let diagnostics = tsc.getSemanticDiagnostics(source)
+                const diagnostics = tsc.getSemanticDiagnostics(source)
                     .concat(tsc.getSyntacticDiagnostics(source));
 
-                let newErrors = this.renderDiagnostics(diagnostics);
-                for (let error of newErrors) {
+                const newErrors = this.renderDiagnostics(diagnostics);
+                for (const error of newErrors) {
                     errors.push(error);
                 }
 
@@ -158,29 +158,30 @@ export class TypeScriptCheckerTool {
                 if (newErrors.length === 0) {
                     try {
                         // we need to do this because Linter cannot find rules dynamically, only CLIEngine!
-                        let eslintReport = this.linter.executeOnText(source.getFullText(), source.fileName);
+                        const eslintReport = this.linter.executeOnText(source.getFullText(), source.fileName);
 
-                        for (let result of eslintReport.results) {
-                            for (let lintError of result.messages) {
-                                let renderLintErrorMessage = this.renderLintErrorMessage(source.fileName, lintError);
+                        for (const result of eslintReport.results) {
+                            for (const lintError of result.messages) {
+                                const renderLintErrorMessage = this.renderLintErrorMessage(source.fileName, lintError);
                                 errors.push(renderLintErrorMessage);
                             }
                         }
                     } catch (ex) {
+                        // error when ESLint configuration cannot be found. skipping lint.
                     }
                 }
             }
 
             if (errors.length > 0) {
                 this.va.speak(`TYPESCRIPT: ${errors.length} ERROR!`);
-                let errorsOut = '\n' + errors.join('\n\n') + '\n';
+                const errorsOut = '\n' + errors.join('\n\n') + '\n';
                 console.error(errorsOut);
             } else {
                 this.va.rewind();
                 console.log(chalk.green('Types OK') + chalk.grey(': Successfully checked TypeScript project without errors.'));
             }
         } finally {
-            let time = prettyHrTime(process.hrtime(start));
+            const time = prettyHrTime(process.hrtime(start));
             Shout.timed('Finished type-check after', chalk.green(time));
         }
     }
@@ -190,12 +191,12 @@ export class TypeScriptCheckerTool {
      * @param diagnostics 
      */
     renderDiagnostics(diagnostics: TypeScript.Diagnostic[]): string[] {
-        let errors = diagnostics.map(diagnostic => {
+        const errors = diagnostics.map(diagnostic => {
             let error = chalk.red('TS' + diagnostic.code) + ' ';
 
             if (diagnostic.file && diagnostic.start) {
-                let realFileName = this.sourceStore.getFilePath(diagnostic.file.fileName);
-                let { line, character } = diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start);
+                const realFileName = this.sourceStore.getFilePath(diagnostic.file.fileName);
+                const { line, character } = diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start);
                 error += chalk.red(realFileName) + ' ' + chalk.yellow(`(${line + 1},${character + 1})`) + ':\n';
             }
 
@@ -212,7 +213,7 @@ export class TypeScriptCheckerTool {
      * @param lintError 
      */
     renderLintErrorMessage(fileName: string, lintError: eslint.Linter.LintMessage): string {
-        let lintErrorMessage = chalk.red('ESLint') + ' '
+        const lintErrorMessage = chalk.red('ESLint') + ' '
             + chalk.red(fileName) + ' '
             + chalk.yellow(`(${lintError.line},${lintError.column})`) + ': '
             + chalk.grey(lintError.ruleId) + '\n'
@@ -225,9 +226,9 @@ export class TypeScriptCheckerTool {
      * Tracks all TypeScript files (*.ts and *.tsx) in the project folder recursively.
      * On file creation / change / deletion, the project will be type-checked automatically.
      */
-    watch() {
+    watch(): void {
         let debounced: NodeJS.Timer;
-        let debounce = () => {
+        const debounce = (): void => {
             clearTimeout(debounced);
             debounced = setTimeout(() => {
                 try {
@@ -242,7 +243,7 @@ export class TypeScriptCheckerTool {
             ignoreInitial: true
         })
             .on('add', (file: string) => {
-                this.sourceStore.loadFile(file).then(changed => {
+                this.sourceStore.loadFile(file).then(() => {
                     Shout.typescript(chalk.grey('tracking new file:', file));
                     debounce();
                 });
@@ -256,7 +257,7 @@ export class TypeScriptCheckerTool {
                 });
             })
             .on('unlink', (file: string) => {
-                let deleted = this.sourceStore.removeFile(file);
+                const deleted = this.sourceStore.removeFile(file);
                 if (deleted) {
                     Shout.typescript(chalk.grey('removing file:', file));
                     debounce();

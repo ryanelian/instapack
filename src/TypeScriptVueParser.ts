@@ -5,7 +5,7 @@ import VueTemplateCompiler = require('vue-template-compiler');
  * @param raw 
  */
 export function parseTypeScriptInVueFile(raw: string): string {
-    let parse = VueTemplateCompiler.parseComponent(raw);
+    const parse = VueTemplateCompiler.parseComponent(raw);
 
     if (!parse.script || !parse.script.start) {
         return '';
@@ -15,12 +15,12 @@ export function parseTypeScriptInVueFile(raw: string): string {
         return '';
     }
 
-    let charIndex: number = parse.script.start;
-    let newlines = raw.substr(0, charIndex).match(/\r\n|\n|\r/g);
+    const charIndex: number = parse.script.start;
+    const newlines = raw.substr(0, charIndex).match(/\r\n|\n|\r/g);
     let code: string = parse.script.content;
 
     if (newlines) {
-        for (let newline of newlines) {
+        for (const newline of newlines) {
             code = '//' + newline + code;
         }
     }

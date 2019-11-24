@@ -2,9 +2,9 @@ import say = require('say');
 
 export class VoiceAssistant {
     private silent: boolean;
-    private suppress: boolean = false;
+    private suppress = false;
 
-    constructor(silent: boolean = false) {
+    constructor(silent = false) {
         this.silent = silent;
     }
 

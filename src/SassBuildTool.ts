@@ -5,14 +5,14 @@ import sass = require('sass');
 import { watch } from 'chokidar';
 import postcss = require('postcss');
 import autoprefixer = require('autoprefixer');
-const CleanCSS = require('clean-css');
+import CleanCSS = require('clean-css');
 import { RawSourceMap } from 'source-map';
 import mergeSourceMap = require('merge-source-map');
 import Fiber = require("fibers");
 
 import { prettyHrTime } from './PrettyUnits';
 import { Shout } from './Shout';
-import { IVariables } from './variables-factory/IVariables';
+import { BuildVariables } from './variables-factory/BuildVariables';
 import { PathFinder } from './variables-factory/PathFinder';
 import { sassImporter } from './SassImportResolver';
 import { VoiceAssistant } from './VoiceAssistant';
@@ -30,7 +30,7 @@ interface CssBuildResult {
  */
 export class SassBuildTool {
 
-    private variables: IVariables;
+    private variables: BuildVariables;
     private finder: PathFinder;
     private va: VoiceAssistant;
 
@@ -39,7 +39,7 @@ export class SassBuildTool {
      * @param settings 
      * @param flags 
      */
-    constructor(variables: IVariables) {
+    constructor(variables: BuildVariables) {
         this.variables = variables;
         this.finder = new PathFinder(variables);
         this.va = new VoiceAssistant(variables.silent);
@@ -80,9 +80,9 @@ export class SassBuildTool {
      * @param sm 
      */
     fixSassGeneratedSourceMap(sm: RawSourceMap) {
-        let folder = upath.basename(this.virtualSassOutputFilePath);
+        const folder = upath.basename(this.virtualSassOutputFilePath);
         sm.sources = sm.sources.map(s => {
-            let absolute = upath.join(folder, s);
+            const absolute = upath.join(folder, s);
             return '/' + upath.relative(this.finder.root, absolute);
         });
     }
@@ -93,9 +93,9 @@ export class SassBuildTool {
      * @param virtualSassOutputPath 
      */
     async compileSassProject(virtualSassOutputPath: string) {
-        let cssInput = this.finder.cssEntry;
+        const cssInput = this.finder.cssEntry;
 
-        let sassOptions: sass.Options = {
+        const sassOptions: sass.Options = {
             file: cssInput,
             outFile: virtualSassOutputPath,
             data: await fse.readFile(cssInput, 'utf8'),
@@ -108,15 +108,15 @@ export class SassBuildTool {
         // enable calling asynchronous importers from the synchronous code path
         sassOptions['fiber'] = Fiber;
 
-        let sassResult = await this.runSassAsync(sassOptions);
+        const sassResult = await this.runSassAsync(sassOptions);
 
-        let result: CssBuildResult = {
+        const result: CssBuildResult = {
             css: sassResult.css.toString('utf8')
         };
 
         if (this.variables.sourceMap && sassResult.map) {
-            let sms: string = sassResult.map.toString('utf8');
-            let sm: RawSourceMap = JSON.parse(sms);
+            const sms: string = sassResult.map.toString('utf8');
+            const sm: RawSourceMap = JSON.parse(sms);
             this.fixSassGeneratedSourceMap(sm);
 
             // console.log(sm.sources);
@@ -137,7 +137,7 @@ export class SassBuildTool {
      * @param sassResult 
      */
     async runPostCSS(virtualSassOutputPath: string, virtualPostcssOutputPath: string, sassResult: CssBuildResult) {
-        let postcssOptions: postcss.ProcessOptions = {
+        const postcssOptions: postcss.ProcessOptions = {
             from: virtualSassOutputPath,
             to: virtualPostcssOutputPath
         };
@@ -149,17 +149,17 @@ export class SassBuildTool {
             };
         }
 
-        let postcssResult = await postcss([
+        const postcssResult = await postcss([
             autoprefixer()
         ]).process(sassResult.css, postcssOptions);
 
-        let result: CssBuildResult = {
+        const result: CssBuildResult = {
             css: postcssResult.css
         };
 
         if (this.variables.sourceMap && sassResult.map && postcssResult.map) {
-            let sm2 = postcssResult.map.toJSON();
-            let abs = upath.resolve(upath.dirname(virtualPostcssOutputPath), sm2.sources[0]);
+            const sm2 = postcssResult.map.toJSON();
+            const abs = upath.resolve(upath.dirname(virtualPostcssOutputPath), sm2.sources[0]);
             // console.log(abs);
 
             sm2.sources[0] = '/' + upath.relative(this.variables.root, abs);
@@ -184,7 +184,7 @@ export class SassBuildTool {
      * @param postcssResult 
      */
     runCleanCSS(cssOutputPath: string, postcssResult: CssBuildResult) {
-        let cleanCssOptions = {
+        const cleanCssOptions = {
             level: {
                 1: {
                     specialComments: false
@@ -195,19 +195,19 @@ export class SassBuildTool {
             sourceMapInlineSources: this.variables.sourceMap
         };
 
-        let cleanResult = new CleanCSS(cleanCssOptions).minify(postcssResult.css);
-        let errors: Error[] = cleanResult.errors;
+        const cleanResult = new CleanCSS(cleanCssOptions).minify(postcssResult.css);
+        const errors: Error[] = cleanResult.errors;
         if (errors.length) {
-            let errorMessage = "Error when minifying CSS:\n" + errors.map(Q => '- ' + Q.toString()).join("\n");
+            const errorMessage = "Error when minifying CSS:\n" + errors.map(Q => '- ' + Q.toString()).join("\n");
             throw new Error(errorMessage);
         }
 
-        let result: CssBuildResult = {
+        const result: CssBuildResult = {
             css: cleanResult.styles
         };
 
         if (this.variables.sourceMap && postcssResult.map && cleanResult.sourceMap) {
-            let sm3: RawSourceMap = cleanResult.sourceMap.toJSON();
+            const sm3: RawSourceMap = cleanResult.sourceMap.toJSON();
             sm3.sources[0] = '/(intermediate)/(postcss-output).css';
             sm3.file = upath.basename(cssOutputPath);
 
@@ -218,7 +218,7 @@ export class SassBuildTool {
             // console.log(result.map.sources);
             // console.log(result.map.file);
 
-            let sourceMapFileName = upath.basename(cssOutputPath) + '.map';
+            const sourceMapFileName = upath.basename(cssOutputPath) + '.map';
             result.css += `\n/*# sourceMappingURL=${sourceMapFileName} */`;
         }
 
@@ -229,10 +229,10 @@ export class SassBuildTool {
      * Builds the CSS project asynchronously.
      */
     async build() {
-        let sassOutputPath = this.virtualSassOutputFilePath;
-        let sassResult = await this.compileSassProject(sassOutputPath);
+        const sassOutputPath = this.virtualSassOutputFilePath;
+        const sassResult = await this.compileSassProject(sassOutputPath);
 
-        let cssOutputPath = this.finder.cssOutputFilePath;
+        const cssOutputPath = this.finder.cssOutputFilePath;
         let postcssOutputPath = cssOutputPath;
         if (this.variables.production) {
             postcssOutputPath = this.virtualPostcssOutputFilePath;
@@ -244,11 +244,11 @@ export class SassBuildTool {
             cssResult = this.runCleanCSS(cssOutputPath, cssResult);
         }
 
-        let cssOutputTask = Shout.fileOutput(cssOutputPath, cssResult.css);
+        const cssOutputTask = Shout.fileOutput(cssOutputPath, cssResult.css);
 
         if (cssResult.map) {
             cssResult.map.sourceRoot = 'instapack://';
-            let s = JSON.stringify(cssResult.map);
+            const s = JSON.stringify(cssResult.map);
             await Shout.fileOutput(cssOutputPath + '.map', s);
         }
 
@@ -261,7 +261,7 @@ export class SassBuildTool {
      */
     async buildWithStopwatch() {
         Shout.timed('Compiling', chalk.cyan('index.scss'), chalk.grey('in ' + this.finder.cssInputFolder + '/'));
-        let start = process.hrtime();
+        const start = process.hrtime();
         try {
             await this.build();
         }
@@ -271,7 +271,7 @@ export class SassBuildTool {
 
             if (error['formatted']) {
                 // for node-sass compile error
-                let formatted = 'Sass Compile' + (error['formatted'] as string).trim();
+                const formatted = 'Sass Compile' + (error['formatted'] as string).trim();
                 render = chalk.red(formatted);
                 console.error('\n' + render + '\n');
             } else {
@@ -279,7 +279,7 @@ export class SassBuildTool {
             }
         }
         finally {
-            let time = prettyHrTime(process.hrtime(start));
+            const time = prettyHrTime(process.hrtime(start));
             Shout.timed('Finished CSS build after', chalk.green(time));
         }
     }
@@ -289,7 +289,7 @@ export class SassBuildTool {
      */
     watch() {
         let debounced: NodeJS.Timer;
-        let debounce = () => {
+        const debounce = () => {
             clearTimeout(debounced);
             debounced = setTimeout(() => {
                 this.buildWithStopwatch();

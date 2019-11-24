@@ -10,19 +10,19 @@ function stringifyExponent(ordinal, scale) {
     if (ordinal < 1000) {
         return ordinal.toFixed().toString();
     }
-    let firstThreeDigits = ordinal * Math.pow(1000, -scale);
+    const firstThreeDigits = ordinal * Math.pow(1000, -scale);
     return firstThreeDigits.toPrecision(3).toString();
 }
 exports.stringifyExponent = stringifyExponent;
 function prettyBytes(size) {
-    let unit = siDegree(size);
+    const unit = siDegree(size);
     return stringifyExponent(size, unit) + ' ' + bigUnitPrefix[unit] + 'B';
 }
 exports.prettyBytes = prettyBytes;
 function prettySeconds(s) {
-    let h = Math.floor(s / 3600);
+    const h = Math.floor(s / 3600);
     s -= h * 3600;
-    let m = Math.floor(s / 60);
+    const m = Math.floor(s / 60);
     s -= m * 60;
     let result = s.toPrecision(3) + ' s';
     if (m) {
@@ -45,11 +45,11 @@ function prettyMilliseconds(ms) {
 exports.prettyMilliseconds = prettyMilliseconds;
 function prettyHrTime(hrtime) {
     if (hrtime[0] === 0) {
-        let unit = siDegree(hrtime[1]);
+        const unit = siDegree(hrtime[1]);
         return stringifyExponent(hrtime[1], unit) + ' ' + nanoUnitPrefix[unit] + 's';
     }
     else {
-        let s = hrtime[0] + (hrtime[1] / Math.pow(1000, 3));
+        const s = hrtime[0] + (hrtime[1] / Math.pow(1000, 3));
         return prettySeconds(s);
     }
 }

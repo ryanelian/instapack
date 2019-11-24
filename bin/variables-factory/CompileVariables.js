@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 function compileVariables(buildFlags, projectSettings, userSettings, dotEnv, typescriptConfiguration) {
-    let variables = {
+    const variables = {
         root: projectSettings.root,
         input: projectSettings.input,
         output: projectSettings.output,

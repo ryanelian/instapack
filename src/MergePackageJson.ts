@@ -3,10 +3,10 @@
  * @param input 
  */
 export function objectSortByKeys(input) {
-    let output: any = {};
+    const output: any = {};
 
-    let keys = Object.keys(input).sort();
-    for (let key of keys) {
+    const keys = Object.keys(input).sort();
+    for (const key of keys) {
         output[key] = input[key];
     }
 
@@ -20,7 +20,7 @@ export function objectSortByKeys(input) {
  * @param templatePackageJson 
  */
 export function mergePackageJson(projectPackageJson, templatePackageJson) {
-    let packageJson = JSON.parse(JSON.stringify(projectPackageJson));
+    const packageJson = JSON.parse(JSON.stringify(projectPackageJson));
 
     if (templatePackageJson.instapack) {
         packageJson.instapack = templatePackageJson.instapack;
@@ -35,7 +35,7 @@ export function mergePackageJson(projectPackageJson, templatePackageJson) {
     }
 
     if (templatePackageJson.dependencies) {
-        for (let packageName in templatePackageJson.dependencies) {
+        for (const packageName in templatePackageJson.dependencies) {
             if (packageJson.devDependencies[packageName]) {
                 // override version of existing package in dev dependencies
                 packageJson.devDependencies[packageName] = templatePackageJson.dependencies[packageName];
@@ -46,7 +46,7 @@ export function mergePackageJson(projectPackageJson, templatePackageJson) {
     }
 
     if (templatePackageJson.devDependencies) {
-        for (let packageName in templatePackageJson.devDependencies) {
+        for (const packageName in templatePackageJson.devDependencies) {
             if (packageJson.dependencies[packageName]) {
                 // override version of existing package in normal dependencies
                 packageJson.dependencies[packageName] = templatePackageJson.devDependencies[packageName];

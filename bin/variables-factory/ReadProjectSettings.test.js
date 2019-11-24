@@ -12,12 +12,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const ava_1 = require("ava");
 const upath = require("upath");
 const ReadProjectSettings_1 = require("./ReadProjectSettings");
-let root = process.cwd();
-let fixtures = upath.join(root, 'fixtures');
+const root = process.cwd();
+const fixtures = upath.join(root, 'fixtures');
 ava_1.default('Project Settings: Not Found', (t) => __awaiter(void 0, void 0, void 0, function* () {
-    let folder = upath.join(fixtures, 'Empty');
-    let settings = yield ReadProjectSettings_1.readProjectSettingsFrom(folder);
-    let result = {
+    const folder = upath.join(fixtures, 'Empty');
+    const settings = yield ReadProjectSettings_1.readProjectSettingsFrom(folder);
+    const result = {
         root: upath.toUnix(folder),
         input: 'client',
         output: 'wwwroot',
@@ -32,15 +32,15 @@ ava_1.default('Project Settings: Not Found', (t) => __awaiter(void 0, void 0, vo
     t.deepEqual(settings, result);
 }));
 ava_1.default('Project Settings: Invalid', (t) => __awaiter(void 0, void 0, void 0, function* () {
-    let folder = upath.join(fixtures, 'ProjectSettingsInvalid');
+    const folder = upath.join(fixtures, 'ProjectSettingsInvalid');
     yield t.throwsAsync(() => __awaiter(void 0, void 0, void 0, function* () {
         yield ReadProjectSettings_1.readProjectSettingsFrom(folder);
     }));
 }));
 ava_1.default('Project Settings: Valid', (t) => __awaiter(void 0, void 0, void 0, function* () {
-    let folder = upath.join(fixtures, 'ProjectSettingsValid');
-    let settings = yield ReadProjectSettings_1.readProjectSettingsFrom(folder);
-    let result = {
+    const folder = upath.join(fixtures, 'ProjectSettingsValid');
+    const settings = yield ReadProjectSettings_1.readProjectSettingsFrom(folder);
+    const result = {
         root: upath.toUnix(folder),
         input: 'src',
         output: 'www',

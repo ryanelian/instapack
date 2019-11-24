@@ -14,7 +14,7 @@ import { parseTypeScriptInVueFile } from './TypeScriptVueParser';
 // 2. add custom extension parse logic to parseThenStoreSource
 // 3. add check to delete virtual file path condition
 
-interface ICachedSource {
+interface CachedSource {
     filePath: string;
     source: TypeScript.SourceFile;
     version: string;
@@ -28,7 +28,7 @@ export class TypeScriptSourceStore {
     /**
      * Gets the cached source.
      */
-    private readonly sources: Map<string, ICachedSource> = new Map<string, ICachedSource>();
+    private readonly sources: Map<string, CachedSource> = new Map<string, CachedSource>();
 
     /**
      * Gets the parser language target.
@@ -39,7 +39,7 @@ export class TypeScriptSourceStore {
         this.target = target;
     }
 
-    get sourcePaths() {
+    get sourcePaths(): string[] {
         return Array.from(this.sources.keys());
     }
 
@@ -48,7 +48,7 @@ export class TypeScriptSourceStore {
      * @param sourcePath 
      */
     getFilePath(sourcePath: string): string {
-        let s = this.sources.get(sourcePath);
+        const s = this.sources.get(sourcePath);
         if (s) {
             return s.filePath;
         } else {
@@ -58,19 +58,19 @@ export class TypeScriptSourceStore {
 
     private readonly _typeCheckGlobs: string[] = [];
 
-    get typeCheckGlobs() {
+    get typeCheckGlobs(): string[] {
         return this._typeCheckGlobs;
     }
 
-    async loadFolder(folder: string) {
-        let tsGlobs = upath.join(folder, '**', '*.ts');
-        let tsxGlobs = upath.join(folder, '**', '*.tsx');
-        let vueGlobs = upath.join(folder, '**', '*.vue');
+    async loadFolder(folder: string): Promise<void> {
+        const tsGlobs = upath.join(folder, '**', '*.ts');
+        const tsxGlobs = upath.join(folder, '**', '*.tsx');
+        const vueGlobs = upath.join(folder, '**', '*.vue');
 
         this._typeCheckGlobs.push(tsGlobs, tsxGlobs, vueGlobs);
-        let files = await glob(this._typeCheckGlobs);
+        const files = await glob(this._typeCheckGlobs);
 
-        let readSources: Promise<boolean>[] = [];
+        const readSources: Promise<boolean>[] = [];
         for (const file of files) {
             readSources.push(this.loadFile(file));
         }
@@ -82,7 +82,7 @@ export class TypeScriptSourceStore {
      * @param filePath 
      */
     async loadFile(filePath: string): Promise<boolean> {
-        let raw = await fse.readFile(filePath, 'utf8');
+        const raw = await fse.readFile(filePath, 'utf8');
         // console.log('LOAD ' + filePath);
         return this.parseThenStoreSource(filePath, raw);
     }
@@ -92,7 +92,7 @@ export class TypeScriptSourceStore {
      * @param filePath 
      */
     loadFileSync(filePath: string): boolean {
-        let raw = fse.readFileSync(filePath, 'utf8');
+        const raw = fse.readFileSync(filePath, 'utf8');
         // console.log('LOAD (sync) ' + filePath);
         return this.parseThenStoreSource(filePath, raw);
     }
@@ -102,7 +102,7 @@ export class TypeScriptSourceStore {
      * @param content 
      */
     private calculateFileVersion(content: string): string {
-        let hash = createHash('sha512');
+        const hash = createHash('sha512');
         hash.update(content);
         return hash.digest('hex');
     }
@@ -122,9 +122,9 @@ export class TypeScriptSourceStore {
             raw = parseTypeScriptInVueFile(raw);
         }
 
-        let version = this.calculateFileVersion(raw);
+        const version = this.calculateFileVersion(raw);
 
-        let previousSource = this.sources.get(sourcePath);
+        const previousSource = this.sources.get(sourcePath);
         if (previousSource && previousSource.version === version) {
             return false;
         }
@@ -151,7 +151,7 @@ export class TypeScriptSourceStore {
             return s1.source;
         }
 
-        let filePath = this.getFilePath(sourcePath);
+        const filePath = this.getFilePath(sourcePath);
         this.loadFileSync(filePath);
 
         // console.log('SOURCE (sync) ' + sourcePath);

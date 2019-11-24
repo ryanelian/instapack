@@ -4,7 +4,7 @@ import * as TypeScript from 'typescript';
 import { Shout } from './Shout';
 import chalk = require('chalk');
 
-let fallbackTypeScriptConfig = {
+const fallbackTypeScriptConfig = {
     compilerOptions: {
         alwaysStrict: true,
         skipLibCheck: true,
@@ -28,11 +28,11 @@ let fallbackTypeScriptConfig = {
 };
 
 export async function tryReadTypeScriptConfigJson(folder: string) {
-    let tsconfigJsonPath = upath.join(folder, 'tsconfig.json');
+    const tsconfigJsonPath = upath.join(folder, 'tsconfig.json');
 
     try {
-        let tsconfigJson = await fse.readJson(tsconfigJsonPath);
-        let tryParse = parseTypescriptConfig(folder, tsconfigJson);
+        const tsconfigJson = await fse.readJson(tsconfigJsonPath);
+        const tryParse = parseTypescriptConfig(folder, tsconfigJson);
         // if (parse.options.target !== TypeScript.ScriptTarget.ES5) {
         //     Shout.warning('TypeScript build', chalk.cyan('target'), 'is not', chalk.yellow('ES5') + '!');
         // }
@@ -48,10 +48,10 @@ export async function tryReadTypeScriptConfigJson(folder: string) {
 export function parseTypescriptConfig(folder: string, json: any): TypeScript.ParsedCommandLine {
     // apparently TypeScript.parseJsonConfigFileContent modifies the input object!
     // deep copy the object for unit test sanity...
-    let o = JSON.parse(JSON.stringify(json));
+    const o = JSON.parse(JSON.stringify(json));
 
     // https://github.com/Microsoft/TypeScript/blob/master/src/compiler/commandLineParser.ts#L992
-    let tsconfig = TypeScript.parseJsonConfigFileContent(o, TypeScript.sys, folder);
+    const tsconfig = TypeScript.parseJsonConfigFileContent(o, TypeScript.sys, folder);
     if (tsconfig.errors.length) {
         throw Error(tsconfig.errors[0].messageText.toString());
     }

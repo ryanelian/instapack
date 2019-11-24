@@ -14,11 +14,11 @@ const path = require("path");
 const TypeScript = require("typescript");
 const TypescriptConfigParser_1 = require("./TypescriptConfigParser");
 const Shout_1 = require("./Shout");
-let root = process.cwd();
-let fixtures = path.join(root, 'fixtures');
-let validFolder = path.join(fixtures, 'TypeScriptConfigValid');
-let emptyFolder = path.join(fixtures, 'TypeScriptConfigEmpty');
-let invalidFolder = path.join(fixtures, 'TypeScriptConfigInvalid');
+const root = process.cwd();
+const fixtures = path.join(root, 'fixtures');
+const validFolder = path.join(fixtures, 'TypeScriptConfigValid');
+const emptyFolder = path.join(fixtures, 'TypeScriptConfigEmpty');
+const invalidFolder = path.join(fixtures, 'TypeScriptConfigInvalid');
 Shout_1.Shout.error = function () { };
 Shout_1.Shout.warning = function () { };
 ava_1.default('Parse TypeScript Configuration: Error', t => {
@@ -38,7 +38,7 @@ ava_1.default('Parse TypeScript Configuration: Error', t => {
     });
 });
 ava_1.default('Parse TypeScript Configuration: OK', t => {
-    let result = TypescriptConfigParser_1.parseTypescriptConfig(validFolder, {
+    const result = TypescriptConfigParser_1.parseTypescriptConfig(validFolder, {
         "compilerOptions": {
             "noImplicitAny": false,
             "noImplicitThis": true,
@@ -97,7 +97,7 @@ ava_1.default('Parse TypeScript Configuration: OK', t => {
         && result.options.jsx === TypeScript.JsxEmit.React);
 });
 ava_1.default('Read tsconfig.json: Valid', (t) => __awaiter(void 0, void 0, void 0, function* () {
-    let r = yield TypescriptConfigParser_1.tryReadTypeScriptConfigJson(validFolder);
+    const r = yield TypescriptConfigParser_1.tryReadTypeScriptConfigJson(validFolder);
     t.deepEqual(r, {
         "compilerOptions": {
             "noImplicitAny": false,
@@ -139,7 +139,7 @@ ava_1.default('Read tsconfig.json: Valid', (t) => __awaiter(void 0, void 0, void
         ]
     });
 }));
-let fallbackTypeScriptConfig = {
+const fallbackTypeScriptConfig = {
     compilerOptions: {
         alwaysStrict: true,
         skipLibCheck: true,
@@ -159,10 +159,10 @@ let fallbackTypeScriptConfig = {
     }
 };
 ava_1.default('Read tsconfig.json: Empty', (t) => __awaiter(void 0, void 0, void 0, function* () {
-    let r = yield TypescriptConfigParser_1.tryReadTypeScriptConfigJson(emptyFolder);
+    const r = yield TypescriptConfigParser_1.tryReadTypeScriptConfigJson(emptyFolder);
     t.deepEqual(r, fallbackTypeScriptConfig);
 }));
 ava_1.default('Read tsconfig.json: Invalid', (t) => __awaiter(void 0, void 0, void 0, function* () {
-    let r = yield TypescriptConfigParser_1.tryReadTypeScriptConfigJson(invalidFolder);
+    const r = yield TypescriptConfigParser_1.tryReadTypeScriptConfigJson(invalidFolder);
     t.deepEqual(r, fallbackTypeScriptConfig);
 }));

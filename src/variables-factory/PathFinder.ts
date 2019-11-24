@@ -1,18 +1,18 @@
 import * as upath from 'upath';
-import { IVariables } from './IVariables';
+import { BuildVariables } from './BuildVariables';
 
 /**
  * A very light and thin extension build on top of IVariables for getting various file paths. 
  */
 export class PathFinder {
 
-    private readonly variables: IVariables;
+    private readonly variables: BuildVariables;
 
     /**
      * Creates a new instance of PathFinder class.
      * @param variables 
      */
-    constructor(variables: IVariables) {
+    constructor(variables: BuildVariables) {
         this.variables = variables;
     }
 

@@ -3,12 +3,13 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const program = require("yargs");
 const chalk = require("chalk");
+const fse = require("fs-extra");
 const instapack = require("./index");
 const EnvParser_1 = require("./variables-factory/EnvParser");
 const UserSettingsManager_1 = require("./user-settings/UserSettingsManager");
-const manifest = require('../package.json');
-let projectFolder = process.cwd();
-let ipack = new instapack(projectFolder);
+const manifest = fse.readJsonSync(require.resolve('../package.json'));
+const projectFolder = process.cwd();
+const ipack = new instapack(projectFolder);
 program.version(manifest.version);
 function echo(command, subCommand) {
     if (!subCommand) {
@@ -45,12 +46,15 @@ program.command({
         });
     },
     handler: (argv) => {
-        let subCommand = argv.project || 'all';
+        let subCommand = 'all';
+        if (typeof argv.project === 'string') {
+            subCommand = argv.project;
+        }
         echo('build', subCommand);
         ipack.build(subCommand, {
-            production: !Boolean(argv.dev),
+            production: !argv.dev,
             watch: Boolean(argv.watch),
-            sourceMap: !Boolean(argv.nodebug),
+            sourceMap: !argv.nodebug,
             env: EnvParser_1.parseCliEnvFlags(argv.env),
             stats: Boolean(argv.stats),
             hot: Boolean(argv.hot),
@@ -65,7 +69,10 @@ program.command({
         return yargs.choices('template', ipack.availableTemplates);
     },
     handler: (argv) => {
-        let subCommand = argv.template || 'vue';
+        let subCommand = 'vue';
+        if (typeof argv.template === 'string') {
+            subCommand = argv.template;
+        }
         echo('new', subCommand);
         ipack.scaffold(subCommand)
             .catch(err => console.error(err));
@@ -78,9 +85,14 @@ program.command({
         return yargs.choices('key', UserSettingsManager_1.userSettingsOptions);
     },
     handler: (argv) => {
-        echo('set', argv.key);
-        ipack.changeUserSettings(argv.key, argv.value)
-            .catch(err => console.error(err));
+        if (typeof argv.key === 'string' && typeof argv.value === 'string') {
+            echo('set', argv.key);
+            ipack.changeUserSettings(argv.key, argv.value)
+                .catch(err => console.error(err));
+        }
+        else {
+            throw new Error(`Argument 'key' and 'value' must be string`);
+        }
     }
 });
-let parse = program.strict().help().argv;
+program.strict().help().argv;

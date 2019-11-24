@@ -1,10 +1,10 @@
 import test from "ava";
 
 import { compileVariables } from "./CompileVariables";
-import { IVariables } from "./IVariables";
+import { BuildVariables } from "./BuildVariables";
 
 test('Compile Variables: Simple', t => {
-    let result = compileVariables(
+    const result = compileVariables(
         {
             env: {
                 foo: 'bar'
@@ -50,7 +50,7 @@ test('Compile Variables: Simple', t => {
             }
         });
 
-    let expected: IVariables = {
+    const expected: BuildVariables = {
         root: __dirname,
         input: 'client',
         output: 'wwwroot',
@@ -93,7 +93,7 @@ test('Compile Variables: Simple', t => {
 });
 
 test('Compile Variables: Overrides', t => {
-    let result = compileVariables(
+    const result = compileVariables(
         {
             env: {
                 foo: 'bar',
@@ -147,7 +147,7 @@ test('Compile Variables: Overrides', t => {
             }
         });
 
-    let expected: IVariables = {
+    const expected: BuildVariables = {
         root: __dirname,
         input: 'src',
         output: 'www',

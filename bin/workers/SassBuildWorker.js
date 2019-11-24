@@ -15,7 +15,7 @@ module.exports = function (variables, finish) {
         if (variables.verbose) {
             Shout_1.Shout.displayVerboseOutput = true;
         }
-        let tool = new SassBuildTool_1.SassBuildTool(variables);
+        const tool = new SassBuildTool_1.SassBuildTool(variables);
         try {
             yield tool.buildWithStopwatch();
             if (variables.watch) {

@@ -25,30 +25,30 @@ function resolveAsync(customResolver, lookupStartPath, request) {
 }
 function sassImport(source, request) {
     return __awaiter(this, void 0, void 0, function* () {
-        let lookupStartPath = upath.dirname(source);
-        let requestFileName = upath.basename(request);
-        let requestDir = upath.dirname(request);
+        const lookupStartPath = upath.dirname(source);
+        const requestFileName = upath.basename(request);
+        const requestDir = upath.dirname(request);
         if (requestFileName.startsWith('_') === false) {
-            let partialFolderLookups = [lookupStartPath];
+            const partialFolderLookups = [lookupStartPath];
             if (requestDir !== '.') {
                 partialFolderLookups.push('node_modules');
             }
-            let partialSassResolver = enhanced_resolve_1.ResolverFactory.createResolver({
+            const partialSassResolver = enhanced_resolve_1.ResolverFactory.createResolver({
                 fileSystem: new enhanced_resolve_1.NodeJsInputFileSystem(),
                 extensions: ['.scss'],
                 modules: partialFolderLookups,
                 mainFiles: [],
                 descriptionFiles: []
             });
-            let partialFileName = '_' + upath.addExt(requestFileName, '.scss');
-            let partialRequest = upath.join(requestDir, partialFileName);
+            const partialFileName = '_' + upath.addExt(requestFileName, '.scss');
+            const partialRequest = upath.join(requestDir, partialFileName);
             try {
                 return yield resolveAsync(partialSassResolver, lookupStartPath, partialRequest);
             }
-            catch (error) {
+            catch (ex) {
             }
         }
-        let sassResolver = enhanced_resolve_1.ResolverFactory.createResolver({
+        const sassResolver = enhanced_resolve_1.ResolverFactory.createResolver({
             fileSystem: new enhanced_resolve_1.NodeJsInputFileSystem(),
             extensions: ['.scss'],
             modules: [lookupStartPath, 'node_modules'],
@@ -58,9 +58,9 @@ function sassImport(source, request) {
         try {
             return yield resolveAsync(sassResolver, lookupStartPath, request);
         }
-        catch (error) {
+        catch (ex) {
         }
-        let cssResolver = enhanced_resolve_1.ResolverFactory.createResolver({
+        const cssResolver = enhanced_resolve_1.ResolverFactory.createResolver({
             fileSystem: new enhanced_resolve_1.NodeJsInputFileSystem(),
             extensions: ['.css'],
             modules: [lookupStartPath, 'node_modules'],

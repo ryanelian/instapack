@@ -141,9 +141,9 @@ In addition, build flags are available:
 
 - `--dev` or `-d` disables build outputs optimization and minification for **FAST build!** :fire:
 
-- `--hot` or `-h` enables **Hot Reload** development mode using dedicated build server. :rotating_light: [Read more ↓](#hot-reload-development-mode)
+- `--serve` or `-s` enables **Hot Reload** development mode using dedicated build server. :rotating_light: [Read more ↓](#hot-reload-development-mode)
 
-- `--nodebug` or `-b` disables source maps, producing undebuggable outputs. (Slightly improves build speed)
+- `--no-sourcemap` disables source maps, producing undebuggable outputs. (Slightly improves build speed)
 
 - `--stats` generates `stats.json` next to the TypeScript build outputs, which can be fed to [webpack-bundle-analyzer](https://www.npmjs.com/package/webpack-bundle-analyzer) or [webpack-visualizer](http://chrisbateman.github.io/webpack-visualizer/). For sanity, this flag will be ignored when using `-d` or `-w` flags.
 
@@ -153,7 +153,7 @@ In addition, build flags are available:
 
 - `package-manager` allows setting default package manager to be used for restoring and integrity-checking `node_modules` prior build. Possible values: `yarn`, `npm`, `disabled` (default: `yarn`)
 
-- `silent` disables voice assistant on build fails during watch mode when set to `true`. Possible values: `true` and `false` (default: `false`)
+- `mute` disables voice assistant on build fails during watch mode when set to `true`. Possible values: `true` and `false` (default: `false`)
 
 ## Configurations
 

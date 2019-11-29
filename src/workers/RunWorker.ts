@@ -12,7 +12,7 @@ const copyBuildWorkerModulePath = require.resolve('./CopyBuildWorker');
  * @param modulePath 
  * @param params 
  */
-export async function runWorkerAsync<T>(modulePath: string, params) {
+export async function runWorkerAsync<T>(modulePath: string, params): Promise<T> {
     const worker = WorkerFarm(modulePath);
     try {
         const p = new Promise<T>((ok, reject) => {

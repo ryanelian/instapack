@@ -58,15 +58,17 @@ class SassBuildTool {
     compileSassProject(virtualSassOutputPath) {
         return __awaiter(this, void 0, void 0, function* () {
             const cssInput = this.finder.cssEntry;
-            const sassOptions = {
+            let sassOptions = {
                 file: cssInput,
                 outFile: virtualSassOutputPath,
                 data: yield fse.readFile(cssInput, 'utf8'),
                 sourceMap: this.variables.sourceMap,
                 sourceMapContents: this.variables.sourceMap,
-                importer: SassImportResolver_1.sassImporter
+                importer: SassImportResolver_1.sassImporter,
             };
-            sassOptions['fiber'] = Fiber;
+            sassOptions = Object.assign(sassOptions, {
+                'fiber': Fiber
+            });
             const sassResult = yield this.runSassAsync(sassOptions);
             const result = {
                 css: sassResult.css.toString('utf8')

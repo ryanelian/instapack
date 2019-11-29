@@ -49,7 +49,7 @@ export class SassBuildTool {
      * Asynchronously run Sass as a Promise.
      * @param options 
      */
-    runSassAsync(options: sass.Options) {
+    runSassAsync(options: sass.Options): Promise<sass.Result> {
         return new Promise<sass.Result>((ok, reject) => {
             sass.render(options, (error, result) => {
                 if (error) {
@@ -64,14 +64,14 @@ export class SassBuildTool {
     /**
      * Gets the full file path of the virtual Sass-Compiled CSS file. 
      */
-    get virtualSassOutputFilePath() {
+    get virtualSassOutputFilePath(): string {
         return upath.join(this.finder.root, '(intermediate)', '(sass-output).css');
     }
 
     /**
      * Gets the full file path of the virtual Sass-Compiled CSS file. 
      */
-    get virtualPostcssOutputFilePath() {
+    get virtualPostcssOutputFilePath(): string {
         return upath.join(this.finder.root, '(intermediate)', '(postcss-output).css');
     }
 
@@ -79,7 +79,7 @@ export class SassBuildTool {
      * Normalize `sources` paths of a Sass-compiled source map.
      * @param sm 
      */
-    fixSassGeneratedSourceMap(sm: RawSourceMap) {
+    fixSassGeneratedSourceMap(sm: RawSourceMap): void {
         const folder = upath.basename(this.virtualSassOutputFilePath);
         sm.sources = sm.sources.map(s => {
             const absolute = upath.join(folder, s);
@@ -92,21 +92,23 @@ export class SassBuildTool {
      * Normalize generated source map.
      * @param virtualSassOutputPath 
      */
-    async compileSassProject(virtualSassOutputPath: string) {
+    async compileSassProject(virtualSassOutputPath: string): Promise<CssBuildResult> {
         const cssInput = this.finder.cssEntry;
 
-        const sassOptions: sass.Options = {
+        let sassOptions: sass.Options = {
             file: cssInput,
             outFile: virtualSassOutputPath,
             data: await fse.readFile(cssInput, 'utf8'),
 
             sourceMap: this.variables.sourceMap,
             sourceMapContents: this.variables.sourceMap,
-            importer: sassImporter
+            importer: sassImporter,
         };
 
         // enable calling asynchronous importers from the synchronous code path
-        sassOptions['fiber'] = Fiber;
+        sassOptions = Object.assign(sassOptions, {
+            'fiber': Fiber
+        });
 
         const sassResult = await this.runSassAsync(sassOptions);
 
@@ -136,7 +138,7 @@ export class SassBuildTool {
      * @param virtualPostcssOutputPath 
      * @param sassResult 
      */
-    async runPostCSS(virtualSassOutputPath: string, virtualPostcssOutputPath: string, sassResult: CssBuildResult) {
+    async runPostCSS(virtualSassOutputPath: string, virtualPostcssOutputPath: string, sassResult: CssBuildResult): Promise<CssBuildResult> {
         const postcssOptions: postcss.ProcessOptions = {
             from: virtualSassOutputPath,
             to: virtualPostcssOutputPath
@@ -183,7 +185,7 @@ export class SassBuildTool {
      * @param cssOutputPath 
      * @param postcssResult 
      */
-    runCleanCSS(cssOutputPath: string, postcssResult: CssBuildResult) {
+    runCleanCSS(cssOutputPath: string, postcssResult: CssBuildResult): CssBuildResult {
         const cleanCssOptions = {
             level: {
                 1: {
@@ -228,7 +230,7 @@ export class SassBuildTool {
     /**
      * Builds the CSS project asynchronously.
      */
-    async build() {
+    async build(): Promise<void> {
         const sassOutputPath = this.virtualSassOutputFilePath;
         const sassResult = await this.compileSassProject(sassOutputPath);
 
@@ -259,7 +261,7 @@ export class SassBuildTool {
     /**
      * Executes build method with a formatted error and stopwatch wrapper. 
      */
-    async buildWithStopwatch() {
+    async buildWithStopwatch(): Promise<void> {
         Shout.timed('Compiling', chalk.cyan('index.scss'), chalk.grey('in ' + this.finder.cssInputFolder + '/'));
         const start = process.hrtime();
         try {
@@ -287,9 +289,9 @@ export class SassBuildTool {
     /**
      * Executes build when any *.scss files on the CSS project folder is modified.
      */
-    watch() {
+    watch(): void {
         let debounced: NodeJS.Timer;
-        const debounce = () => {
+        const debounce = (): void => {
             clearTimeout(debounced);
             debounced = setTimeout(() => {
                 this.buildWithStopwatch();

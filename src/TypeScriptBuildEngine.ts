@@ -468,7 +468,8 @@ inject();
 
         if (this.variables.production) {
             compiler.hooks.compilation.tap('typescript-minify-notify', compilation => {
-                compilation.hooks.afterHash.tap('typescript-minify-notify', () => {
+                // https://github.com/webpack/tapable/issues/116
+                return compilation.hooks.afterHash.tap('typescript-minify-notify', () => {
                     Shout.timed('TypeScript compilation finished! Minifying bundles...');
                 });
             });

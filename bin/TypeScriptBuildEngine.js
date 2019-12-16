@@ -330,7 +330,7 @@ inject();
         });
         if (this.variables.production) {
             compiler.hooks.compilation.tap('typescript-minify-notify', compilation => {
-                compilation.hooks.afterHash.tap('typescript-minify-notify', () => {
+                return compilation.hooks.afterHash.tap('typescript-minify-notify', () => {
                     Shout_1.Shout.timed('TypeScript compilation finished! Minifying bundles...');
                 });
             });

@@ -58,7 +58,7 @@ function resolveVueTemplateCompiler(projectBasePath) {
             return vueCompilerResolveCache[projectBasePath];
         }
         const resolver = enhanced_resolve_1.ResolverFactory.createResolver({
-            fileSystem: new enhanced_resolve_1.NodeJsInputFileSystem()
+            fileSystem: fse
         });
         let compilerRoute;
         const instapackVueCompilerVersion = require('vue-template-compiler/package.json')['version'];

@@ -374,8 +374,14 @@ inject();
         const config: webpack.Configuration = {
             entry: [osEntry],
             output: {
-                filename: this.finder.jsOutputFileName,
-                chunkFilename: this.finder.jsChunkFileName,   // https://webpack.js.org/guides/code-splitting
+                filename: (chunkData): string => {
+                    if (chunkData.chunk.name === 'main') {
+                        return this.finder.jsOutputFileName;
+                    } else {
+                        return this.finder.jsChunkFileName;
+                    }
+                },
+                chunkFilename: this.finder.jsChunkFileName,
                 path: osOutputJsFolder,
                 publicPath: 'js/',
                 library: this.variables.namespace
@@ -411,10 +417,7 @@ inject();
             performance: {
                 hints: false    // https://webpack.js.org/configuration/performance
             },
-            plugins: plugins,
-            watchOptions: {
-                ignored: [/node_modules/]
-            }
+            plugins: plugins
         };
 
         if (wildcards && config.resolve) {
@@ -540,9 +543,8 @@ inject();
             for (const asset of o.assets) {
                 if (asset.emitted) {
                     const kb = prettyBytes(asset.size);
-                    Shout.timed(chalk.blue(asset.name), chalk.magenta(kb),
-                        chalk.grey('in ' + this.outputPublicPath)
-                    );
+                    const where = 'in ' + (this.variables.hot ? this.outputPublicPath : this.finder.jsOutputFolder);
+                    Shout.timed(chalk.blue(asset.name), chalk.magenta(kb), chalk.grey(where));
                 }
             }
         }

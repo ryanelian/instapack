@@ -1,5 +1,5 @@
 import * as fse from 'fs-extra';
-import { NodeJsInputFileSystem, ResolverFactory } from 'enhanced-resolve';
+import { ResolverFactory } from 'enhanced-resolve';
 import { Shout } from './Shout';
 import chalk = require('chalk');
 
@@ -61,7 +61,7 @@ export async function resolveVueTemplateCompiler(projectBasePath: string): Promi
     }
 
     const resolver = ResolverFactory.createResolver({
-        fileSystem: new NodeJsInputFileSystem()
+        fileSystem: fse
     });
 
     let compilerRoute: CompilerRoute;

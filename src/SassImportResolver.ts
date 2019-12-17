@@ -1,13 +1,14 @@
 import * as upath from 'upath';
-import { NodeJsInputFileSystem, ResolverFactory } from 'enhanced-resolve';
+import { ResolverFactory } from 'enhanced-resolve';
 import { ImporterReturnType } from 'sass';
+import fs = require('fs');
 
 /**
  * Invoke enhanced-resolve custom resolver as a Promise.
  * @param lookupStartPath 
  * @param request 
  */
-function resolveAsync(customResolver, lookupStartPath: string, request: string) {
+function resolveAsync(customResolver, lookupStartPath: string, request: string): Promise<string> {
     return new Promise<string>((ok, reject) => {
         customResolver.resolve({}, lookupStartPath, request, {}, (error: Error, resolution: string) => {
             if (error) {
@@ -45,7 +46,7 @@ export async function sassImport(source: string, request: string): Promise<strin
         }
 
         const partialSassResolver = ResolverFactory.createResolver({
-            fileSystem: new NodeJsInputFileSystem(),
+            fileSystem: fs,
             extensions: ['.scss'],
             modules: partialFolderLookups,
             mainFiles: [],
@@ -65,7 +66,7 @@ export async function sassImport(source: string, request: string): Promise<strin
     }
 
     const sassResolver = ResolverFactory.createResolver({
-        fileSystem: new NodeJsInputFileSystem(),
+        fileSystem: fs,
         extensions: ['.scss'],
         modules: [lookupStartPath, 'node_modules'],
         mainFiles: ['_index', 'index'],
@@ -86,7 +87,7 @@ export async function sassImport(source: string, request: string): Promise<strin
     }
 
     const cssResolver = ResolverFactory.createResolver({
-        fileSystem: new NodeJsInputFileSystem(),
+        fileSystem: fs,
         extensions: ['.css'],
         modules: [lookupStartPath, 'node_modules'],
         mainFields: ['style']
@@ -103,7 +104,7 @@ export async function sassImport(source: string, request: string): Promise<strin
     // Standard+: when using node-sass includePaths option set to the node_modules folder. (Older instapack behavior)
 }
 
-export function sassImporter(request: string, source: string, done: (data: ImporterReturnType) => void) {
+export function sassImporter(request: string, source: string, done: (data: ImporterReturnType) => void): void {
     sassImport(source, request).then(resolution => {
         // console.log(source, '+', request, '=', resolution); console.log();
         done({

@@ -252,7 +252,14 @@ inject();
         const config = {
             entry: [osEntry],
             output: {
-                filename: this.finder.jsOutputFileName,
+                filename: (chunkData) => {
+                    if (chunkData.chunk.name === 'main') {
+                        return this.finder.jsOutputFileName;
+                    }
+                    else {
+                        return this.finder.jsChunkFileName;
+                    }
+                },
                 chunkFilename: this.finder.jsChunkFileName,
                 path: osOutputJsFolder,
                 publicPath: 'js/',
@@ -285,10 +292,7 @@ inject();
             performance: {
                 hints: false
             },
-            plugins: plugins,
-            watchOptions: {
-                ignored: [/node_modules/]
-            }
+            plugins: plugins
         };
         if (wildcards && config.resolve) {
             config.resolve.modules = wildcards;
@@ -386,7 +390,8 @@ inject();
             for (const asset of o.assets) {
                 if (asset.emitted) {
                     const kb = PrettyUnits_1.prettyBytes(asset.size);
-                    Shout_1.Shout.timed(chalk.blue(asset.name), chalk.magenta(kb), chalk.grey('in ' + this.outputPublicPath));
+                    const where = 'in ' + (this.variables.hot ? this.outputPublicPath : this.finder.jsOutputFolder);
+                    Shout_1.Shout.timed(chalk.blue(asset.name), chalk.magenta(kb), chalk.grey(where));
                 }
             }
         }

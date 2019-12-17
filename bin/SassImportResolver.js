@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const upath = require("upath");
 const enhanced_resolve_1 = require("enhanced-resolve");
+const fs = require("fs");
 function resolveAsync(customResolver, lookupStartPath, request) {
     return new Promise((ok, reject) => {
         customResolver.resolve({}, lookupStartPath, request, {}, (error, resolution) => {
@@ -34,7 +35,7 @@ function sassImport(source, request) {
                 partialFolderLookups.push('node_modules');
             }
             const partialSassResolver = enhanced_resolve_1.ResolverFactory.createResolver({
-                fileSystem: new enhanced_resolve_1.NodeJsInputFileSystem(),
+                fileSystem: fs,
                 extensions: ['.scss'],
                 modules: partialFolderLookups,
                 mainFiles: [],
@@ -49,7 +50,7 @@ function sassImport(source, request) {
             }
         }
         const sassResolver = enhanced_resolve_1.ResolverFactory.createResolver({
-            fileSystem: new enhanced_resolve_1.NodeJsInputFileSystem(),
+            fileSystem: fs,
             extensions: ['.scss'],
             modules: [lookupStartPath, 'node_modules'],
             mainFiles: ['_index', 'index'],
@@ -61,7 +62,7 @@ function sassImport(source, request) {
         catch (ex) {
         }
         const cssResolver = enhanced_resolve_1.ResolverFactory.createResolver({
-            fileSystem: new enhanced_resolve_1.NodeJsInputFileSystem(),
+            fileSystem: fs,
             extensions: ['.css'],
             modules: [lookupStartPath, 'node_modules'],
             mainFields: ['style']

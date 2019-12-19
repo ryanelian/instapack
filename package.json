@@ -79,7 +79,7 @@
     "vue-loader": "15.8.3",
     "vue-template-compiler": "2.6.11",
     "webpack": "5.0.0-beta.9",
-    "webpack-dev-server": "3.9.0",
+    "webpack-dev-server": "3.10.1",
     "which": "1.3.1",
     "worker-farm": "1.7.0",
     "yargs": "15.0.2"

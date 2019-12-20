@@ -52,7 +52,7 @@
     "build": "npm run compile && npm run lint && npm run test"
   },
   "dependencies": {
-    "@babel/core": "7.7.5",
+    "@babel/core": "7.7.7",
     "ajv": "6.10.2",
     "autoprefixer": "9.7.3",
     "babel-loader": "8.0.6",
@@ -79,7 +79,7 @@
     "vue-loader": "15.8.3",
     "vue-template-compiler": "2.6.11",
     "webpack": "5.0.0-beta.9",
-    "webpack-dev-server": "3.9.0",
+    "webpack-dev-server": "3.10.1",
     "which": "1.3.1",
     "worker-farm": "1.7.0",
     "yargs": "15.0.2"
@@ -89,7 +89,7 @@
     "@types/eslint": "^6.1.3",
     "@types/fs-extra": "^8.0.1",
     "@types/loader-utils": "^1.1.3",
-    "@types/node": "^12.12.19",
+    "@types/node": "^12.12.21",
     "@types/sass": "^1.16.0",
     "@types/webpack": "^4.41.0",
     "@types/webpack-dev-server": "^3.9.0",

@@ -504,7 +504,7 @@ inject();
 
         return new Promise<void>((ok, reject) => {
             compiler.watch({
-                ignored: /node_modules/,
+                ignored: ['node_modules'],
                 aggregateTimeout: 300
             }, (err) => {
                 if (err) {

@@ -360,7 +360,7 @@ inject();
         this.addCompilerBuildNotification(compiler);
         return new Promise((ok, reject) => {
             compiler.watch({
-                ignored: /node_modules/,
+                ignored: ['node_modules'],
                 aggregateTimeout: 300
             }, (err) => {
                 if (err) {

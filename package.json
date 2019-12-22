@@ -47,9 +47,9 @@
   "scripts": {
     "compile": "tsc",
     "lint": "eslint src/** --ext ts --env node --fix",
+    "build": "npm run compile && npm run lint",
     "test": "ava --verbose",
-    "test:watch": "ava --watch",
-    "build": "npm run compile && npm run lint && npm run test"
+    "test:watch": "ava --watch"
   },
   "dependencies": {
     "@babel/core": "7.7.7",

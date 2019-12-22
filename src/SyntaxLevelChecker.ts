@@ -1,6 +1,6 @@
 import * as TypeScript from 'typescript';
 
-function is2015Syntax(node: TypeScript.Node) {
+function is2015Syntax(node: TypeScript.Node): boolean {
     if (TypeScript.isParameter(node)) {
         if (node.initializer) {
             return true;
@@ -132,7 +132,7 @@ function is2015Syntax(node: TypeScript.Node) {
     return false;
 }
 
-function is2016Syntax(node: TypeScript.Node) {
+function is2016Syntax(node: TypeScript.Node): boolean {
     if (node.kind === TypeScript.SyntaxKind.AsteriskAsteriskToken) {
         return true;
     }
@@ -150,7 +150,7 @@ function is2016Syntax(node: TypeScript.Node) {
     return false;
 }
 
-function is2017Syntax(node: TypeScript.Node) {
+function is2017Syntax(node: TypeScript.Node): boolean {
     if (node.kind === TypeScript.SyntaxKind.AsyncKeyword) {
         return true;
     }
@@ -170,7 +170,7 @@ function is2017Syntax(node: TypeScript.Node) {
     return false;
 }
 
-function is2018Syntax(node: TypeScript.Node) {
+function is2018Syntax(node: TypeScript.Node): boolean {
     if (TypeScript.isObjectBindingPattern(node)) {
         return node.elements.some(Q => Boolean(Q.dotDotDotToken));
     }
@@ -201,7 +201,7 @@ function is2018Syntax(node: TypeScript.Node) {
     return false
 }
 
-function is2019Syntax(node: TypeScript.Node) {
+function is2019Syntax(node: TypeScript.Node): boolean {
     if (TypeScript.isCatchClause(node)) {
         if (!node.variableDeclaration) {
             return true;
@@ -211,7 +211,7 @@ function is2019Syntax(node: TypeScript.Node) {
     return false;
 }
 
-function is2020Syntax(node: TypeScript.Node) {
+function is2020Syntax(node: TypeScript.Node): boolean {
     if (TypeScript.isBigIntLiteral(node)) {
         return true;
     }
@@ -220,7 +220,7 @@ function is2020Syntax(node: TypeScript.Node) {
     return false;
 }
 
-function isESNextSyntax(node: TypeScript.Node) {
+function isESNextSyntax(node: TypeScript.Node): boolean {
     if (node.kind === TypeScript.SyntaxKind.QuestionQuestionToken) {
         return true;
     }
@@ -248,7 +248,7 @@ function isESNextSyntax(node: TypeScript.Node) {
     return false;
 }
 
-function traverse(node: TypeScript.Node, cb: (node: TypeScript.Node) => void, depth = 0) {
+function traverse(node: TypeScript.Node, cb: (node: TypeScript.Node) => void, depth = 0): void {
     // console.log(new Array(depth).join('--'), TypeScript.SyntaxKind[node.kind].toString());
     // console.log(new Array(depth).join('//'), node.getFullText());
     cb(node);
@@ -258,12 +258,12 @@ function traverse(node: TypeScript.Node, cb: (node: TypeScript.Node) => void, de
     });
 }
 
-interface IScriptLevel {
+interface TypeScriptScriptLevel {
     level: TypeScript.ScriptTarget;
     source: TypeScript.SourceFile;
 }
 
-export function checkSyntaxLevel(sourcePath: string, source: string, languageTarget: TypeScript.ScriptTarget): IScriptLevel {
+export function checkSyntaxLevel(sourcePath: string, source: string, languageTarget: TypeScript.ScriptTarget): TypeScriptScriptLevel {
     // let sw = process.hrtime();
     const ast = TypeScript.createSourceFile(sourcePath, source, languageTarget, true, TypeScript.ScriptKind.JS);
     // console.log(sourcePath, prettyHrTime(process.hrtime(sw)));

@@ -11,7 +11,8 @@ class VoiceAssistant {
             return;
         }
         try {
-            say.speak(message, 'Samantha', 1.3, err => { });
+            say.speak(message, 'Samantha', 1.3, () => {
+            });
             this.suppress = true;
         }
         catch (error) {

@@ -13,14 +13,11 @@ const ava_1 = require("ava");
 const path = require("path");
 const TypeScript = require("typescript");
 const TypescriptConfigParser_1 = require("./TypescriptConfigParser");
-const Shout_1 = require("./Shout");
 const root = process.cwd();
 const fixtures = path.join(root, 'fixtures');
 const validFolder = path.join(fixtures, 'TypeScriptConfigValid');
 const emptyFolder = path.join(fixtures, 'TypeScriptConfigEmpty');
 const invalidFolder = path.join(fixtures, 'TypeScriptConfigInvalid');
-Shout_1.Shout.error = function () { };
-Shout_1.Shout.warning = function () { };
 ava_1.default('Parse TypeScript Configuration: Error', t => {
     t.throws(() => {
         TypescriptConfigParser_1.parseTypescriptConfig(validFolder, {

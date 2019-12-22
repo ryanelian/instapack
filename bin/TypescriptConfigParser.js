@@ -33,12 +33,25 @@ const fallbackTypeScriptConfig = {
         ]
     }
 };
+function parseTypescriptConfig(folder, json) {
+    const o = JSON.parse(JSON.stringify(json));
+    const tsconfig = TypeScript.parseJsonConfigFileContent(o, TypeScript.sys, folder);
+    if (tsconfig.errors.length) {
+        throw Error(tsconfig.errors[0].messageText.toString());
+    }
+    return tsconfig;
+}
+exports.parseTypescriptConfig = parseTypescriptConfig;
 function tryReadTypeScriptConfigJson(folder) {
     return __awaiter(this, void 0, void 0, function* () {
         const tsconfigJsonPath = upath.join(folder, 'tsconfig.json');
         try {
             const tsconfigJson = yield fse.readJson(tsconfigJsonPath);
             const tryParse = parseTypescriptConfig(folder, tsconfigJson);
+            const errorMessage = tryParse.errors.join('\n\n');
+            if (tryParse.errors.length) {
+                throw new Error(errorMessage);
+            }
             return tsconfigJson;
         }
         catch (error) {
@@ -49,12 +62,3 @@ function tryReadTypeScriptConfigJson(folder) {
     });
 }
 exports.tryReadTypeScriptConfigJson = tryReadTypeScriptConfigJson;
-function parseTypescriptConfig(folder, json) {
-    const o = JSON.parse(JSON.stringify(json));
-    const tsconfig = TypeScript.parseJsonConfigFileContent(o, TypeScript.sys, folder);
-    if (tsconfig.errors.length) {
-        throw Error(tsconfig.errors[0].messageText.toString());
-    }
-    return tsconfig;
-}
-exports.parseTypescriptConfig = parseTypescriptConfig;

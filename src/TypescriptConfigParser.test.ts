@@ -2,16 +2,12 @@ import test from "ava";
 import * as path from 'path';
 import * as TypeScript from 'typescript';
 import { parseTypescriptConfig, tryReadTypeScriptConfigJson } from "./TypescriptConfigParser";
-import { Shout } from "./Shout";
 
 const root = process.cwd();
 const fixtures = path.join(root, 'fixtures');
 const validFolder = path.join(fixtures, 'TypeScriptConfigValid');
 const emptyFolder = path.join(fixtures, 'TypeScriptConfigEmpty');
 const invalidFolder = path.join(fixtures, 'TypeScriptConfigInvalid');
-
-Shout.error = function () { };
-Shout.warning = function () { };
 
 test('Parse TypeScript Configuration: Error', t => {
     t.throws(() => {

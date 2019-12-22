@@ -8,20 +8,22 @@ export class VoiceAssistant {
         this.silent = silent;
     }
 
-    speak(message: string) {
+    speak(message: string): void {
         if (this.silent || this.suppress) {
             return;
         }
 
         try {
-            say.speak(message, 'Samantha', 1.3, err => { });
+            say.speak(message, 'Samantha', 1.3, () => {
+                // do nothing
+            });
             this.suppress = true;
         } catch (error) {
-            
+            // do nothing
         }
     }
 
-    rewind(){
+    rewind(): void {
         this.suppress = false;
     }
 }

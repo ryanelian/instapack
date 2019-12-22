@@ -28,7 +28,7 @@ export class ToolOrchestrator {
     /**
      * Displays information about currently used build flags.
      */
-    outputBuildInformation() {
+    outputBuildInformation(): void {
         if (this.variables.production) {
             Shout.timed(chalk.yellow("Production"), "Mode: Build optimizations are enabled.");
         } else {
@@ -54,7 +54,7 @@ export class ToolOrchestrator {
      * Checks whether JS build task can be run.
      * If not, display validation error messages.
      */
-    async validateJsBuildTask() {
+    async validateJsBuildTask(): Promise<boolean> {
         const entry = this.finder.jsEntry;
         const checkEntry = fse.pathExists(entry);
 
@@ -70,7 +70,7 @@ export class ToolOrchestrator {
      * Checks whether the CSS build task can be run.
      * If not, display validation error messages.
      */
-    async validateCssBuildTask() {
+    async validateCssBuildTask(): Promise<boolean> {
         const entry = this.finder.cssEntry;
         const exist = await fse.pathExists(entry);
         if (!exist) {
@@ -79,7 +79,7 @@ export class ToolOrchestrator {
         return exist;
     }
 
-    async build(taskName: string) {
+    async build(taskName: string): Promise<void> {
         switch (taskName) {
             case 'all':
                 this.build('js');

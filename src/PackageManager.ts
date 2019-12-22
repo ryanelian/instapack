@@ -9,16 +9,16 @@ export class PackageManager {
      * Runs a child process that displays outputs to current command line output.
      * @param command 
      */
-    runWithOutputs(command: string) {
+    runWithOutputs(command: string): Buffer {
         // inherit
         return ChildProcess.execSync(command, {
             stdio: [0, 1, 2]
         });
     }
 
-    async whichAsync(tool: string) {
-        return new Promise<boolean>((ok, reject) => {
-            which(tool, (err, path) => {
+    async whichAsync(tool: string): Promise<boolean> {
+        return new Promise<boolean>((ok) => {
+            which(tool, (err) => {
                 if (err) {
                     ok(false);
                     return;
@@ -36,7 +36,7 @@ export class PackageManager {
      * Throws if the tool is unknown.
      * @param packageManager 
      */
-    async restore(packageManager: string) {
+    async restore(packageManager: string): Promise<void> {
         if (!packageManager) {
             packageManager = 'yarn';
         }

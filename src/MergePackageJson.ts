@@ -2,8 +2,8 @@
  * Sort an map-like object by its keys.
  * @param input 
  */
-export function objectSortByKeys(input) {
-    const output: any = {};
+export function objectSortByKeys(input: object): MapLikeObject<unknown> {
+    const output: MapLikeObject<unknown> = {};
 
     const keys = Object.keys(input).sort();
     for (const key of keys) {
@@ -13,13 +13,20 @@ export function objectSortByKeys(input) {
     return output;
 }
 
+interface PackageJsonPartial {
+    [key: string]: unknown;
+    instapack: unknown;
+    devDependencies: MapLikeObject<string> | undefined;
+    dependencies: MapLikeObject<string> | undefined;
+}
+
 /**
  * Merge existing project package.json with incoming template package.json 
  * by overriding instapack setting and package versions. (Keep the rest intact)
  * @param projectPackageJson 
  * @param templatePackageJson 
  */
-export function mergePackageJson(projectPackageJson, templatePackageJson) {
+export function mergePackageJson(projectPackageJson: PackageJsonPartial, templatePackageJson: PackageJsonPartial): PackageJsonPartial {
     const packageJson = JSON.parse(JSON.stringify(projectPackageJson));
 
     if (templatePackageJson.instapack) {

@@ -19,8 +19,8 @@ class PackageManager {
     }
     whichAsync(tool) {
         return __awaiter(this, void 0, void 0, function* () {
-            return new Promise((ok, reject) => {
-                which(tool, (err, path) => {
+            return new Promise((ok) => {
+                which(tool, (err) => {
                     if (err) {
                         ok(false);
                         return;

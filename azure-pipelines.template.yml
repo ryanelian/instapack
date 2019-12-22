@@ -18,12 +18,13 @@ jobs:
     displayName: 'Restore Packages'
 
   - script: >
-      npm run build
+      npm run build && 
+      npm test
     displayName: 'Build & Unit Test'
 
   - script: >
       npm install -g rimraf &&
-      ipack set package-manager npm
+      npm install -g yarn
     displayName: 'Prepare Full-Cycle Tests'
       
   - script: >
@@ -48,6 +49,15 @@ jobs:
       rimraf ./demo &&
       mkdir demo &&
       cd demo &&
+      ipack new blazor &&
+      ipack &&
+      ipack -db
+    displayName: 'Full-Cycle Test: blazor'
+
+  - script: >
+      rimraf ./demo &&
+      mkdir demo &&
+      cd demo &&
       ipack new preact &&
       ipack &&
       ipack -db
@@ -61,12 +71,3 @@ jobs:
       ipack &&
       ipack -db
     displayName: 'Full-Cycle Test: inferno'
-
-  - script: >
-      rimraf ./demo &&
-      mkdir demo &&
-      cd demo &&
-      ipack new blazor &&
-      ipack &&
-      ipack -db
-    displayName: 'Full-Cycle Test: blazor'

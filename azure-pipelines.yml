@@ -1,0 +1,12 @@
+jobs:
+- template: azure-pipelines.template.yml
+  parameters:
+    name: win_node_12
+    vmImage: 'windows-2019'
+    node_version: 12.x
+
+- template: azure-pipelines.template.yml
+  parameters:
+    name: win_node_10
+    vmImage: 'windows-2019'
+    node_version: 10.x

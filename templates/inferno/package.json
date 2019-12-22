@@ -6,18 +6,18 @@
     "output": "wwwroot"
   },
   "dependencies": {
-    "@types/luxon": "^1.15.2",
+    "@types/luxon": "^1.21.0",
     "@types/requirejs": "^2.1.31",
     "axios": "^0.19.0",
-    "inferno": "^7.3.2",
+    "inferno": "^7.3.3",
     "linq": "^3.2.1",
-    "luxon": "^1.21.1",
+    "luxon": "^1.21.3",
     "sweetalert": "^2.1.2",
-    "ts-polyfill": "^3.5.3",
+    "ts-polyfill": "^3.7.3",
     "tslib": "^1.10.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.7.0",
+    "@babel/core": "^7.7.7",
     "babel-plugin-inferno": "^6.1.0"
   }
 }

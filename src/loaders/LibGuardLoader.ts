@@ -1,7 +1,6 @@
 import { loader } from 'webpack';
 import * as TypeScript from 'typescript';
 import { getOptions } from 'loader-utils';
-import { RawSourceMap } from 'source-map';
 import chalk = require('chalk');
 import { checkSyntaxLevel } from '../SyntaxLevelChecker';
 import * as upath from 'upath';
@@ -10,7 +9,12 @@ interface LibGuardLoaderOptions {
     compilerOptions?: TypeScript.CompilerOptions;
 }
 
-function transpileModuleAst(resourcePath: string, source: TypeScript.SourceFile, options: TypeScript.CompilerOptions) {
+interface TypeScriptTranspileResult {
+    output: string | undefined;
+    map: string | undefined;
+}
+
+function transpileModuleAst(resourcePath: string, source: TypeScript.SourceFile, options: TypeScript.CompilerOptions): TypeScriptTranspileResult {
     resourcePath = upath.toUnix(resourcePath);
 
     const transpileOptions = TypeScript.getDefaultCompilerOptions();
@@ -44,10 +48,7 @@ function transpileModuleAst(resourcePath: string, source: TypeScript.SourceFile,
     transpileOptions.inlineSources = options.inlineSources;
     // console.log(transpileOptions);
 
-    const result: {
-        output: string | undefined;
-        map: string | undefined;
-    } = {
+    const result: TypeScriptTranspileResult = {
         output: undefined,
         map: undefined
     };
@@ -60,7 +61,9 @@ function transpileModuleAst(resourcePath: string, source: TypeScript.SourceFile,
 
             return undefined;
         },
-        writeFile: () => { },
+        writeFile: () => {
+            throw new Error('LibGuard in-memory TypeScript compiler host should not write any files!');
+        },
         getDefaultLibFileName: () => "lib.d.ts",
         useCaseSensitiveFileNames: () => false,
         getCanonicalFileName: fileName => fileName,
@@ -90,6 +93,11 @@ function transpileModuleAst(resourcePath: string, source: TypeScript.SourceFile,
             result.output = text;
         }
     });
+
+    if (emit.diagnostics.length) {
+        const errorMessage = emit.diagnostics.join('\n\n');
+        throw new Error(errorMessage);
+    }
 
     return result;
 }
@@ -122,15 +130,19 @@ export = function (this: loader.LoaderContext, source: string): void {
     const rel = '/' + upath.relative(this.rootContext, this.resourcePath);
     console.log(`${chalk.yellow('LibGuard')}: Transpiling dependency ${chalk.red(levelFrom)} >> ${chalk.yellow(levelTo)} ${chalk.cyan(rel)}`);
 
-    const result = transpileModuleAst(this.resourcePath, parse.source, options.compilerOptions);
-    // console.log(result);
-    if (this.sourceMap && result.map) {
-        // console.log(this.resourcePath);
-        const sm: RawSourceMap = JSON.parse(result.map);
-        sm.sources = [this.resourcePath];
-        // HACK78
-        this.callback(null, result.output, sm as any);
-    } else {
-        this.callback(null, result.output);
+    try {
+        const result = transpileModuleAst(this.resourcePath, parse.source, options.compilerOptions);
+        // console.log(result);
+        if (this.sourceMap && result.map) {
+            // console.log(this.resourcePath);
+            const sm = JSON.parse(result.map); // RawSourceMap
+            sm.sources = [this.resourcePath];
+            // HACK78
+            this.callback(null, result.output, sm);
+        } else {
+            this.callback(null, result.output);
+        }
+    } catch (error) {
+        this.callback(error);
     }
 }

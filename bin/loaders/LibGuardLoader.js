@@ -41,7 +41,9 @@ function transpileModuleAst(resourcePath, source, options) {
             }
             return undefined;
         },
-        writeFile: () => { },
+        writeFile: () => {
+            throw new Error('LibGuard in-memory TypeScript compiler host should not write any files!');
+        },
         getDefaultLibFileName: () => "lib.d.ts",
         useCaseSensitiveFileNames: () => false,
         getCanonicalFileName: fileName => fileName,
@@ -69,6 +71,10 @@ function transpileModuleAst(resourcePath, source, options) {
             result.output = text;
         }
     });
+    if (emit.diagnostics.length) {
+        const errorMessage = emit.diagnostics.join('\n\n');
+        throw new Error(errorMessage);
+    }
     return result;
 }
 module.exports = function (source) {
@@ -91,13 +97,18 @@ module.exports = function (source) {
     const levelTo = TypeScript.ScriptTarget[target].toUpperCase();
     const rel = '/' + upath.relative(this.rootContext, this.resourcePath);
     console.log(`${chalk.yellow('LibGuard')}: Transpiling dependency ${chalk.red(levelFrom)} >> ${chalk.yellow(levelTo)} ${chalk.cyan(rel)}`);
-    const result = transpileModuleAst(this.resourcePath, parse.source, options.compilerOptions);
-    if (this.sourceMap && result.map) {
-        const sm = JSON.parse(result.map);
-        sm.sources = [this.resourcePath];
-        this.callback(null, result.output, sm);
+    try {
+        const result = transpileModuleAst(this.resourcePath, parse.source, options.compilerOptions);
+        if (this.sourceMap && result.map) {
+            const sm = JSON.parse(result.map);
+            sm.sources = [this.resourcePath];
+            this.callback(null, result.output, sm);
+        }
+        else {
+            this.callback(null, result.output);
+        }
     }
-    else {
-        this.callback(null, result.output);
+    catch (error) {
+        this.callback(error);
     }
 };

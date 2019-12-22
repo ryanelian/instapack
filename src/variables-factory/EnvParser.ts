@@ -16,7 +16,7 @@ export async function readDotEnvFrom(folder: string): Promise<MapLikeObject<stri
     return DotEnv.parse(dotEnvRaw);
 }
 
-export function parseCliEnvFlags(yargsEnv: any): any {
+export function parseCliEnvFlags(yargsEnv): MapLikeObject<string> {
     // console.log(yargsEnv);
 
     const env: MapLikeObject<string> = {};

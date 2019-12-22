@@ -94,5 +94,5 @@ export interface BuildVariables {
 
     copy: CopyOption[];
 
-    typescriptConfiguration: any;
+    typescriptConfiguration: unknown;
 }

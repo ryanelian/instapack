@@ -18,6 +18,10 @@ const fixtures = path.join(root, 'fixtures');
 const validFolder = path.join(fixtures, 'TypeScriptConfigValid');
 const emptyFolder = path.join(fixtures, 'TypeScriptConfigEmpty');
 const invalidFolder = path.join(fixtures, 'TypeScriptConfigInvalid');
+ava_1.default.before(() => {
+    global.console.error = () => { };
+    global.console.warn = () => { };
+});
 ava_1.default('Parse TypeScript Configuration: Error', t => {
     t.throws(() => {
         TypescriptConfigParser_1.parseTypescriptConfig(validFolder, {

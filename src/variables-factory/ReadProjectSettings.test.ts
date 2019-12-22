@@ -7,6 +7,11 @@ import { ProjectSettings } from "./ProjectSettings";
 const root = process.cwd();
 const fixtures = upath.join(root, 'fixtures');
 
+test.before(() => {
+    global.console.error = (): void => { /* disabled */ };
+    global.console.warn = (): void => { /* disabled */ };
+});
+
 test('Project Settings: Not Found', async t => {
     const folder = upath.join(fixtures, 'Empty');
     const settings = await readProjectSettingsFrom(folder);

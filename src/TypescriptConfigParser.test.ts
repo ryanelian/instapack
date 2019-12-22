@@ -9,6 +9,11 @@ const validFolder = path.join(fixtures, 'TypeScriptConfigValid');
 const emptyFolder = path.join(fixtures, 'TypeScriptConfigEmpty');
 const invalidFolder = path.join(fixtures, 'TypeScriptConfigInvalid');
 
+test.before(() => {
+    global.console.error = (): void => { /* disabled */ };
+    global.console.warn = (): void => { /* disabled */ };
+});
+
 test('Parse TypeScript Configuration: Error', t => {
     t.throws(() => {
         parseTypescriptConfig(validFolder, {

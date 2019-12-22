@@ -294,6 +294,11 @@ inject();
             },
             plugins: plugins
         };
+        if (this.typescriptCompilerOptions.target === TypeScript.ScriptTarget.ES5) {
+            if (config.output) {
+                config.output['ecmaVersion'] = 5;
+            }
+        }
         if (wildcards && config.resolve) {
             config.resolve.modules = wildcards;
         }

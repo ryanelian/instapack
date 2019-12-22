@@ -77,7 +77,11 @@ test('Core TypeScript Loader: ES5', async t => {
     const entry = path.join(fixtures, 'index.ts');
     const stats = await compileAsync(entry);
 
-    const o = stats.toJson();
+    const o = stats.toJson({
+        source: true,
+        modules: true
+    });
+    // console.log(JSON.stringify(o, null, 4));
     if (o.modules) {
         let result = o.modules.filter(Q => Q.source)[0].source;
         if (result) {

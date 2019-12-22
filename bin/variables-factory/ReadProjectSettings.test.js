@@ -14,6 +14,10 @@ const upath = require("upath");
 const ReadProjectSettings_1 = require("./ReadProjectSettings");
 const root = process.cwd();
 const fixtures = upath.join(root, 'fixtures');
+ava_1.default.before(() => {
+    global.console.error = () => { };
+    global.console.warn = () => { };
+});
 ava_1.default('Project Settings: Not Found', (t) => __awaiter(void 0, void 0, void 0, function* () {
     const folder = upath.join(fixtures, 'Empty');
     const settings = yield ReadProjectSettings_1.readProjectSettingsFrom(folder);

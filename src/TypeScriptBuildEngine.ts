@@ -420,6 +420,13 @@ inject();
             plugins: plugins
         };
 
+        if (this.typescriptCompilerOptions.target === TypeScript.ScriptTarget.ES5) {
+            if (config.output) {
+                // https://github.com/webpack/changelog-v5/blob/master/MIGRATION%20GUIDE.md#disable-es2015-syntax-in-runtime-code-if-necessary
+                config.output['ecmaVersion'] = 5;
+            }
+        }
+
         if (wildcards && config.resolve) {
             config.resolve.modules = wildcards;
         }

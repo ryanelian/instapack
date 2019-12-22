@@ -78,7 +78,10 @@ function compileAsync(entry) {
 ava_1.default('Core TypeScript Loader: ES5', (t) => __awaiter(void 0, void 0, void 0, function* () {
     const entry = path.join(fixtures, 'index.ts');
     const stats = yield compileAsync(entry);
-    const o = stats.toJson();
+    const o = stats.toJson({
+        source: true,
+        modules: true
+    });
     if (o.modules) {
         let result = o.modules.filter(Q => Q.source)[0].source;
         if (result) {

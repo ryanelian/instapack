@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const fse = require("fs-extra");
 const upath = require("upath");
 const Ajv = require("ajv");
+const Shout_1 = require("../Shout");
 const settingsJsonSchemaPath = require.resolve('../../schemas/settings.json');
 function tryReadPackageJsonInstapackSettings(path) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -49,7 +50,7 @@ function readProjectSettingsFrom(folder) {
         const x = yield tryReadPackageJsonInstapackSettings(packageJsonPath);
         const valid = validate(x);
         if (valid === false) {
-            console.error('Abort Build: Invalid instapack project settings in ' + packageJsonPath);
+            Shout_1.Shout.fatal('Abort Build: Invalid instapack project settings in ' + packageJsonPath);
             console.error(validate.errors);
             throw new Error('Invalid instapack project settings!');
         }

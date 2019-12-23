@@ -17,26 +17,13 @@ class PackageManager {
             stdio: [0, 1, 2]
         });
     }
-    whichAsync(tool) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return new Promise((ok) => {
-                which(tool, (err) => {
-                    if (err) {
-                        ok(false);
-                        return;
-                    }
-                    ok(true);
-                });
-            });
-        });
-    }
     restore(packageManager) {
         return __awaiter(this, void 0, void 0, function* () {
             if (!packageManager) {
                 packageManager = 'yarn';
             }
             if (packageManager === 'yarn') {
-                const yarnExists = yield this.whichAsync('yarn');
+                const yarnExists = yield which('yarn');
                 if (!yarnExists) {
                     packageManager = 'npm';
                 }

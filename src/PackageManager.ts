@@ -16,19 +16,6 @@ export class PackageManager {
         });
     }
 
-    async whichAsync(tool: string): Promise<boolean> {
-        return new Promise<boolean>((ok) => {
-            which(tool, (err) => {
-                if (err) {
-                    ok(false);
-                    return;
-                }
-
-                ok(true);
-            });
-        });
-    }
-
     /**
      * Asynchronously attempts to restore project packages using selected tool.
      * If the tool is not defined, defaults to yarn.
@@ -42,7 +29,7 @@ export class PackageManager {
         }
 
         if (packageManager === 'yarn') {
-            const yarnExists = await this.whichAsync('yarn');
+            const yarnExists = await which('yarn');
             if (!yarnExists) {
                 packageManager = 'npm';
             }

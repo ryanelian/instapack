@@ -255,13 +255,13 @@ import jQuery from 'jquery';
 
 ## ESLint Integration
 
-instapack 8.0.0 supports [ESLint configuration](https://eslint.org/docs/user-guide/configuring), applied directly to TypeScript source code during type-check phase. Source code will be linted only when it can be compiled correctly.
+instapack 8.0.0 supports [ESLint configuration](https://eslint.org/docs/user-guide/configuring), applied directly in-memory to TypeScript source code (including `<script lang="ts"></script>` in Vue Single-File Components) during type-check phase. Source code will be linted only when it can be compiled correctly.
 
 Here is an example `.eslintrc.json` placed in the project root (next to `tsconfig.json`). [typescript-eslint](https://github.com/typescript-eslint/typescript-eslint) dependencies are required to be installed in the project:
 
 ```bash
 npm install eslint typescript @typescript-eslint/eslint-plugin @typescript-eslint/parser -D
-# OR
+# or...
 yarn add eslint typescript @typescript-eslint/eslint-plugin @typescript-eslint/parser -D
 ```
 
@@ -284,11 +284,11 @@ yarn add eslint typescript @typescript-eslint/eslint-plugin @typescript-eslint/p
 }
 ```
 
-For React projects, add one additional package and use this `.eslintrc.json` instead:
+**For React projects, add one additional package and use this `.eslintrc.json` instead:**
 
 ```bash
 npm install eslint-plugin-react -D
-# OR
+# or...
 yarn add eslint-plugin-react -D
 ```
 

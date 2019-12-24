@@ -666,9 +666,7 @@ inject();
      */
     async build(): Promise<void> {
         this.useBabel = await fse.pathExists(this.finder.babelConfiguration);
-        const vueCompiler = await resolveVueTemplateCompiler(this.finder.root);
-        this.vueTemplateCompiler = vueCompiler.compiler;
-
+        this.vueTemplateCompiler = await resolveVueTemplateCompiler(this.finder.root);
         const webpackConfiguration = this.createWebpackConfiguration();
 
         if (this.variables.hot) {

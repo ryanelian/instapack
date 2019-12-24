@@ -10,7 +10,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const TypeScript = require("typescript");
-const eslint = require("eslint");
 const chalk = require("chalk");
 const fse = require("fs-extra");
 const chokidar_1 = require("chokidar");
@@ -20,16 +19,15 @@ const PathFinder_1 = require("./variables-factory/PathFinder");
 const TypescriptConfigParser_1 = require("./TypescriptConfigParser");
 const TypeScriptSourceStore_1 = require("./TypeScriptSourceStore");
 const VoiceAssistant_1 = require("./VoiceAssistant");
+const CompilerResolver_1 = require("./CompilerResolver");
 class TypeScriptCheckerTool {
-    constructor(sourceStore, compilerOptions, silent) {
+    constructor(sourceStore, compilerOptions, silent, eslint) {
         this.sourceStore = sourceStore;
+        this.eslint = eslint;
         this.va = new VoiceAssistant_1.VoiceAssistant(silent);
         this.compilerOptions = compilerOptions;
         this.host = TypeScript.createCompilerHost(compilerOptions);
         this.patchCompilerHost();
-        this.linter = new eslint.CLIEngine({
-            cwd: process.cwd()
-        });
     }
     patchCompilerHost() {
         const rawFileCache = {};
@@ -51,16 +49,28 @@ class TypeScriptCheckerTool {
             const finder = new PathFinder_1.PathFinder(variables);
             const tsconfig = TypescriptConfigParser_1.parseTypescriptConfig(variables.root, variables.typescriptConfiguration);
             const compilerOptions = tsconfig.options;
-            const sourceStore = new TypeScriptSourceStore_1.TypeScriptSourceStore(compilerOptions.target || TypeScript.ScriptTarget.ES3);
-            const loading = sourceStore.loadFolder(finder.jsInputFolder);
-            const tool = new TypeScriptCheckerTool(sourceStore, compilerOptions, variables.silent);
-            yield loading;
-            return tool;
+            const sourceStore = new TypeScriptSourceStore_1.TypeScriptSourceStore(compilerOptions.target || TypeScript.ScriptTarget.ES5);
+            const loadSourceTask = sourceStore.loadFolder(finder.jsInputFolder);
+            const eslintCtor = yield CompilerResolver_1.tryGetProjectESLint(finder.root, finder.jsEntry);
+            let versionAnnounce = `Using TypeScript ${chalk.green(TypeScript.version)} `;
+            if (eslintCtor) {
+                versionAnnounce += `+ ESLint ${chalk.green(eslintCtor.version)}`;
+            }
+            else {
+                versionAnnounce += chalk.grey('(ESLint disabled)');
+            }
+            let eslint;
+            if (eslintCtor) {
+                eslint = new eslintCtor({});
+            }
+            Shout_1.Shout.timed(versionAnnounce);
+            yield loadSourceTask;
+            return new TypeScriptCheckerTool(sourceStore, compilerOptions, variables.silent, eslint);
         });
     }
     typeCheck() {
         const tsc = TypeScript.createProgram(this.sourceStore.sourcePaths, this.compilerOptions, this.host);
-        Shout_1.Shout.timed('Type-checking using TypeScript ' + chalk.green(TypeScript.version));
+        Shout_1.Shout.timed('Type-checking start...');
         const start = process.hrtime();
         try {
             const errors = [];
@@ -74,9 +84,9 @@ class TypeScriptCheckerTool {
                 for (const error of newErrors) {
                     errors.push(error);
                 }
-                if (newErrors.length === 0) {
+                if (newErrors.length === 0 && this.eslint) {
                     try {
-                        const eslintReport = this.linter.executeOnText(source.getFullText(), source.fileName);
+                        const eslintReport = this.eslint.executeOnText(source.getFullText(), source.fileName);
                         for (const result of eslintReport.results) {
                             for (const lintError of result.messages) {
                                 const renderLintErrorMessage = this.renderLintErrorMessage(source.fileName, lintError);
@@ -85,6 +95,7 @@ class TypeScriptCheckerTool {
                         }
                     }
                     catch (ex) {
+                        Shout_1.Shout.error(ex);
                     }
                 }
             }

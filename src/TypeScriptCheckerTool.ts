@@ -1,5 +1,5 @@
 import * as TypeScript from 'typescript';
-import * as eslint from 'eslint';
+import * as ESLint from 'eslint';
 import chalk = require('chalk');
 import * as fse from 'fs-extra';
 import { watch } from 'chokidar';
@@ -11,6 +11,7 @@ import { PathFinder } from './variables-factory/PathFinder';
 import { parseTypescriptConfig } from './TypescriptConfigParser';
 import { TypeScriptSourceStore } from './TypeScriptSourceStore';
 import { VoiceAssistant } from './VoiceAssistant';
+import { tryGetProjectESLint } from './CompilerResolver';
 
 /**
  * Contains methods for static-checking TypeScript projects. 
@@ -29,7 +30,7 @@ export class TypeScriptCheckerTool {
     /**
      * Gets the ESLint service, if available.
      */
-    private readonly linter: eslint.CLIEngine;
+    private readonly eslint: ESLint.CLIEngine | undefined;
 
     /**
      * Gets the TypeScript cache management object.
@@ -45,18 +46,16 @@ export class TypeScriptCheckerTool {
     private constructor(
         sourceStore: TypeScriptSourceStore,
         compilerOptions: TypeScript.CompilerOptions,
-        silent: boolean) {
+        silent: boolean,
+        eslint: ESLint.CLIEngine | undefined) {
 
         this.sourceStore = sourceStore;
+        this.eslint = eslint;
         this.va = new VoiceAssistant(silent);
 
         this.compilerOptions = compilerOptions;
         this.host = TypeScript.createCompilerHost(compilerOptions);
         this.patchCompilerHost();
-
-        this.linter = new eslint.CLIEngine({
-            cwd: process.cwd()
-        });
     }
 
     /**
@@ -97,12 +96,22 @@ export class TypeScriptCheckerTool {
         const tsconfig = parseTypescriptConfig(variables.root, variables.typescriptConfiguration);
         const compilerOptions = tsconfig.options;
 
-        const sourceStore = new TypeScriptSourceStore(compilerOptions.target || TypeScript.ScriptTarget.ES3);
-        const loading = sourceStore.loadFolder(finder.jsInputFolder);
-
-        const tool = new TypeScriptCheckerTool(sourceStore, compilerOptions, variables.silent);
-        await loading;
-        return tool;
+        const sourceStore = new TypeScriptSourceStore(compilerOptions.target || TypeScript.ScriptTarget.ES5);
+        const loadSourceTask = sourceStore.loadFolder(finder.jsInputFolder);
+        const eslintCtor = await tryGetProjectESLint(finder.root, finder.jsEntry);
+        let versionAnnounce = `Using TypeScript ${chalk.green(TypeScript.version)} `;
+        if (eslintCtor) {
+            versionAnnounce += `+ ESLint ${chalk.green(eslintCtor.version)}`;
+        } else {
+            versionAnnounce += chalk.grey('(ESLint disabled)');
+        }
+        let eslint: ESLint.CLIEngine | undefined;
+        if (eslintCtor) {
+            eslint = new eslintCtor({});
+        }
+        Shout.timed(versionAnnounce);
+        await loadSourceTask;
+        return new TypeScriptCheckerTool(sourceStore, compilerOptions, variables.silent, eslint);
     }
 
     /**
@@ -111,7 +120,7 @@ export class TypeScriptCheckerTool {
     typeCheck(): void {
         // console.log(this.sourceStore.sourcePaths);
         const tsc = TypeScript.createProgram(this.sourceStore.sourcePaths, this.compilerOptions, this.host);
-        Shout.timed('Type-checking using TypeScript ' + chalk.green(TypeScript.version));
+        Shout.timed('Type-checking start...');
         const start = process.hrtime();
 
         try {
@@ -155,10 +164,10 @@ export class TypeScriptCheckerTool {
                 // }, false);
                 // let eslintSource = new eslint.SourceCode(txt, ast.estree as eslint.AST.Program);
 
-                if (newErrors.length === 0) {
+                if (newErrors.length === 0 && this.eslint) {
                     try {
                         // we need to do this because Linter cannot find rules dynamically, only CLIEngine!
-                        const eslintReport = this.linter.executeOnText(source.getFullText(), source.fileName);
+                        const eslintReport = this.eslint.executeOnText(source.getFullText(), source.fileName);
 
                         for (const result of eslintReport.results) {
                             for (const lintError of result.messages) {
@@ -167,7 +176,8 @@ export class TypeScriptCheckerTool {
                             }
                         }
                     } catch (ex) {
-                        // error when ESLint configuration cannot be found. skipping lint.
+                        // this should not happen because we checked for configuration prior type-checking
+                        Shout.error(ex);
                     }
                 }
             }
@@ -212,7 +222,7 @@ export class TypeScriptCheckerTool {
      * @param fileName 
      * @param lintError 
      */
-    renderLintErrorMessage(fileName: string, lintError: eslint.Linter.LintMessage): string {
+    renderLintErrorMessage(fileName: string, lintError: ESLint.Linter.LintMessage): string {
         const lintErrorMessage = chalk.red('ESLint') + ' '
             + chalk.red(fileName) + ' '
             + chalk.yellow(`(${lintError.line},${lintError.column})`) + ': '

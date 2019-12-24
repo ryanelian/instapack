@@ -484,8 +484,7 @@ inject();
     build() {
         return __awaiter(this, void 0, void 0, function* () {
             this.useBabel = yield fse.pathExists(this.finder.babelConfiguration);
-            const vueCompiler = yield CompilerResolver_1.resolveVueTemplateCompiler(this.finder.root);
-            this.vueTemplateCompiler = vueCompiler.compiler;
+            this.vueTemplateCompiler = yield CompilerResolver_1.resolveVueTemplateCompiler(this.finder.root);
             const webpackConfiguration = this.createWebpackConfiguration();
             if (this.variables.hot) {
                 yield this.runDevServer(webpackConfiguration);

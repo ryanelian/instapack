@@ -35,7 +35,7 @@ Then invoke instapack using command: `npx ipack` or `yarn ipack`
 
 <img src="https://raw.githubusercontent.com/ryanelian/instapack/master/img/screenshot.png" alt="screenshot" width="450" height="400" />
 
-```powershell
+```bash
 mkdir MyWebApp
 cd MyWebApp
 ipack new empty
@@ -259,8 +259,10 @@ instapack 8.0.0 supports [ESLint configuration](https://eslint.org/docs/user-gui
 
 Here is an example `.eslintrc.json` placed in the project root (next to `tsconfig.json`). [typescript-eslint](https://github.com/typescript-eslint/typescript-eslint) dependencies are required to be installed in the project:
 
-```
+```bash
 npm install eslint typescript @typescript-eslint/eslint-plugin @typescript-eslint/parser -D
+# OR
+yarn add eslint typescript @typescript-eslint/eslint-plugin @typescript-eslint/parser -D
 ```
 
 ```json
@@ -284,8 +286,10 @@ npm install eslint typescript @typescript-eslint/eslint-plugin @typescript-eslin
 
 For React projects, add one additional package and use this `.eslintrc.json` instead:
 
-```
+```bash
 npm install eslint-plugin-react -D
+# OR
+yarn add eslint-plugin-react -D
 ```
 
 ```json
@@ -590,11 +594,11 @@ Occasionally, beta builds will be published (`instapack@beta`) for showcasing th
 
 Alternatively, you may build directly from the source code repository:
 
-```powershell
+```bash
 git clone https://github.com/ryanelian/instapack.git
 cd instapack
-.\link.ps1
-.\build.ps1
+./link.ps1
+./build.ps1
 ipack --version
 ```
 

@@ -7,7 +7,7 @@ interface HelloProps {
 }
 
 export class Hello extends React.Component<HelloProps, undefined> {
-    render() {
+    render(): JSX.Element {
         return <MessageBar messageBarType={MessageBarType.success}>Hello from {this.props.compiler} and {this.props.framework}!</MessageBar>
     }
 }

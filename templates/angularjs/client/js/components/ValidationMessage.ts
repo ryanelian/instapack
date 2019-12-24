@@ -1,8 +1,6 @@
 import template from './ValidationMessage.html';
 
 class ValidationMessageController implements angular.IController {
-    static $inject = [];
-
     input: angular.IFormController;
     forId: string;
     display: string;
@@ -14,10 +12,13 @@ class ValidationMessageController implements angular.IController {
     maxLengthError: string;
     patternError: string;
 
+    static $inject = [];
     constructor() {
+        // add dependency injection hints to $inject,
+        // add dependency injection services as constructor parameter
     }
 
-    $onInit() {
+    $onInit(): void {
         if (this.forId) {
             this.element = window.document.getElementById(this.forId);
         } else {
@@ -32,62 +33,62 @@ class ValidationMessageController implements angular.IController {
         this.setPatternErrorMessage();
     }
 
-    setFieldDisplay() {
+    setFieldDisplay(): void {
         if (!this.display) {
             this.display = this.input.$name;
         }
     }
 
-    setMinErrorMessage() {
+    setMinErrorMessage(): void {
         this.minError = 'input value needs to be higher';
 
         if (this.element) {
-            let min = this.element.getAttribute('min') || this.element.getAttribute('ng-min');
+            const min = this.element.getAttribute('min') || this.element.getAttribute('ng-min');
             if (min) {
                 this.minError = 'minimum input value is ' + min;
             }
         }
     }
 
-    setMaxErrorMessage() {
+    setMaxErrorMessage(): void {
         this.maxError = 'input value needs to be lower';
 
         if (this.element) {
-            let max = this.element.getAttribute('max') || this.element.getAttribute('ng-max');
+            const max = this.element.getAttribute('max') || this.element.getAttribute('ng-max');
             if (max) {
                 this.maxError = 'maximum input value is ' + max;
             }
         }
     }
 
-    setMinLengthErrorMessage() {
+    setMinLengthErrorMessage(): void {
         this.minLengthError = 'input length needs to be longer';
 
         if (this.element) {
-            let minlength = this.element.getAttribute('minlength') || this.element.getAttribute('ng-minlength');
+            const minlength = this.element.getAttribute('minlength') || this.element.getAttribute('ng-minlength');
             if (minlength) {
                 this.minLengthError = 'minimum input length is ' + minlength + ' characters';
             }
         }
     }
 
-    setMaxLengthErrorMessage() {
+    setMaxLengthErrorMessage(): void {
         this.maxLengthError = 'input length needs to be shorter';
 
         if (this.element) {
-            let maxlength = this.element.getAttribute('maxlength') || this.element.getAttribute('ng-maxlength');
+            const maxlength = this.element.getAttribute('maxlength') || this.element.getAttribute('ng-maxlength');
             if (maxlength) {
                 this.maxLengthError = 'maximum input length is ' + maxlength + ' characters';
             }
         }
     }
 
-    setPatternErrorMessage() {
+    setPatternErrorMessage(): void {
         if (!this.patternError) {
             this.patternError = this.display + ' field input pattern mismatched';
 
             if (this.element) {
-                let regex = this.element.getAttribute('pattern');
+                const regex = this.element.getAttribute('pattern');
                 if (regex) {
                     this.patternError += ' ' + regex;
                 }
@@ -96,7 +97,7 @@ class ValidationMessageController implements angular.IController {
     }
 }
 
-export let ValidationMessage: angular.IComponentOptions = {
+export const ValidationMessage: angular.IComponentOptions = {
     template: template,
     bindings: {
         input: '<for',

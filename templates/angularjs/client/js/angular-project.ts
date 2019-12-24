@@ -9,12 +9,12 @@ import uib from 'angular-ui-bootstrap';
 import { ValidationMessage } from './components/ValidationMessage';
 import { SampleService } from './services/SampleService';
 
-let app = angular.module('aspnet', [uib, animate, touch, messages]);
+const app = angular.module('aspnet', [uib, animate, touch, messages]);
 
-app.run(['$q', ($q) => {
+app.run(['$q', ($q: angular.IQService & PromiseConstructor): void => {
     // $q: angular.IQService
     // Polyfill ES2018-compatible Promise using AngularJS implementation, which triggers $scope.$apply()
-    window['Promise'] = $q;
+    window.Promise = $q;
 }]);
 
 app.component('validationMessage', ValidationMessage);

@@ -1,4 +1,4 @@
-import { h, Component } from 'preact';
+import { h, Component, JSX } from 'preact';
 
 interface HelloProps {
     compiler: string;
@@ -6,7 +6,7 @@ interface HelloProps {
 }
 
 export class Hello extends Component<HelloProps, undefined> {
-    render() {
+    render(): h.JSX.Element {
         return <h1>Hello from {this.props.compiler} and {this.props.framework}!</h1>
     }
 }

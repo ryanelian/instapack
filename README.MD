@@ -272,11 +272,43 @@ npm install eslint typescript @typescript-eslint/eslint-plugin @typescript-eslin
         "plugin:@typescript-eslint/recommended"
     ],
     "parserOptions": {
+        "ecmaVersion": 2020,
         "sourceType": "module"
     },
     "env": {
         "browser": true,
         "commonjs": true
+    }
+}
+```
+
+For React projects, add one additional package and use this `.eslintrc.json` instead:
+
+```
+npm install eslint-plugin-react -D
+```
+
+```json
+{
+    "parser": "@typescript-eslint/parser",
+    "extends": [
+        "eslint:recommended",
+        "plugin:react/recommended",
+        "plugin:@typescript-eslint/eslint-recommended",
+        "plugin:@typescript-eslint/recommended"
+    ],
+    "parserOptions": {
+        "ecmaVersion": 2020,
+        "sourceType": "module"
+    },
+    "env": {
+        "browser": true,
+        "commonjs": true
+    },
+    "settings": {
+        "react": {
+            "version": "detect"
+        }
     }
 }
 ```

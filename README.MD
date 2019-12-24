@@ -255,7 +255,9 @@ import jQuery from 'jquery';
 
 ## ESLint Integration
 
-instapack 8.0.0 supports [ESLint configuration](https://eslint.org/docs/user-guide/configuring), applied directly in-memory to TypeScript source code (including `<script lang="ts"></script>` in Vue Single-File Components) during type-check phase. Source code will be linted only when it can be compiled correctly.
+instapack 8.0.0 supports [ESLint configuration](https://eslint.org/docs/user-guide/configuring), applied directly in-memory to TypeScript source code during type-check phase. 
+
+> Source code will be linted only when it can be compiled correctly.
 
 Here is an example `.eslintrc.json` placed in the project root (next to `tsconfig.json`). [typescript-eslint](https://github.com/typescript-eslint/typescript-eslint) dependencies are required to be installed in the project:
 
@@ -284,7 +286,45 @@ yarn add eslint typescript @typescript-eslint/eslint-plugin @typescript-eslint/p
 }
 ```
 
-**For React projects, add one additional package and use this `.eslintrc.json` instead:**
+### ESLint: Vue.js
+
+Out of the box, instapack lints `<script lang="ts"></script>` in Vue Single-File Components without any special ESLint configuration for Vue.js! :heavy_check_mark:
+
+**However, Your lint errors will not be visible in Visual Studio Code...** To remedy this issue, use the following special ESLint configuration instead: (Add two more packages:)
+
+```bash
+npm install eslint-plugin-vue vue-eslint-parser -D
+# or...
+yarn add eslint-plugin-vue vue-eslint-parser -D
+```
+
+```json
+{
+    "parser": "vue-eslint-parser",
+    "extends": [
+        "eslint:recommended",
+        "plugin:vue/recommended",
+        "plugin:@typescript-eslint/eslint-recommended",
+        "plugin:@typescript-eslint/recommended"
+    ],
+    "parserOptions": {
+        "parser": "@typescript-eslint/parser",
+        "ecmaVersion": 2020,
+        "sourceType": "module"
+    },
+    "env": {
+        "browser": true,
+        "commonjs": true
+    },
+    "rules": {
+        "vue/html-indent": ["warn", 4]
+    }
+}
+```
+
+### ESLint: React
+
+For React projects, add one additional package and use this `.eslintrc.json` instead:
 
 ```bash
 npm install eslint-plugin-react -D
@@ -319,7 +359,7 @@ yarn add eslint-plugin-react -D
 
 ## Babel Integration
 
-instapack supports [`.babelrc`](https://babeljs.io/docs/usage/babelrc/) in the project root folder. **Babel will be run AFTER TypeScript compilation.** Here are some use cases where this feature can be useful:
+instapack supports [`.babelrc`](https://babeljs.io/docs/usage/babelrc/) in the project root folder. **Babel transofmations will be applied AFTER TypeScript compilation.** Here are some use cases where this feature can be useful:
 
 - You may use Babel instead of TypeScript to transpile JS to ES5: set TypeScript `target` to `esnext` then use [`@babel/preset-env`](https://github.com/babel/babel/tree/master/packages/babel-preset-env). This has an interesting side effect where [polyfills are automatically applied!](https://babeljs.io/docs/en/babel-polyfill)
 

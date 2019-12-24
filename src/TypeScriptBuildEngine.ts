@@ -388,11 +388,11 @@ inject();
             },
             externals: this.variables.externals,
             resolve: {
-                extensions: ['.ts', '.tsx', '.js', '.jsx', '.mjs', '.vue', '.wasm', '.json'],
+                extensions: ['.ts', '.tsx', '.js', '.jsx', '.vue', '.json'],
                 // .vue automatic resolution follows vue-cli behavior, although is still required in TypeScript...
                 // .html module import must now be explicit!
-                // .mjs causes runtime error when `module.exports` is being used instead of `export`.
-                // .wasm requires adding `application/wasm` MIME to web server (both IIS and Kestrel).
+                // .mjs causes runtime error when `module.exports` is being used instead of `export`. (Experimental in Webpack 5, requires experiments.mjs: true)
+                // .wasm requires adding `application/wasm` MIME to web server (both IIS and Kestrel). (Experimental in Webpack 5, requires experiments: { asyncWebAssembly: true, importAsync: true })
                 alias: alias
             },
             module: {

@@ -286,13 +286,13 @@ yarn add eslint typescript @typescript-eslint/eslint-plugin @typescript-eslint/p
 }
 ```
 
-> To make ESLint errors visible in Visual Studio Code, install the ESLint extensions: https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint
+> To make ESLint errors visible in Visual Studio Code, install the ESLint extension: https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint
 
-### ESLint: Vue.js
+### TypeScript-ESLint: Vue.js
 
 Out of the box, instapack lints `<script lang="ts"></script>` in Vue Single-File Components without any special ESLint configuration for Vue.js! :heavy_check_mark:
 
-**However, these lint errors will not be visible in Visual Studio Code...** To remedy this issue, use the following special ESLint configuration instead: (Add two more packages:)
+**However, these lint errors will not be visible in Visual Studio Code...** To remedy this issue, add two more packages to the project and use the following special ESLint configuration instead:
 
 ```bash
 npm install eslint-plugin-vue vue-eslint-parser -D
@@ -324,7 +324,7 @@ yarn add eslint-plugin-vue vue-eslint-parser -D
 }
 ```
 
-### ESLint: React
+### TypeScript-ESLint: React
 
 For React projects, add one additional package and use this `.eslintrc.json` instead:
 

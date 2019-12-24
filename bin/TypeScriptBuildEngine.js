@@ -267,7 +267,7 @@ inject();
             },
             externals: this.variables.externals,
             resolve: {
-                extensions: ['.ts', '.tsx', '.js', '.jsx', '.mjs', '.vue', '.wasm', '.json'],
+                extensions: ['.ts', '.tsx', '.js', '.jsx', '.vue', '.json'],
                 alias: alias
             },
             module: {

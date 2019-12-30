@@ -140,9 +140,9 @@ In addition, build flags are available:
 
 - `--dev` or `-d` disables build outputs optimization and minification for **FAST build!** :fire:
 
-- `--serve` or `-s` enables **Hot Reload** development mode using dedicated build server. :rotating_light: [Read more ↓](#hot-reload-development-mode)
+- `--serve` or `-s` enables **Hot Reload** development mode using dedicated build server. :recycle: [Read more ↓](#hot-reload-development-mode)
 
-- `--no-sourcemaps` disables source maps, producing undebuggable outputs. (Slightly improves build speed)
+- `--no-sourcemaps` disables source maps, producing undebuggable outputs. :bug: (Slightly improves build speed)
 
 - `--stats` generates `stats.json` next to the TypeScript build outputs, which can be fed to [webpack-bundle-analyzer](https://www.npmjs.com/package/webpack-bundle-analyzer) or [webpack-visualizer](http://chrisbateman.github.io/webpack-visualizer/). For sanity, this flag will be ignored when using `-d` or `-w` flags.
 

@@ -62,7 +62,7 @@ Out of the box, these files will be used as the program entry points:
 
 ## System Requirements
 
-Currently supported Node.js is [the latest version 8 or 10 or 12 LTS](https://nodejs.org/en/download/).
+Currently supported Node.js is [the latest version 10 or 12 (LTS)](https://nodejs.org/en/download/).
 
 When using [Visual Studio 2017 or 2019](https://www.visualstudio.com/downloads/), install [the latest TypeScript SDK](https://marketplace.visualstudio.com/search?term=typescript&target=VS&category=Tools&cost=free&vsVersion=&subCategory=Programming%20Languages&sortBy=UpdatedDate).
 
@@ -80,21 +80,19 @@ If using [the latest Visual Studio Code](https://code.visualstudio.com/), it sho
 
 - Beginner-friendly: Lower the barrier of entry for developing a modern web app. :balloon:
 
-- Introduce structures to the front-end source code using standard module systems. :building_construction:
+- Introduce structures to the front-end source code using standard module systems. :bento:
 
 - Improve source code quality and maintainability with type hints and compile-time checks. :eyeglasses:
 
 - Enforce best practices when building apps, which may significantly impact page load time. :hammer_and_wrench: (i.e. tree-shaking, code-splitting, bundling, and minification) 
 
-- Blur the boundary between design-time and coding-time using lightning-fast `watch` + `dev` / `hot` build mode. :zap:
+- Blur the boundary between design-time and coding-time using lightning-fast `serve` or `watch` + `dev` build mode. :zap:
 
 ## But... Why?
 
-Recently, *every hecking framework on this planet* :earth_asia: has their own CLI; but only few are able to support TypeScript as first-class feature. Thus, most people gave up on TypeScript right off the bat... :bat:
+**instapack is a first-class end-to-end TypeScript and Sass build tool. :tophat:** Meaning, it comes with an assurance to compile projects written using standard TypeScript or Sass successfully regardless of frameworks used. :statue_of_liberty: This mindset is the differentiating factor between instapack and other CLI tools, which tend to be designed framework-first but TypeScript-second! 
 
-instapack is an initiative to develop a command line tool for compiling most apps developed using mainstream JS frameworks, with a :lemon: twist: **It can easily build an app written in TypeScript with minimal configurations!**
-
-instapack is battle-tested :hocho: and is designed to cover *most normal use cases* when developing a modern web app. Powered by [webpack](https://webpack.js.org), instapack effortlessly devours modules written using modern JS standards (ES Harmony, CommonJS, AMD, UMD) and more (HTML templates, Vue SFC).
+instapack is battle-tested :hocho: and is designed to cover *most normal use cases* when developing a modern web app. Powered by [webpack](https://webpack.js.org), instapack effortlessly consumes modern JS modules (ES, CommonJS, UMD) and more (plain HTML templates, Vue SFC, TypeScript JSX).
 
 With this powerful tool, you can save time :watch:, save precious SSD space :space_invader:, and save yourself from the pain of manually maintaining project build scripts! :coffee:
 
@@ -144,7 +142,7 @@ In addition, build flags are available:
 
 - `--serve` or `-s` enables **Hot Reload** development mode using dedicated build server. :rotating_light: [Read more ↓](#hot-reload-development-mode)
 
-- `--no-sourcemap` disables source maps, producing undebuggable outputs. (Slightly improves build speed)
+- `--no-sourcemaps` disables source maps, producing undebuggable outputs. (Slightly improves build speed)
 
 - `--stats` generates `stats.json` next to the TypeScript build outputs, which can be fed to [webpack-bundle-analyzer](https://www.npmjs.com/package/webpack-bundle-analyzer) or [webpack-visualizer](http://chrisbateman.github.io/webpack-visualizer/). For sanity, this flag will be ignored when using `-d` or `-w` flags.
 
@@ -259,7 +257,7 @@ instapack 8.0.0 supports [ESLint configuration](https://eslint.org/docs/user-gui
 
 > Source code will be linted only when it can be compiled correctly.
 
-Here is an example `.eslintrc.json` placed in the project root (next to `tsconfig.json`). [typescript-eslint](https://github.com/typescript-eslint/typescript-eslint) dependencies are required to be installed in the project:
+Here is an example `.eslintrc.json` placed in the project root (next to `tsconfig.json`). eslint and [typescript-eslint](https://github.com/typescript-eslint/typescript-eslint) packages are required to be installed in the project:
 
 ```bash
 npm install eslint typescript @typescript-eslint/eslint-plugin @typescript-eslint/parser -D
@@ -361,7 +359,7 @@ yarn add eslint-plugin-react -D
 
 ## Babel Integration
 
-instapack supports [`.babelrc`](https://babeljs.io/docs/usage/babelrc/) in the project root folder. **Babel transofmations will be applied AFTER TypeScript compilation.** Here are some use cases where this feature can be useful:
+instapack supports [`.babelrc`](https://babeljs.io/docs/usage/babelrc/) in the project root folder. **Babel transformations will be applied AFTER TypeScript compilation.** Here are some use cases where this feature can be useful:
 
 - You may use Babel instead of TypeScript to transpile JS to ES5: set TypeScript `target` to `esnext` then use [`@babel/preset-env`](https://github.com/babel/babel/tree/master/packages/babel-preset-env). This has an interesting side effect where [polyfills are automatically applied!](https://babeljs.io/docs/en/babel-polyfill)
 
@@ -768,17 +766,52 @@ Nope.
 
 Nope. 
 
-However, you can _eject_ the `client` folder out of the back-end project folder, rename the `jsOut` file, and then redirect the `output` folder path back into the assets folder of the back-end project. This is the preferred way of doing things because:
+However, you can _eject_ the `client` folder out of the back-end project folder, rename the `jsOut` file, and then redirect the `output` folder path back into the assets folder of the back-end project:
 
-- You may have multiple front-end projects for a single back-end project.
+```
+├───backend
+│   └───wwwroot
+│       ├───css
+│       │       frontend1.css
+│       │       frontend2.css
+│       └───js
+│               frontend1.dll.js
+│               frontend1.js
+│               frontend2.dll.js
+│               frontend2.js
+│               
+├───frontend1
+│   │   package.json
+│   │   tsconfig.json
+│   │   
+│   └───client
+│       ├───css
+│       │       index.scss
+│       └───js
+│               index.ts
+│               
+└───frontend2
+    │   package.json
+    │   tsconfig.json
+    │   
+    └───client
+        ├───css
+        │       index.scss
+        └───js
+                index.ts
+```
 
-- Every front-end project can have vastly different `tsconfig.json` and `package.json` setup.
+This is the preferred way of doing things because:
 
-- Prevents front-end projects from screwing around with each other's code.
+- You may have multiple front-end projects for a single back-end project. Heck, you might be able to parallelize the build by running two or more instapack at once.
+
+- Every front-end project can have vastly different `tsconfig.json` and `package.json` setup. (e.g. Same dependencies, different versions!)
+
+- Generally, prevent front-end projects from screwing around with each other's code.
 
 ### My package restore / IDE is slow. Help!
 
-Windows Defender or other anti-virus software appear to slow down package restore and IDEs when opening projects.
+Windows Defender or other anti-virus software apparently slow down package restores and IDEs when opening projects.
 
 For this very reason, it is highly recommended to:
 

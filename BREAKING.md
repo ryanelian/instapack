@@ -2,6 +2,20 @@
 
 Here are the list of breaking changes when upgrading between instapack major (or minor) versions.
 
+## 8.0.0
+
+- Build flag `--hot` / `-h` is changed to `serve` / `-s` to reduce confusion with `--help`
+
+- Build flag `--nodebug` is changed to `--no-sourcemaps`
+
+- Global settings `silent` is changed to `mute` to correctly reflect the actual function.
+
+- Dropped the deprecated TSLint in favor of ESLint-TypeScript integrations.
+
+- Dropped the already-deprecated `.vue.html` component compilation.
+
+- Dropped the End-of-Life (01-2020) Node.js version 8!
+
 ## 7.3.0
 
 - `port2` option is no longer being used and is obsoleted.

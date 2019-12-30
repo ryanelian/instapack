@@ -53,7 +53,7 @@ export interface BuildVariables {
     /**
      * Gets the user settings for disabling voice assistant on build failure.
      */
-    silent: boolean;
+    mute: boolean;
 
     /**
      * Gets the production mode build flag, which enables minification and optimization of the build outputs. 
@@ -76,23 +76,27 @@ export interface BuildVariables {
     stats: boolean;
 
     /**
-     * Gets the verbose build flag.
-     */
-    verbose: boolean;
-
-    /**
      * Gets the hot reload development mode build flag.
      */
-    hot: boolean;
+    serve: boolean;
 
     /**
      * Gets the static port number to be used by the Hot Reload server for delivering built assets.
      */
     port1: number;
 
+    /**
+     * Gets the global object reference name for root exported modules.
+     */
     namespace: string | undefined;
 
+    /**
+     * Gets the library manager asset copy build options.
+     */
     copy: CopyOption[];
 
+    /**
+     * Gets the TypeScript configuration JSON file.
+     */
     typescriptConfiguration: unknown;
 }

@@ -39,9 +39,6 @@ module.exports = class InstapackProgram {
     }
     build(taskName, flags) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (flags.verbose) {
-                Shout_1.Shout.displayVerboseOutput = true;
-            }
             const projectSettings = ReadProjectSettings_1.readProjectSettingsFrom(this.projectFolder);
             const dotEnv = EnvParser_1.readDotEnvFrom(this.projectFolder);
             const userSettings = yield UserSettingsManager_1.getSettings();

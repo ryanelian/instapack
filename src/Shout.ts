@@ -78,8 +78,6 @@ export const Shout = {
         console.log(output);
     },
 
-    displayVerboseOutput: false,
-
     /**
      * Logs file output and writes to output directory as a UTF-8 encoded string.
      * @param filePath 

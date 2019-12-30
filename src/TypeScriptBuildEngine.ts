@@ -52,7 +52,7 @@ export class TypeScriptBuildEngine {
     constructor(variables: BuildVariables) {
         this.variables = variables;
         this.finder = new PathFinder(variables);
-        this.va = new VoiceAssistant(variables.silent);
+        this.va = new VoiceAssistant(variables.mute);
         this.typescriptCompilerOptions = parseTypescriptConfig(variables.root, variables.typescriptConfiguration).options;
         this.typescriptCompilerOptions.noEmit = false;
         this.typescriptCompilerOptions.emitDeclarationOnly = false;
@@ -445,7 +445,7 @@ inject();
             children: false,
             chunkModules: false,
             chunkOrigins: false,
-            chunks: this.variables.hot,
+            chunks: this.variables.serve,
             depth: false,
             entrypoints: false,
             env: false,
@@ -550,13 +550,13 @@ inject();
             for (const asset of o.assets) {
                 if (asset.emitted) {
                     const kb = prettyBytes(asset.size);
-                    const where = 'in ' + (this.variables.hot ? this.outputPublicPath : this.finder.jsOutputFolder);
+                    const where = 'in ' + (this.variables.serve ? this.outputPublicPath : this.finder.jsOutputFolder);
                     Shout.timed(chalk.blue(asset.name), chalk.magenta(kb), chalk.grey(where));
                 }
             }
         }
 
-        if (this.variables.hot && o.chunks) {
+        if (this.variables.serve && o.chunks) {
             for (const chunk of o.chunks) {
                 if (chunk.initial === false) {
                     continue;
@@ -669,7 +669,7 @@ inject();
         this.vueTemplateCompiler = await resolveVueTemplateCompiler(this.finder.root);
         const webpackConfiguration = this.createWebpackConfiguration();
 
-        if (this.variables.hot) {
+        if (this.variables.serve) {
             await this.runDevServer(webpackConfiguration);
         } else if (this.variables.watch) {
             await this.watch(webpackConfiguration);

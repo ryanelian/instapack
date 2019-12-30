@@ -59,8 +59,6 @@ async function tryGetProjectPackage(resolver: EnhancedResolver, projectBasePath:
 }
 
 export async function resolveVueTemplateCompiler(projectBasePath: string): Promise<unknown> {
-    console.log('FINDING VUE TEMPLATE COMPILER')
-
     const resolver: EnhancedResolver = ResolverFactory.createResolver({
         fileSystem: fse
     });

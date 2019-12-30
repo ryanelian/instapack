@@ -9,12 +9,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 const TypeScriptBuildEngine_1 = require("../TypeScriptBuildEngine");
-const Shout_1 = require("../Shout");
 module.exports = function (variables, finish) {
     return __awaiter(this, void 0, void 0, function* () {
-        if (variables.verbose) {
-            Shout_1.Shout.displayVerboseOutput = true;
-        }
         const tool = new TypeScriptBuildEngine_1.TypeScriptBuildEngine(variables);
         try {
             yield tool.build();

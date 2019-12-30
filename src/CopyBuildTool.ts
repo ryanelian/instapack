@@ -17,7 +17,7 @@ export class CopyBuildTool {
 
     constructor(variables: BuildVariables) {
         this.variables = variables;
-        this.va = new VoiceAssistant(variables.silent);
+        this.va = new VoiceAssistant(variables.mute);
         this.pathFinder = new PathFinder(variables);
     }
 

@@ -64,7 +64,6 @@ exports.Shout = {
         const output = chalk.magenta('Sass') + message;
         console.log(output);
     },
-    displayVerboseOutput: false,
     fileOutput(filePath, content) {
         const bundle = Buffer.from(content, 'utf8');
         const info = upath.parse(filePath);

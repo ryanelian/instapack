@@ -13,17 +13,16 @@ function compileVariables(buildFlags, projectSettings, userSettings, dotEnv, typ
         copy: projectSettings.copy,
         env: Object.assign(dotEnv, buildFlags.env),
         packageManager: userSettings.packageManager,
-        silent: userSettings.silent,
+        mute: userSettings.mute,
         production: buildFlags.production,
         sourceMap: buildFlags.sourceMap,
         watch: buildFlags.watch,
         stats: buildFlags.stats,
-        verbose: buildFlags.verbose,
-        hot: buildFlags.hot,
+        serve: buildFlags.serve,
         port1: projectSettings.port1,
         typescriptConfiguration: typescriptConfiguration
     };
-    if (variables.hot) {
+    if (variables.serve) {
         variables.production = false;
         variables.watch = true;
     }
@@ -31,7 +30,7 @@ function compileVariables(buildFlags, projectSettings, userSettings, dotEnv, typ
         variables.stats = false;
     }
     if (variables.watch === false) {
-        variables.silent = true;
+        variables.mute = true;
     }
     return variables;
 }

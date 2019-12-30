@@ -42,7 +42,7 @@ export class SassBuildTool {
     constructor(variables: BuildVariables) {
         this.variables = variables;
         this.finder = new PathFinder(variables);
-        this.va = new VoiceAssistant(variables.silent);
+        this.va = new VoiceAssistant(variables.mute);
     }
 
     /**

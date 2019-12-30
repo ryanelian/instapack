@@ -9,12 +9,11 @@ test('Compile Variables: Simple', t => {
             env: {
                 foo: 'bar'
             },
-            hot: false,
+            serve: false,
             production: true,
             watch: false,
             sourceMap: true,
-            stats: true,
-            verbose: false
+            stats: true
         },
         {
             root: __dirname,
@@ -30,7 +29,7 @@ test('Compile Variables: Simple', t => {
             port1: 0
         },
         {
-            silent: false,
+            mute: false,
             packageManager: 'yarn'
         },
         {
@@ -62,18 +61,17 @@ test('Compile Variables: Simple', t => {
         namespace: 'instapack',
         copy: [],
         port1: 0,
-        silent: true,
+        mute: true,
         packageManager: 'yarn',
         env: {
             foo: 'bar',
             hello: 'world'
         },
-        hot: false,
+        serve: false,
         production: true,
         watch: false,
         sourceMap: true,
         stats: true,
-        verbose: false,
         typescriptConfiguration: {
             compilerOptions: {
                 alwaysStrict: true,
@@ -98,12 +96,11 @@ test('Compile Variables: Overrides', t => {
             env: {
                 foo: 'bar',
             },
-            hot: true,
+            serve: true,
             production: true,
             watch: false,
             sourceMap: false,
-            stats: true,
-            verbose: true
+            stats: true
         },
         {
             root: __dirname,
@@ -127,7 +124,7 @@ test('Compile Variables: Overrides', t => {
             port1: 20178
         },
         {
-            silent: true,
+            mute: true,
             packageManager: 'npm'
         },
         {
@@ -167,17 +164,16 @@ test('Compile Variables: Overrides', t => {
             "destination": "webfonts"
         }],
         port1: 20178,
-        silent: true,
+        mute: true,
         packageManager: 'npm',
         env: {
             foo: 'bar'
         },
-        hot: true,
+        serve: true,
         production: false,
         watch: true,
         sourceMap: false,
         stats: false,
-        verbose: true,
         typescriptConfiguration: {
             compilerOptions: {
                 alwaysStrict: true,

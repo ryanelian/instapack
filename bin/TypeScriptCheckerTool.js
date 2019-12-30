@@ -65,7 +65,7 @@ class TypeScriptCheckerTool {
             }
             Shout_1.Shout.timed(versionAnnounce);
             yield loadSourceTask;
-            return new TypeScriptCheckerTool(sourceStore, compilerOptions, variables.silent, eslint);
+            return new TypeScriptCheckerTool(sourceStore, compilerOptions, variables.mute, eslint);
         });
     }
     typeCheck() {

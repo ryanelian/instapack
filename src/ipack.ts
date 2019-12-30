@@ -39,19 +39,18 @@ program.command({
             }).option('dev', {
                 alias: 'd',
                 describe: 'Disables build outputs optimization and minification.'
-            }).option('hot', {
-                alias: 'h',
+            }).option('serve', {
+                alias: 's',
                 describe: 'Enables Hot Reload development mode using dedicated build servers.'
-            }).option('nodebug', {
-                alias: 'b',
-                describe: 'Disables source maps, producing undebuggable outputs.'
+            }).option('sourcemaps', {
+                default: true,
+                describe: 'Enables source maps, which enables debugging build outputs.'
             }).option('env', {
                 describe: 'Defines process.env variables to be replaced in TypeScript project build.'
             }).option('stats', {
                 describe: 'Generates webpack stats.json next to the TypeScript build outputs for analysis.'
-            }).option('v', {
-                alias: 'verbose',
-                describe: 'Trace diagnostic outputs for debugging instapack.'
+            }).option('overwrite', {
+                describe: 'Enables overwriting files in output folder by copy assets build tool.'
             });
     },
     handler: (argv) => {
@@ -64,11 +63,10 @@ program.command({
         ipack.build(subCommand, {
             production: !argv.dev,
             watch: Boolean(argv.watch),
-            sourceMap: !argv.nodebug,
+            sourceMap: Boolean(argv.sourcemaps),
             env: parseCliEnvFlags(argv.env),
             stats: Boolean(argv.stats),
-            hot: Boolean(argv.hot),
-            verbose: Boolean(argv.verbose)
+            serve: Boolean(argv.serve)
         }).catch(err => console.error(err));
     }
 });

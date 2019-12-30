@@ -1,4 +1,3 @@
-import { Shout } from "../Shout";
 import { SassBuildTool } from "../SassBuildTool";
 import { BuildVariables } from "../variables-factory/BuildVariables";
 
@@ -7,11 +6,6 @@ import { BuildVariables } from "../variables-factory/BuildVariables";
  * If watch mode is detected, do not send task completion signal to worker farm.
  */
 export = async function (variables: BuildVariables, finish): Promise<void> {
-
-    if (variables.verbose) {
-        Shout.displayVerboseOutput = true;
-    }
-
     const tool = new SassBuildTool(variables);
 
     try {

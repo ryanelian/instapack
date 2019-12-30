@@ -28,7 +28,7 @@ class SassBuildTool {
     constructor(variables) {
         this.variables = variables;
         this.finder = new PathFinder_1.PathFinder(variables);
-        this.va = new VoiceAssistant_1.VoiceAssistant(variables.silent);
+        this.va = new VoiceAssistant_1.VoiceAssistant(variables.mute);
     }
     runSassAsync(options) {
         return new Promise((ok, reject) => {

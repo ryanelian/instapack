@@ -33,7 +33,7 @@ class TypeScriptBuildEngine {
         this.wormholes = new Set();
         this.variables = variables;
         this.finder = new PathFinder_1.PathFinder(variables);
-        this.va = new VoiceAssistant_1.VoiceAssistant(variables.silent);
+        this.va = new VoiceAssistant_1.VoiceAssistant(variables.mute);
         this.typescriptCompilerOptions = TypescriptConfigParser_1.parseTypescriptConfig(variables.root, variables.typescriptConfiguration).options;
         this.typescriptCompilerOptions.noEmit = false;
         this.typescriptCompilerOptions.emitDeclarationOnly = false;
@@ -312,7 +312,7 @@ inject();
             children: false,
             chunkModules: false,
             chunkOrigins: false,
-            chunks: this.variables.hot,
+            chunks: this.variables.serve,
             depth: false,
             entrypoints: false,
             env: false,
@@ -395,12 +395,12 @@ inject();
             for (const asset of o.assets) {
                 if (asset.emitted) {
                     const kb = PrettyUnits_1.prettyBytes(asset.size);
-                    const where = 'in ' + (this.variables.hot ? this.outputPublicPath : this.finder.jsOutputFolder);
+                    const where = 'in ' + (this.variables.serve ? this.outputPublicPath : this.finder.jsOutputFolder);
                     Shout_1.Shout.timed(chalk.blue(asset.name), chalk.magenta(kb), chalk.grey(where));
                 }
             }
         }
-        if (this.variables.hot && o.chunks) {
+        if (this.variables.serve && o.chunks) {
             for (const chunk of o.chunks) {
                 if (chunk.initial === false) {
                     continue;
@@ -486,7 +486,7 @@ inject();
             this.useBabel = yield fse.pathExists(this.finder.babelConfiguration);
             this.vueTemplateCompiler = yield CompilerResolver_1.resolveVueTemplateCompiler(this.finder.root);
             const webpackConfiguration = this.createWebpackConfiguration();
-            if (this.variables.hot) {
+            if (this.variables.serve) {
                 yield this.runDevServer(webpackConfiguration);
             }
             else if (this.variables.watch) {

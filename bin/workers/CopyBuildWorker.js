@@ -8,13 +8,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-const Shout_1 = require("../Shout");
 const CopyBuildTool_1 = require("../CopyBuildTool");
 module.exports = function (variables, finish) {
     return __awaiter(this, void 0, void 0, function* () {
-        if (variables.verbose) {
-            Shout_1.Shout.displayVerboseOutput = true;
-        }
         const tool = new CopyBuildTool_1.CopyBuildTool(variables);
         try {
             yield tool.buildWithStopwatch();

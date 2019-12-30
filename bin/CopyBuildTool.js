@@ -20,7 +20,7 @@ const FastGlob = require("fast-glob");
 class CopyBuildTool {
     constructor(variables) {
         this.variables = variables;
-        this.va = new VoiceAssistant_1.VoiceAssistant(variables.silent);
+        this.va = new VoiceAssistant_1.VoiceAssistant(variables.mute);
         this.pathFinder = new PathFinder_1.PathFinder(variables);
     }
     buildWithStopwatch() {

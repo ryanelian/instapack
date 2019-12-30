@@ -61,7 +61,6 @@ function tryGetProjectPackage(resolver, projectBasePath, packageName) {
 }
 function resolveVueTemplateCompiler(projectBasePath) {
     return __awaiter(this, void 0, void 0, function* () {
-        console.log('FINDING VUE TEMPLATE COMPILER');
         const resolver = enhanced_resolve_1.ResolverFactory.createResolver({
             fileSystem: fse
         });

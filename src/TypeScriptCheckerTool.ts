@@ -111,7 +111,7 @@ export class TypeScriptCheckerTool {
         }
         Shout.timed(versionAnnounce);
         await loadSourceTask;
-        return new TypeScriptCheckerTool(sourceStore, compilerOptions, variables.silent, eslint);
+        return new TypeScriptCheckerTool(sourceStore, compilerOptions, variables.mute, eslint);
     }
 
     /**

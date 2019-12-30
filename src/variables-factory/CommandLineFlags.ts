@@ -6,7 +6,6 @@ export interface CommandLineFlags {
     sourceMap: boolean;
     watch: boolean;
     stats: boolean;
-    verbose: boolean;
-    hot: boolean;
+    serve: boolean;
     env: MapLikeObject<string>;
 }

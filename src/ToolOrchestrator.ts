@@ -92,12 +92,12 @@ export class ToolOrchestrator {
                 if (valid) {
                     runTypeScriptBuildWorker(this.variables).catch(error => {
                         Shout.fatal(`during JS build:`, error);
-                        const va = new VoiceAssistant(this.variables.silent);
+                        const va = new VoiceAssistant(this.variables.mute);
                         va.speak(`JAVASCRIPT BUILD FATAL ERROR!`);
                     });
                     runTypeScriptCheckWorker(this.variables).catch(error => {
                         Shout.fatal(`during type-checking:`, error);
-                        const va = new VoiceAssistant(this.variables.silent);
+                        const va = new VoiceAssistant(this.variables.mute);
                         va.speak(`TYPE CHECK FATAL ERROR!`);
                     });
                 }
@@ -109,7 +109,7 @@ export class ToolOrchestrator {
                 if (valid) {
                     runSassBuildWorker(this.variables).catch(error => {
                         Shout.fatal(`during CSS build:`, error);
-                        const va = new VoiceAssistant(this.variables.silent);
+                        const va = new VoiceAssistant(this.variables.mute);
                         va.speak(`CSS BUILD FATAL ERROR!`);
                     });
                 }
@@ -120,7 +120,7 @@ export class ToolOrchestrator {
                 if (this.variables.copy.length) {
                     runCopyBuildWorker(this.variables).catch(error => {
                         Shout.fatal(`during Copy Assets job:`, error);
-                        const va = new VoiceAssistant(this.variables.silent);
+                        const va = new VoiceAssistant(this.variables.mute);
                         va.speak(`COPY ASSETS FATAL ERROR!`);
                     });
                 }

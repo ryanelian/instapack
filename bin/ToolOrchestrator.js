@@ -73,12 +73,12 @@ class ToolOrchestrator {
                     if (valid) {
                         RunWorker_1.runTypeScriptBuildWorker(this.variables).catch(error => {
                             Shout_1.Shout.fatal(`during JS build:`, error);
-                            const va = new VoiceAssistant_1.VoiceAssistant(this.variables.silent);
+                            const va = new VoiceAssistant_1.VoiceAssistant(this.variables.mute);
                             va.speak(`JAVASCRIPT BUILD FATAL ERROR!`);
                         });
                         RunWorker_1.runTypeScriptCheckWorker(this.variables).catch(error => {
                             Shout_1.Shout.fatal(`during type-checking:`, error);
-                            const va = new VoiceAssistant_1.VoiceAssistant(this.variables.silent);
+                            const va = new VoiceAssistant_1.VoiceAssistant(this.variables.mute);
                             va.speak(`TYPE CHECK FATAL ERROR!`);
                         });
                     }
@@ -89,7 +89,7 @@ class ToolOrchestrator {
                     if (valid) {
                         RunWorker_1.runSassBuildWorker(this.variables).catch(error => {
                             Shout_1.Shout.fatal(`during CSS build:`, error);
-                            const va = new VoiceAssistant_1.VoiceAssistant(this.variables.silent);
+                            const va = new VoiceAssistant_1.VoiceAssistant(this.variables.mute);
                             va.speak(`CSS BUILD FATAL ERROR!`);
                         });
                     }
@@ -99,7 +99,7 @@ class ToolOrchestrator {
                     if (this.variables.copy.length) {
                         RunWorker_1.runCopyBuildWorker(this.variables).catch(error => {
                             Shout_1.Shout.fatal(`during Copy Assets job:`, error);
-                            const va = new VoiceAssistant_1.VoiceAssistant(this.variables.silent);
+                            const va = new VoiceAssistant_1.VoiceAssistant(this.variables.mute);
                             va.speak(`COPY ASSETS FATAL ERROR!`);
                         });
                     }

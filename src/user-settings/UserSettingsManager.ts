@@ -15,22 +15,28 @@ type ValidatorFunction = (x: string) => boolean;
 
 const validators: Readonly<MapLikeObject<ValidatorFunction>> = Object.freeze({
     'package-manager': (x: string) => ['yarn', 'npm', 'disabled'].includes(x),
-    'silent': (x: string) => ['true', 'false'].includes(x)
+    'mute': (x: string) => ['true', 'false'].includes(x)
 });
 
 const defaultSettings: Readonly<UserSettings> = Object.freeze({
     packageManager: 'yarn',
-    silent: false,
+    mute: false,
 });
 
 export const userSettingsOptions = Object.freeze(Object.keys(validators));
 
 export async function getSettings(): Promise<UserSettings> {
-    let settings: UserSettings = Object.assign({}, defaultSettings);
+    const settings: UserSettings = Object.assign({}, defaultSettings);
 
     try {
         const currentSettings: UserSettings = await fse.readJson(userSettingsFilePath);
-        settings = Object.assign(settings, currentSettings);
+        for (const key in defaultSettings) {
+            const value = currentSettings[key];
+            // avoid reading invalid settings... (reset to good known default settings)
+            if (value && validators[key](value)) {
+                settings[key] = currentSettings[key];
+            }
+        }
     } catch (error) {
         // use default settings
     }

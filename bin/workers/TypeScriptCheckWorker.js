@@ -8,13 +8,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-const Shout_1 = require("../Shout");
 const TypeScriptCheckerTool_1 = require("../TypeScriptCheckerTool");
 module.exports = function (variables, finish) {
     return __awaiter(this, void 0, void 0, function* () {
-        if (variables.verbose) {
-            Shout_1.Shout.displayVerboseOutput = true;
-        }
         const tool = yield TypeScriptCheckerTool_1.TypeScriptCheckerTool.createToolAsync(variables);
         try {
             tool.typeCheck();

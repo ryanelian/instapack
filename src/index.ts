@@ -58,11 +58,7 @@ export = class InstapackProgram {
      * @param flags 
      */
     async build(taskName: string, flags: CommandLineFlags): Promise<void> {
-        if (flags.verbose) {
-            Shout.displayVerboseOutput = true;
-        }
-
-        // parallel IO
+        // parallel async IO
         const projectSettings = readProjectSettingsFrom(this.projectFolder);
         const dotEnv = readDotEnvFrom(this.projectFolder);
         const userSettings = await getSettings();

@@ -1,13 +1,7 @@
-import { Shout } from "../Shout";
 import { BuildVariables } from "../variables-factory/BuildVariables";
 import { CopyBuildTool } from "../CopyBuildTool";
 
 export = async function (variables: BuildVariables, finish): Promise<void> {
-
-    if (variables.verbose) {
-        Shout.displayVerboseOutput = true;
-    }
-
     const tool = new CopyBuildTool(variables);
 
     try {

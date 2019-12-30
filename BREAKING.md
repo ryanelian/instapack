@@ -20,8 +20,6 @@ Here are the list of breaking changes when upgrading between instapack major (or
 
 - Automatic Node.js Polyfills Removed (webpack 5)
 
-- 
-
 - `.mjs` and `.wasm` are no longer resolved by default due to webpack 5 disabling them by default (Requiring `experiments.mjs: true` and `experiments: { asyncWebAssembly: true, importAsync: true }` https://github.com/webpack/changelog-v5#experiments)
 
 - Babel transformations will now be applied to all `.js` files imported from `node_modules`

@@ -144,7 +144,7 @@ In addition, build flags are available:
 
 - `--no-sourcemaps` disables source maps, producing undebuggable outputs. :bug: (Slightly improves build speed)
 
-- `--stats` generates `stats.json` next to the TypeScript build outputs, which can be fed to [webpack-bundle-analyzer](https://www.npmjs.com/package/webpack-bundle-analyzer) or [webpack-visualizer](http://chrisbateman.github.io/webpack-visualizer/). For sanity, this flag will be ignored when using `-d` or `-w` flags.
+- `--stats` generates `stats.json` next to the TypeScript build outputs, which can be analyzed by a third-party tool: [webpack-bundle-analyzer](https://www.npmjs.com/package/webpack-bundle-analyzer). For sanity, this flag will be ignored when using `-d` or `-w` flags.
 
 > You can combine multiple build flags, for example: `ipack -dw` = `dev` + `watch` mode for **massive productivity gainz!** :muscle:
 

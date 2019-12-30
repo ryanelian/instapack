@@ -47,9 +47,6 @@ export async function tryReadTypeScriptConfigJson(folder: string): Promise<unkno
     try {
         const tsconfigJson = await fse.readJson(tsconfigJsonPath);
         const tryParse = parseTypescriptConfig(folder, tsconfigJson);
-        // if (parse.options.target !== TypeScript.ScriptTarget.ES5) {
-        //     Shout.warning('TypeScript build', chalk.cyan('target'), 'is not', chalk.yellow('ES5') + '!');
-        // }
         const errorMessage = tryParse.errors.join('\n\n');
         if (tryParse.errors.length) {
             throw new Error(errorMessage);

@@ -31,8 +31,11 @@ class ToolOrchestrator {
             Shout_1.Shout.timed(chalk.yellow("Watch"), "Mode: Source code will be automatically compiled on changes.");
         }
         let smState = chalk.yellow(this.variables.sourceMap ? 'Enabled' : 'Disabled');
-        if (!this.variables.production && this.variables.watch) {
-            smState = smState + ' ' + chalk.grey('(Inlined JS)');
+        if (this.variables.production) {
+            smState = smState + ' ' + chalk.grey('(Hidden)');
+        }
+        else if (this.variables.watch) {
+            smState = smState + ' ' + chalk.grey('(Inlined, Eval)');
         }
         Shout_1.Shout.timed('Source Maps:', smState);
         if (this.variables.stats) {

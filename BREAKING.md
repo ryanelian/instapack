@@ -4,7 +4,7 @@ Here are the list of breaking changes when upgrading between instapack major (or
 
 ## 8.0.0
 
-- Build flag `--hot` / `-h` is changed to `serve` / `-s` to reduce confusion with `--help`
+- Build flag `--hot` / `-h` is changed to `--serve` / `-s` to reduce confusion with `--help`
 
 - Build flag `--nodebug` is changed to `--no-sourcemaps`
 
@@ -18,11 +18,19 @@ Here are the list of breaking changes when upgrading between instapack major (or
 
 - Dropped the End-of-Life (01-2020) Node.js version 8!
 
-- `.mjs` and `.wasm` are no longer resolved by default due to Webpack 5 disabling them by default (Requiring `experiments.mjs: true` and `experiments: { asyncWebAssembly: true, importAsync: true }` https://github.com/webpack/changelog-v5#experiments)
+- Automatic Node.js Polyfills Removed (webpack 5)
+
+- 
+
+- `.mjs` and `.wasm` are no longer resolved by default due to webpack 5 disabling them by default (Requiring `experiments.mjs: true` and `experiments: { asyncWebAssembly: true, importAsync: true }` https://github.com/webpack/changelog-v5#experiments)
 
 - Babel transformations will now be applied to all `.js` files imported from `node_modules`
 
   - This feature is meant for users who disables TypeScript transpilation (Script Target: `esnext`) but still wants to transpile projects using `@babel/preset-env`
+
+- Production bundle will now use hidden source maps. 
+
+  - Developers using Google Chrome can still load the separated source map file by right-clicking the JS file from Debugger and selecting "Add source map..."
 
 ## 7.3.0
 

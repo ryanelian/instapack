@@ -9,10 +9,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const upath = require("upath");
 const path = require("path");
+const upath = require("upath");
 const fse = require("fs-extra");
-const url = require("url");
 const chalk = require("chalk");
 const webpack = require("webpack");
 const webpackDevServer = require("webpack-dev-server");
@@ -20,26 +19,21 @@ const portfinder = require("portfinder");
 const TypeScript = require("typescript");
 const vue_loader_1 = require("vue-loader");
 const CompilerResolver_1 = require("./CompilerResolver");
-const PrettyUnits_1 = require("./PrettyUnits");
 const Shout_1 = require("./Shout");
 const PathFinder_1 = require("./variables-factory/PathFinder");
 const LoaderPaths_1 = require("./loaders/LoaderPaths");
 const TypescriptConfigParser_1 = require("./TypescriptConfigParser");
-const VoiceAssistant_1 = require("./VoiceAssistant");
+const InstapackBuildPlugin_1 = require("./plugins/InstapackBuildPlugin");
 class TypeScriptBuildEngine {
     constructor(variables) {
-        this.outputPublicPath = 'js/';
         this.useBabel = false;
-        this.wormholes = new Set();
         this.variables = variables;
         this.finder = new PathFinder_1.PathFinder(variables);
-        this.va = new VoiceAssistant_1.VoiceAssistant(variables.mute);
         this.typescriptCompilerOptions = TypescriptConfigParser_1.parseTypescriptConfig(variables.root, variables.typescriptConfiguration).options;
         this.typescriptCompilerOptions.noEmit = false;
         this.typescriptCompilerOptions.emitDeclarationOnly = false;
         this.typescriptCompilerOptions.sourceMap = variables.sourceMap;
         this.typescriptCompilerOptions.inlineSources = variables.sourceMap;
-        this.languageTarget = this.typescriptCompilerOptions.target || TypeScript.ScriptTarget.ES3;
     }
     convertTypeScriptPathToWebpackAliasPath(baseUrl, value) {
         let result = upath.join(baseUrl, value);
@@ -195,21 +189,11 @@ class TypeScriptBuildEngine {
             ]
         };
     }
-    createWormholeToHotScript(uri) {
-        return `// instapack Script Injection: automagically reference the real hot-reloading script
-function inject() {
-    let body = document.getElementsByTagName('body')[0];
-
-    let target = document.createElement('script');
-    target.src = '${uri}';
-    body.appendChild(target);
-}
-
-inject();
-`;
-    }
     createWebpackPlugins() {
+        var _a;
         const plugins = [];
+        const typescriptTarget = (_a = this.typescriptCompilerOptions.target, (_a !== null && _a !== void 0 ? _a : TypeScript.ScriptTarget.ES3));
+        plugins.push(new InstapackBuildPlugin_1.InstapackBuildPlugin(this.variables, typescriptTarget));
         plugins.push(new vue_loader_1.VueLoaderPlugin());
         if (Object.keys(this.variables.env).length > 0) {
             plugins.push(new webpack.EnvironmentPlugin(this.variables.env));
@@ -238,7 +222,7 @@ inject();
             return false;
         }
         if (this.variables.production) {
-            return 'source-map';
+            return 'hidden-source-map';
         }
         if (this.variables.watch === false) {
             return 'source-map';
@@ -297,63 +281,40 @@ inject();
             },
             plugins: plugins
         };
-        if (this.typescriptCompilerOptions.target === TypeScript.ScriptTarget.ES5) {
-            if (config.output) {
-                config.output['ecmaVersion'] = 5;
-            }
+        if (config.output) {
+            config.output['ecmaVersion'] = this.getECMAScriptVersion();
         }
         if (wildcards && config.resolve) {
             config.resolve.modules = wildcards;
         }
         return config;
     }
-    get statsSerializeEssentialOption() {
-        return {
-            assets: true,
-            cached: false,
-            cachedAssets: false,
-            children: false,
-            chunkModules: false,
-            chunkOrigins: false,
-            chunks: this.variables.serve,
-            depth: false,
-            entrypoints: false,
-            env: false,
-            errors: true,
-            errorDetails: false,
-            hash: false,
-            modules: false,
-            moduleTrace: true,
-            publicPath: false,
-            reasons: false,
-            source: false,
-            timings: true,
-            version: false,
-            warnings: true,
-            usedExports: false,
-            performance: false,
-            providedExports: false
-        };
-    }
-    addCompilerBuildNotification(compiler) {
-        const t = TypeScript.ScriptTarget[this.languageTarget].toUpperCase();
-        compiler.hooks.compile.tap('typescript-compile-start', () => {
-            Shout_1.Shout.timed('Compiling', chalk.cyan('index.ts'), '>>', chalk.yellow(t), chalk.grey('in ' + this.finder.jsInputFolder + '/'));
-        });
-        if (this.variables.production) {
-            compiler.hooks.compilation.tap('typescript-minify-notify', compilation => {
-                return compilation.hooks.afterHash.tap('typescript-minify-notify', () => {
-                    Shout_1.Shout.timed('TypeScript compilation finished! Minifying bundles...');
-                });
-            });
+    getECMAScriptVersion() {
+        switch (this.typescriptCompilerOptions.target) {
+            case TypeScript.ScriptTarget.ES3:
+                return 5;
+            case TypeScript.ScriptTarget.ES5:
+                return 5;
+            case TypeScript.ScriptTarget.ES2015:
+                return 2015;
+            case TypeScript.ScriptTarget.ES2016:
+                return 2016;
+            case TypeScript.ScriptTarget.ES2017:
+                return 2017;
+            case TypeScript.ScriptTarget.ES2018:
+                return 2018;
+            case TypeScript.ScriptTarget.ES2019:
+                return 2019;
+            case TypeScript.ScriptTarget.ES2020:
+                return 2020;
+            case TypeScript.ScriptTarget.ESNext:
+                return 2020;
+            default:
+                return 5;
         }
-        compiler.hooks.done.tapPromise('display-build-results', (stats) => __awaiter(this, void 0, void 0, function* () {
-            this.displayBuildResults(stats);
-        }));
     }
     buildOnce(webpackConfiguration) {
         const compiler = webpack(webpackConfiguration);
-        this.addCompilerBuildNotification(compiler);
         return new Promise((ok, reject) => {
             compiler.run((err, stats) => {
                 if (err) {
@@ -365,7 +326,6 @@ inject();
     }
     watch(webpackConfiguration) {
         const compiler = webpack(webpackConfiguration);
-        this.addCompilerBuildNotification(compiler);
         return new Promise((ok, reject) => {
             compiler.watch({
                 ignored: ['node_modules'],
@@ -378,86 +338,8 @@ inject();
             });
         });
     }
-    displayBuildResults(stats) {
-        const o = stats.toJson(this.statsSerializeEssentialOption);
-        const errors = o.errors;
-        if (errors.length) {
-            const errorMessage = '\n' + errors.join('\n\n') + '\n';
-            console.error(chalk.red(errorMessage));
-            this.va.speak(`JAVA SCRIPT BUILD: ${errors.length} ERROR!`);
-        }
-        else {
-            this.va.rewind();
-        }
-        const warnings = o.warnings;
-        if (warnings.length) {
-            const warningMessage = '\n' + warnings.join('\n\n') + '\n';
-            console.warn(chalk.yellow(warningMessage));
-        }
-        if (o.assets) {
-            for (const asset of o.assets) {
-                if (asset.emitted) {
-                    const kb = PrettyUnits_1.prettyBytes(asset.size);
-                    const where = 'in ' + (this.variables.serve ? this.outputPublicPath : this.finder.jsOutputFolder);
-                    Shout_1.Shout.timed(chalk.blue(asset.name), chalk.magenta(kb), chalk.grey(where));
-                }
-            }
-        }
-        if (this.variables.serve && o.chunks) {
-            for (const chunk of o.chunks) {
-                if (chunk.initial === false) {
-                    continue;
-                }
-                this.putWormholes(chunk.files);
-            }
-        }
-        if (o.time) {
-            const t = PrettyUnits_1.prettyMilliseconds(o.time);
-            Shout_1.Shout.timed('Finished JS build after', chalk.green(t));
-        }
-        else {
-            Shout_1.Shout.timed('Finished JS build.');
-        }
-    }
-    putWormholes(fileNames) {
-        if (!fileNames) {
-            return;
-        }
-        for (const file of fileNames) {
-            if (file.includes('.hot-update.js')) {
-                continue;
-            }
-            if (this.wormholes.has(file)) {
-                continue;
-            }
-            this.putWormhole(file).then(() => {
-                this.wormholes.add(file);
-            }).catch(err => {
-                Shout_1.Shout.error(err);
-            });
-        }
-    }
-    putWormhole(fileName) {
-        const physicalFilePath = upath.join(this.finder.jsOutputFolder, fileName);
-        const hotUri = url.resolve(this.outputPublicPath, fileName);
-        Shout_1.Shout.timed(`Inject <script> ${chalk.cyan(physicalFilePath)} --> ${chalk.cyan(hotUri)}`);
-        const hotProxy = this.createWormholeToHotScript(hotUri);
-        return fse.outputFile(physicalFilePath, hotProxy);
-    }
-    runDevServer(webpackConfiguration) {
+    runDevServer(webpackConfiguration, port) {
         return __awaiter(this, void 0, void 0, function* () {
-            let basePort = 28080;
-            if (this.variables.port1) {
-                basePort = this.variables.port1;
-            }
-            const port = yield portfinder.getPortPromise({
-                port: basePort
-            });
-            this.outputPublicPath = `http://localhost:${port}/`;
-            if (!webpackConfiguration.output) {
-                throw new Error('Unexpected undefined value: webpack configuration output object.');
-            }
-            webpackConfiguration.output.publicPath = this.outputPublicPath;
             const devServerOptions = {
                 hot: true,
                 contentBase: false,
@@ -469,18 +351,18 @@ inject();
             };
             webpackDevServer.addDevServerEntrypoints(webpackConfiguration, devServerOptions);
             const compiler = webpack(webpackConfiguration);
-            this.addCompilerBuildNotification(compiler);
             const devServer = new webpackDevServer(compiler, devServerOptions);
-            return new Promise((ok, reject) => {
+            const createServerTask = new Promise((ok, reject) => {
                 devServer.listen(port, 'localhost', error => {
                     if (error) {
                         reject(error);
                         return;
                     }
-                    Shout_1.Shout.timed(chalk.yellow('Hot Reload'), `Server running on http://localhost:${chalk.green(port)}/`);
                     ok();
                 });
             });
+            yield createServerTask;
+            Shout_1.Shout.timed(chalk.yellow('Hot Reload'), `server running on http://localhost:${chalk.green(port)}/`);
         });
     }
     build() {
@@ -489,14 +371,25 @@ inject();
             this.vueTemplateCompiler = yield CompilerResolver_1.resolveVueTemplateCompiler(this.finder.root);
             const webpackConfiguration = this.createWebpackConfiguration();
             if (this.variables.serve) {
-                yield this.runDevServer(webpackConfiguration);
+                let basePort = 28080;
+                if (this.variables.port1) {
+                    basePort = this.variables.port1;
+                }
+                const port = yield portfinder.getPortPromise({
+                    port: basePort
+                });
+                if (!webpackConfiguration.output) {
+                    throw new Error('Unexpected undefined value: webpack configuration output object.');
+                }
+                webpackConfiguration.output.publicPath = `http://localhost:${port}/`;
+                yield this.runDevServer(webpackConfiguration, port);
             }
             else if (this.variables.watch) {
                 yield this.watch(webpackConfiguration);
             }
             else {
                 const stats = yield this.buildOnce(webpackConfiguration);
-                if (this.variables.stats) {
+                if (this.variables.stats && this.variables.production) {
                     yield fse.outputJson(this.finder.statsJsonFilePath, stats.toJson());
                 }
             }

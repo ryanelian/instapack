@@ -40,8 +40,10 @@ export class ToolOrchestrator {
         }
 
         let smState = chalk.yellow(this.variables.sourceMap ? 'Enabled' : 'Disabled');
-        if (!this.variables.production && this.variables.watch) {
-            smState = smState + ' ' + chalk.grey('(Inlined JS)');
+        if (this.variables.production) {
+            smState = smState + ' ' + chalk.grey('(Hidden)');
+        } else if (this.variables.watch) {
+            smState = smState + ' ' + chalk.grey('(Inlined, Eval)');
         }
         Shout.timed('Source Maps:', smState);
 

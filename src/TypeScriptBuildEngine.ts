@@ -1,22 +1,20 @@
-import * as upath from 'upath';
 import * as path from 'path';
+import * as upath from 'upath';
 import * as fse from 'fs-extra';
-import * as url from 'url';
 import chalk = require('chalk');
 import webpack = require('webpack');
 import webpackDevServer = require('webpack-dev-server');
 import portfinder = require('portfinder');
 import * as TypeScript from 'typescript';
 import { VueLoaderPlugin } from 'vue-loader';
-import { resolveVueTemplateCompiler } from './CompilerResolver';
 
-import { prettyBytes, prettyMilliseconds } from './PrettyUnits';
+import { resolveVueTemplateCompiler } from './CompilerResolver';
 import { Shout } from './Shout';
 import { BuildVariables } from './variables-factory/BuildVariables';
 import { PathFinder } from './variables-factory/PathFinder';
 import { LoaderPaths } from './loaders/LoaderPaths';
 import { parseTypescriptConfig } from './TypescriptConfigParser';
-import { VoiceAssistant } from './VoiceAssistant';
+import { InstapackBuildPlugin } from './plugins/InstapackBuildPlugin';
 
 /**
  * Contains methods for compiling a TypeScript project.
@@ -27,22 +25,11 @@ export class TypeScriptBuildEngine {
 
     private readonly finder: PathFinder;
 
-    private outputPublicPath = 'js/';
-
     private readonly typescriptCompilerOptions: TypeScript.CompilerOptions;
-
-    private readonly languageTarget: TypeScript.ScriptTarget;
 
     private useBabel = false;
 
     private vueTemplateCompiler: unknown;
-
-    private va: VoiceAssistant;
-
-    /**
-     * Keep track of Hot Reload wormhole file names already created.
-     */
-    private readonly wormholes: Set<string> = new Set<string>();
 
     /**
      * Constructs a new instance of TypeScriptBuildTool using the specified settings and build flags. 
@@ -52,13 +39,11 @@ export class TypeScriptBuildEngine {
     constructor(variables: BuildVariables) {
         this.variables = variables;
         this.finder = new PathFinder(variables);
-        this.va = new VoiceAssistant(variables.mute);
         this.typescriptCompilerOptions = parseTypescriptConfig(variables.root, variables.typescriptConfiguration).options;
         this.typescriptCompilerOptions.noEmit = false;
         this.typescriptCompilerOptions.emitDeclarationOnly = false;
         this.typescriptCompilerOptions.sourceMap = variables.sourceMap;
         this.typescriptCompilerOptions.inlineSources = variables.sourceMap;
-        this.languageTarget = this.typescriptCompilerOptions.target || TypeScript.ScriptTarget.ES3;
     }
 
     /**
@@ -280,28 +265,13 @@ export class TypeScriptBuildEngine {
     }
 
     /**
-     * Create a fake physical source code for importing the real hot-reloading source code.
-     * @param uri 
-     */
-    createWormholeToHotScript(uri: string): string {
-        return `// instapack Script Injection: automagically reference the real hot-reloading script
-function inject() {
-    let body = document.getElementsByTagName('body')[0];
-
-    let target = document.createElement('script');
-    target.src = '${uri}';
-    body.appendChild(target);
-}
-
-inject();
-`;
-    }
-
-    /**
      * Returns webpack plugins array.
      */
     createWebpackPlugins(): webpack.Plugin[] {
         const plugins: webpack.Plugin[] = [];
+
+        const typescriptTarget = this.typescriptCompilerOptions.target ?? TypeScript.ScriptTarget.ES3;
+        plugins.push(new InstapackBuildPlugin(this.variables, typescriptTarget));
 
         plugins.push(new VueLoaderPlugin());
 
@@ -345,13 +315,13 @@ inject();
     /**
      * Get the suitable webpack configuration dev tool for the job, according to instapack settings.
      */
-    get webpackConfigurationDevTool(): boolean | 'source-map' | 'eval-source-map' {
+    get webpackConfigurationDevTool(): boolean | 'hidden-source-map' | 'source-map' | 'eval-source-map' {
         if (this.variables.sourceMap === false) {
             return false;
         }
 
         if (this.variables.production) {
-            return 'source-map';
+            return 'hidden-source-map';
         }
 
         // dev mode, faster build only during incremental compilation
@@ -428,11 +398,9 @@ inject();
             plugins: plugins
         };
 
-        if (this.typescriptCompilerOptions.target === TypeScript.ScriptTarget.ES5) {
-            if (config.output) {
-                // https://github.com/webpack/changelog-v5/blob/master/MIGRATION%20GUIDE.md#disable-es2015-syntax-in-runtime-code-if-necessary
-                config.output['ecmaVersion'] = 5;
-            }
+        if (config.output) {
+            // https://webpack.js.org/configuration/output/#outputecmaversion
+            config.output['ecmaVersion'] = this.getECMAScriptVersion();
         }
 
         if (wildcards && config.resolve) {
@@ -442,66 +410,33 @@ inject();
         return config;
     }
 
-    /**
-     * Get stat objects required for instapack build logs.
-     */
-    get statsSerializeEssentialOption(): webpack.Stats.ToJsonOptions {
-        return {
-            assets: true,
-            cached: false,
-            cachedAssets: false,
-            children: false,
-            chunkModules: false,
-            chunkOrigins: false,
-            chunks: this.variables.serve,
-            depth: false,
-            entrypoints: false,
-            env: false,
-            errors: true,
-            errorDetails: false,
-            hash: false,
-            modules: false,
-            moduleTrace: true,
-            publicPath: false,
-            reasons: false,
-            source: false,
-            timings: true,
-            version: false,
-            warnings: true,
-            usedExports: false,
-            performance: false,
-            providedExports: false
-        };
-    }
-
-    addCompilerBuildNotification(compiler: webpack.Compiler): void {
-        const t = TypeScript.ScriptTarget[this.languageTarget].toUpperCase();
-
-        compiler.hooks.compile.tap('typescript-compile-start', () => {
-            Shout.timed('Compiling', chalk.cyan('index.ts'),
-                '>>', chalk.yellow(t),
-                chalk.grey('in ' + this.finder.jsInputFolder + '/')
-            );
-        });
-
-        if (this.variables.production) {
-            compiler.hooks.compilation.tap('typescript-minify-notify', compilation => {
-                // https://github.com/webpack/tapable/issues/116
-                return compilation.hooks.afterHash.tap('typescript-minify-notify', () => {
-                    Shout.timed('TypeScript compilation finished! Minifying bundles...');
-                });
-            });
+    getECMAScriptVersion(): number {
+        switch (this.typescriptCompilerOptions.target) {
+            case TypeScript.ScriptTarget.ES3:
+                return 5;
+            case TypeScript.ScriptTarget.ES5:
+                return 5;
+            case TypeScript.ScriptTarget.ES2015:
+                return 2015;
+            case TypeScript.ScriptTarget.ES2016:
+                return 2016;
+            case TypeScript.ScriptTarget.ES2017:
+                return 2017;
+            case TypeScript.ScriptTarget.ES2018:
+                return 2018;
+            case TypeScript.ScriptTarget.ES2019:
+                return 2019;
+            case TypeScript.ScriptTarget.ES2020:
+                return 2020;
+            case TypeScript.ScriptTarget.ESNext:
+                return 2020;
+            default:
+                return 5;
         }
-
-        compiler.hooks.done.tapPromise('display-build-results', async stats => {
-            this.displayBuildResults(stats);
-        });
     }
 
     buildOnce(webpackConfiguration: webpack.Configuration): Promise<webpack.Stats> {
         const compiler = webpack(webpackConfiguration);
-        this.addCompilerBuildNotification(compiler);
-
         return new Promise<webpack.Stats>((ok, reject) => {
             compiler.run((err, stats) => {
                 if (err) {
@@ -515,8 +450,6 @@ inject();
 
     watch(webpackConfiguration: webpack.Configuration): Promise<void> {
         const compiler = webpack(webpackConfiguration);
-        this.addCompilerBuildNotification(compiler);
-
         return new Promise<void>((ok, reject) => {
             compiler.watch({
                 ignored: ['node_modules'],
@@ -532,117 +465,15 @@ inject();
     }
 
     /**
-     * Interact with user via CLI output when TypeScript build is finished.
-     * @param stats 
-     */
-    displayBuildResults(stats: webpack.Stats): void {
-        const o = stats.toJson(this.statsSerializeEssentialOption);
-        // console.log(o);
-
-        const errors: string[] = o.errors;
-        if (errors.length) {
-            const errorMessage = '\n' + errors.join('\n\n') + '\n';
-            console.error(chalk.red(errorMessage));
-            this.va.speak(`JAVA SCRIPT BUILD: ${errors.length} ERROR!`);
-        } else {
-            this.va.rewind();
-        }
-
-        const warnings: string[] = o.warnings;
-        if (warnings.length) {
-            const warningMessage = '\n' + warnings.join('\n\n') + '\n';
-            console.warn(chalk.yellow(warningMessage));
-        }
-
-        if (o.assets) {
-            for (const asset of o.assets) {
-                if (asset.emitted) {
-                    const kb = prettyBytes(asset.size);
-                    const where = 'in ' + (this.variables.serve ? this.outputPublicPath : this.finder.jsOutputFolder);
-                    Shout.timed(chalk.blue(asset.name), chalk.magenta(kb), chalk.grey(where));
-                }
-            }
-        }
-
-        if (this.variables.serve && o.chunks) {
-            for (const chunk of o.chunks) {
-                if (chunk.initial === false) {
-                    continue;
-                }
-
-                this.putWormholes(chunk.files);
-            }
-        }
-
-        if (o.time) {
-            const t = prettyMilliseconds(o.time);
-            Shout.timed('Finished JS build after', chalk.green(t));
-        } else {
-            Shout.timed('Finished JS build.');
-        }
-    }
-
-    /**
-     * Create physical wormhole scripts for initial chunk files, once each. 
-     * @param fileNames 
-     */
-    putWormholes(fileNames: string[]): void {
-        if (!fileNames) {
-            return;
-        }
-
-        for (const file of fileNames) {
-            if (file.includes('.hot-update.js')) {
-                continue;
-            }
-
-            if (this.wormholes.has(file)) {
-                continue;
-            }
-
-            this.putWormhole(file).then(() => {
-                this.wormholes.add(file);
-            }).catch(err => {
-                Shout.error(err);
-            });
-        }
-    }
-
-    /**
-     * Create physical wormhole script in place of output file.
-     */
-    putWormhole(fileName: string): Promise<void> {
-        const physicalFilePath = upath.join(this.finder.jsOutputFolder, fileName);
-        const hotUri = url.resolve(this.outputPublicPath, fileName);
-        Shout.timed(`Inject <script> ${chalk.cyan(physicalFilePath)} --> ${chalk.cyan(hotUri)}`);
-        const hotProxy = this.createWormholeToHotScript(hotUri);
-        return fse.outputFile(physicalFilePath, hotProxy);
-    }
-
-    /**
      * Runs the hot reload server using provided webpack configuration.
      * @param webpackConfiguration 
      */
-    async runDevServer(webpackConfiguration: webpack.Configuration): Promise<void> {
-        let basePort = 28080;
-        if (this.variables.port1) {
-            basePort = this.variables.port1;
-        }
-        const port = await portfinder.getPortPromise({
-            port: basePort
-        });
-        this.outputPublicPath = `http://localhost:${port}/`;
-
-        if (!webpackConfiguration.output) {
-            throw new Error('Unexpected undefined value: webpack configuration output object.');
-        }
-        webpackConfiguration.output.publicPath = this.outputPublicPath;
-
+    async runDevServer(webpackConfiguration: webpack.Configuration, port: number): Promise<void> {
         const devServerOptions: webpackDevServer.Configuration = {
             hot: true,
-            contentBase: false,                     // don't serve static files from project folder LOL
-            port: port,                             // for some reason, WDS not using port from listen() parameter
-            headers: {                              // CORS
+            contentBase: false,     // don't serve static files from project folder LOL
+            port: port,             // for some reason, WDS not using port from listen() parameter
+            headers: {              // CORS
                 'Access-Control-Allow-Origin': '*'
             },
             noInfo: true
@@ -650,11 +481,9 @@ inject();
 
         webpackDevServer.addDevServerEntrypoints(webpackConfiguration, devServerOptions);
         const compiler = webpack(webpackConfiguration);
-        this.addCompilerBuildNotification(compiler);
-
         const devServer = new webpackDevServer(compiler, devServerOptions);
 
-        return new Promise<void>((ok, reject) => {
+        const createServerTask = new Promise<void>((ok, reject) => {
             // 'localhost' parameter MUST be written, otherwise error callback WILL NOT work! 
             devServer.listen(port, 'localhost', error => {
                 if (error) {
@@ -662,10 +491,12 @@ inject();
                     return;
                 }
 
-                Shout.timed(chalk.yellow('Hot Reload'), `Server running on http://localhost:${chalk.green(port)}/`);
                 ok();
             });
         });
+
+        await createServerTask;
+        Shout.timed(chalk.yellow('Hot Reload'), `server running on http://localhost:${chalk.green(port)}/`);
     }
 
     /**
@@ -677,12 +508,24 @@ inject();
         const webpackConfiguration = this.createWebpackConfiguration();
 
         if (this.variables.serve) {
-            await this.runDevServer(webpackConfiguration);
+            let basePort = 28080;
+            if (this.variables.port1) {
+                basePort = this.variables.port1;
+            }
+            const port = await portfinder.getPortPromise({
+                port: basePort
+            });
+
+            if (!webpackConfiguration.output) {
+                throw new Error('Unexpected undefined value: webpack configuration output object.');
+            }
+            webpackConfiguration.output.publicPath = `http://localhost:${port}/`;
+            await this.runDevServer(webpackConfiguration, port);
         } else if (this.variables.watch) {
             await this.watch(webpackConfiguration);
         } else {
             const stats = await this.buildOnce(webpackConfiguration);
-            if (this.variables.stats) {
+            if (this.variables.stats && this.variables.production) {
                 await fse.outputJson(this.finder.statsJsonFilePath, stats.toJson());
             }
         }

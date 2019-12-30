@@ -157,19 +157,18 @@ export class TypeScriptBuildEngine {
     /**
      * Gets JS Babel transpile rules for webpack.
      */
-    get jsBabelWebpackRules(): webpack.Rule {
+    get jsBabelWebpackRules(): webpack.RuleSetRule {
         return {
-            test: /\.(jsx?|mjs)$/,
-            exclude: /node_modules/,
+            test: /\.js$/,
             use: {
                 loader: LoaderPaths.babel
             }
         };
     }
 
-    get libGuardRules(): webpack.Rule {
+    get libGuardRules(): webpack.RuleSetRule {
         return {
-            test: /\.m?js$/,
+            test: /\.js$/,
             include: /node_modules/,
             use: [{
                 loader: LoaderPaths.libGuard,
@@ -183,7 +182,7 @@ export class TypeScriptBuildEngine {
     /**
      * Gets a configured TypeScript rules for webpack.
      */
-    get typescriptWebpackRules(): webpack.Rule {
+    get typescriptWebpackRules(): webpack.RuleSetRule {
         const loaders: webpack.Loader[] = [];
 
         // webpack loaders are declared in reverse / right-to-left!
@@ -202,7 +201,7 @@ export class TypeScriptBuildEngine {
             }
         });
 
-        const tsRules: webpack.Rule = {
+        const tsRules: webpack.RuleSetRule = {
             test: /\.tsx?$/,
             exclude: /node_modules/,
             use: loaders
@@ -214,7 +213,7 @@ export class TypeScriptBuildEngine {
     /**
      * Gets a Vue Single-File Component rule for webpack.
      */
-    get vueWebpackRules(): webpack.Rule {
+    get vueWebpackRules(): webpack.RuleSetRule {
         return {
             test: /\.vue$/,
             exclude: /node_modules/,
@@ -232,7 +231,7 @@ export class TypeScriptBuildEngine {
     /**
      * Gets a configured HTML template rules for webpack.
      */
-    get templatesWebpackRules(): webpack.Rule {
+    get templatesWebpackRules(): webpack.RuleSetRule {
         return {
             test: /\.html?$/,
             exclude: /node_modules/,
@@ -248,7 +247,7 @@ export class TypeScriptBuildEngine {
     /**
      * Gets CSS rules for webpack to prevent explosion during vue compile.
      */
-    get cssWebpackRules(): webpack.Rule {
+    get cssWebpackRules(): webpack.RuleSetRule {
         const vueStyleLoader = {
             loader: LoaderPaths.vueStyle
         };
@@ -285,7 +284,7 @@ export class TypeScriptBuildEngine {
      * @param uri 
      */
     createWormholeToHotScript(uri: string): string {
-        return `// instapack wormhole: automagically reference the real hot-reloading script
+        return `// instapack Script Injection: automagically reference the real hot-reloading script
 function inject() {
     let body = document.getElementsByTagName('body')[0];
 
@@ -318,17 +317,25 @@ inject();
      * @param tsCompilerOptions 
      * @param useBabel 
      */
-    createWebpackRules(): webpack.Rule[] {
+    createWebpackRules(): webpack.RuleSetRule[] {
         const rules = [
             this.typescriptWebpackRules,
             this.vueWebpackRules,
             this.templatesWebpackRules,
-            this.cssWebpackRules,
-            this.libGuardRules
+            this.cssWebpackRules
         ];
 
+        // loader rules are evaluated LIFO
+        // meaning, LibGuard should run first before Babel
         if (this.useBabel) {
             rules.push(this.jsBabelWebpackRules);
+        }
+
+        if (this.typescriptCompilerOptions.target) {
+            // TypeScript module transpilation is effectively off when target is ESNext
+            if (this.typescriptCompilerOptions.target < TypeScript.ScriptTarget.ESNext) {
+                rules.push(this.libGuardRules);
+            }
         }
 
         return rules;
@@ -605,9 +612,8 @@ inject();
      */
     putWormhole(fileName: string): Promise<void> {
         const physicalFilePath = upath.join(this.finder.jsOutputFolder, fileName);
-        const relativeFilePath = upath.relative(this.finder.root, physicalFilePath);
         const hotUri = url.resolve(this.outputPublicPath, fileName);
-        Shout.timed(`+wormhole: ${chalk.cyan(relativeFilePath)} --> ${chalk.cyan(hotUri)}`);
+        Shout.timed(`Inject <script> ${chalk.cyan(physicalFilePath)} --> ${chalk.cyan(hotUri)}`);
         const hotProxy = this.createWormholeToHotScript(hotUri);
         return fse.outputFile(physicalFilePath, hotProxy);
     }

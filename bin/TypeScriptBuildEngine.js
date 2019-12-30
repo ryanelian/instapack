@@ -100,8 +100,7 @@ class TypeScriptBuildEngine {
     }
     get jsBabelWebpackRules() {
         return {
-            test: /\.(jsx?|mjs)$/,
-            exclude: /node_modules/,
+            test: /\.js$/,
             use: {
                 loader: LoaderPaths_1.LoaderPaths.babel
             }
@@ -109,7 +108,7 @@ class TypeScriptBuildEngine {
     }
     get libGuardRules() {
         return {
-            test: /\.m?js$/,
+            test: /\.js$/,
             include: /node_modules/,
             use: [{
                     loader: LoaderPaths_1.LoaderPaths.libGuard,
@@ -197,7 +196,7 @@ class TypeScriptBuildEngine {
         };
     }
     createWormholeToHotScript(uri) {
-        return `// instapack wormhole: automagically reference the real hot-reloading script
+        return `// instapack Script Injection: automagically reference the real hot-reloading script
 function inject() {
     let body = document.getElementsByTagName('body')[0];
 
@@ -222,11 +221,15 @@ inject();
             this.typescriptWebpackRules,
             this.vueWebpackRules,
             this.templatesWebpackRules,
-            this.cssWebpackRules,
-            this.libGuardRules
+            this.cssWebpackRules
         ];
         if (this.useBabel) {
             rules.push(this.jsBabelWebpackRules);
+        }
+        if (this.typescriptCompilerOptions.target) {
+            if (this.typescriptCompilerOptions.target < TypeScript.ScriptTarget.ESNext) {
+                rules.push(this.libGuardRules);
+            }
         }
         return rules;
     }
@@ -436,9 +439,8 @@ inject();
     }
     putWormhole(fileName) {
         const physicalFilePath = upath.join(this.finder.jsOutputFolder, fileName);
-        const relativeFilePath = upath.relative(this.finder.root, physicalFilePath);
         const hotUri = url.resolve(this.outputPublicPath, fileName);
-        Shout_1.Shout.timed(`+wormhole: ${chalk.cyan(relativeFilePath)} --> ${chalk.cyan(hotUri)}`);
+        Shout_1.Shout.timed(`Inject <script> ${chalk.cyan(physicalFilePath)} --> ${chalk.cyan(hotUri)}`);
         const hotProxy = this.createWormholeToHotScript(hotUri);
         return fse.outputFile(physicalFilePath, hotProxy);
     }

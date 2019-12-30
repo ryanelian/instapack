@@ -375,14 +375,14 @@ Compiling a JS project using this mode will:
 
 - Redirect the JS outputs to the build server (instead of the physical JS output folder).
 
-- Create wormholes (script injections) in place of the usual JS output files, directed to respective scripts on the build server.
+- Create script injections in place of the usual JS output files, directed to respective scripts on the build server.
 
 ```
 [01:24:26] Hot Reload Server running on http://localhost:28080/
 [01:24:28] ipack.dll.js 6.25 MB in http://localhost:28080/
 [01:24:28] ipack.js 62.5 kB in http://localhost:28080/
-[01:24:28] +wormhole: wwwroot/js/ipack.dll.js --> http://localhost:28080/ipack.dll.js
-[01:24:28] +wormhole: wwwroot/js/ipack.js --> http://localhost:28080/ipack.js
+[01:24:28] Inject <script> D:/VS/project/wwwroot/js/ipack.dll.js --> http://localhost:28080/ipack.dll.js
+[01:24:28] Inject <script> D:/VS/project/wwwroot/js/ipack.js --> http://localhost:28080/ipack.js
 ```
 
 > No changes should be required for the `<script src="...">` in the app itself!

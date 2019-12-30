@@ -325,8 +325,9 @@ inject();
             this.cssWebpackRules
         ];
 
-        // loader rules are evaluated LIFO
-        // meaning, LibGuard should run first before Babel
+        // loader rules are evaluated LIFO 
+        // https://stackoverflow.com/questions/32234329/what-is-the-loader-order-for-webpack
+        // meaning, LibGuard should run first before Babel!
         if (this.useBabel) {
             rules.push(this.jsBabelWebpackRules);
         }

@@ -8,17 +8,21 @@ Here are the list of breaking changes when upgrading between instapack major (or
 
 - Build flag `--nodebug` is changed to `--no-sourcemaps`
 
-- Global settings `silent` is changed to `mute` to correctly reflect the actual behavior.
+- Global instapack user settings `silent` is changed to `mute` to correctly reflect the actual behavior.
 
-- Dropped the deprecated TSLint in favor of ESLint-TypeScript integrations.
+- Dropped the community-deprecated TSLint in favor of ESLint-TypeScript integrations. https://github.com/palantir/tslint/issues/4534
 
-- Dropped the already-deprecated `.vue.html` component compilation.
+- Dropped the (already-obsoleted) `.vue.html` module compilation. 
+
+  - Developers using this feature should migrate to `.vue` Single-File Component instead.
 
 - Dropped the End-of-Life (01-2020) Node.js version 8!
 
 - `.mjs` and `.wasm` are no longer resolved by default due to Webpack 5 disabling them by default (Requiring `experiments.mjs: true` and `experiments: { asyncWebAssembly: true, importAsync: true }` https://github.com/webpack/changelog-v5#experiments)
 
-- Babel transpilation will now be applied to all `.js` files imported from `node_modules`. This feature is for users who disables TypeScript transpilation (Script Target: `esnext`) but still wants to transpile projects using `@babel/preset-env`
+- Babel transformations will now be applied to all `.js` files imported from `node_modules`
+
+  - This feature is meant for users who disables TypeScript transpilation (Script Target: `esnext`) but still wants to transpile projects using `@babel/preset-env`
 
 ## 7.3.0
 

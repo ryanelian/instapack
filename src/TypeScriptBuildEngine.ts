@@ -436,9 +436,10 @@ export class TypeScriptBuildEngine {
     }
 
     buildOnce(webpackConfiguration: webpack.Configuration): Promise<webpack.Stats> {
-        const compiler = webpack(webpackConfiguration);
+        // https://github.com/webpack/changelog-v5/blob/master/README.md#compiler-idle-and-close
+        // The webpack() facade automatically calls close when being passed a callback.
         return new Promise<webpack.Stats>((ok, reject) => {
-            compiler.run((err, stats) => {
+            webpack(webpackConfiguration, (err, stats) => {
                 if (err) {
                     reject(err);
                 }

@@ -314,9 +314,8 @@ class TypeScriptBuildEngine {
         }
     }
     buildOnce(webpackConfiguration) {
-        const compiler = webpack(webpackConfiguration);
         return new Promise((ok, reject) => {
-            compiler.run((err, stats) => {
+            webpack(webpackConfiguration, (err, stats) => {
                 if (err) {
                     reject(err);
                 }

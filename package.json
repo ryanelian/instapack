@@ -77,7 +77,7 @@
     "upath": "1.2.0",
     "vue-loader": "15.8.3",
     "vue-template-compiler": "2.6.11",
-    "webpack": "5.0.0-beta.10",
+    "webpack": "5.0.0-beta.11",
     "webpack-dev-server": "3.10.1",
     "which": "2.0.2",
     "worker-farm": "1.7.0",

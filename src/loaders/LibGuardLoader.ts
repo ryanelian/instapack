@@ -4,6 +4,7 @@ import { getOptions } from 'loader-utils';
 import chalk = require('chalk');
 import { checkSyntaxLevel } from '../SyntaxLevelChecker';
 import * as upath from 'upath';
+import { RawSourceMap } from 'source-map';
 
 interface LibGuardLoaderOptions {
     compilerOptions?: TypeScript.CompilerOptions;
@@ -135,9 +136,8 @@ export = function (this: loader.LoaderContext, source: string): void {
         // console.log(result);
         if (this.sourceMap && result.map) {
             // console.log(this.resourcePath);
-            const sm = JSON.parse(result.map); // RawSourceMap
+            const sm: RawSourceMap = JSON.parse(result.map);
             sm.sources = [this.resourcePath];
-            // HACK78
             this.callback(null, result.output, sm);
         } else {
             this.callback(null, result.output);

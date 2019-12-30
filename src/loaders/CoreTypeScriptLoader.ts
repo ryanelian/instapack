@@ -1,6 +1,7 @@
 import { loader } from 'webpack';
 import * as TypeScript from 'typescript';
 import { getOptions } from 'loader-utils';
+import { RawSourceMap } from 'source-map';
 
 interface CoreTypeScriptLoaderOptions {
     compilerOptions?: TypeScript.CompilerOptions;
@@ -27,7 +28,7 @@ export = function (this: loader.LoaderContext, source: string): void {
 
     if (this.sourceMap && result.sourceMapText) {
         // console.log(this.resourcePath);
-        const sm = JSON.parse(result.sourceMapText); // RawSourceMap
+        const sm: RawSourceMap = JSON.parse(result.sourceMapText);
         sm.sources = [this.resourcePath];
         this.callback(null, result.outputText, sm);
     } else {

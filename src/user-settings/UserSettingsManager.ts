@@ -13,7 +13,7 @@ function convertKebabToCamelCase(s: string): string {
 
 type ValidatorFunction = (x: string) => boolean;
 
-const validators: Readonly<MapLikeObject<ValidatorFunction>> = Object.freeze({
+const validators: Readonly<MapLike<ValidatorFunction>> = Object.freeze({
     'package-manager': (x: string) => ['yarn', 'npm', 'disabled'].includes(x),
     'mute': (x: string) => ['true', 'false'].includes(x)
 });

@@ -1,6 +1,6 @@
 /**
  * A simple strongly-typed key-value store.
  */
-interface MapLikeObject<T> {
+interface MapLike<T> {
     [key: string]: T;
 }

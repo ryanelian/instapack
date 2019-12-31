@@ -33,9 +33,10 @@ class InstapackBuildPlugin {
         });
         if (this.variables.production) {
             compiler.hooks.compilation.tap('typescript-minify-notify', compilation => {
-                return compilation.hooks.afterHash.tap('typescript-minify-notify', () => {
+                compilation.hooks.afterHash.tap('typescript-minify-notify', () => {
                     Shout_1.Shout.timed('TypeScript compilation finished! Minifying bundles...');
                 });
+                return undefined;
             });
         }
         compiler.hooks.done.tapPromise('display-build-results', (stats) => __awaiter(this, void 0, void 0, function* () {
@@ -88,10 +89,19 @@ class InstapackBuildPlugin {
             providedExports: false
         };
     }
+    formatError(error) {
+        if (error.stack) {
+            return `${error.moduleId} (${error.loc})\n ${error.stack}`;
+        }
+        else {
+            return error;
+        }
+    }
     displayBuildResults(stats, outputPublicPath) {
         const errors = stats.errors;
         if (errors.length) {
-            const errorMessage = '\n' + errors.join('\n\n') + '\n';
+            const errorMessage = errors.map(Q => this.formatError(Q)).join('\n\n') + '\n';
+            Shout_1.Shout.error('during JS build:');
             console.error(chalk.red(errorMessage));
             this.va.speak(`JAVA SCRIPT BUILD: ${errors.length} ERROR!`);
         }
@@ -100,7 +110,8 @@ class InstapackBuildPlugin {
         }
         const warnings = stats.warnings;
         if (warnings.length) {
-            const warningMessage = '\n' + warnings.join('\n\n') + '\n';
+            const warningMessage = warnings.map(Q => this.formatError(Q)).join('\n\n') + '\n';
+            Shout_1.Shout.warning('during JS build:');
             console.warn(chalk.yellow(warningMessage));
         }
         if (stats.assets) {

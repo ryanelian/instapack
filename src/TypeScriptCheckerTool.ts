@@ -62,7 +62,7 @@ export class TypeScriptCheckerTool {
      * Modify TypeScript compiler host to use instapack's in-memory source cache.
      */
     private patchCompilerHost(): void {
-        const rawFileCache: MapLikeObject<string | undefined> = {};
+        const rawFileCache: MapLike<string | undefined> = {};
         this.host.readFile = (fileName): string => {
             // Apparently this is being used by TypeScript to read package.json in node_modules...
             // Probably to find .d.ts files?

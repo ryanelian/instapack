@@ -186,10 +186,6 @@ instapack puts configurations inside `package.json` to reduce project files clut
 
 - `alias` allows overriding module `import` calls from all files, including dependencies. [Read more ↗](https://webpack.js.org/configuration/resolve/)
 
-  - [TypeScript `paths` compiler option in `tsconfig.json`](https://www.typescriptlang.org/docs/handbook/module-resolution.html) will be translated into aliases with caveats:
-  
-    - For non-`*` paths: due to technical limitations, only the first path in the string array will be honored.
-
 - `externals` allows rewriting module `import` calls from all files, including dependencies, to globally exposed objects via `window` object. [Read more ↗](https://webpack.js.org/configuration/externals/)
 
   - This technique enables usage of scripts hosted on [CDN](https://en.wikipedia.org/wiki/Content_delivery_network)!
@@ -250,6 +246,57 @@ import jQuery from 'jquery';
 ```
 
 - `port1` can be set for declaring a static port number to be used by the Hot Reload server. If not set or is already used, the port number will be randomized. [Read more ↓](#hot-reload-development-mode)
+
+## TypeScript Custom Paths Module Resolution
+
+https://www.typescriptlang.org/docs/handbook/module-resolution.html#path-mapping
+
+TypeScript allows importing modules using non-relative path request query using the `paths` (and `baseUrl`) compiler options. instapack attempts to mimic TypeScript module resolution behavior when building the project. For example:
+
+```json
+{
+  "compilerOptions": {
+    "baseUrl": "./client/js",
+    "paths": {
+        "*": [
+            "*",
+            "globals/*"
+        ],
+        "stuff": ["lib/stuff"],
+        "stuff/*": ["lib/stuff/*"]
+    }
+  }
+}
+```
+
+Will be automatically translated into instapack `alias` options:
+
+```json
+{
+    "stuff$": [ "D:/project/client/js/lib/stuff" ],
+    "stuff": [ "D:/project/client/js/lib/stuff" ]
+}
+```
+
+> `$` suffix in `alias` options key signify an exact query string match.
+
+AND the internal webpack `resolve.modules` option:
+
+```json
+[
+  "D:/project/client/js",
+  "D:/project/client/js/globals",
+  "node_modules"
+]
+```
+
+These options allow unusual module imports using non-relative paths:
+
+```ts
+import { x } from 'stuff';      // might resolve to /client/js/lib/stuff/index.ts
+import { y } from 'stuff/y';    // might resolve to /client/js/lib/stuff/y.ts
+import { xyz } from 'abc/def';  // might resolve to /client/js/abc/def.ts or /client/js/globals/abc/def.ts
+```
 
 ## ESLint Integration
 

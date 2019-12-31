@@ -5,8 +5,8 @@ export interface ProjectSettings {
     jsOut: string;
     cssOut: string;
     port1: number;
-    alias: MapLikeObject<string>;
-    externals: MapLikeObject<string | string[] | MapLikeObject<string | string[]>>;
+    alias: MapLike<string>;
+    externals: MapLike<string | string[] | MapLike<string | string[]>>;
     namespace: string | undefined;
     copy: CopyOption[];
 }

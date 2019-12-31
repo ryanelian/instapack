@@ -10,7 +10,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const path = require("path");
-const upath = require("upath");
 const fse = require("fs-extra");
 const chalk = require("chalk");
 const webpack = require("webpack");
@@ -24,6 +23,7 @@ const PathFinder_1 = require("./variables-factory/PathFinder");
 const LoaderPaths_1 = require("./loaders/LoaderPaths");
 const TypescriptConfigParser_1 = require("./TypescriptConfigParser");
 const InstapackBuildPlugin_1 = require("./plugins/InstapackBuildPlugin");
+const TypeScriptPathsTranslator_1 = require("./TypeScriptPathsTranslator");
 class TypeScriptBuildEngine {
     constructor(variables) {
         this.useBabel = false;
@@ -34,63 +34,6 @@ class TypeScriptBuildEngine {
         this.typescriptCompilerOptions.emitDeclarationOnly = false;
         this.typescriptCompilerOptions.sourceMap = variables.sourceMap;
         this.typescriptCompilerOptions.inlineSources = variables.sourceMap;
-    }
-    convertTypeScriptPathToWebpackAliasPath(baseUrl, value) {
-        let result = upath.join(baseUrl, value);
-        if (result.endsWith('/*')) {
-            result = result.substr(0, result.length - 2);
-        }
-        return result;
-    }
-    mergeTypeScriptPathAlias() {
-        const alias = Object.assign({}, this.variables.alias);
-        if (!this.typescriptCompilerOptions.paths) {
-            return alias;
-        }
-        if (!this.typescriptCompilerOptions.baseUrl) {
-            Shout_1.Shout.warning(chalk.cyan('tsconfig.json'), 'paths are defined, but baseUrl is not!', chalk.grey('(Ignoring)'));
-            return alias;
-        }
-        for (let key in this.typescriptCompilerOptions.paths) {
-            if (key === '*') {
-                continue;
-            }
-            const values = this.typescriptCompilerOptions.paths[key];
-            if (values.length > 1) {
-                Shout_1.Shout.warning(chalk.cyan('tsconfig.json'), 'paths:', chalk.yellow(key), 'resolves to more than one path!', chalk.grey('(Using the first one.)'));
-            }
-            const value = values[0];
-            if (!value) {
-                Shout_1.Shout.warning(chalk.cyan('tsconfig.json'), 'paths:', chalk.yellow(key), 'is empty!');
-                continue;
-            }
-            if (key.endsWith('/*')) {
-                key = key.substr(0, key.length - 2);
-            }
-            const result = this.convertTypeScriptPathToWebpackAliasPath(this.typescriptCompilerOptions.baseUrl, value);
-            if (!alias[key]) {
-                alias[key] = result;
-            }
-        }
-        return alias;
-    }
-    getWildcardModules() {
-        if (!this.typescriptCompilerOptions.baseUrl) {
-            return undefined;
-        }
-        const r = new Set();
-        const p = this.typescriptCompilerOptions.paths;
-        if (p && p['*']) {
-            for (const value of p['*']) {
-                const result = this.convertTypeScriptPathToWebpackAliasPath(this.typescriptCompilerOptions.baseUrl, value);
-                r.add(result);
-            }
-        }
-        else {
-            r.add(this.typescriptCompilerOptions.baseUrl);
-        }
-        r.add('node_modules');
-        return Array.from(r);
     }
     get jsBabelWebpackRules() {
         return {
@@ -230,8 +173,8 @@ class TypeScriptBuildEngine {
         return 'eval-source-map';
     }
     createWebpackConfiguration() {
-        const alias = this.mergeTypeScriptPathAlias();
-        const wildcards = this.getWildcardModules();
+        const alias = TypeScriptPathsTranslator_1.mergeTypeScriptPathAlias(this.typescriptCompilerOptions, this.finder.root, this.variables.alias);
+        const wildcards = TypeScriptPathsTranslator_1.getWildcardModules(this.typescriptCompilerOptions, this.finder.root);
         const rules = this.createWebpackRules();
         const plugins = this.createWebpackPlugins();
         const osEntry = path.normalize(this.finder.jsEntry);

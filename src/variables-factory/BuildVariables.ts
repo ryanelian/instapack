@@ -33,17 +33,17 @@ export interface BuildVariables {
     /**
      * Replaces dependency imports to another dependency. For example: {'vue': 'vue/dist/vue.esm'}
      */
-    alias: MapLikeObject<string>;
+    alias: MapLike<string>;
 
     /**
      * Rewrites dependency imports to a global object. For example: {'jquery': '$'}
      */
-    externals: MapLikeObject<string | string[] | MapLikeObject<string | string[]>>;
+    externals: MapLike<string | string[] | MapLike<string | string[]>>;
 
     /**
      * Gets the user-supplied environment variables from CLI or .env file.
      */
-    env: MapLikeObject<string>;
+    env: MapLike<string>;
 
     /**
      * Gets the user settings for the package manager used for automatic project restore prior builds. 

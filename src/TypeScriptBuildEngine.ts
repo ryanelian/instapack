@@ -1,5 +1,4 @@
 import * as path from 'path';
-import * as upath from 'upath';
 import * as fse from 'fs-extra';
 import chalk = require('chalk');
 import webpack = require('webpack');
@@ -15,6 +14,7 @@ import { PathFinder } from './variables-factory/PathFinder';
 import { LoaderPaths } from './loaders/LoaderPaths';
 import { parseTypescriptConfig } from './TypescriptConfigParser';
 import { InstapackBuildPlugin } from './plugins/InstapackBuildPlugin';
+import { mergeTypeScriptPathAlias, getWildcardModules } from './TypeScriptPathsTranslator';
 
 /**
  * Contains methods for compiling a TypeScript project.
@@ -44,99 +44,6 @@ export class TypeScriptBuildEngine {
         this.typescriptCompilerOptions.emitDeclarationOnly = false;
         this.typescriptCompilerOptions.sourceMap = variables.sourceMap;
         this.typescriptCompilerOptions.inlineSources = variables.sourceMap;
-    }
-
-    /**
-     * A simple helper function for resolving TypeScript paths, trimming * from the rightmost path.
-     * @param baseUrl 
-     * @param value 
-     */
-    private convertTypeScriptPathToWebpackAliasPath(baseUrl: string, value: string): string {
-        let result = upath.join(baseUrl, value);
-        if (result.endsWith('/*')) {
-            result = result.substr(0, result.length - 2);
-        }
-
-        // console.log(baseUrl, value, JSON.stringify(result));
-        return result;
-    }
-
-    /**
-     * Translates tsconfig.json paths into webpack-compatible aliases!
-     */
-    mergeTypeScriptPathAlias(): MapLikeObject<string> {
-        const alias: MapLikeObject<string> = Object.assign({}, this.variables.alias);
-
-        if (!this.typescriptCompilerOptions.paths) {
-            return alias;
-        }
-
-        if (!this.typescriptCompilerOptions.baseUrl) {
-            Shout.warning(chalk.cyan('tsconfig.json'),
-                'paths are defined, but baseUrl is not!',
-                chalk.grey('(Ignoring)'));
-            return alias;
-        }
-
-        for (let key in this.typescriptCompilerOptions.paths) {
-            if (key === '*') {
-                // configure this in resolve.modules instead
-                continue;
-            }
-
-            // technical limitation: 1 alias = 1 path, not multiple paths...
-            const values = this.typescriptCompilerOptions.paths[key];
-            if (values.length > 1) {
-                Shout.warning(chalk.cyan('tsconfig.json'),
-                    'paths:', chalk.yellow(key), 'resolves to more than one path!',
-                    chalk.grey('(Using the first one.)')
-                );
-            }
-
-            const value = values[0];
-            if (!value) {
-                Shout.warning(chalk.cyan('tsconfig.json'), 'paths:', chalk.yellow(key), 'is empty!');
-                continue;
-            }
-
-            // webpack alias does wildcard resolution automatically.
-            if (key.endsWith('/*')) {
-                key = key.substr(0, key.length - 2);
-            }
-            const result = this.convertTypeScriptPathToWebpackAliasPath(this.typescriptCompilerOptions.baseUrl, value);
-            // console.log(key, " ", result);
-
-            // don't let the merge overrides user-defined aliases!
-            if (!alias[key]) {
-                alias[key] = result;
-            }
-        }
-
-        return alias;
-    }
-
-    /**
-     * Returns lookup folders for non-relative module imports, from TypeScript * paths. 
-     */
-    private getWildcardModules(): string[] | undefined {
-        if (!this.typescriptCompilerOptions.baseUrl) {
-            return undefined;
-        }
-
-        const r = new Set<string>();
-        const p = this.typescriptCompilerOptions.paths;
-
-        if (p && p['*']) {
-            for (const value of p['*']) {
-                const result = this.convertTypeScriptPathToWebpackAliasPath(this.typescriptCompilerOptions.baseUrl, value);
-                r.add(result);
-            }
-        } else {
-            r.add(this.typescriptCompilerOptions.baseUrl);
-        }
-
-        r.add('node_modules');
-        return Array.from(r);
     }
 
     /**
@@ -336,8 +243,8 @@ export class TypeScriptBuildEngine {
      * Returns webpack configuration from blended instapack settings and build flags.
      */
     createWebpackConfiguration(): webpack.Configuration {
-        const alias = this.mergeTypeScriptPathAlias();
-        const wildcards = this.getWildcardModules();
+        const alias = mergeTypeScriptPathAlias(this.typescriptCompilerOptions, this.finder.root, this.variables.alias);
+        const wildcards = getWildcardModules(this.typescriptCompilerOptions, this.finder.root);
         // console.log(alias);
         // console.log(wildcards);
 
@@ -366,12 +273,15 @@ export class TypeScriptBuildEngine {
             },
             externals: this.variables.externals,
             resolve: {
-                extensions: ['.ts', '.tsx', '.js', '.jsx', '.vue', '.json'],
                 // .vue automatic resolution follows vue-cli behavior, although is still required in TypeScript...
                 // .html module import must now be explicit!
                 // .mjs causes runtime error when `module.exports` is being used instead of `export`. (Experimental in Webpack 5, requires experiments.mjs: true)
                 // .wasm requires adding `application/wasm` MIME to web server (both IIS and Kestrel). (Experimental in Webpack 5, requires experiments: { asyncWebAssembly: true, importAsync: true })
-                alias: alias
+                extensions: ['.ts', '.tsx', '.js', '.jsx', '.vue', '.json'],
+                // the following type definition requires @types/webpack@5
+                // https://github.com/webpack/webpack/issues/6817
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                alias: alias as any
             },
             module: {
                 rules: rules

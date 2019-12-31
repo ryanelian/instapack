@@ -45,10 +45,13 @@ export class InstapackBuildPlugin {
 
         if (this.variables.production) {
             compiler.hooks.compilation.tap('typescript-minify-notify', compilation => {
-                // https://github.com/webpack/tapable/issues/116
-                return compilation.hooks.afterHash.tap('typescript-minify-notify', () => {
+                compilation.hooks.afterHash.tap('typescript-minify-notify', () => {
                     Shout.timed('TypeScript compilation finished! Minifying bundles...');
                 });
+
+                // https://github.com/webpack/tapable/issues/116
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                return undefined as any;
             });
         }
 
@@ -106,6 +109,16 @@ export class InstapackBuildPlugin {
         };
     }
 
+    formatError(error): string {
+        // webpack 5 might have changed error / warning stats data to array of objects
+        // instead of array of strings https://github.com/webpack/webpack/issues/9802#issuecomment-569966784
+        if (error.stack) {
+            return `${error.moduleId} (${error.loc})\n ${error.stack}`;
+        } else {
+            return error;
+        }
+    }
+
     /**
      * Interact with user via CLI output when TypeScript build is finished.
      * @param stats 
@@ -113,7 +126,8 @@ export class InstapackBuildPlugin {
     displayBuildResults(stats: webpack.Stats.ToJsonOutput, outputPublicPath: string | undefined): void {
         const errors: string[] = stats.errors;
         if (errors.length) {
-            const errorMessage = '\n' + errors.join('\n\n') + '\n';
+            const errorMessage = errors.map(Q => this.formatError(Q)).join('\n\n') + '\n';
+            Shout.error('during JS build:');
             console.error(chalk.red(errorMessage));
             this.va.speak(`JAVA SCRIPT BUILD: ${errors.length} ERROR!`);
         } else {
@@ -122,7 +136,8 @@ export class InstapackBuildPlugin {
 
         const warnings: string[] = stats.warnings;
         if (warnings.length) {
-            const warningMessage = '\n' + warnings.join('\n\n') + '\n';
+            const warningMessage = warnings.map(Q => this.formatError(Q)).join('\n\n') + '\n';
+            Shout.warning('during JS build:');
             console.warn(chalk.yellow(warningMessage));
         }
 

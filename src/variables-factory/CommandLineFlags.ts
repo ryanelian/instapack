@@ -7,5 +7,5 @@ export interface CommandLineFlags {
     watch: boolean;
     stats: boolean;
     serve: boolean;
-    env: MapLikeObject<string>;
+    env: MapLike<string>;
 }

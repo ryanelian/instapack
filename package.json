@@ -71,7 +71,7 @@
     "postcss": "7.0.26",
     "sass": "1.24.0",
     "say": "0.16.0",
-    "source-map": "0.6.1",
+    "source-map": "0.7.3",
     "typescript": "3.7.4",
     "upath": "1.2.0",
     "vue-loader": "15.8.3",

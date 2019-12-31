@@ -531,8 +531,6 @@ An excerpt of build log when using dynamic import:
 [02:41:10] ipack.js 2.76 kB
 ```
 
-- The number `0` is an auto-generated chunk name, which can be overridden using the *magic comment* `import(/* webpackChunkName: "MyComponent" */ './MyComponent')` (generates `ipack.MyComponent.js` instead).
-
 > To use this syntax within TypeScript, `module` compiler option in `tsconfig.json` must be set to `esnext`
 
 ### CommonJS / Node.js require
@@ -540,7 +538,7 @@ An excerpt of build log when using dynamic import:
 Imports Node.js modules within the project or from `node_modules`. However, **you WILL NOT get intellisense!** (Modules will be imported as `any` data type.)
 
 ```js
-let $ = require('jquery');
+const $ = require('jquery');
 ```
 
 > CommonJS `require` method in TypeScript is provided through `@types/requirejs` or `@types/node` packages.
@@ -554,7 +552,7 @@ Imports an `.html` file to be minified and then stringified. This technique is i
 import template from './MyTemplate.html';
 
 // CJS syntax
-let templateCJS: string = require('./MyTemplate.html');
+const templateCJS: string = require('./MyTemplate.html');
 ```
 
 > A global TypeScript definition file for `*.html` module is required for importing the `.html` file from TypeScript using ESM syntax.
@@ -575,9 +573,12 @@ Imports strongly-typed, static JSON file in the TypeScript project using the `im
 ```ts
 // ESM syntax
 import settings from './settings.json';
+
+// CJS syntax (any)
+const settingsCJS = require('./settings.json');
 ```
 
-> Requires `resolveJsonModule` compiler option in `tsconfig.json` to be set to `true`
+> ESM syntax requires `resolveJsonModule` compiler option in `tsconfig.json` to be set to `true`
 
 ### Vue Single-File Components
 

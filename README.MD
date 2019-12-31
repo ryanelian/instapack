@@ -249,9 +249,9 @@ import jQuery from 'jquery';
 
 ## TypeScript Custom Paths Module Resolution
 
-https://www.typescriptlang.org/docs/handbook/module-resolution.html#path-mapping
+[TypeScript allows importing modules using non-relative path request query using the `paths` (and `baseUrl`) compiler options in `tsconfig.json`](https://www.typescriptlang.org/docs/handbook/module-resolution.html#path-mapping)
 
-TypeScript allows importing modules using non-relative path request query using the `paths` (and `baseUrl`) compiler options. instapack attempts to mimic TypeScript module resolution behavior when building the project. For example:
+instapack attempts to mimic TypeScript module resolution behavior when building the project. For example:
 
 ```json
 {
@@ -269,7 +269,7 @@ TypeScript allows importing modules using non-relative path request query using 
 }
 ```
 
-Will be automatically translated into instapack `alias` options:
+**Will be automatically translated into instapack `alias` options:**
 
 ```json
 {
@@ -280,7 +280,7 @@ Will be automatically translated into instapack `alias` options:
 
 > `$` suffix in `alias` options key signify an exact query string match.
 
-AND the internal webpack `resolve.modules` option:
+**AND the internal webpack `resolve.modules` option:**
 
 ```json
 [

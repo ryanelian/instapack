@@ -68,7 +68,7 @@
     "loader-utils": "1.2.3",
     "merge-source-map": "1.1.0",
     "portfinder": "1.0.25",
-    "postcss": "7.0.25",
+    "postcss": "7.0.26",
     "sass": "1.24.0",
     "say": "0.16.0",
     "source-map": "0.6.1",

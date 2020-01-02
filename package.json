@@ -81,7 +81,7 @@
     "webpack-dev-server": "3.10.1",
     "which": "2.0.2",
     "worker-farm": "1.7.0",
-    "yargs": "15.0.2"
+    "yargs": "15.1.0"
   },
   "devDependencies": {
     "@types/autoprefixer": "^9.6.1",

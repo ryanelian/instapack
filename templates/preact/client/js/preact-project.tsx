@@ -1,7 +1,10 @@
 import { h, render } from 'preact';
 import { Hello } from "./components/Hello";
 
-render(
-    <Hello compiler="instapack" framework="Preact" />,
-    document.getElementById('app')
-);
+const el = document.getElementById('app');
+if (el) {
+    render(
+        <Hello compiler="instapack" framework="Preact" />,
+        el
+    );
+}

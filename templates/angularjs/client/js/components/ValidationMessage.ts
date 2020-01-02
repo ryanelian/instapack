@@ -1,16 +1,16 @@
 import template from './ValidationMessage.html';
 
 class ValidationMessageController implements angular.IController {
-    input: angular.IFormController;
-    forId: string;
-    display: string;
-    element: HTMLElement;
+    input: angular.IFormController | undefined;
+    forId: string | undefined;
+    display: string | undefined;
+    element: HTMLElement | undefined;
 
-    minError: string;
-    maxError: string;
-    minLengthError: string;
-    maxLengthError: string;
-    patternError: string;
+    minError = '';
+    maxError = '';
+    minLengthError = '';
+    maxLengthError = '';
+    patternError = '';
 
     static $inject = [];
     constructor() {
@@ -20,9 +20,16 @@ class ValidationMessageController implements angular.IController {
 
     $onInit(): void {
         if (this.forId) {
-            this.element = window.document.getElementById(this.forId);
-        } else {
+            const el = window.document.getElementById(this.forId);
+            if (el) {
+                this.element = el;
+            }
+        } else if (this.input && this.input.$name) {
             this.element = window.document.getElementsByName(this.input.$name)[0];
+        }
+
+        if (!this.element) {
+            throw new Error('Form input element not found!');
         }
 
         this.setFieldDisplay();
@@ -34,7 +41,7 @@ class ValidationMessageController implements angular.IController {
     }
 
     setFieldDisplay(): void {
-        if (!this.display) {
+        if (this.input && (this.display === undefined)) {
             this.display = this.input.$name;
         }
     }

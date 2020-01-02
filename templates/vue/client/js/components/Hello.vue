@@ -10,7 +10,7 @@ import Component from 'vue-class-component';
     props: ['framework', 'compiler']
 })
 export default class Hello extends Vue {
-    framework: string;
-    compiler: string;
+    framework: string = '';
+    compiler: string = '';
 }
 </script>

@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const url = require("url");
 const upath = require("upath");
@@ -39,14 +30,14 @@ class InstapackBuildPlugin {
                 return undefined;
             });
         }
-        compiler.hooks.done.tapPromise('display-build-results', (stats) => __awaiter(this, void 0, void 0, function* () {
+        compiler.hooks.done.tapPromise('display-build-results', async (stats) => {
             var _a;
             const statsObject = stats.toJson(this.statsSerializeEssentialOption);
             const outputPublicPath = (_a = compiler.options.output) === null || _a === void 0 ? void 0 : _a.publicPath;
             this.displayBuildResults(statsObject, outputPublicPath);
             if (this.variables.serve) {
                 if (outputPublicPath) {
-                    yield this.putInjectionScripts(statsObject, outputPublicPath);
+                    await this.putInjectionScripts(statsObject, outputPublicPath);
                 }
                 else {
                     Shout_1.Shout.error(new Error('instapack: Cannot create injection scripts due to undefined output.publicPath webpack option!'));
@@ -59,7 +50,7 @@ class InstapackBuildPlugin {
             else {
                 Shout_1.Shout.timed('Finished JS build.');
             }
-        }));
+        });
     }
     get statsSerializeEssentialOption() {
         return {
@@ -124,36 +115,34 @@ class InstapackBuildPlugin {
             }
         }
     }
-    putInjectionScripts(stats, outputPublicPath) {
-        return __awaiter(this, void 0, void 0, function* () {
-            if (!stats.chunks) {
-                Shout_1.Shout.error(new Error('Cannot create injection scripts due to undefined stats chunk!'));
-                return;
+    async putInjectionScripts(stats, outputPublicPath) {
+        if (!stats.chunks) {
+            Shout_1.Shout.error(new Error('Cannot create injection scripts due to undefined stats chunk!'));
+            return;
+        }
+        const tasks = [];
+        for (const chunk of stats.chunks) {
+            if (chunk.initial === false) {
+                continue;
             }
-            const tasks = [];
-            for (const chunk of stats.chunks) {
-                if (chunk.initial === false) {
+            for (const file of chunk.files) {
+                if (file.includes('.hot-update.js')) {
                     continue;
                 }
-                for (const file of chunk.files) {
-                    if (file.includes('.hot-update.js')) {
-                        continue;
-                    }
-                    if (this.wormholes.has(file)) {
-                        continue;
-                    }
-                    const task = this.putInjectionScript(file, outputPublicPath);
-                    tasks.push(task);
-                    this.wormholes.add(file);
+                if (this.wormholes.has(file)) {
+                    continue;
                 }
+                const task = this.putInjectionScript(file, outputPublicPath);
+                tasks.push(task);
+                this.wormholes.add(file);
             }
-            try {
-                yield Promise.all(tasks);
-            }
-            catch (error) {
-                Shout_1.Shout.error('creating injection scripts!', error);
-            }
-        });
+        }
+        try {
+            await Promise.all(tasks);
+        }
+        catch (error) {
+            Shout_1.Shout.error('creating injection scripts!', error);
+        }
     }
     putInjectionScript(fileName, outputPublicPath) {
         const physicalFilePath = upath.join(this.finder.jsOutputFolder, fileName);

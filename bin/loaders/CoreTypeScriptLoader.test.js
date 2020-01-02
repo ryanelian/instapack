@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const webpack = require("webpack");
 const memoryFS = require("memory-fs");
@@ -38,46 +29,44 @@ const tsconfigJson = {
     }
 };
 const tsconfig = TypescriptConfigParser_1.parseTypescriptConfig(fixtures, tsconfigJson);
-function compileAsync(entry) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const compiler = webpack({
-            context: fixtures,
-            entry: [entry],
-            output: {
-                filename: 'bundle.js',
-                path: fixtures
-            },
-            module: {
-                rules: [{
-                        test: /\.tsx?$/,
-                        use: [{
-                                loader: LoaderPaths_1.LoaderPaths.typescript,
-                                options: {
-                                    compilerOptions: tsconfig.options
-                                }
-                            }]
-                    }]
-            },
-            resolve: {
-                extensions: ['.ts', '.tsx', '.js', '.jsx', '.mjs']
-            },
-            mode: 'development'
-        });
-        const ram = new memoryFS();
-        compiler.outputFileSystem = ram;
-        return yield new Promise((ok, reject) => {
-            compiler.run((err, stats) => {
-                if (err) {
-                    reject(err);
-                }
-                ok(stats);
-            });
+async function compileAsync(entry) {
+    const compiler = webpack({
+        context: fixtures,
+        entry: [entry],
+        output: {
+            filename: 'bundle.js',
+            path: fixtures
+        },
+        module: {
+            rules: [{
+                    test: /\.tsx?$/,
+                    use: [{
+                            loader: LoaderPaths_1.LoaderPaths.typescript,
+                            options: {
+                                compilerOptions: tsconfig.options
+                            }
+                        }]
+                }]
+        },
+        resolve: {
+            extensions: ['.ts', '.tsx', '.js', '.jsx', '.mjs']
+        },
+        mode: 'development'
+    });
+    const ram = new memoryFS();
+    compiler.outputFileSystem = ram;
+    return await new Promise((ok, reject) => {
+        compiler.run((err, stats) => {
+            if (err) {
+                reject(err);
+            }
+            ok(stats);
         });
     });
 }
-ava_1.default('Core TypeScript Loader: ES5', (t) => __awaiter(void 0, void 0, void 0, function* () {
+ava_1.default('Core TypeScript Loader: ES5', async (t) => {
     const entry = path.join(fixtures, 'index.ts');
-    const stats = yield compileAsync(entry);
+    const stats = await compileAsync(entry);
     const o = stats.toJson({
         source: true,
         modules: true
@@ -92,4 +81,4 @@ ava_1.default('Core TypeScript Loader: ES5', (t) => __awaiter(void 0, void 0, vo
     else {
         t.fail('webpack stats.toJson().modules is undefined!');
     }
-}));
+});

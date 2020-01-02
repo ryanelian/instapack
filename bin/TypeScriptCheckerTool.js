@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const TypeScript = require("typescript");
 const chalk = require("chalk");
@@ -44,29 +35,27 @@ class TypeScriptCheckerTool {
             return this.sourceStore.getSource(fileName);
         };
     }
-    static createToolAsync(variables) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const finder = new PathFinder_1.PathFinder(variables);
-            const tsconfig = TypescriptConfigParser_1.parseTypescriptConfig(variables.root, variables.typescriptConfiguration);
-            const compilerOptions = tsconfig.options;
-            const sourceStore = new TypeScriptSourceStore_1.TypeScriptSourceStore(compilerOptions.target || TypeScript.ScriptTarget.ES5);
-            const loadSourceTask = sourceStore.loadFolder(finder.jsInputFolder);
-            const eslintCtor = yield CompilerResolver_1.tryGetProjectESLint(finder.root, finder.jsEntry);
-            let versionAnnounce = `Using TypeScript ${chalk.green(TypeScript.version)} `;
-            if (eslintCtor) {
-                versionAnnounce += `+ ESLint ${chalk.green(eslintCtor.version)}`;
-            }
-            else {
-                versionAnnounce += chalk.grey('(ESLint disabled)');
-            }
-            let eslint;
-            if (eslintCtor) {
-                eslint = new eslintCtor({});
-            }
-            Shout_1.Shout.timed(versionAnnounce);
-            yield loadSourceTask;
-            return new TypeScriptCheckerTool(sourceStore, compilerOptions, variables.mute, eslint);
-        });
+    static async createToolAsync(variables) {
+        const finder = new PathFinder_1.PathFinder(variables);
+        const tsconfig = TypescriptConfigParser_1.parseTypescriptConfig(variables.root, variables.typescriptConfiguration);
+        const compilerOptions = tsconfig.options;
+        const sourceStore = new TypeScriptSourceStore_1.TypeScriptSourceStore(compilerOptions.target || TypeScript.ScriptTarget.ES5);
+        const loadSourceTask = sourceStore.loadFolder(finder.jsInputFolder);
+        const eslintCtor = await CompilerResolver_1.tryGetProjectESLint(finder.root, finder.jsEntry);
+        let versionAnnounce = `Using TypeScript ${chalk.green(TypeScript.version)} `;
+        if (eslintCtor) {
+            versionAnnounce += `+ ESLint ${chalk.green(eslintCtor.version)}`;
+        }
+        else {
+            versionAnnounce += chalk.grey('(ESLint disabled)');
+        }
+        let eslint;
+        if (eslintCtor) {
+            eslint = new eslintCtor({});
+        }
+        Shout_1.Shout.timed(versionAnnounce);
+        await loadSourceTask;
+        return new TypeScriptCheckerTool(sourceStore, compilerOptions, variables.mute, eslint);
     }
     typeCheck() {
         const tsc = TypeScript.createProgram(this.sourceStore.sourcePaths, this.compilerOptions, this.host);

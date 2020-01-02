@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const ava_1 = require("ava");
 const fse = require("fs-extra");
@@ -16,27 +7,27 @@ const SyntaxLevelChecker_1 = require("./SyntaxLevelChecker");
 const typescript_1 = require("typescript");
 const root = process.cwd();
 const samplesFolder = upath.join(root, 'fixtures', 'SyntaxLevelCheckSampleLibraries');
-ava_1.default('Level Check: ES5 JQuery 3.4.1', (t) => __awaiter(void 0, void 0, void 0, function* () {
+ava_1.default('Level Check: ES5 JQuery 3.4.1', async (t) => {
     const fileName = 'jquery-3.4.1.min.js';
     const filePath = upath.join(samplesFolder, fileName);
-    const sourceCode = yield fse.readFile(filePath, 'utf8');
+    const sourceCode = await fse.readFile(filePath, 'utf8');
     const check = SyntaxLevelChecker_1.checkSyntaxLevel(fileName, sourceCode, typescript_1.ScriptTarget.ESNext);
     t.is(check.level, typescript_1.ScriptTarget.ES5);
-}));
-ava_1.default('Level Check: ES5 AngularJS 1.2.32', (t) => __awaiter(void 0, void 0, void 0, function* () {
+});
+ava_1.default('Level Check: ES5 AngularJS 1.2.32', async (t) => {
     const fileName = 'angular-1.2.32.min.js';
     const filePath = upath.join(samplesFolder, fileName);
-    const sourceCode = yield fse.readFile(filePath, 'utf8');
+    const sourceCode = await fse.readFile(filePath, 'utf8');
     const check = SyntaxLevelChecker_1.checkSyntaxLevel(fileName, sourceCode, typescript_1.ScriptTarget.ESNext);
     t.is(check.level, typescript_1.ScriptTarget.ES5);
-}));
-ava_1.default('Level Check: ES5 Bootstrap 3.3.7', (t) => __awaiter(void 0, void 0, void 0, function* () {
+});
+ava_1.default('Level Check: ES5 Bootstrap 3.3.7', async (t) => {
     const fileName = 'bootstrap-3.3.7.min.js';
     const filePath = upath.join(samplesFolder, fileName);
-    const sourceCode = yield fse.readFile(filePath, 'utf8');
+    const sourceCode = await fse.readFile(filePath, 'utf8');
     const check = SyntaxLevelChecker_1.checkSyntaxLevel(fileName, sourceCode, typescript_1.ScriptTarget.ESNext);
     t.is(check.level, typescript_1.ScriptTarget.ES5);
-}));
+});
 ava_1.default('Level Check: ES2015 Function Parameters', t => {
     const check = SyntaxLevelChecker_1.checkSyntaxLevel('m.js', `function (a = 1, b = 2) { return a === 3 && b === 2; }`, typescript_1.ScriptTarget.ESNext);
     t.is(check.level, typescript_1.ScriptTarget.ES2015);

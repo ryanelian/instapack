@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const path = require("path");
 const fse = require("fs-extra");
@@ -286,71 +277,67 @@ class TypeScriptBuildEngine {
             });
         });
     }
-    runDevServer(webpackConfiguration, port) {
-        return __awaiter(this, void 0, void 0, function* () {
-            if (!webpackConfiguration.output) {
-                throw new Error('Unexpected undefined value: webpack configuration output object.');
-            }
-            const schema = this.variables.https ? 'https' : 'http';
-            webpackConfiguration.output.publicPath = `${schema}://localhost:${port}/`;
-            const devServerOptions = {
-                hot: true,
-                contentBase: false,
-                port: port,
-                headers: {
-                    'Access-Control-Allow-Origin': '*'
-                },
-                noInfo: true
+    async runDevServer(webpackConfiguration, port) {
+        if (!webpackConfiguration.output) {
+            throw new Error('Unexpected undefined value: webpack configuration output object.');
+        }
+        const schema = this.variables.https ? 'https' : 'http';
+        webpackConfiguration.output.publicPath = `${schema}://localhost:${port}/`;
+        const devServerOptions = {
+            hot: true,
+            contentBase: false,
+            port: port,
+            headers: {
+                'Access-Control-Allow-Origin': '*'
+            },
+            noInfo: true
+        };
+        if (this.variables.https) {
+            const certFileAsync = fse.readFile(UserSettingsPath_1.UserSettingsPath.certFile);
+            const keyFileAsync = fse.readFile(UserSettingsPath_1.UserSettingsPath.keyFile);
+            devServerOptions.https = {
+                key: await keyFileAsync,
+                cert: await certFileAsync
             };
-            if (this.variables.https) {
-                const certFileAsync = fse.readFile(UserSettingsPath_1.UserSettingsPath.certFile);
-                const keyFileAsync = fse.readFile(UserSettingsPath_1.UserSettingsPath.keyFile);
-                devServerOptions.https = {
-                    key: yield keyFileAsync,
-                    cert: yield certFileAsync
-                };
-            }
-            webpackDevServer.addDevServerEntrypoints(webpackConfiguration, devServerOptions);
-            const compiler = webpack(webpackConfiguration);
-            const devServer = new webpackDevServer(compiler, devServerOptions);
-            const createServerTask = new Promise((ok, reject) => {
-                devServer.listen(port, 'localhost', error => {
-                    if (error) {
-                        reject(error);
-                        return;
-                    }
-                    ok();
-                });
+        }
+        webpackDevServer.addDevServerEntrypoints(webpackConfiguration, devServerOptions);
+        const compiler = webpack(webpackConfiguration);
+        const devServer = new webpackDevServer(compiler, devServerOptions);
+        const createServerTask = new Promise((ok, reject) => {
+            devServer.listen(port, 'localhost', error => {
+                if (error) {
+                    reject(error);
+                    return;
+                }
+                ok();
             });
-            yield createServerTask;
-            Shout_1.Shout.timed(chalk.yellow('Hot Reload'), `server running on http://localhost:${chalk.green(port)}/`);
         });
+        await createServerTask;
+        Shout_1.Shout.timed(chalk.yellow('Hot Reload'), `server running on http://localhost:${chalk.green(port)}/`);
     }
-    build() {
-        return __awaiter(this, void 0, void 0, function* () {
-            this.useBabel = yield fse.pathExists(this.finder.babelConfiguration);
-            this.vueTemplateCompiler = yield CompilerResolver_1.resolveVueTemplateCompiler(this.finder.root);
-            const webpackConfiguration = this.createWebpackConfiguration();
-            if (this.variables.serve) {
-                let basePort = 28080;
-                if (this.variables.port1) {
-                    basePort = this.variables.port1;
-                }
-                const port = yield portfinder.getPortPromise({
-                    port: basePort
-                });
-                yield this.runDevServer(webpackConfiguration, port);
+    async build() {
+        this.useBabel = await fse.pathExists(this.finder.babelConfiguration);
+        this.vueTemplateCompiler = await CompilerResolver_1.resolveVueTemplateCompiler(this.finder.root);
+        const webpackConfiguration = this.createWebpackConfiguration();
+        if (this.variables.serve) {
+            let basePort = 28080;
+            if (this.variables.port1) {
+                basePort = this.variables.port1;
             }
-            else if (this.variables.watch) {
-                yield this.watch(webpackConfiguration);
+            const port = await portfinder.getPortPromise({
+                port: basePort
+            });
+            await this.runDevServer(webpackConfiguration, port);
+        }
+        else if (this.variables.watch) {
+            await this.watch(webpackConfiguration);
+        }
+        else {
+            const stats = await this.buildOnce(webpackConfiguration);
+            if (this.variables.stats && this.variables.production) {
+                await fse.outputJson(this.finder.statsJsonFilePath, stats.toJson());
             }
-            else {
-                const stats = yield this.buildOnce(webpackConfiguration);
-                if (this.variables.stats && this.variables.production) {
-                    yield fse.outputJson(this.finder.statsJsonFilePath, stats.toJson());
-                }
-            }
-        });
+        }
     }
 }
 exports.TypeScriptBuildEngine = TypeScriptBuildEngine;

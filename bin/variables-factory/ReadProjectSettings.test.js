@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const ava_1 = require("ava");
 const upath = require("upath");
@@ -18,9 +9,9 @@ ava_1.default.before(() => {
     global.console.error = () => { };
     global.console.warn = () => { };
 });
-ava_1.default('Project Settings: Not Found', (t) => __awaiter(void 0, void 0, void 0, function* () {
+ava_1.default('Project Settings: Not Found', async (t) => {
     const folder = upath.join(fixtures, 'Empty');
-    const settings = yield ReadProjectSettings_1.readProjectSettingsFrom(folder);
+    const settings = await ReadProjectSettings_1.readProjectSettingsFrom(folder);
     const result = {
         root: upath.toUnix(folder),
         input: 'client',
@@ -34,16 +25,16 @@ ava_1.default('Project Settings: Not Found', (t) => __awaiter(void 0, void 0, vo
         port1: 0,
     };
     t.deepEqual(settings, result);
-}));
-ava_1.default('Project Settings: Invalid', (t) => __awaiter(void 0, void 0, void 0, function* () {
+});
+ava_1.default('Project Settings: Invalid', async (t) => {
     const folder = upath.join(fixtures, 'ProjectSettingsInvalid');
-    yield t.throwsAsync(() => __awaiter(void 0, void 0, void 0, function* () {
-        yield ReadProjectSettings_1.readProjectSettingsFrom(folder);
-    }));
-}));
-ava_1.default('Project Settings: Valid', (t) => __awaiter(void 0, void 0, void 0, function* () {
+    await t.throwsAsync(async () => {
+        await ReadProjectSettings_1.readProjectSettingsFrom(folder);
+    });
+});
+ava_1.default('Project Settings: Valid', async (t) => {
     const folder = upath.join(fixtures, 'ProjectSettingsValid');
-    const settings = yield ReadProjectSettings_1.readProjectSettingsFrom(folder);
+    const settings = await ReadProjectSettings_1.readProjectSettingsFrom(folder);
     const result = {
         root: upath.toUnix(folder),
         input: 'src',
@@ -61,4 +52,4 @@ ava_1.default('Project Settings: Valid', (t) => __awaiter(void 0, void 0, void 0
         port1: 32101,
     };
     t.deepEqual(settings, result);
-}));
+});

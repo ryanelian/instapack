@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const fse = require("fs-extra");
 const upath = require("upath");
@@ -55,59 +46,55 @@ class SassBuildTool {
             return '/' + upath.relative(this.finder.root, absolute);
         });
     }
-    compileSassProject(virtualSassOutputPath) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const cssInput = this.finder.cssEntry;
-            let sassOptions = {
-                file: cssInput,
-                outFile: virtualSassOutputPath,
-                data: yield fse.readFile(cssInput, 'utf8'),
-                sourceMap: this.variables.sourceMap,
-                sourceMapContents: this.variables.sourceMap,
-                importer: SassImportResolver_1.sassImporter,
-            };
-            sassOptions = Object.assign(sassOptions, {
-                'fiber': Fiber
-            });
-            const sassResult = yield this.runSassAsync(sassOptions);
-            const result = {
-                css: sassResult.css.toString('utf8')
-            };
-            if (this.variables.sourceMap && sassResult.map) {
-                const sms = sassResult.map.toString('utf8');
-                const sm = JSON.parse(sms);
-                this.fixSassGeneratedSourceMap(sm);
-                result.map = sm;
-            }
-            return result;
+    async compileSassProject(virtualSassOutputPath) {
+        const cssInput = this.finder.cssEntry;
+        let sassOptions = {
+            file: cssInput,
+            outFile: virtualSassOutputPath,
+            data: await fse.readFile(cssInput, 'utf8'),
+            sourceMap: this.variables.sourceMap,
+            sourceMapContents: this.variables.sourceMap,
+            importer: SassImportResolver_1.sassImporter,
+        };
+        sassOptions = Object.assign(sassOptions, {
+            'fiber': Fiber
         });
+        const sassResult = await this.runSassAsync(sassOptions);
+        const result = {
+            css: sassResult.css.toString('utf8')
+        };
+        if (this.variables.sourceMap && sassResult.map) {
+            const sms = sassResult.map.toString('utf8');
+            const sm = JSON.parse(sms);
+            this.fixSassGeneratedSourceMap(sm);
+            result.map = sm;
+        }
+        return result;
     }
-    runPostCSS(virtualSassOutputPath, virtualPostcssOutputPath, sassResult) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const postcssOptions = {
-                from: virtualSassOutputPath,
-                to: virtualPostcssOutputPath
+    async runPostCSS(virtualSassOutputPath, virtualPostcssOutputPath, sassResult) {
+        const postcssOptions = {
+            from: virtualSassOutputPath,
+            to: virtualPostcssOutputPath
+        };
+        if (this.variables.sourceMap) {
+            postcssOptions.map = {
+                inline: false,
+                prev: false
             };
-            if (this.variables.sourceMap) {
-                postcssOptions.map = {
-                    inline: false,
-                    prev: false
-                };
-            }
-            const postcssResult = yield postcss([
-                autoprefixer()
-            ]).process(sassResult.css, postcssOptions);
-            const result = {
-                css: postcssResult.css
-            };
-            if (this.variables.sourceMap && sassResult.map && postcssResult.map) {
-                const sm2 = postcssResult.map.toJSON();
-                const abs = upath.resolve(upath.dirname(virtualPostcssOutputPath), sm2.sources[0]);
-                sm2.sources[0] = '/' + upath.relative(this.variables.root, abs);
-                result.map = mergeSourceMap(sassResult.map, sm2);
-            }
-            return result;
-        });
+        }
+        const postcssResult = await postcss([
+            autoprefixer()
+        ]).process(sassResult.css, postcssOptions);
+        const result = {
+            css: postcssResult.css
+        };
+        if (this.variables.sourceMap && sassResult.map && postcssResult.map) {
+            const sm2 = postcssResult.map.toJSON();
+            const abs = upath.resolve(upath.dirname(virtualPostcssOutputPath), sm2.sources[0]);
+            sm2.sources[0] = '/' + upath.relative(this.variables.root, abs);
+            result.map = mergeSourceMap(sassResult.map, sm2);
+        }
+        return result;
     }
     runCleanCSS(cssOutputPath, postcssResult) {
         const cleanCssOptions = {
@@ -139,53 +126,49 @@ class SassBuildTool {
         }
         return result;
     }
-    build() {
-        return __awaiter(this, void 0, void 0, function* () {
-            const sassOutputPath = this.virtualSassOutputFilePath;
-            const sassResult = yield this.compileSassProject(sassOutputPath);
-            const cssOutputPath = this.finder.cssOutputFilePath;
-            let postcssOutputPath = cssOutputPath;
-            if (this.variables.production) {
-                postcssOutputPath = this.virtualPostcssOutputFilePath;
-            }
-            let cssResult = yield this.runPostCSS(sassOutputPath, postcssOutputPath, sassResult);
-            if (this.variables.production) {
-                cssResult = this.runCleanCSS(cssOutputPath, cssResult);
-            }
-            const cssOutputTask = Shout_1.Shout.fileOutput(cssOutputPath, cssResult.css);
-            if (cssResult.map) {
-                cssResult.map.sourceRoot = 'instapack://';
-                const s = JSON.stringify(cssResult.map);
-                yield Shout_1.Shout.fileOutput(cssOutputPath + '.map', s);
-            }
-            yield cssOutputTask;
-            this.va.rewind();
-        });
+    async build() {
+        const sassOutputPath = this.virtualSassOutputFilePath;
+        const sassResult = await this.compileSassProject(sassOutputPath);
+        const cssOutputPath = this.finder.cssOutputFilePath;
+        let postcssOutputPath = cssOutputPath;
+        if (this.variables.production) {
+            postcssOutputPath = this.virtualPostcssOutputFilePath;
+        }
+        let cssResult = await this.runPostCSS(sassOutputPath, postcssOutputPath, sassResult);
+        if (this.variables.production) {
+            cssResult = this.runCleanCSS(cssOutputPath, cssResult);
+        }
+        const cssOutputTask = Shout_1.Shout.fileOutput(cssOutputPath, cssResult.css);
+        if (cssResult.map) {
+            cssResult.map.sourceRoot = 'instapack://';
+            const s = JSON.stringify(cssResult.map);
+            await Shout_1.Shout.fileOutput(cssOutputPath + '.map', s);
+        }
+        await cssOutputTask;
+        this.va.rewind();
     }
-    buildWithStopwatch() {
-        return __awaiter(this, void 0, void 0, function* () {
-            Shout_1.Shout.timed('Compiling', chalk.cyan('index.scss'), chalk.grey('in ' + this.finder.cssInputFolder + '/'));
-            const start = process.hrtime();
-            try {
-                yield this.build();
+    async buildWithStopwatch() {
+        Shout_1.Shout.timed('Compiling', chalk.cyan('index.scss'), chalk.grey('in ' + this.finder.cssInputFolder + '/'));
+        const start = process.hrtime();
+        try {
+            await this.build();
+        }
+        catch (error) {
+            let render;
+            this.va.speak('CSS COMPILE ERROR!');
+            if (error['formatted']) {
+                const formatted = 'Sass Compile' + error['formatted'].trim();
+                render = chalk.red(formatted);
+                console.error('\n' + render + '\n');
             }
-            catch (error) {
-                let render;
-                this.va.speak('CSS COMPILE ERROR!');
-                if (error['formatted']) {
-                    const formatted = 'Sass Compile' + error['formatted'].trim();
-                    render = chalk.red(formatted);
-                    console.error('\n' + render + '\n');
-                }
-                else {
-                    Shout_1.Shout.error('during CSS build:', error);
-                }
+            else {
+                Shout_1.Shout.error('during CSS build:', error);
             }
-            finally {
-                const time = PrettyUnits_1.prettyHrTime(process.hrtime(start));
-                Shout_1.Shout.timed('Finished CSS build after', chalk.green(time));
-            }
-        });
+        }
+        finally {
+            const time = PrettyUnits_1.prettyHrTime(process.hrtime(start));
+            Shout_1.Shout.timed('Finished CSS build after', chalk.green(time));
+        }
     }
     watch() {
         let debounced;

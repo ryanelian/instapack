@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const fse = require("fs-extra");
 const upath = require("upath");
 const TypeScript = require("typescript");
+const jsonc = require("strip-json-comments");
 const Shout_1 = require("./Shout");
 const chalk = require("chalk");
 const fallbackTypeScriptConfig = {
@@ -46,13 +47,14 @@ function tryReadTypeScriptConfigJson(folder) {
     return __awaiter(this, void 0, void 0, function* () {
         const tsconfigJsonPath = upath.join(folder, 'tsconfig.json');
         try {
-            const tsconfigJson = yield fse.readJson(tsconfigJsonPath);
-            const tryParse = parseTypescriptConfig(folder, tsconfigJson);
+            const tsconfigRaw = yield fse.readFile(tsconfigJsonPath, 'utf8');
+            const tsconfig = JSON.parse(jsonc(tsconfigRaw));
+            const tryParse = parseTypescriptConfig(folder, tsconfig);
             const errorMessage = tryParse.errors.join('\n\n');
             if (tryParse.errors.length) {
                 throw new Error(errorMessage);
             }
-            return tsconfigJson;
+            return tsconfig;
         }
         catch (error) {
             Shout_1.Shout.error('when reading', chalk.cyan(tsconfigJsonPath), error);

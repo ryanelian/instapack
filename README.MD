@@ -72,17 +72,17 @@ If using [the latest Visual Studio Code](https://code.visualstudio.com/), it sho
 
 - Zero configurations: Hyper-opinionated front-end project build system. **It just works!** :sparkling_heart:
 
+- Beginner-friendly: Lower the barrier of entry for developing a modern web app. :balloon:
+
 - Unify and standardize team build system across multiple projects, for any JS frameworks. :fist:
 
 - Built-in new project scaffold tool for assorted JS frameworks. :gift:
 
+- Improve source code quality and maintainability with type hints and compile-time checks. :eyeglasses:
+
 - Rich debugging experience: set breakpoints, view variables, and step into the TypeScript source code! :mag:
 
-- Beginner-friendly: Lower the barrier of entry for developing a modern web app. :balloon:
-
 - Introduce structures to the front-end source code using standard module systems. :bento:
-
-- Improve source code quality and maintainability with type hints and compile-time checks. :eyeglasses:
 
 - Enforce best practices when building apps, which may significantly impact page load time. :hammer_and_wrench: (i.e. tree-shaking, code-splitting, bundling, and minification) 
 
@@ -250,6 +250,8 @@ import jQuery from 'jquery';
 ```
 
 - `port1` can be set for declaring a static port number to be used by the Hot Reload server. If not set or is already used, the port number will be randomized. [Read more ↓](#hot-reload-development-mode)
+
+- instapack will not resolve symlinks if TypeScript compiler option `preserveSymlinks` is set to `true`
 
 ## TypeScript Custom Paths Module Resolution
 

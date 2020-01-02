@@ -72,6 +72,7 @@
     "sass": "1.24.0",
     "say": "0.16.0",
     "source-map": "0.6.1",
+    "strip-json-comments": "3.0.1",
     "typescript": "3.7.4",
     "upath": "1.2.0",
     "vue-loader": "15.8.3",

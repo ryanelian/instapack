@@ -314,8 +314,18 @@ export class TypeScriptBuildEngine {
             config.output['ecmaVersion'] = this.getECMAScriptVersion();
         }
 
-        if (wildcards && config.resolve) {
-            config.resolve.modules = wildcards;
+        if (config.resolve) {
+            if (wildcards) {
+                config.resolve.modules = wildcards;
+            }
+
+            // https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-5.html#the---preservesymlinks-compiler-flag
+            // This flag also exhibits the opposite behavior to Webpack’s resolve.symlinks option 
+            // (TypeScript’s preserveSymlinks true === Webpack’s resolve.symlinks to false) and vice-versa.
+            // https://webpack.js.org/configuration/resolve/#resolvesymlinks defaults to true
+            if (this.typescriptCompilerOptions.preserveSymlinks) {
+                config.resolve.symlinks = false;
+            }
         }
 
         return config;

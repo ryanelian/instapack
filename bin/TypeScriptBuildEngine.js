@@ -228,8 +228,13 @@ class TypeScriptBuildEngine {
         if (config.output) {
             config.output['ecmaVersion'] = this.getECMAScriptVersion();
         }
-        if (wildcards && config.resolve) {
-            config.resolve.modules = wildcards;
+        if (config.resolve) {
+            if (wildcards) {
+                config.resolve.modules = wildcards;
+            }
+            if (this.typescriptCompilerOptions.preserveSymlinks) {
+                config.resolve.symlinks = false;
+            }
         }
         return config;
     }

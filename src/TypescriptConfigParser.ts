@@ -1,6 +1,7 @@
 import * as fse from 'fs-extra';
 import * as upath from 'upath';
 import * as TypeScript from 'typescript';
+import jsonc = require('strip-json-comments');
 import { Shout } from './Shout';
 import chalk = require('chalk');
 
@@ -45,14 +46,15 @@ export async function tryReadTypeScriptConfigJson(folder: string): Promise<unkno
     const tsconfigJsonPath = upath.join(folder, 'tsconfig.json');
 
     try {
-        const tsconfigJson = await fse.readJson(tsconfigJsonPath);
-        const tryParse = parseTypescriptConfig(folder, tsconfigJson);
+        const tsconfigRaw = await fse.readFile(tsconfigJsonPath, 'utf8');
+        const tsconfig = JSON.parse(jsonc(tsconfigRaw));
+        const tryParse = parseTypescriptConfig(folder, tsconfig);
         const errorMessage = tryParse.errors.join('\n\n');
         if (tryParse.errors.length) {
             throw new Error(errorMessage);
         }
 
-        return tsconfigJson;
+        return tsconfig;
     } catch (error) {
         Shout.error('when reading', chalk.cyan(tsconfigJsonPath), error);
         Shout.warning('Using the default fallback TypeScript configuration!');

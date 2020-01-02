@@ -1,5 +1,5 @@
 <template>
-<h1>Hello from {{ compiler }} and {{ framework }}!</h1>
+    <h1>Hello from {{ compiler }} and {{ framework }}!</h1>
 </template>
 
 <script lang="ts">
@@ -10,7 +10,7 @@ import Component from 'vue-class-component';
     props: ['framework', 'compiler']
 })
 export default class Hello extends Vue {
-    framework: string = '';
-    compiler: string = '';
+    framework = '';
+    compiler = '';
 }
 </script>

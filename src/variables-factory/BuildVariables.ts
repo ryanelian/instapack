@@ -99,4 +99,9 @@ export interface BuildVariables {
      * Gets the TypeScript configuration JSON file.
      */
     typescriptConfiguration: unknown;
+
+    /**
+     * Gets the HTTPS hot reload dev server build flag.
+     */
+    https: boolean;
 }

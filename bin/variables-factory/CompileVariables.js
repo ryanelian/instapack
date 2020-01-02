@@ -20,6 +20,7 @@ function compileVariables(buildFlags, projectSettings, userSettings, dotEnv, typ
         stats: buildFlags.stats,
         serve: buildFlags.serve,
         port1: projectSettings.port1,
+        https: buildFlags.https,
         typescriptConfiguration: typescriptConfiguration
     };
     if (variables.serve) {

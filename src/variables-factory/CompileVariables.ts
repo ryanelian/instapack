@@ -33,6 +33,7 @@ export function compileVariables(
 
         serve: buildFlags.serve,
         port1: projectSettings.port1,
+        https: buildFlags.https,
         typescriptConfiguration: typescriptConfiguration
     };
 

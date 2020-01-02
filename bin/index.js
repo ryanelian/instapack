@@ -15,12 +15,13 @@ const ReadProjectSettings_1 = require("./variables-factory/ReadProjectSettings")
 const EnvParser_1 = require("./variables-factory/EnvParser");
 const CompileVariables_1 = require("./variables-factory/CompileVariables");
 const PathFinder_1 = require("./variables-factory/PathFinder");
-const PackageManager_1 = require("./PackageManager");
+const ProcessInvoke_1 = require("./ProcessInvoke");
 const Shout_1 = require("./Shout");
 const ToolOrchestrator_1 = require("./ToolOrchestrator");
 const TypescriptConfigParser_1 = require("./TypescriptConfigParser");
 const MergePackageJson_1 = require("./MergePackageJson");
 const UserSettingsManager_1 = require("./user-settings/UserSettingsManager");
+const UserSettingsPath_1 = require("./user-settings/UserSettingsPath");
 module.exports = class InstapackProgram {
     constructor(projectFolder) {
         this.projectFolder = upath.normalize(projectFolder);
@@ -37,6 +38,25 @@ module.exports = class InstapackProgram {
         });
         return templates;
     }
+    ensureSetupHttps() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const certExistsAsync = fse.pathExists(UserSettingsPath_1.UserSettingsPath.certFile);
+            const keyExistsAsync = fse.pathExists(UserSettingsPath_1.UserSettingsPath.keyFile);
+            if ((yield certExistsAsync) && (yield keyExistsAsync)) {
+                Shout_1.Shout.timed('Using existing HTTPS cert file: ' + chalk.cyan(UserSettingsPath_1.UserSettingsPath.certFile));
+                Shout_1.Shout.timed('Using existing HTTPS key file: ' + chalk.cyan(UserSettingsPath_1.UserSettingsPath.keyFile));
+                return true;
+            }
+            try {
+                yield ProcessInvoke_1.setupHttps();
+                return true;
+            }
+            catch (error) {
+                Shout_1.Shout.error('when setting up HTTPS for hot reload dev server:', error);
+                return false;
+            }
+        });
+    }
     build(taskName, flags) {
         return __awaiter(this, void 0, void 0, function* () {
             const projectSettings = ReadProjectSettings_1.readProjectSettingsFrom(this.projectFolder);
@@ -50,8 +70,7 @@ module.exports = class InstapackProgram {
                 const packageJsonExists = yield fse.pathExists(packageJsonPath);
                 if (packageJsonExists) {
                     try {
-                        const pm = new PackageManager_1.PackageManager();
-                        yield pm.restore(variables.packageManager);
+                        yield ProcessInvoke_1.restorePackages(variables.packageManager);
                     }
                     catch (error) {
                         Shout_1.Shout.error('when restoring package:', error);
@@ -59,6 +78,13 @@ module.exports = class InstapackProgram {
                 }
                 else {
                     Shout_1.Shout.warning('unable to find', chalk.cyan(packageJsonPath), chalk.grey('skipping package restore...'));
+                }
+            }
+            if (variables.https) {
+                const httpsOK = yield this.ensureSetupHttps();
+                if (!httpsOK) {
+                    Shout_1.Shout.error('failed to setup HTTPS for hot reload dev server. Aborting build!');
+                    return;
                 }
             }
             const tm = new ToolOrchestrator_1.ToolOrchestrator(variables);

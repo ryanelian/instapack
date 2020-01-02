@@ -142,6 +142,10 @@ In addition, build flags are available:
 
 - `--serve` or `-s` enables **Hot Reload** development mode using dedicated build server. :recycle: [Read more ↓](#hot-reload-development-mode)
 
+- `--https` augments `--serve` flag, allowing the Hot Reload dev server to use `https://` protocol.
+
+  - This feature requires [mkcert](https://github.com/FiloSottile/mkcert) third-party utility to be installed and available on the CLI path.
+
 - `--no-sourcemaps` disables source maps, producing undebuggable outputs. :bug: (Slightly improves build speed)
 
 - `--stats` generates `stats.json` next to the TypeScript build outputs, which can be analyzed by a third-party tool: [webpack-bundle-analyzer](https://www.npmjs.com/package/webpack-bundle-analyzer). For sanity, this flag will be ignored when using `-d` or `-w` flags.

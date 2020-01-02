@@ -1,9 +1,6 @@
-import * as upath from 'upath';
-import * as OS from 'os';
 import * as fse from 'fs-extra';
 import { UserSettings } from './UserSettings';
-
-const userSettingsFilePath: string = upath.join(OS.homedir(), 'instapack', 'settings.json');
+import { UserSettingsPath } from './UserSettingsPath';
 
 function convertKebabToCamelCase(s: string): string {
     return s.toLowerCase().replace(/-[a-z]/g, ss => {
@@ -29,7 +26,7 @@ export async function getSettings(): Promise<UserSettings> {
     const settings: UserSettings = Object.assign({}, defaultSettings);
 
     try {
-        const currentSettings: UserSettings = await fse.readJson(userSettingsFilePath);
+        const currentSettings: UserSettings = await fse.readJson(UserSettingsPath.settings);
         for (const key in defaultSettings) {
             const value = currentSettings[key];
             // avoid reading invalid settings... (reset to good known default settings)
@@ -66,6 +63,6 @@ export async function setSetting(key: string, value: string): Promise<string> {
 
     const settings = await getSettings();
     settings[trueKey] = trueValue;
-    await fse.outputJson(userSettingsFilePath, settings);
-    return userSettingsFilePath;
+    await fse.outputJson(UserSettingsPath.settings, settings);
+    return UserSettingsPath.settings;
 }

@@ -8,4 +8,5 @@ export interface CommandLineFlags {
     stats: boolean;
     serve: boolean;
     env: MapLike<string>;
+    https: boolean;
 }

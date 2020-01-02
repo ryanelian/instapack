@@ -24,6 +24,7 @@ const LoaderPaths_1 = require("./loaders/LoaderPaths");
 const TypescriptConfigParser_1 = require("./TypescriptConfigParser");
 const InstapackBuildPlugin_1 = require("./plugins/InstapackBuildPlugin");
 const TypeScriptPathsTranslator_1 = require("./TypeScriptPathsTranslator");
+const UserSettingsPath_1 = require("./user-settings/UserSettingsPath");
 class TypeScriptBuildEngine {
     constructor(variables) {
         this.useBabel = false;
@@ -282,6 +283,11 @@ class TypeScriptBuildEngine {
     }
     runDevServer(webpackConfiguration, port) {
         return __awaiter(this, void 0, void 0, function* () {
+            if (!webpackConfiguration.output) {
+                throw new Error('Unexpected undefined value: webpack configuration output object.');
+            }
+            const schema = this.variables.https ? 'https' : 'http';
+            webpackConfiguration.output.publicPath = `${schema}://localhost:${port}/`;
             const devServerOptions = {
                 hot: true,
                 contentBase: false,
@@ -291,6 +297,14 @@ class TypeScriptBuildEngine {
                 },
                 noInfo: true
             };
+            if (this.variables.https) {
+                const certFileAsync = fse.readFile(UserSettingsPath_1.UserSettingsPath.certFile);
+                const keyFileAsync = fse.readFile(UserSettingsPath_1.UserSettingsPath.keyFile);
+                devServerOptions.https = {
+                    key: yield keyFileAsync,
+                    cert: yield certFileAsync
+                };
+            }
             webpackDevServer.addDevServerEntrypoints(webpackConfiguration, devServerOptions);
             const compiler = webpack(webpackConfiguration);
             const devServer = new webpackDevServer(compiler, devServerOptions);
@@ -320,10 +334,6 @@ class TypeScriptBuildEngine {
                 const port = yield portfinder.getPortPromise({
                     port: basePort
                 });
-                if (!webpackConfiguration.output) {
-                    throw new Error('Unexpected undefined value: webpack configuration output object.');
-                }
-                webpackConfiguration.output.publicPath = `http://localhost:${port}/`;
                 yield this.runDevServer(webpackConfiguration, port);
             }
             else if (this.variables.watch) {

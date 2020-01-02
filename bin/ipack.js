@@ -42,6 +42,8 @@ program.command({
             describe: 'Generates webpack stats.json next to the TypeScript build outputs for analysis.'
         }).option('overwrite', {
             describe: 'Enables overwriting files in output folder by copy assets build tool.'
+        }).option('https', {
+            describe: 'Enables HTTPS hot reload dev server. (Requires mkcert to be installed)'
         });
     },
     handler: (argv) => {
@@ -56,8 +58,9 @@ program.command({
             sourceMap: Boolean(argv.sourcemaps),
             env: EnvParser_1.parseCliEnvFlags(argv.env),
             stats: Boolean(argv.stats),
-            serve: Boolean(argv.serve)
-        }).catch(err => console.error(err));
+            serve: Boolean(argv.serve),
+            https: Boolean(argv.https)
+        }).catch(console.error);
     }
 });
 program.command({
@@ -72,8 +75,7 @@ program.command({
             subCommand = argv.template;
         }
         echo('new', subCommand);
-        ipack.scaffold(subCommand)
-            .catch(err => console.error(err));
+        ipack.scaffold(subCommand).catch(console.error);
     }
 });
 program.command({
@@ -85,8 +87,7 @@ program.command({
     handler: (argv) => {
         if (typeof argv.key === 'string' && typeof argv.value === 'string') {
             echo('set', argv.key);
-            ipack.changeUserSettings(argv.key, argv.value)
-                .catch(err => console.error(err));
+            ipack.changeUserSettings(argv.key, argv.value).catch(console.error);
         }
         else {
             throw new Error(`Argument 'key' and 'value' must be string`);

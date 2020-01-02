@@ -7,12 +7,13 @@ import { readProjectSettingsFrom } from './variables-factory/ReadProjectSettings
 import { readDotEnvFrom } from './variables-factory/EnvParser';
 import { compileVariables } from './variables-factory/CompileVariables';
 import { PathFinder } from './variables-factory/PathFinder';
-import { PackageManager } from './PackageManager';
+import { restorePackages, setupHttps } from './ProcessInvoke';
 import { Shout } from './Shout';
 import { ToolOrchestrator } from './ToolOrchestrator';
 import { tryReadTypeScriptConfigJson } from './TypescriptConfigParser';
 import { mergePackageJson } from './MergePackageJson';
 import { getSettings, setSetting } from './user-settings/UserSettingsManager';
+import { UserSettingsPath } from './user-settings/UserSettingsPath';
 
 /**
  * Exposes methods for developing a web app client project.
@@ -52,6 +53,25 @@ export = class InstapackProgram {
         return templates;
     }
 
+    async ensureSetupHttps(): Promise<boolean> {
+        const certExistsAsync = fse.pathExists(UserSettingsPath.certFile);
+        const keyExistsAsync = fse.pathExists(UserSettingsPath.keyFile);
+
+        if (await certExistsAsync && await keyExistsAsync) {
+            Shout.timed('Using existing HTTPS cert file: ' + chalk.cyan(UserSettingsPath.certFile))
+            Shout.timed('Using existing HTTPS key file: ' + chalk.cyan(UserSettingsPath.keyFile))
+            return true;
+        }
+
+        try {
+            await setupHttps();
+            return true;
+        } catch (error) {
+            Shout.error('when setting up HTTPS for hot reload dev server:', error);
+            return false;
+        }
+    }
+
     /**
      * Performs web app client project compilation using a pre-configured task and build flags.
      * @param taskName 
@@ -77,13 +97,20 @@ export = class InstapackProgram {
             const packageJsonExists = await fse.pathExists(packageJsonPath);
             if (packageJsonExists) {
                 try {
-                    const pm = new PackageManager();
-                    await pm.restore(variables.packageManager);
+                    await restorePackages(variables.packageManager);
                 } catch (error) {
                     Shout.error('when restoring package:', error);
                 }
             } else {
                 Shout.warning('unable to find', chalk.cyan(packageJsonPath), chalk.grey('skipping package restore...'));
+            }
+        }
+
+        if (variables.https) {
+            const httpsOK = await this.ensureSetupHttps();
+            if (!httpsOK) {
+                Shout.error('failed to setup HTTPS for hot reload dev server. Aborting build!');
+                return;
             }
         }
 

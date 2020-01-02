@@ -9,10 +9,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const upath = require("upath");
-const OS = require("os");
 const fse = require("fs-extra");
-const userSettingsFilePath = upath.join(OS.homedir(), 'instapack', 'settings.json');
+const UserSettingsPath_1 = require("./UserSettingsPath");
 function convertKebabToCamelCase(s) {
     return s.toLowerCase().replace(/-[a-z]/g, ss => {
         return ss[1].toUpperCase();
@@ -31,7 +29,7 @@ function getSettings() {
     return __awaiter(this, void 0, void 0, function* () {
         const settings = Object.assign({}, defaultSettings);
         try {
-            const currentSettings = yield fse.readJson(userSettingsFilePath);
+            const currentSettings = yield fse.readJson(UserSettingsPath_1.UserSettingsPath.settings);
             for (const key in defaultSettings) {
                 const value = currentSettings[key];
                 if (value && validators[key](value)) {
@@ -65,8 +63,8 @@ function setSetting(key, value) {
         }
         const settings = yield getSettings();
         settings[trueKey] = trueValue;
-        yield fse.outputJson(userSettingsFilePath, settings);
-        return userSettingsFilePath;
+        yield fse.outputJson(UserSettingsPath_1.UserSettingsPath.settings, settings);
+        return UserSettingsPath_1.UserSettingsPath.settings;
     });
 }
 exports.setSetting = setSetting;

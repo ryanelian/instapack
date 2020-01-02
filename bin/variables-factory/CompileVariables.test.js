@@ -11,7 +11,8 @@ ava_1.default('Compile Variables: Simple', t => {
         production: true,
         watch: false,
         sourceMap: true,
-        stats: true
+        stats: true,
+        https: false
     }, {
         root: __dirname,
         input: 'client',
@@ -58,6 +59,7 @@ ava_1.default('Compile Variables: Simple', t => {
             hello: 'world'
         },
         serve: false,
+        https: false,
         production: true,
         watch: false,
         sourceMap: true,
@@ -83,6 +85,7 @@ ava_1.default('Compile Variables: Overrides', t => {
             foo: 'bar',
         },
         serve: true,
+        https: true,
         production: true,
         watch: false,
         sourceMap: false,
@@ -148,6 +151,7 @@ ava_1.default('Compile Variables: Overrides', t => {
             foo: 'bar'
         },
         serve: true,
+        https: true,
         production: false,
         watch: true,
         sourceMap: false,

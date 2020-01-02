@@ -15,6 +15,7 @@ import { LoaderPaths } from './loaders/LoaderPaths';
 import { parseTypescriptConfig } from './TypescriptConfigParser';
 import { InstapackBuildPlugin } from './plugins/InstapackBuildPlugin';
 import { mergeTypeScriptPathAlias, getWildcardModules } from './TypeScriptPathsTranslator';
+import { UserSettingsPath } from './user-settings/UserSettingsPath';
 
 /**
  * Contains methods for compiling a TypeScript project.
@@ -380,6 +381,12 @@ export class TypeScriptBuildEngine {
      * @param webpackConfiguration 
      */
     async runDevServer(webpackConfiguration: webpack.Configuration, port: number): Promise<void> {
+        if (!webpackConfiguration.output) {
+            throw new Error('Unexpected undefined value: webpack configuration output object.');
+        }
+        const schema = this.variables.https ? 'https' : 'http';
+        webpackConfiguration.output.publicPath = `${schema}://localhost:${port}/`;
+
         const devServerOptions: webpackDevServer.Configuration = {
             hot: true,
             contentBase: false,     // don't serve static files from project folder LOL
@@ -389,6 +396,19 @@ export class TypeScriptBuildEngine {
             },
             noInfo: true
         };
+
+        if (this.variables.https) {
+            const certFileAsync = fse.readFile(UserSettingsPath.certFile);
+            const keyFileAsync = fse.readFile(UserSettingsPath.keyFile);
+            // https://webpack.js.org/configuration/dev-server/#devserverhttps
+            devServerOptions.https = {
+                key: await keyFileAsync,
+                cert: await certFileAsync
+            }
+            // https://webpack.js.org/configuration/dev-server/#devserverhttp2
+            // If devServer.http2 is not explicitly set to false, 
+            // it will default to true when devServer.https is enabled.
+        }
 
         webpackDevServer.addDevServerEntrypoints(webpackConfiguration, devServerOptions);
         const compiler = webpack(webpackConfiguration);
@@ -427,10 +447,6 @@ export class TypeScriptBuildEngine {
                 port: basePort
             });
 
-            if (!webpackConfiguration.output) {
-                throw new Error('Unexpected undefined value: webpack configuration output object.');
-            }
-            webpackConfiguration.output.publicPath = `http://localhost:${port}/`;
             await this.runDevServer(webpackConfiguration, port);
         } else if (this.variables.watch) {
             await this.watch(webpackConfiguration);

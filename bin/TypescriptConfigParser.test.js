@@ -10,6 +10,7 @@ const validFolder = path.join(fixtures, 'TypeScriptConfigValid');
 const emptyFolder = path.join(fixtures, 'TypeScriptConfigEmpty');
 const invalidFolder = path.join(fixtures, 'TypeScriptConfigInvalid');
 ava_1.default.before(() => {
+    global.console.log = () => { };
     global.console.error = () => { };
     global.console.warn = () => { };
 });
@@ -133,21 +134,25 @@ ava_1.default('Read tsconfig.json: Valid', async (t) => {
 });
 const fallbackTypeScriptConfig = {
     compilerOptions: {
-        alwaysStrict: true,
-        skipLibCheck: true,
-        noImplicitReturns: true,
-        noFallthroughCasesInSwitch: true,
-        allowSyntheticDefaultImports: true,
-        experimentalDecorators: true,
-        jsx: "react",
-        target: "es2016",
-        module: "esnext",
-        moduleResolution: "node",
-        lib: [
-            "dom",
-            "es2016",
-            "dom.iterable"
-        ]
+        "target": "ES2015",
+        "module": "ESNext",
+        "lib": [
+            "DOM",
+            "DOM.Iterable",
+            "ES2015",
+        ],
+        "resolveJsonModule": true,
+        "jsx": "react",
+        "importHelpers": false,
+        "strict": true,
+        "noImplicitAny": false,
+        "noImplicitReturns": true,
+        "noFallthroughCasesInSwitch": true,
+        "moduleResolution": "node",
+        "allowSyntheticDefaultImports": true,
+        "experimentalDecorators": true,
+        "forceConsistentCasingInFileNames": true,
+        "skipLibCheck": true
     }
 };
 ava_1.default('Read tsconfig.json: Empty', async (t) => {

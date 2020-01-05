@@ -10,6 +10,7 @@ const emptyFolder = path.join(fixtures, 'TypeScriptConfigEmpty');
 const invalidFolder = path.join(fixtures, 'TypeScriptConfigInvalid');
 
 test.before(() => {
+    global.console.log = (): void => { /* disabled */ };
     global.console.error = (): void => { /* disabled */ };
     global.console.warn = (): void => { /* disabled */ };
 });
@@ -152,24 +153,26 @@ test('Read tsconfig.json: Valid', async t => {
 
 const fallbackTypeScriptConfig = {
     compilerOptions: {
-        alwaysStrict: true,
-        skipLibCheck: true,
-        noImplicitReturns: true,
-        noFallthroughCasesInSwitch: true,
+        "target": "ES2015",                       /* Specify ECMAScript target version: 'ES3' (default), 'ES5', 'ES2015', 'ES2016', 'ES2017', 'ES2018', 'ES2019' or 'ESNEXT'. */
+        "module": "ESNext",                       /* Specify module code generation: 'none', 'commonjs', 'amd', 'system', 'umd', 'es2015', or 'ESNext'. */
+        "lib": [                                  /* Specify library files to be included in the compilation. */
+            "DOM",
+            "DOM.Iterable",
+            "ES2015",
+        ],
 
-        allowSyntheticDefaultImports: true,
-        experimentalDecorators: true,
-        jsx: "react",
-
-        target: "es2016",
-        module: "esnext",
-        moduleResolution: "node",
-
-        lib: [
-            "dom",
-            "es2016",
-            "dom.iterable"
-        ]
+        "resolveJsonModule": true,                /* Include modules imported with .json extension. */
+        "jsx": "react",                           /* Specify JSX code generation: 'preserve', 'react-native', or 'react'. */
+        "importHelpers": false,                   /* Import emit helpers from 'tslib'. */
+        "strict": true,                           /* Enable all strict type-checking options. */
+        "noImplicitAny": false,                   /* Raise error on expressions and declarations with an implied 'any' type. */
+        "noImplicitReturns": true,                /* Report error when not all code paths in function return a value. */
+        "noFallthroughCasesInSwitch": true,       /* Report errors for fallthrough cases in switch statement. */
+        "moduleResolution": "node",               /* Specify module resolution strategy: 'node' (Node.js) or 'classic' (TypeScript pre-1.6). */
+        "allowSyntheticDefaultImports": true,     /* Allow default imports from modules with no default export. This does not affect code emit, just typechecking. */
+        "experimentalDecorators": true,           /* Enables experimental support for ES7 decorators. */
+        "forceConsistentCasingInFileNames": true, /* Disallow inconsistently-cased references to the same file. */
+        "skipLibCheck": true                      /* Skip type checking of all declaration files. */
     }
 };
 

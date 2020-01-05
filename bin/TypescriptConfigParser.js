@@ -8,21 +8,25 @@ const Shout_1 = require("./Shout");
 const chalk = require("chalk");
 const fallbackTypeScriptConfig = {
     compilerOptions: {
-        alwaysStrict: true,
-        skipLibCheck: true,
-        noImplicitReturns: true,
-        noFallthroughCasesInSwitch: true,
-        allowSyntheticDefaultImports: true,
-        experimentalDecorators: true,
-        jsx: "react",
-        target: "es2016",
-        module: "esnext",
-        moduleResolution: "node",
-        lib: [
-            "dom",
-            "es2016",
-            "dom.iterable"
-        ]
+        "target": "ES2015",
+        "module": "ESNext",
+        "lib": [
+            "DOM",
+            "DOM.Iterable",
+            "ES2015",
+        ],
+        "resolveJsonModule": true,
+        "jsx": "react",
+        "importHelpers": false,
+        "strict": true,
+        "noImplicitAny": false,
+        "noImplicitReturns": true,
+        "noFallthroughCasesInSwitch": true,
+        "moduleResolution": "node",
+        "allowSyntheticDefaultImports": true,
+        "experimentalDecorators": true,
+        "forceConsistentCasingInFileNames": true,
+        "skipLibCheck": true
     }
 };
 function parseTypescriptConfig(folder, json) {
@@ -49,6 +53,7 @@ async function tryReadTypeScriptConfigJson(folder) {
     catch (error) {
         Shout_1.Shout.error('when reading', chalk.cyan(tsconfigJsonPath), error);
         Shout_1.Shout.warning('Using the default fallback TypeScript configuration!');
+        console.log(fallbackTypeScriptConfig);
         return fallbackTypeScriptConfig;
     }
 }

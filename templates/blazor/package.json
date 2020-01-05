@@ -29,7 +29,7 @@
     "luxon": "^1.21.3",
     "popper.js": "^1.16.0",
     "sweetalert": "^2.1.2",
-    "ts-polyfill": "^3.7.3",
+    "ts-polyfill": "^3.7.4",
     "tslib": "^1.10.0"
   }
 }

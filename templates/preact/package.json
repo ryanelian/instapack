@@ -13,7 +13,7 @@
     "luxon": "^1.21.3",
     "preact": "^10.1.1",
     "sweetalert": "^2.1.2",
-    "ts-polyfill": "^3.7.3",
+    "ts-polyfill": "^3.7.4",
     "tslib": "^1.10.0"
   }
 }

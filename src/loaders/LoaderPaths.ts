@@ -3,7 +3,7 @@
  */
 export const LoaderPaths = {
     typescript: require.resolve('./CoreTypeScriptLoader'),
-    template: require.resolve('html-loader'),
+    html: require.resolve('./HtmLoader'),
     babel: require.resolve('babel-loader'),
     vue: require.resolve('vue-loader'),
     vueStyle: require.resolve('vue-style-loader'),

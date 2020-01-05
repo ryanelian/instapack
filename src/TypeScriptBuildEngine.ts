@@ -54,7 +54,8 @@ export class TypeScriptBuildEngine {
         return {
             test: /\.js$/,
             use: {
-                loader: LoaderPaths.babel
+                loader: LoaderPaths.babel,
+                ident: 'babel-js-loader'
             }
         };
     }
@@ -65,6 +66,7 @@ export class TypeScriptBuildEngine {
             include: /node_modules/,
             use: [{
                 loader: LoaderPaths.libGuard,
+                ident: 'js-lib-loader',
                 options: {
                     compilerOptions: this.typescriptCompilerOptions
                 }
@@ -76,19 +78,21 @@ export class TypeScriptBuildEngine {
      * Gets a configured TypeScript rules for webpack.
      */
     get typescriptWebpackRules(): webpack.RuleSetRule {
-        const loaders: webpack.Loader[] = [];
+        const loaders: webpack.RuleSetLoader[] = [];
 
         // webpack loaders are declared in reverse / right-to-left!
         // babel(typescript(source_code))
 
         if (this.useBabel) {
             loaders.push({
-                loader: LoaderPaths.babel
+                loader: LoaderPaths.babel,
+                ident: 'babel-typescript-loader'
             })
         }
 
         loaders.push({
             loader: LoaderPaths.typescript,
+            ident: 'typescript-loader',
             options: {
                 compilerOptions: this.typescriptCompilerOptions
             }
@@ -112,6 +116,7 @@ export class TypeScriptBuildEngine {
             exclude: /node_modules/,
             use: [{
                 loader: LoaderPaths.vue,
+                ident: 'vue-loader',
                 options: {
                     compiler: this.vueTemplateCompiler,
                     transformAssetUrls: {},     // remove <img> src and SVG <image> xlink:href resolution
@@ -129,10 +134,8 @@ export class TypeScriptBuildEngine {
             test: /\.html?$/,
             exclude: /node_modules/,
             use: [{
-                loader: LoaderPaths.template,
-                options: {
-                    attrs: false
-                }
+                loader: LoaderPaths.html,
+                ident: 'html-loader'
             }]
         };
     }
@@ -140,20 +143,26 @@ export class TypeScriptBuildEngine {
     /**
      * Gets CSS rules for webpack to prevent explosion during vue compile.
      */
-    get cssWebpackRules(): webpack.RuleSetRule {
-        const vueStyleLoader = {
-            loader: LoaderPaths.vueStyle
+    get vueCssWebpackRules(): webpack.RuleSetRule {
+        const vueStyleLoader: webpack.RuleSetLoader = {
+            loader: LoaderPaths.vueStyle,
+            ident: 'vue-style-loader'
         };
-        const cssModulesLoader = {
+        // https://vue-loader.vuejs.org/guide/css-modules.html#usage
+        const cssModulesLoader: webpack.RuleSetLoader = {
             loader: LoaderPaths.css,
+            ident: 'vue-css-module-loader',
             options: {
-                modules: true,
-                localIdentName: '[local]_[hash:base64:5]',
+                // enable CSS Modules
+                modules: {
+                    localIdentName: '[local]_[contenthash:8]'
+                },
                 url: false
             }
         };
-        const cssLoader = {
+        const cssLoader: webpack.RuleSetLoader = {
             loader: LoaderPaths.css,
+            ident: 'vue-css-loader',
             options: {
                 url: false
             }
@@ -161,14 +170,20 @@ export class TypeScriptBuildEngine {
 
         return {
             test: /\.css$/,
-            exclude: /node_modules/,
+            resourceQuery: /\?vue/,
             oneOf: [
-                { // this matches <style module>
-                    resourceQuery: /module/,
+                {
+                    // this matches <style module>
+                    // ./HelloWorld.vue?vue&type=style&index=0&module=true&lang=css&
+                    resourceQuery: /module=true/,
                     use: [vueStyleLoader, cssModulesLoader]
-                }, { // this matches plain <style> or <style scoped>
+                },
+                {
+                    // this matches plain <style> or <style scoped>
+                    // HelloWorld.vue?vue&type=style&index=0&lang=css&
                     use: [vueStyleLoader, cssLoader]
-                }]
+                }
+            ]
         };
     }
 
@@ -200,7 +215,7 @@ export class TypeScriptBuildEngine {
             this.typescriptWebpackRules,
             this.vueWebpackRules,
             this.templatesWebpackRules,
-            this.cssWebpackRules
+            this.vueCssWebpackRules
         ];
 
         // loader rules are evaluated LIFO 
@@ -264,10 +279,10 @@ export class TypeScriptBuildEngine {
                     if (chunkData.chunk.name === 'main') {
                         return this.finder.jsOutputFileName;
                     } else {
-                        return this.finder.jsChunkFileName;
+                        return this.finder.jsInitialChunkFileName;
                     }
                 },
-                chunkFilename: this.finder.jsChunkFileName,
+                chunkFilename: this.finder.jsDynamicChunkFileName,
                 path: osOutputJsFolder,
                 publicPath: 'js/',
                 library: this.variables.namespace

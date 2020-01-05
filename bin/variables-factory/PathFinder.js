@@ -53,8 +53,11 @@ class PathFinder {
     get jsOutputFileName() {
         return upath.addExt(this.variables.jsOut, '.js');
     }
-    get jsChunkFileName() {
+    get jsInitialChunkFileName() {
         return upath.removeExt(this.jsOutputFileName, '.js') + '.[name].js';
+    }
+    get jsDynamicChunkFileName() {
+        return upath.removeExt(this.jsOutputFileName, '.js') + '.[contenthash].js';
     }
     get jsOutputFilePath() {
         return upath.join(this.jsOutputFolder, this.jsOutputFileName);

@@ -22,6 +22,8 @@ Here are the list of breaking changes when upgrading between instapack major (or
 
 - `.mjs` and `.wasm` are no longer resolved by default due to webpack 5 disabling them by default (Requiring `experiments.mjs: true` and `experiments: { asyncWebAssembly: true, importAsync: true }` https://github.com/webpack/changelog-v5#experiments)
 
+- JS Build: Plain `.css` files will no longer be build, only `<style>` code blocks in `.vue` files.
+
 - Babel transformations will now be applied to all `.js` files imported from `node_modules`
 
   - This feature is meant for users who disables TypeScript transpilation (Script Target: `esnext`) but still wants to transpile projects using `@babel/preset-env`

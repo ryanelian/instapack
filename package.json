@@ -1,6 +1,6 @@
 {
   "name": "instapack",
-  "version": "8.0.0-alpha.5",
+  "version": "8.0.0-alpha.6",
   "description": "All-in-one TypeScript and Sass compiler for web applications!",
   "keywords": [
     "typescript",
@@ -59,17 +59,17 @@
     "chalk": "3.0.0",
     "chokidar": "3.3.1",
     "clean-css": "4.2.1",
-    "css-loader": "3.4.0",
+    "css-loader": "3.4.1",
     "dotenv": "8.2.0",
     "fast-glob": "3.1.1",
     "fibers": "4.0.2",
     "fs-extra": "8.1.0",
-    "html-loader": "0.5.5",
+    "html-minifier": "4.0.0",
     "loader-utils": "1.2.3",
     "merge-source-map": "1.1.0",
     "portfinder": "1.0.25",
     "postcss": "7.0.26",
-    "sass": "1.24.0",
+    "sass": "1.24.2",
     "say": "0.16.0",
     "source-map": "0.6.1",
     "strip-json-comments": "3.0.1",
@@ -81,7 +81,7 @@
     "webpack-dev-server": "3.10.1",
     "which": "2.0.2",
     "worker-farm": "1.7.0",
-    "yargs": "15.0.2"
+    "yargs": "15.1.0"
   },
   "devDependencies": {
     "@types/autoprefixer": "^9.6.1",

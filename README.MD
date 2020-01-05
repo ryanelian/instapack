@@ -102,7 +102,7 @@ You may use `instapack` or `ipack` to invoke the command line interface.
 
 ### new [template]
 
-Scaffolds a new instapack project into your existing app folder where the command line is invoked. **All templates target [ES2015, compatible with modern major browsers](https://kangax.github.io/compat-table/es6/) unless noted otherwise.** These templates are available:
+Scaffolds a new instapack project into current working directory. **All templates target [ES2015, compatible with modern major browsers](https://kangax.github.io/compat-table/es6/) unless noted otherwise.** These templates are available:
 
 - `empty` for a minimal clean slate.
 
@@ -150,7 +150,9 @@ In addition, build flags are available:
 
 - `--stats` generates `stats.json` next to the TypeScript build outputs, which can be analyzed by a third-party tool: [webpack-bundle-analyzer](https://www.npmjs.com/package/webpack-bundle-analyzer). For sanity, this flag will be ignored when using `-d` or `-w` flags.
 
-> You can combine multiple build flags, for example: `ipack -dw` = `dev` + `watch` mode for **massive productivity gainz!** :muscle:
+- `--overwrite` allows replacing file in destination when using `copy` build tool.
+
+> Multiple build flags can be combined, for example: `ipack -dw` = `dev` + `watch` mode
 
 ### set <key> <value>
 
@@ -218,7 +220,7 @@ import jQuery from 'jquery';
 
 - `copy` allows copying static assets from the npm folder (`node_modules`) into the project output folder (e.g. `wwwroot`) during build.
 
-  - **This is a PREVIEW feature** inspired from [Visual Studio LibMan](https://docs.microsoft.com/en-us/aspnet/core/client-side/libman/libman-vs?view=aspnetcore-3.0). *No overwrites will be performed right now due to safety concerns.*
+  - **This is a PREVIEW feature** inspired by [Visual Studio LibMan](https://docs.microsoft.com/en-us/aspnet/core/client-side/libman/libman-vs?view=aspnetcore-3.0).
 
   - `library` accepts a package name. The package MUST be installed in the project `package.json` and cannot be transient implicit / merely a sub-dependency of other packages.
 
@@ -370,7 +372,9 @@ yarn add eslint-plugin-vue vue-eslint-parser -D
         "commonjs": true
     },
     "rules": {
-        "vue/html-indent": ["warn", 4]
+        "vue/html-indent": ["warn", 4],
+        "vue/singleline-html-element-content-newline": "off",
+        "vue/html-self-closing": "off"
     }
 }
 ```
@@ -414,9 +418,9 @@ yarn add eslint-plugin-react -D
 
 instapack supports [`.babelrc`](https://babeljs.io/docs/usage/babelrc/) in the project root folder. **Babel transformations will be applied AFTER TypeScript compilation.** Here are some use cases where this feature can be useful:
 
-- You may use Babel instead of TypeScript to transpile JS to ES5: set TypeScript `target` to `esnext` then use [`@babel/preset-env`](https://github.com/babel/babel/tree/master/packages/babel-preset-env). This has an interesting side effect where [polyfills are automatically applied!](https://babeljs.io/docs/en/babel-polyfill)
+- Babel may be used instead of TypeScript to transpile JS to ES5: set TypeScript `target` to `esnext` then use [`@babel/preset-env`](https://github.com/babel/babel/tree/master/packages/babel-preset-env). This has an interesting side effect where [polyfills are automatically applied!](https://babeljs.io/docs/en/babel-polyfill)
 
-- You may use Babel instead of TypeScript to compile JSX: set TypeScript `jsx` to `preserve` then use the framework-compatible JSX plugin. For example: `@babel/preset-react`, `babel-plugin-transform-vue-jsx`, `babel-plugin-inferno`
+- Babel may be used instead of TypeScript to compile JSX: set TypeScript `jsx` to `preserve` then use the framework-compatible JSX plugin. For example: `@babel/preset-react`, `babel-plugin-transform-vue-jsx`, `babel-plugin-inferno`
 
 ## Hot Reload Development Mode
 
@@ -462,7 +466,7 @@ Create a `.babelrc` in the project root folder:
 }
 ```
 
-Refactor your root component as a *hot-exported* module:
+Refactor the root component as a *hot-exported* module:
 
 ```tsx
 // client/js/components/App.tsx
@@ -614,13 +618,7 @@ export default class Hello extends Vue {
 
 - [A global TypeScript definition file for `*.vue` module](https://github.com/ryanelian/instapack/blob/master/templates/vue/client/js/vue-shim.d.ts) is required for importing the `.vue` file from TypeScript using ESM syntax.
 
-  - This file will be created for you when using the `vue` new project template!
-
-- Notice that basic `<style>` (or `<style scoped>` or `<style module>`) should work, but should *NOT* be used. **Instead of coding your CSS in a JS project, you should write CSS using instapack Sass compiler instead!**
-
-  - **This particular feature is NOT SUPPORTED!** There are numerous reported issues related to CSS in Vue SFC (such as NOT working in an Async Components).
-
-  - **Limitations:** You cannot use Sass. The CSS will not be auto-prefixed and minified.
+- Basic CSS support in `<style>` (or `<style scoped>` or `<style module>`) code blocks should work, but Sass cannot be used and the resulting CSS will NOT be auto-prefixed and minified. 
 
 - Projects with matching `vue-template-compiler` dependency (compiler version === Vue version) will be built using that specific compiler instead of using instapack built-in `vue-template-compiler`.
 
@@ -656,7 +654,7 @@ instapack also has a custom Node-like but standard-compliant Sass module system 
 
 instapack supports defining variables in `process.env` global object. Variables coming from `process.env` are always strings.
 
-> Using `process.env` in your TypeScript project requires `@types/node` package installed.
+> Using `process.env` in a TypeScript project requires `@types/node` package installed.
 
 ### .env
 
@@ -706,7 +704,7 @@ Yes, absolutely!
 
 Add the packages required for your project using npm / Yarn and then start hacking. We'll take care of the outputs.
 
-Also, pull requests are welcomed if you have a great starting templates and books for those projects. We'd love to expand our collections!
+Also, pull requests are welcomed if you have a great starting templates! We'd love to expand our collections!
 
 ### Is it even safe to target ES2015?
 
@@ -781,7 +779,7 @@ release:
 
 ### How to debug using Visual Studio Code?
 
-Install the [VS Code extension: Debugger for Chrome](https://marketplace.visualstudio.com/items?itemName=msjsdiag.debugger-for-chrome), open the project using VS Code (`package.json` should be located on your workspace folder root).
+Install the [VS Code extension: Debugger for Chrome](https://marketplace.visualstudio.com/items?itemName=msjsdiag.debugger-for-chrome), open the project root folder (where `package.json` is located) using VS Code.
 
 Create a folder `.vscode` and a file `launch.json` inside it:
 
@@ -857,7 +855,7 @@ However, you can _eject_ the `client` folder out of the back-end project folder,
 
 This is the preferred way of doing things because:
 
-- You may have multiple front-end projects for a single back-end project. Heck, you might be able to parallelize the build by running two or more instapack at once.
+- You may have multiple front-end projects for a single back-end project, which may aid in version management and build speed (parallelization).
 
 - Every front-end project can have vastly different `tsconfig.json` and `package.json` setup. (e.g. Same dependencies, different versions!)
 

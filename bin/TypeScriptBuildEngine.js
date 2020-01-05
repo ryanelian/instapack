@@ -31,7 +31,8 @@ class TypeScriptBuildEngine {
         return {
             test: /\.js$/,
             use: {
-                loader: LoaderPaths_1.LoaderPaths.babel
+                loader: LoaderPaths_1.LoaderPaths.babel,
+                ident: 'babel-js-loader'
             }
         };
     }
@@ -41,6 +42,7 @@ class TypeScriptBuildEngine {
             include: /node_modules/,
             use: [{
                     loader: LoaderPaths_1.LoaderPaths.libGuard,
+                    ident: 'js-lib-loader',
                     options: {
                         compilerOptions: this.typescriptCompilerOptions
                     }
@@ -51,11 +53,13 @@ class TypeScriptBuildEngine {
         const loaders = [];
         if (this.useBabel) {
             loaders.push({
-                loader: LoaderPaths_1.LoaderPaths.babel
+                loader: LoaderPaths_1.LoaderPaths.babel,
+                ident: 'babel-typescript-loader'
             });
         }
         loaders.push({
             loader: LoaderPaths_1.LoaderPaths.typescript,
+            ident: 'typescript-loader',
             options: {
                 compilerOptions: this.typescriptCompilerOptions
             }
@@ -73,6 +77,7 @@ class TypeScriptBuildEngine {
             exclude: /node_modules/,
             use: [{
                     loader: LoaderPaths_1.LoaderPaths.vue,
+                    ident: 'vue-loader',
                     options: {
                         compiler: this.vueTemplateCompiler,
                         transformAssetUrls: {},
@@ -86,39 +91,42 @@ class TypeScriptBuildEngine {
             test: /\.html?$/,
             exclude: /node_modules/,
             use: [{
-                    loader: LoaderPaths_1.LoaderPaths.template,
-                    options: {
-                        attrs: false
-                    }
+                    loader: LoaderPaths_1.LoaderPaths.html,
+                    ident: 'html-loader'
                 }]
         };
     }
-    get cssWebpackRules() {
+    get vueCssWebpackRules() {
         const vueStyleLoader = {
-            loader: LoaderPaths_1.LoaderPaths.vueStyle
+            loader: LoaderPaths_1.LoaderPaths.vueStyle,
+            ident: 'vue-style-loader'
         };
         const cssModulesLoader = {
             loader: LoaderPaths_1.LoaderPaths.css,
+            ident: 'vue-css-module-loader',
             options: {
-                modules: true,
-                localIdentName: '[local]_[hash:base64:5]',
+                modules: {
+                    localIdentName: '[local]_[contenthash:8]'
+                },
                 url: false
             }
         };
         const cssLoader = {
             loader: LoaderPaths_1.LoaderPaths.css,
+            ident: 'vue-css-loader',
             options: {
                 url: false
             }
         };
         return {
             test: /\.css$/,
-            exclude: /node_modules/,
+            resourceQuery: /\?vue/,
             oneOf: [
                 {
-                    resourceQuery: /module/,
+                    resourceQuery: /module=true/,
                     use: [vueStyleLoader, cssModulesLoader]
-                }, {
+                },
+                {
                     use: [vueStyleLoader, cssLoader]
                 }
             ]
@@ -140,7 +148,7 @@ class TypeScriptBuildEngine {
             this.typescriptWebpackRules,
             this.vueWebpackRules,
             this.templatesWebpackRules,
-            this.cssWebpackRules
+            this.vueCssWebpackRules
         ];
         if (this.useBabel) {
             rules.push(this.jsBabelWebpackRules);
@@ -179,10 +187,10 @@ class TypeScriptBuildEngine {
                         return this.finder.jsOutputFileName;
                     }
                     else {
-                        return this.finder.jsChunkFileName;
+                        return this.finder.jsInitialChunkFileName;
                     }
                 },
-                chunkFilename: this.finder.jsChunkFileName,
+                chunkFilename: this.finder.jsDynamicChunkFileName,
                 path: osOutputJsFolder,
                 publicPath: 'js/',
                 library: this.variables.namespace

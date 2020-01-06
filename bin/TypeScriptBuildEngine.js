@@ -8,6 +8,7 @@ const webpackDevServer = require("webpack-dev-server");
 const portfinder = require("portfinder");
 const TypeScript = require("typescript");
 const vue_loader_1 = require("vue-loader");
+const ReactRefreshWebpackPlugin = require("@webhotelier/webpack-fast-refresh");
 const CompilerResolver_1 = require("./CompilerResolver");
 const Shout_1 = require("./Shout");
 const PathFinder_1 = require("./variables-factory/PathFinder");
@@ -132,6 +133,22 @@ class TypeScriptBuildEngine {
             ]
         };
     }
+    get reactRefreshWebpackRules() {
+        return {
+            test: /\.[jt]sx?$/,
+            exclude: /node_modules/,
+            use: {
+                loader: LoaderPaths_1.LoaderPaths.babel,
+                ident: 'babel-react-refresh-loader',
+                options: {
+                    plugins: [
+                        require.resolve('@babel/plugin-syntax-dynamic-import'),
+                        require.resolve('react-refresh/babel'),
+                    ]
+                }
+            }
+        };
+    }
     createWebpackPlugins() {
         var _a;
         const plugins = [];
@@ -140,6 +157,9 @@ class TypeScriptBuildEngine {
         plugins.push(new vue_loader_1.VueLoaderPlugin());
         if (Object.keys(this.variables.env).length > 0) {
             plugins.push(new webpack.EnvironmentPlugin(this.variables.env));
+        }
+        if (this.variables.reactRefresh) {
+            plugins.push(new ReactRefreshWebpackPlugin());
         }
         return plugins;
     }
@@ -157,6 +177,9 @@ class TypeScriptBuildEngine {
             if (this.typescriptCompilerOptions.target < TypeScript.ScriptTarget.ESNext) {
                 rules.push(this.libGuardRules);
             }
+        }
+        if (this.variables.reactRefresh) {
+            rules.unshift(this.reactRefreshWebpackRules);
         }
         return rules;
     }
@@ -298,7 +321,8 @@ class TypeScriptBuildEngine {
             headers: {
                 'Access-Control-Allow-Origin': '*'
             },
-            noInfo: true
+            noInfo: true,
+            stats: 'none'
         };
         if (this.variables.https) {
             const certFileAsync = fse.readFile(UserSettingsPath_1.UserSettingsPath.certFile);

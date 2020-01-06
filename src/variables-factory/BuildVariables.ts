@@ -104,4 +104,9 @@ export interface BuildVariables {
      * Gets the HTTPS hot reload dev server build flag.
      */
     https: boolean;
+
+    /**
+     * Gets the Fast Refresh for React build flag.
+     */
+    reactRefresh: boolean;
 }

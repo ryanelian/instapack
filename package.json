@@ -1,6 +1,6 @@
 {
   "name": "instapack",
-  "version": "8.0.0-alpha.6",
+  "version": "8.0.0-alpha.7",
   "description": "All-in-one TypeScript and Sass compiler for web applications!",
   "keywords": [
     "typescript",
@@ -53,6 +53,8 @@
   },
   "dependencies": {
     "@babel/core": "7.7.7",
+    "@babel/plugin-syntax-dynamic-import": "7.7.4",
+    "@webhotelier/webpack-fast-refresh": "1.2.6",
     "ajv": "6.10.2",
     "autoprefixer": "9.7.3",
     "babel-loader": "8.0.6",
@@ -69,6 +71,7 @@
     "merge-source-map": "1.1.0",
     "portfinder": "1.0.25",
     "postcss": "7.0.26",
+    "react-refresh": "0.7.1",
     "sass": "1.24.2",
     "say": "0.16.0",
     "source-map": "0.6.1",

@@ -216,7 +216,7 @@
   dependencies:
     "@babel/helper-plugin-utils" "^7.0.0"
 
-"@babel/plugin-syntax-dynamic-import@^7.7.4":
+"@babel/plugin-syntax-dynamic-import@7.7.4", "@babel/plugin-syntax-dynamic-import@^7.7.4":
   version "7.7.4"
   resolved "https://registry.yarnpkg.com/@babel/plugin-syntax-dynamic-import/-/plugin-syntax-dynamic-import-7.7.4.tgz#29ca3b4415abfe4a5ec381e903862ad1a54c3aec"
   integrity sha512-jHQW0vbRGvwQNgyVxwDh4yuXu4bH1f5/EICJLAhl1SblLs2CDhrsmCk+v5XLdE9wxtAFRyxx+P//Iw+a5L/tTg==
@@ -751,6 +751,11 @@
     "@webassemblyjs/ast" "1.8.5"
     "@webassemblyjs/wast-parser" "1.8.5"
     "@xtuc/long" "4.2.2"
+
+"@webhotelier/webpack-fast-refresh@1.2.6":
+  version "1.2.6"
+  resolved "https://registry.yarnpkg.com/@webhotelier/webpack-fast-refresh/-/webpack-fast-refresh-1.2.6.tgz#83c0376052a5d242ccbbde287e59bf51802a5caf"
+  integrity sha512-tRZ5/XOxxce6RA0G/SeCw6nphFxdvQ0Nt5uh6xE35lObM5zS4vM1Y9hOzqDsxg5bu0WSMy6RRycHHZc6Yzgmtg==
 
 "@xtuc/ieee754@^1.2.0":
   version "1.2.0"
@@ -4797,6 +4802,11 @@ rc@^1.2.8:
     ini "~1.3.0"
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
+
+react-refresh@0.7.1:
+  version "0.7.1"
+  resolved "https://registry.yarnpkg.com/react-refresh/-/react-refresh-0.7.1.tgz#b9605e4cd0e5366b9cc21705ebe6ee5bda8ccf85"
+  integrity sha512-tFM1EmOxub/hMKtXilOslJTEt7ANDMwtjD8psJAFSe1oQl7anmGEQONxSR+hAYePgHGI1eVhRVdprBruXu3wfw==
 
 read-pkg-up@^3.0.0:
   version "3.0.0"

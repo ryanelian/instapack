@@ -6,6 +6,7 @@ import webpackDevServer = require('webpack-dev-server');
 import portfinder = require('portfinder');
 import * as TypeScript from 'typescript';
 import { VueLoaderPlugin } from 'vue-loader';
+import ReactRefreshWebpackPlugin = require('@webhotelier/webpack-fast-refresh');
 
 import { resolveVueTemplateCompiler } from './CompilerResolver';
 import { Shout } from './Shout';
@@ -188,6 +189,27 @@ export class TypeScriptBuildEngine {
     }
 
     /**
+     * Gets JS Babel transpile rules for webpack.
+     */
+    get reactRefreshWebpackRules(): webpack.RuleSetRule {
+        return {
+            test: /\.[jt]sx?$/,
+            exclude: /node_modules/,
+            use: {
+                loader: LoaderPaths.babel,
+                ident: 'babel-react-refresh-loader',
+                options: {
+                    plugins: [
+                        require.resolve('@babel/plugin-syntax-dynamic-import'),
+                        require.resolve('react-refresh/babel'),
+                    ]
+                }
+            }
+        };
+    }
+
+
+    /**
      * Returns webpack plugins array.
      */
     createWebpackPlugins(): webpack.Plugin[] {
@@ -200,6 +222,10 @@ export class TypeScriptBuildEngine {
 
         if (Object.keys(this.variables.env).length > 0) {
             plugins.push(new webpack.EnvironmentPlugin(this.variables.env));
+        }
+
+        if (this.variables.reactRefresh) {
+            plugins.push(new ReactRefreshWebpackPlugin());
         }
 
         return plugins;
@@ -230,6 +256,11 @@ export class TypeScriptBuildEngine {
             if (this.typescriptCompilerOptions.target < TypeScript.ScriptTarget.ESNext) {
                 rules.push(this.libGuardRules);
             }
+        }
+
+        if (this.variables.reactRefresh) {
+            // React Refresh Babel transformations should be done AFTER ALL other loaders!
+            rules.unshift(this.reactRefreshWebpackRules);
         }
 
         return rules;
@@ -419,7 +450,8 @@ export class TypeScriptBuildEngine {
             headers: {              // CORS
                 'Access-Control-Allow-Origin': '*'
             },
-            noInfo: true
+            noInfo: true,           // supress messages like the webpack bundle information
+            stats: 'none'           // stats are outputted via instapack build plugin
         };
 
         if (this.variables.https) {

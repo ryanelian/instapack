@@ -12,6 +12,9 @@ class ToolOrchestrator {
         this.finder = new PathFinder_1.PathFinder(this.variables);
     }
     outputBuildInformation() {
+        if (this.variables.reactRefresh) {
+            Shout_1.Shout.warning(`Experimental ${chalk.yellow('React Fast Refresh')} dev server is enabled!`);
+        }
         if (this.variables.production) {
             Shout_1.Shout.timed(chalk.yellow("Production"), "Mode: Build optimizations are enabled.");
         }

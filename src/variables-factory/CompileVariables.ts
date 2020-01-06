@@ -34,8 +34,13 @@ export function compileVariables(
         serve: buildFlags.serve,
         port1: projectSettings.port1,
         https: buildFlags.https,
+        reactRefresh: buildFlags.reactRefresh,
         typescriptConfiguration: typescriptConfiguration
     };
+
+    if (variables.reactRefresh) {
+        variables.serve = true;
+    }
 
     if (variables.serve) {
         variables.production = false;

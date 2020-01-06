@@ -9,4 +9,5 @@ export interface CommandLineFlags {
     serve: boolean;
     env: MapLike<string>;
     https: boolean;
+    reactRefresh: boolean;
 }

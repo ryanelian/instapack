@@ -12,7 +12,8 @@ ava_1.default('Compile Variables: Simple', t => {
         watch: false,
         sourceMap: true,
         stats: true,
-        https: false
+        https: false,
+        reactRefresh: false
     }, {
         root: __dirname,
         input: 'client',
@@ -60,6 +61,7 @@ ava_1.default('Compile Variables: Simple', t => {
         },
         serve: false,
         https: false,
+        reactRefresh: true,
         production: true,
         watch: false,
         sourceMap: true,
@@ -89,7 +91,8 @@ ava_1.default('Compile Variables: Overrides', t => {
         production: true,
         watch: false,
         sourceMap: false,
-        stats: true
+        stats: true,
+        reactRefresh: true
     }, {
         root: __dirname,
         input: 'src',
@@ -156,6 +159,7 @@ ava_1.default('Compile Variables: Overrides', t => {
         watch: true,
         sourceMap: false,
         stats: false,
+        reactRefresh: true,
         typescriptConfiguration: {
             compilerOptions: {
                 alwaysStrict: true,

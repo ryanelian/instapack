@@ -29,6 +29,10 @@ export class ToolOrchestrator {
      * Displays information about currently used build flags.
      */
     outputBuildInformation(): void {
+        if (this.variables.reactRefresh) {
+            Shout.warning(`Experimental ${chalk.yellow('React Fast Refresh')} dev server is enabled!`);
+        }
+
         if (this.variables.production) {
             Shout.timed(chalk.yellow("Production"), "Mode: Build optimizations are enabled.");
         } else {

@@ -43,7 +43,9 @@ program.command({
         }).option('overwrite', {
             describe: 'Enables overwriting files in output folder by copy assets build tool.'
         }).option('https', {
-            describe: 'Enables HTTPS hot reload dev server. (Requires mkcert to be installed)'
+            describe: 'Enables HTTPS Hot Reload dev server. (Requires mkcert to be installed)'
+        }).option('experimental-react-refresh', {
+            describe: 'Enables Fast Refresh for React with dev server.'
         });
     },
     handler: (argv) => {
@@ -59,7 +61,8 @@ program.command({
             env: EnvParser_1.parseCliEnvFlags(argv.env),
             stats: Boolean(argv.stats),
             serve: Boolean(argv.serve),
-            https: Boolean(argv.https)
+            https: Boolean(argv.https),
+            reactRefresh: Boolean(argv['experimental-react-refresh'])
         }).catch(console.error);
     }
 });

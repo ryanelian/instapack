@@ -4,36 +4,27 @@ const loader_utils_1 = require("loader-utils");
 const chalk = require("chalk");
 const SyntaxLevelChecker_1 = require("../SyntaxLevelChecker");
 const upath = require("upath");
-function transpileModuleAst(resourcePath, source, options) {
-    resourcePath = upath.toUnix(resourcePath);
+function createTranspileModuleAstOptions(baseOptions) {
     const transpileOptions = TypeScript.getDefaultCompilerOptions();
     transpileOptions.isolatedModules = true;
-    transpileOptions.noLib = true;
-    transpileOptions.noResolve = true;
-    transpileOptions.lib = undefined;
-    transpileOptions.types = undefined;
-    transpileOptions.noEmit = undefined;
-    transpileOptions.noEmitOnError = undefined;
-    transpileOptions.emitDeclarationOnly = undefined;
-    transpileOptions.paths = undefined;
-    transpileOptions.rootDirs = undefined;
-    transpileOptions.declaration = undefined;
-    transpileOptions.composite = undefined;
-    transpileOptions.declarationDir = undefined;
-    transpileOptions.out = undefined;
-    transpileOptions.outFile = undefined;
-    transpileOptions['suppressOutputPathCheck'] = true;
+    transpileOptions.suppressOutputPathCheck = true;
+    transpileOptions.allowNonTsExtensions = true;
     transpileOptions.allowJs = true;
-    transpileOptions.importHelpers = options.importHelpers;
-    transpileOptions.target = options.target;
-    transpileOptions.module = options.module;
-    transpileOptions.moduleResolution = options.moduleResolution;
-    transpileOptions.sourceMap = options.sourceMap;
-    transpileOptions.inlineSources = options.inlineSources;
-    const result = {
-        output: undefined,
-        map: undefined
-    };
+    transpileOptions.noResolve = true;
+    transpileOptions.noLib = true;
+    transpileOptions.importHelpers = baseOptions.importHelpers;
+    transpileOptions.target = baseOptions.target;
+    transpileOptions.module = baseOptions.module;
+    transpileOptions.moduleResolution = baseOptions.moduleResolution;
+    transpileOptions.sourceMap = baseOptions.sourceMap;
+    transpileOptions.inlineSources = baseOptions.inlineSources;
+    return transpileOptions;
+}
+function transpileModuleAst(resourcePath, source, options) {
+    resourcePath = upath.toUnix(resourcePath);
+    const transpileOptions = createTranspileModuleAstOptions(options);
+    let output = undefined;
+    let map = undefined;
     const host = {
         getSourceFile: (fileName) => {
             if (fileName === resourcePath) {
@@ -41,8 +32,19 @@ function transpileModuleAst(resourcePath, source, options) {
             }
             return undefined;
         },
-        writeFile: () => {
-            throw new Error('LibGuard in-memory TypeScript compiler host should not write any files!');
+        writeFile: (name, text) => {
+            if (name.endsWith('.map')) {
+                if (map) {
+                    throw new Error('[LibGuard] Unexpected multiple source map outputs: ' + name);
+                }
+                map = text;
+            }
+            else {
+                if (output) {
+                    throw new Error('[LibGuard] Unexpected multiple JS outputs: ' + name);
+                }
+                output = text;
+            }
         },
         getDefaultLibFileName: () => "lib.d.ts",
         useCaseSensitiveFileNames: () => false,
@@ -50,32 +52,16 @@ function transpileModuleAst(resourcePath, source, options) {
         getCurrentDirectory: () => "",
         getNewLine: () => TypeScript.sys.newLine,
         fileExists: (fileName) => fileName === resourcePath,
-        readFile: (fileName) => {
-            throw new Error(`transpileModule should not readFile (${fileName})`);
-        },
+        readFile: () => "",
         directoryExists: () => true,
         getDirectories: () => []
     };
     const program = TypeScript.createProgram([resourcePath], transpileOptions, host);
-    const emit = program.emit(undefined, (name, text) => {
-        if (name.endsWith('.map')) {
-            if (result.map) {
-                throw new Error('[LibGuard] Unexpected multiple Source Map output: ' + name);
-            }
-            result.map = text;
-        }
-        else {
-            if (result.output) {
-                throw new Error('[LibGuard] Unexpected multiple JS output: ' + name);
-            }
-            result.output = text;
-        }
-    });
-    if (emit.diagnostics.length) {
-        const errorMessage = emit.diagnostics.join('\n\n');
-        throw new Error(errorMessage);
+    program.emit();
+    if (output === undefined) {
+        throw new Error('[LibGuard] JS generation failed!');
     }
-    return result;
+    return { output, map };
 }
 module.exports = function (source) {
     const options = loader_utils_1.getOptions(this);

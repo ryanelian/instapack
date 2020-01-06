@@ -11,48 +11,47 @@ interface LibGuardLoaderOptions {
 }
 
 interface TypeScriptTranspileResult {
-    output: string | undefined;
+    output: string;
     map: string | undefined;
+}
+
+function createTranspileModuleAstOptions(baseOptions: TypeScript.CompilerOptions): TypeScript.CompilerOptions {
+    const transpileOptions = TypeScript.getDefaultCompilerOptions();
+    transpileOptions.isolatedModules = true;
+
+    // https://github.com/microsoft/TypeScript/blob/master/src/services/transpile.ts
+    // transpileModule does not write anything to disk so there is no need to verify that there are no conflicts between input and output paths.
+    transpileOptions.suppressOutputPathCheck = true;
+
+    // Filename can be non-ts file.
+    transpileOptions.allowNonTsExtensions = true;
+    transpileOptions.allowJs = true;
+
+    // We are not doing a full typecheck, we are not resolving the whole context,
+    // so pass --noResolve to avoid reporting missing file errors.
+    transpileOptions.noResolve = true;
+
+    // We are not returning a sourceFile for lib file when asked by the program,
+    // so pass --noLib to avoid reporting a file not found error.
+    transpileOptions.noLib = true;
+
+    transpileOptions.importHelpers = baseOptions.importHelpers;
+    transpileOptions.target = baseOptions.target;
+    transpileOptions.module = baseOptions.module;
+    transpileOptions.moduleResolution = baseOptions.moduleResolution;
+    transpileOptions.sourceMap = baseOptions.sourceMap;
+    transpileOptions.inlineSources = baseOptions.inlineSources;
+
+    // console.log(transpileOptions);
+    return transpileOptions;
 }
 
 function transpileModuleAst(resourcePath: string, source: TypeScript.SourceFile, options: TypeScript.CompilerOptions): TypeScriptTranspileResult {
     resourcePath = upath.toUnix(resourcePath);
 
-    const transpileOptions = TypeScript.getDefaultCompilerOptions();
-    transpileOptions.isolatedModules = true;
-    transpileOptions.noLib = true;
-    transpileOptions.noResolve = true;
-
-    transpileOptions.lib = undefined;
-    transpileOptions.types = undefined;
-    transpileOptions.noEmit = undefined;
-    transpileOptions.noEmitOnError = undefined;
-    transpileOptions.emitDeclarationOnly = undefined;
-    transpileOptions.paths = undefined;
-    transpileOptions.rootDirs = undefined;
-    transpileOptions.declaration = undefined;
-    transpileOptions.composite = undefined;
-    transpileOptions.declarationDir = undefined;
-    transpileOptions.out = undefined;
-    transpileOptions.outFile = undefined;
-
-    // internal: https://github.com/Microsoft/TypeScript/blob/865b3e786277233585e1586edba52bf837b61b71/src/services/transpile.ts#L33
-    transpileOptions['suppressOutputPathCheck'] = true;
-    // transpileOptions['allowNonTsExtensions'] = true;
-
-    transpileOptions.allowJs = true;
-    transpileOptions.importHelpers = options.importHelpers;
-    transpileOptions.target = options.target;
-    transpileOptions.module = options.module;
-    transpileOptions.moduleResolution = options.moduleResolution;
-    transpileOptions.sourceMap = options.sourceMap;
-    transpileOptions.inlineSources = options.inlineSources;
-    // console.log(transpileOptions);
-
-    const result: TypeScriptTranspileResult = {
-        output: undefined,
-        map: undefined
-    };
+    const transpileOptions = createTranspileModuleAstOptions(options);
+    let output: string | undefined = undefined;
+    let map: string | undefined = undefined;
 
     const host: TypeScript.CompilerHost = {
         getSourceFile: (fileName) => {
@@ -62,8 +61,20 @@ function transpileModuleAst(resourcePath: string, source: TypeScript.SourceFile,
 
             return undefined;
         },
-        writeFile: () => {
-            throw new Error('LibGuard in-memory TypeScript compiler host should not write any files!');
+        writeFile: (name, text) => {
+            if (name.endsWith('.map')) {
+                if (map) {
+                    throw new Error('[LibGuard] Unexpected multiple source map outputs: ' + name);
+                }
+
+                map = text;
+            } else {
+                if (output) {
+                    throw new Error('[LibGuard] Unexpected multiple JS outputs: ' + name);
+                }
+
+                output = text;
+            }
         },
         getDefaultLibFileName: () => "lib.d.ts",
         useCaseSensitiveFileNames: () => false,
@@ -71,36 +82,20 @@ function transpileModuleAst(resourcePath: string, source: TypeScript.SourceFile,
         getCurrentDirectory: () => "",
         getNewLine: () => TypeScript.sys.newLine,
         fileExists: (fileName): boolean => fileName === resourcePath,
-        readFile: (fileName) => {
-            throw new Error(`transpileModule should not readFile (${fileName})`);
-        },
+        readFile: () => "",
         directoryExists: () => true,
         getDirectories: () => []
     };
 
     const program = TypeScript.createProgram([resourcePath], transpileOptions, host);
-    const emit = program.emit(undefined, (name, text) => {
-        if (name.endsWith('.map')) {
-            if (result.map) {
-                throw new Error('[LibGuard] Unexpected multiple Source Map output: ' + name);
-            }
+    program.emit();
 
-            result.map = text;
-        } else {
-            if (result.output) {
-                throw new Error('[LibGuard] Unexpected multiple JS output: ' + name);
-            }
-
-            result.output = text;
-        }
-    });
-
-    if (emit.diagnostics.length) {
-        const errorMessage = emit.diagnostics.join('\n\n');
-        throw new Error(errorMessage);
+    // program emit appears to be sync, as seen in original source code
+    if (output === undefined) {
+        throw new Error('[LibGuard] JS generation failed!');
     }
 
-    return result;
+    return { output, map };
 }
 
 export = function (this: loader.LoaderContext, source: string): void {

@@ -114,9 +114,7 @@ Scaffolds a new instapack project into current working directory. **All template
 
   - [This template allows calling instapack-built TypeScript code from C#](https://docs.microsoft.com/en-us/aspnet/core/blazor/javascript-interop?view=aspnetcore-3.0) when a third-party JS library (from npm) is required. [Read more about `namespace` configuration ↓](https://github.com/ryanelian/instapack#configurations)
 
-- `react` for developing a web app using [React](https://reactjs.org/) and [MobX 5](https://github.com/mobxjs/mobx) and [Microsoft UI Fabric](https://developer.microsoft.com/en-us/fabric).
-
-- `react-semantic-ui` is identical to `react` template but ships with [Semantic UI](https://semantic-ui.com/) instead.
+- `react` for developing a web app using [React](https://reactjs.org/) and [MobX 5](https://github.com/mobxjs/mobx) and Bootstrap 4.
 
 - `preact` for developing a web app using [Preact](https://preactjs.com/). (Fast 3kB alternative to React)
 
@@ -145,6 +143,8 @@ In addition, build flags are available:
 - `--https` augments `--serve` flag, allowing the Hot Reload dev server to use `https://` protocol.
 
   - This feature requires [mkcert](https://github.com/FiloSottile/mkcert) third-party utility to be installed and available on the CLI path.
+
+- `--experimental-react-refresh` enables dev server with [React Fast Refresh](https://facebook.github.io/react-native/blog/2019/09/18/version-0.61) (new native Hot Reload).
 
 - `--no-sourcemaps` disables source maps, producing undebuggable outputs. :bug: (Slightly improves build speed)
 
@@ -446,64 +446,15 @@ Compiling a JS project using this mode will:
 
 ### Vue.js
 
-Hot Reload for Vue.js project using Single-File Components format (`.vue`) has been enabled out of the box.
+Hot Reload for Vue.js projects using Single-File Component format (`.vue`) has been enabled out of the box.
 
 > No further configurations necessary!
 
 ### React
 
-Install package: https://github.com/gaearon/react-hot-loader
+When using `--experimental-react-refresh` build flag, Fast Refresh / Hot Reload for React projects has been enabled out of the box without requiring any code changes!
 
-```
-yarn add react-hot-loader @hot-loader/react-dom
-```
-
-Create a `.babelrc` in the project root folder:
-
-```json
-{
-  "plugins": ["react-hot-loader/babel"]
-}
-```
-
-Refactor the root component as a *hot-exported* module:
-
-```tsx
-// client/js/components/App.tsx
-import React from 'react';
-import { hot } from 'react-hot-loader/root';
-import { Hello } from "./Hello";
-
-export const App = () => <Hello compiler="instapack" framework="React" />;
-export const HotApp = hot(App);
-```
-
-Import that module, then render:
-
-```tsx
-import 'react-hot-loader';  // import before React and react-dom!
-
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { HotApp } from './components/App';
-
-ReactDOM.render(
-    <HotApp />,
-    document.getElementById('app')
-);
-```
-
-Then add `alias` field to instapack settings in `package.json`
-
-```json
-{
-  "instapack": {
-    "alias": {
-      "react-dom": "@hot-loader/react-dom"
-    }
-  }
-}
-```
+> If not using React Refresh, use [react-hot-loader](https://github.com/gaearon/react-hot-loader) package and manually configure the project using instructions provided.
 
 ## Module Systems
 

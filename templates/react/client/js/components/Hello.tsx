@@ -1,5 +1,7 @@
 import React from 'react';
-import { MessageBar, MessageBarType } from 'office-ui-fabric-react/lib/MessageBar';
+import { Alert } from 'reactstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 
 interface HelloProps {
     compiler: string;
@@ -8,6 +10,9 @@ interface HelloProps {
 
 export class Hello extends React.Component<HelloProps, {}> {
     render(): JSX.Element {
-        return <MessageBar messageBarType={MessageBarType.success}>Hello from {this.props.compiler} and {this.props.framework}!</MessageBar>
+        return <Alert color="success">
+            <FontAwesomeIcon className="mr-3" icon={faCheckCircle}></FontAwesomeIcon>
+            Hello from {this.props.compiler} and {this.props.framework}!
+        </Alert>
     }
 }

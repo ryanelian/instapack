@@ -71,7 +71,7 @@ test('Compile Variables: Simple', t => {
         },
         serve: false,
         https: false,
-        reactRefresh: true,
+        reactRefresh: false,
         production: true,
         watch: false,
         sourceMap: true,

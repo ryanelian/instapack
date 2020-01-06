@@ -131,15 +131,8 @@ export class PathFinder {
     /**
      * ipack.[name].js
      */
-    get jsInitialChunkFileName(): string {
+    get jsChunkFileName(): string {
         return upath.removeExt(this.jsOutputFileName, '.js') + '.[name].js';
-    }
-
-    /**
-     * ipack.[contenthash].js
-     */
-    get jsDynamicChunkFileName(): string {
-        return upath.removeExt(this.jsOutputFileName, '.js') + '.[contenthash].js';
     }
 
     /**

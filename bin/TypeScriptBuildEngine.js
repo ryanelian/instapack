@@ -200,21 +200,21 @@ class TypeScriptBuildEngine {
         const wildcards = TypeScriptPathsTranslator_1.getWildcardModules(this.typescriptCompilerOptions, this.finder.root);
         const rules = this.createWebpackRules();
         const plugins = this.createWebpackPlugins();
-        const osEntry = path.normalize(this.finder.jsEntry);
-        const osOutputJsFolder = path.normalize(this.finder.jsOutputFolder);
+        const webpackEntry = path.normalize(this.finder.jsEntry);
+        const webpackOutputJsFolder = path.normalize(this.finder.jsOutputFolder);
         const config = {
-            entry: [osEntry],
+            entry: webpackEntry,
             output: {
-                filename: (chunkData) => {
-                    if (chunkData.chunk.name === 'main') {
+                filename: (data) => {
+                    if (data.chunk.name === 'main') {
                         return this.finder.jsOutputFileName;
                     }
                     else {
-                        return this.finder.jsInitialChunkFileName;
+                        return this.finder.jsChunkFileName;
                     }
                 },
-                chunkFilename: this.finder.jsDynamicChunkFileName,
-                path: osOutputJsFolder,
+                chunkFilename: this.finder.jsChunkFileName,
+                path: webpackOutputJsFolder,
                 publicPath: 'js/',
                 library: this.variables.namespace
             },
@@ -230,12 +230,13 @@ class TypeScriptBuildEngine {
             devtool: this.webpackConfigurationDevTool,
             optimization: {
                 noEmitOnErrors: true,
+                chunkIds: 'natural',
                 splitChunks: {
                     cacheGroups: {
                         vendors: {
                             name: 'dll',
                             test: /[\\/]node_modules[\\/]/,
-                            chunks: 'initial',
+                            chunks: 'all',
                             enforce: true,
                             priority: -10
                         }

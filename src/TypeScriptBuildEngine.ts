@@ -299,22 +299,24 @@ export class TypeScriptBuildEngine {
         const plugins = this.createWebpackPlugins();
 
         // webpack configuration errors if using UNIX path in Windows!
-        const osEntry = path.normalize(this.finder.jsEntry);
-        const osOutputJsFolder = path.normalize(this.finder.jsOutputFolder);
+        const webpackEntry = path.normalize(this.finder.jsEntry);
+        const webpackOutputJsFolder = path.normalize(this.finder.jsOutputFolder);
         // apparently we don't need to normalize paths for alias and wildcards.
 
         const config: webpack.Configuration = {
-            entry: [osEntry],
+            entry: webpackEntry,
             output: {
-                filename: (chunkData): string => {
-                    if (chunkData.chunk.name === 'main') {
-                        return this.finder.jsOutputFileName;
+                filename: (data): string => {
+                    if (data.chunk.name === 'main') {
+                        return this.finder.jsOutputFileName
                     } else {
-                        return this.finder.jsInitialChunkFileName;
+                        // when no dynamically imported modules, 
+                        // dll / vendor asset becomes initial chunk! 
+                        return this.finder.jsChunkFileName;
                     }
                 },
-                chunkFilename: this.finder.jsDynamicChunkFileName,
-                path: osOutputJsFolder,
+                chunkFilename: this.finder.jsChunkFileName,
+                path: webpackOutputJsFolder,
                 publicPath: 'js/',
                 library: this.variables.namespace
             },
@@ -337,12 +339,13 @@ export class TypeScriptBuildEngine {
             devtool: this.webpackConfigurationDevTool,
             optimization: {     // https://medium.com/webpack/webpack-4-mode-and-optimization-5423a6bc597a
                 noEmitOnErrors: true,   // https://dev.to/flexdinesh/upgrade-to-webpack-4---5bc5
+                chunkIds: 'natural',    // https://blog.logrocket.com/new-features-in-webpack-5-2559755adf5e/
                 splitChunks: {          // https://webpack.js.org/plugins/split-chunks-plugin/
                     cacheGroups: {
                         vendors: {
                             name: 'dll',
                             test: /[\\/]node_modules[\\/]/,
-                            chunks: 'initial',
+                            chunks: 'all',
                             enforce: true,
                             priority: -10
                         }

@@ -54,24 +54,11 @@ export class TypeScriptBuildEngine {
     get jsBabelWebpackRules(): webpack.RuleSetRule {
         return {
             test: /\.js$/,
+            exclude: /node_modules/,
             use: {
                 loader: LoaderPaths.babel,
                 ident: 'babel-js-loader'
             }
-        };
-    }
-
-    get libGuardRules(): webpack.RuleSetRule {
-        return {
-            test: /\.js$/,
-            include: /node_modules/,
-            use: [{
-                loader: LoaderPaths.libGuard,
-                ident: 'js-lib-loader',
-                options: {
-                    compilerOptions: this.typescriptCompilerOptions
-                }
-            }]
         };
     }
 
@@ -244,21 +231,13 @@ export class TypeScriptBuildEngine {
             this.vueCssWebpackRules
         ];
 
-        // loader rules are evaluated LIFO 
-        // https://stackoverflow.com/questions/32234329/what-is-the-loader-order-for-webpack
-        // meaning, LibGuard should run first before Babel!
         if (this.useBabel) {
             rules.push(this.jsBabelWebpackRules);
         }
 
-        if (this.typescriptCompilerOptions.target) {
-            // TypeScript module transpilation is effectively off when target is ESNext
-            if (this.typescriptCompilerOptions.target < TypeScript.ScriptTarget.ESNext) {
-                rules.push(this.libGuardRules);
-            }
-        }
-
         if (this.variables.reactRefresh) {
+            // loader rules are evaluated LIFO 
+            // https://stackoverflow.com/questions/32234329/what-is-the-loader-order-for-webpack
             // React Refresh Babel transformations should be done AFTER ALL other loaders!
             rules.unshift(this.reactRefreshWebpackRules);
         }

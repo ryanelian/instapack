@@ -31,23 +31,11 @@ class TypeScriptBuildEngine {
     get jsBabelWebpackRules() {
         return {
             test: /\.js$/,
+            exclude: /node_modules/,
             use: {
                 loader: LoaderPaths_1.LoaderPaths.babel,
                 ident: 'babel-js-loader'
             }
-        };
-    }
-    get libGuardRules() {
-        return {
-            test: /\.js$/,
-            include: /node_modules/,
-            use: [{
-                    loader: LoaderPaths_1.LoaderPaths.libGuard,
-                    ident: 'js-lib-loader',
-                    options: {
-                        compilerOptions: this.typescriptCompilerOptions
-                    }
-                }]
         };
     }
     get typescriptWebpackRules() {
@@ -172,11 +160,6 @@ class TypeScriptBuildEngine {
         ];
         if (this.useBabel) {
             rules.push(this.jsBabelWebpackRules);
-        }
-        if (this.typescriptCompilerOptions.target) {
-            if (this.typescriptCompilerOptions.target < TypeScript.ScriptTarget.ESNext) {
-                rules.push(this.libGuardRules);
-            }
         }
         if (this.variables.reactRefresh) {
             rules.unshift(this.reactRefreshWebpackRules);

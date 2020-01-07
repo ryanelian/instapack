@@ -19,10 +19,10 @@
     "client-side",
     "vue",
     "react",
-    "angularjs",
-    "single-page-app",
-    "progressive-web-app",
-    "babel"
+    "babel",
+    "eslint",
+    "hot-reload",
+    "zero-configuration"
   ],
   "homepage": "https://github.com/ryanelian/instapack#readme",
   "bugs": {
@@ -96,8 +96,8 @@
     "@types/webpack": "^4.41.1",
     "@types/webpack-dev-server": "^3.9.0",
     "@types/yargs": "^13.0.4",
-    "@typescript-eslint/eslint-plugin": "2.14.0",
-    "@typescript-eslint/parser": "2.14.0",
+    "@typescript-eslint/eslint-plugin": "2.15.0",
+    "@typescript-eslint/parser": "2.15.0",
     "ava": "2.4.0",
     "eslint": "6.8.0"
   },

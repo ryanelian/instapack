@@ -22,6 +22,7 @@ export function compileVariables(
         namespace: projectSettings.namespace,
         copy: projectSettings.copy,
         env: Object.assign(dotEnv, buildFlags.env),
+        copyOverwrite: buildFlags.copyOverwrite,
 
         packageManager: userSettings.packageManager,
         mute: userSettings.mute,

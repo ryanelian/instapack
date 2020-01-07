@@ -10,4 +10,5 @@ export interface CommandLineFlags {
     env: MapLike<string>;
     https: boolean;
     reactRefresh: boolean;
+    copyOverwrite: boolean;
 }

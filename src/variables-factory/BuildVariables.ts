@@ -109,4 +109,9 @@ export interface BuildVariables {
      * Gets the Fast Refresh for React build flag.
      */
     reactRefresh: boolean;
+
+    /**
+     * Gets the overwrite flag for copy assets build tool.
+     */
+    copyOverwrite: boolean;
 }

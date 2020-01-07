@@ -146,7 +146,7 @@ In addition, build flags are available:
 
 - `--stats` generates `stats.json` next to the TypeScript build outputs, which can be analyzed by a third-party tool: [webpack-bundle-analyzer](https://www.npmjs.com/package/webpack-bundle-analyzer). For sanity, this flag will be ignored when using `-d` or `-w` flags.
 
-- `--overwrite` allows replacing file in destination when using `copy` build tool.
+- `--cow` allows overwriting files in output folder by `copy` assets build tool.
 
 > Multiple build flags can be combined, for example: `ipack -dw` = `dev` + `watch` mode
 

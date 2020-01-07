@@ -15,16 +15,18 @@ class CopyBuildTool {
         this.pathFinder = new PathFinder_1.PathFinder(variables);
     }
     async buildWithStopwatch() {
-        let message = `Copying ${this.variables.copy.length} library assets ${chalk.grey('to ' + this.pathFinder.outputFolderPath)}`;
-        const overwriteMode = true;
-        if (overwriteMode) {
-            message += chalk.yellow(' (non-overwrite)');
-        }
-        Shout_1.Shout.timed(message);
+        Shout_1.Shout.timed(`Copying ${this.variables.copy.length} library assets ${chalk.grey('to ' + this.pathFinder.outputFolderPath)}`);
         const start = process.hrtime();
         try {
             const count = await this.build();
-            Shout_1.Shout.timed(`Copy Assets job: Successfully copied ${count} files`);
+            let message = `Copy Assets job: Successfully copied ${count} files`;
+            if (this.variables.copyOverwrite) {
+                message += chalk.yellow(' (overwrites: on)');
+            }
+            else {
+                message += chalk.grey(' (overwrites: off)');
+            }
+            Shout_1.Shout.timed(message);
         }
         catch (error) {
             this.va.speak('COPY ASSETS ERROR!');
@@ -35,9 +37,9 @@ class CopyBuildTool {
             Shout_1.Shout.timed('Finished Copy Assets job after', chalk.green(time));
         }
     }
-    async tryCopyFile(from, to, overwrite) {
+    async tryCopyFile(from, to) {
         const exists = await fse.pathExists(to);
-        if (exists && overwrite === false) {
+        if (exists && !this.variables.copyOverwrite) {
             return false;
         }
         const targetFolderPath = upath.dirname(to);
@@ -49,7 +51,7 @@ class CopyBuildTool {
             return false;
         }
         try {
-            if (overwrite) {
+            if (this.variables.copyOverwrite) {
                 await fse.copyFile(from, to);
             }
             else {
@@ -91,7 +93,7 @@ class CopyBuildTool {
         } while (tokenMatrix[0][i]);
         return upath.join(...commonPath);
     }
-    async tryCopy(job, overwrite) {
+    async tryCopy(job) {
         const libraryPath = upath.join(this.pathFinder.npmFolder, job.library);
         const targetPath = upath.join(this.pathFinder.outputFolderPath, job.destination);
         const tasks = [];
@@ -130,7 +132,7 @@ class CopyBuildTool {
             const absoluteFilePath = upath.join(libraryPath, asset);
             const relativeFilePath = upath.relative(commonPath, asset);
             const targetFilePath = upath.join(targetPath, relativeFilePath);
-            const task = this.tryCopyFile(absoluteFilePath, targetFilePath, overwrite);
+            const task = this.tryCopyFile(absoluteFilePath, targetFilePath);
             tasks.push(task);
         }
         const success = await Promise.all(tasks);
@@ -152,7 +154,7 @@ class CopyBuildTool {
         const copyTasks = [];
         for (const job of this.variables.copy) {
             if (dependencies.has(job.library)) {
-                copyTasks.push(this.tryCopy(job, false));
+                copyTasks.push(this.tryCopy(job));
             }
             else {
                 Shout_1.Shout.error(`Copy skip: Project package.json has no ${chalk.cyan(job.library)} dependency!`);

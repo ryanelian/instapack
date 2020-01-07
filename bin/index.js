@@ -18,7 +18,7 @@ module.exports = class InstapackProgram {
         this.projectFolder = upath.normalize(projectFolder);
     }
     get availableBuildTasks() {
-        return ['all', 'js', 'css'];
+        return ['all', 'js', 'css', 'copy'];
     }
     get availableTemplates() {
         const templatesFolder = upath.join(__dirname, '..', 'templates');

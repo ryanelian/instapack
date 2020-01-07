@@ -12,6 +12,7 @@ function compileVariables(buildFlags, projectSettings, userSettings, dotEnv, typ
         namespace: projectSettings.namespace,
         copy: projectSettings.copy,
         env: Object.assign(dotEnv, buildFlags.env),
+        copyOverwrite: buildFlags.copyOverwrite,
         packageManager: userSettings.packageManager,
         mute: userSettings.mute,
         production: buildFlags.production,

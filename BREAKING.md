@@ -24,9 +24,7 @@ Here are the list of breaking changes when upgrading between instapack major (or
 
 - JS Build: Plain `.css` files will no longer be build, only `<style>` code blocks in `.vue` files.
 
-- Babel transformations will now be applied to all `.js` files imported from `node_modules`
-
-  - This feature is meant for users who disables TypeScript transpilation (Script Target: `esnext`) but still wants to transpile projects using `@babel/preset-env`
+- JS library transpilation is now opt-in via `package.json` option: `transpileLibraries`
 
 - Production bundle will now use hidden source maps. 
 

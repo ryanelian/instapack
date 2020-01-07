@@ -33,7 +33,7 @@ export = class InstapackProgram {
      * Gets a list of string which contains tasks available for the build method.
      */
     get availableBuildTasks(): string[] {
-        return ['all', 'js', 'css'];
+        return ['all', 'js', 'css', 'copy'];
     }
 
     /**

@@ -15,7 +15,8 @@ test('Compile Variables: Simple', t => {
             sourceMap: true,
             stats: true,
             https: false,
-            reactRefresh: false
+            reactRefresh: false,
+            copyOverwrite: false
         },
         {
             root: __dirname,
@@ -76,6 +77,7 @@ test('Compile Variables: Simple', t => {
         watch: false,
         sourceMap: true,
         stats: true,
+        copyOverwrite: false,
         typescriptConfiguration: {
             compilerOptions: {
                 alwaysStrict: true,
@@ -106,7 +108,8 @@ test('Compile Variables: Overrides', t => {
             watch: false,
             sourceMap: false,
             stats: true,
-            reactRefresh: true
+            reactRefresh: true,
+            copyOverwrite: true
         },
         {
             root: __dirname,
@@ -182,6 +185,7 @@ test('Compile Variables: Overrides', t => {
         sourceMap: false,
         stats: false,
         reactRefresh: true,
+        copyOverwrite: true,
         typescriptConfiguration: {
             compilerOptions: {
                 alwaysStrict: true,

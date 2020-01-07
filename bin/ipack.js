@@ -33,6 +33,10 @@ program.command({
         }).option('serve', {
             alias: 's',
             describe: 'Enables Hot Reload development mode using dedicated build servers.'
+        }).option('https', {
+            describe: 'Enables HTTPS Hot Reload dev server. (Requires mkcert to be installed)'
+        }).option('experimental-react-refresh', {
+            describe: 'Enables Fast Refresh for React with dev server.'
         }).option('sourcemaps', {
             default: true,
             describe: 'Enables source maps, which enables debugging build outputs.'
@@ -40,12 +44,8 @@ program.command({
             describe: 'Defines process.env variables to be replaced in TypeScript project build.'
         }).option('stats', {
             describe: 'Generates webpack stats.json next to the TypeScript build outputs for analysis.'
-        }).option('overwrite', {
+        }).option('cow', {
             describe: 'Enables overwriting files in output folder by copy assets build tool.'
-        }).option('https', {
-            describe: 'Enables HTTPS Hot Reload dev server. (Requires mkcert to be installed)'
-        }).option('experimental-react-refresh', {
-            describe: 'Enables Fast Refresh for React with dev server.'
         });
     },
     handler: (argv) => {
@@ -62,7 +62,8 @@ program.command({
             stats: Boolean(argv.stats),
             serve: Boolean(argv.serve),
             https: Boolean(argv.https),
-            reactRefresh: Boolean(argv['experimental-react-refresh'])
+            reactRefresh: Boolean(argv['experimental-react-refresh']),
+            copyOverwrite: Boolean(argv.cow)
         }).catch(console.error);
     }
 });

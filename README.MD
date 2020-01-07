@@ -416,7 +416,7 @@ yarn add eslint-plugin-react -D
 
 instapack supports [`.babelrc`](https://babeljs.io/docs/usage/babelrc/) in the project root folder. **Babel transformations will be applied AFTER TypeScript compilation.** Here are some use cases where this feature can be useful:
 
-- Babel may be used instead of TypeScript to transpile JS to ES5: set TypeScript `target` to `esnext` then use [`@babel/preset-env`](https://github.com/babel/babel/tree/master/packages/babel-preset-env).
+- Babel may be used instead of TypeScript to transpile JS to ES5: set TypeScript `target` to `esnext` then use [`@babel/preset-env`](https://github.com/babel/babel/tree/master/packages/babel-preset-env)
 
 - Babel may be used instead of TypeScript to compile JSX: set TypeScript `jsx` to `preserve` then use the framework-compatible JSX plugin. For example: `@babel/preset-react`, `babel-plugin-transform-vue-jsx`, `babel-plugin-inferno`
 
@@ -573,23 +573,25 @@ export default class Hello extends Vue {
 
 ### Sass CSS Module System
 
-https://github.com/sass/sass/blob/master/accepted/module-system.md
-
-instapack also has a custom Node-like but standard-compliant Sass module system using [`@use`](https://sass-lang.com/documentation/at-rules/use), [`@forward`](https://sass-lang.com/documentation/at-rules/forward), and [`@import`](https://sass-lang.com/documentation/at-rules/import) syntaxes.
+instapack also has a custom Node-like but [standard-compliant Sass module system](https://github.com/sass/sass/blob/master/accepted/module-system.md) using [`@use`](https://sass-lang.com/documentation/at-rules/use), [`@forward`](https://sass-lang.com/documentation/at-rules/forward), and [`@import`](https://sass-lang.com/documentation/at-rules/import) syntaxes.
 
 > **HEADS UP!** The Sass team discourages the continued use of the `@import` rule. Sass will gradually phase it out over the next few years, and eventually remove it from the language entirely. Prefer the `@use` rule instead.
 
-- Aligned with [the official Sass CSS Imports specification](https://github.com/sass/sass/blob/master/accepted/css-imports.md#handling-an-import-rule), these imports will be treated as *'plain CSS'* `@import` rules (instead of being included in the compiled CSS):
+- [According to the official Sass CSS Imports specification](https://github.com/sass/sass/blob/master/accepted/css-imports.md#handling-an-import-rule), these imports will be treated as *'plain CSS'* `@import` rules (file not included in resulting bundle):
 
   - The imported URL / query path begins with `http://` or `https://`
 
-  - The query path ends with `.css` **(omit `.css` extension to include the file!)**
+  - **The query path explicitly ends with `.css` extension.** :warning: 
+
+    - NOT included: `@import './thing.css';`
+
+    - Included: `@import './thing';`
 
   - The query path is syntactically defined as a `url()`
 
   - The argument has a [media query](https://developer.mozilla.org/en-US/docs/Web/CSS/Media_Queries/Using_media_queries) and/or a [supports query](https://developer.mozilla.org/en-US/docs/Web/CSS/@supports).
 
-- Includes `.scss` and `.css` files relative to the source. ([Standard Sass behavior](https://jonathantneal.github.io/sass-import-resolve/))
+- Includes `.scss` and `.css` files relative to the source. ([Standard Sass behavior](https://sass-lang.com/documentation/at-rules/use#load-paths))
 
   - Includes _partial.scss files, but NOT _partial.css files!
 

@@ -28,7 +28,7 @@ Here are the list of breaking changes when upgrading between instapack major (or
 
 - Production bundle will now use hidden source maps. 
 
-  - Developers using Google Chrome can still load the separated source map file by right-clicking the JS file from Debugger and selecting "Add source map..."
+  - Developers using Google Chrome can still load the separated source map file by right-clicking the JS source code viewer in the Debugger and selecting "Add source map..."
 
 ## 7.3.0
 

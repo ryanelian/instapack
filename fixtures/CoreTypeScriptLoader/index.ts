@@ -1,5 +1,5 @@
-const foo = (bar: string) => {
+const foo = (bar: string): number => {
     return bar.length;
 };
 
-let x = foo('abcd');
+const x = foo('abcd');

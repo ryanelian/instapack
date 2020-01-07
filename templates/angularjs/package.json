@@ -9,6 +9,34 @@
     },
     "copy": [
       {
+        "library": "jquery",
+        "files": [
+          "dist/jquery.min.js"
+        ],
+        "destination": "js/jquery.min.js"
+      },
+      {
+        "library": "jquery-validation",
+        "files": [
+          "dist/jquery.validate.min.js"
+        ],
+        "destination": "js/jquery.validate.min.js"
+      },
+      {
+        "library": "jquery-validation-unobtrusive",
+        "files": [
+          "dist/jquery.validate.unobtrusive.min.js"
+        ],
+        "destination": "js/jquery.validate.unobtrusive.min.js"
+      },
+      {
+        "library": "bootstrap-sass",
+        "files": [
+          "assets/javascripts/bootstrap.min.js"
+        ],
+        "destination": "js/bootstrap.min.js"
+      },
+      {
         "library": "bootstrap-sass",
         "files": [
           "assets/fonts"
@@ -33,8 +61,5 @@
     "sweetalert": "^2.1.2",
     "ts-polyfill": "^3.7.4",
     "tslib": "^1.10.0"
-  },
-  "devDependencies": {
-    "uglify-js": "^3.7.3"
   }
 }

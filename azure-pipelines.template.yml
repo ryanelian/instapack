@@ -53,21 +53,3 @@ jobs:
       ipack &&
       ipack -d --no-sourcemaps
     displayName: 'Full-Cycle Test: blazor'
-
-  - script: >
-      rimraf ./demo &&
-      mkdir demo &&
-      cd demo &&
-      ipack new preact &&
-      ipack &&
-      ipack -d --no-sourcemaps
-    displayName: 'Full-Cycle Test: preact'
-
-  - script: >
-      rimraf ./demo &&
-      mkdir demo &&
-      cd demo &&
-      ipack new inferno &&
-      ipack &&
-      ipack -d --no-sourcemaps
-    displayName: 'Full-Cycle Test: inferno'

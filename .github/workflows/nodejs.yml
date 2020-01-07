@@ -52,19 +52,3 @@ jobs:
         ipack new blazor
         ipack -d --no-sourcemaps
         ipack 
-    - name: instapack full-cycle test - Preact
-      run: |
-        rimraf ./demo
-        mkdir demo
-        cd demo
-        ipack new preact
-        ipack -d --no-sourcemaps
-        ipack 
-    - name: instapack full-cycle test - Inferno
-      run: |
-        rimraf ./demo
-        mkdir demo
-        cd demo
-        ipack new inferno
-        ipack -d --no-sourcemaps
-        ipack 

@@ -106,8 +106,6 @@ Scaffolds a new instapack project into current working directory. **All template
 
 - `empty` for a minimal clean slate.
 
-- `es5` for an empty template targeting ES5 browsers (Internet Explorer 10+).
-
 - `vue` for developing a web app using [Vue.js](https://vuejs.org/v2/guide/) and [Bootstrap 4](https://getbootstrap.com/).
 
 - `blazor` for developing a web app using the ASP.NET Core Blazor framework, which allows SPA-like experience using C# programming language instead of JS.
@@ -116,13 +114,11 @@ Scaffolds a new instapack project into current working directory. **All template
 
 - `react` for developing a web app using [React](https://reactjs.org/) and [MobX 5](https://github.com/mobxjs/mobx) and Bootstrap 4.
 
-- `preact` for developing a web app using [Preact](https://preactjs.com/). (Fast 3kB alternative to React)
+- `angularjs` for developing a legacy web app targeting ES5 browsers (Internet Explorer 10+) using [AngularJS 1.7](https://angularjs.org/) and [Bootstrap 3](http://getbootstrap.com/docs/3.3/).
 
-- `inferno` for developing a web app using [Inferno](https://infernojs.org/). (Insanely fast, React-like)
+  - This template is a museum and should NOT be used for developing new projects.
 
-- `angularjs` for developing a *legacy* web app targeting ES5 browsers using [AngularJS 1.7](https://angularjs.org/) and [Bootstrap 3](http://getbootstrap.com/docs/3.3/).
-
-  - Includes [jquery-validation-unobtrusive](https://github.com/aspnet/jquery-validation-unobtrusive) for ASP.NET MVC client-side validation and a simple JS concat tool (`concat.cmd` and `concat.js`).
+  - Includes [jquery-validation-unobtrusive](https://github.com/aspnet/jquery-validation-unobtrusive) for ASP.NET MVC client-side validation.
 
 If no template parameter is provided, `vue` will be chosen. :vulcan_salute:
 
@@ -649,13 +645,11 @@ ipack --version
 
 ### Can I use [insert_framework_name_here] ?
 
-Yes, absolutely!
+Yes, absolutely! 
 
-**If it worked when using standard JS, it WILL work with instapack.**
+**If it worked when using standard JS, it WILL work with instapack.** (Other frameworks not shipped in new project templates such as Angular 2+, Preact, Inferno.js, Mithril.js are known to be working with instapack.)
 
 Add the packages required for your project using npm / Yarn and then start hacking. We'll take care of the outputs.
-
-Also, pull requests are welcomed if you have a great starting templates! We'd love to expand our collections!
 
 ### Is it even safe to target ES2015?
 

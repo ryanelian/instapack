@@ -37,7 +37,7 @@ const minifierOptions = {
 export = function (this: loader.LoaderContext, html: string): void {
     let template = minify(html, minifierOptions).trim();
     template = 'module.exports = ' + JSON.stringify(template);
-    // console.log("Template compiled: " + this.resourcePath + "\n" + template);
+    // console.log(this.resourcePath);
 
     // source-map 0.6.1 docs
     // https://github.com/mozilla/source-map/tree/5d4678c0ace727d467c6fdf33af090cf64a8123a

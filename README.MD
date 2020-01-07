@@ -108,7 +108,7 @@ Scaffolds a new instapack project into current working directory. **All template
 
 - `vue` for developing a web app using [Vue.js](https://vuejs.org/v2/guide/) and [Bootstrap 4](https://getbootstrap.com/).
 
-- `blazor` for developing a web app using the ASP.NET Core Blazor framework, which allows SPA-like experience using C# programming language instead of JS.
+- `blazor` for developing a web app using the [ASP.NET Core Blazor](https://dotnet.microsoft.com/apps/aspnet/web-apps/blazor) framework, which allows SPA-like experience using C# programming language instead of JS.
 
   - [This template allows calling instapack-built TypeScript code from C#](https://docs.microsoft.com/en-us/aspnet/core/blazor/javascript-interop?view=aspnetcore-3.0) when a third-party JS library (from npm) is required. [Read more about `namespace` configuration ↓](https://github.com/ryanelian/instapack#configurations)
 
@@ -190,7 +190,7 @@ instapack puts configurations inside `package.json` to reduce project files clut
 
 - `externals` allows rewriting module `import` calls from all files, including dependencies, to globally exposed objects via `window` object. [Read more ↗](https://webpack.js.org/configuration/externals/)
 
-  - This technique enables usage of scripts hosted on [CDN](https://en.wikipedia.org/wiki/Content_delivery_network)!
+  - This technique enables usage of scripts hosted on [CDN such as unpkg](https://unpkg.com/)!
 
   - This technique also allows referencing non-module, old-school IIFE JS loaded via `<script>` which provides excellent interop with older libraries!
 
@@ -246,6 +246,8 @@ import jQuery from 'jquery';
   }
 }
 ```
+
+- `transpileLibraries` accepts an array of strings of package names, forcing transpilation of `.js` files bundled from those packages in the `node_modules` folder using the TypeScript compiler, following the `target` compiler option in `tsconfig.json`
 
 - `port1` can be set for declaring a static port number to be used by the Hot Reload server. If not set or is already used, the port number will be randomized. [Read more ↓](#hot-reload-development-mode)
 
@@ -414,7 +416,7 @@ yarn add eslint-plugin-react -D
 
 instapack supports [`.babelrc`](https://babeljs.io/docs/usage/babelrc/) in the project root folder. **Babel transformations will be applied AFTER TypeScript compilation.** Here are some use cases where this feature can be useful:
 
-- Babel may be used instead of TypeScript to transpile JS to ES5: set TypeScript `target` to `esnext` then use [`@babel/preset-env`](https://github.com/babel/babel/tree/master/packages/babel-preset-env). This has an interesting side effect where [polyfills are automatically applied!](https://babeljs.io/docs/en/babel-polyfill)
+- Babel may be used instead of TypeScript to transpile JS to ES5: set TypeScript `target` to `esnext` then use [`@babel/preset-env`](https://github.com/babel/babel/tree/master/packages/babel-preset-env).
 
 - Babel may be used instead of TypeScript to compile JSX: set TypeScript `jsx` to `preserve` then use the framework-compatible JSX plugin. For example: `@babel/preset-react`, `babel-plugin-transform-vue-jsx`, `babel-plugin-inferno`
 

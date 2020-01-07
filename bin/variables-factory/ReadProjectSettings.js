@@ -30,6 +30,7 @@ async function readProjectSettingsFrom(folder) {
         copy: [],
         namespace: undefined,
         port1: 0,
+        transpileLibraries: []
     };
     const ajv = new Ajv();
     const settingsJsonSchema = await fse.readJson(settingsJsonSchemaPath);

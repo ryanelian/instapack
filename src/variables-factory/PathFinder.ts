@@ -52,17 +52,10 @@ export class PathFinder {
     }
 
     /**
-     * client
-     */
-    get inputFolderName(): string {
-        return this.variables.input;
-    }
-
-    /**
      * /project/client/
      */
     get inputFolderPath(): string {
-        return upath.join(this.root, this.inputFolderName);
+        return upath.join(this.root, this.variables.input);
     }
 
     /**
@@ -101,17 +94,10 @@ export class PathFinder {
     }
 
     /**
-     * wwwroot
-     */
-    get outputFolderName(): string {
-        return this.variables.output;
-    }
-
-    /**
      * /project/wwwroot/
      */
     get outputFolderPath(): string {
-        return upath.join(this.root, this.outputFolderName);
+        return upath.join(this.root, this.variables.output);
     }
 
     /**

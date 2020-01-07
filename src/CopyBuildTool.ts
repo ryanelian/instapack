@@ -7,7 +7,7 @@ import * as upath from 'upath';
 import * as fse from 'fs-extra';
 import { PathFinder } from "./variables-factory/PathFinder";
 import FastGlob = require("fast-glob");
-import { CopyOption } from "./variables-factory/ProjectSettings";
+import { CopyOption } from "./variables-factory/BuildVariables";
 
 export class CopyBuildTool {
 

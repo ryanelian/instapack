@@ -75,7 +75,7 @@ class TypeScriptBuildEngine {
                 }]
         };
     }
-    get templatesWebpackRules() {
+    get htmlWebpackRules() {
         return {
             test: /\.html?$/,
             exclude: /node_modules/,
@@ -137,6 +137,19 @@ class TypeScriptBuildEngine {
             }
         };
     }
+    transpileWebpackRulesForLibraries(folders) {
+        return {
+            test: /\.js$/,
+            include: folders,
+            use: {
+                loader: LoaderPaths_1.LoaderPaths.typescript,
+                ident: 'js-lib-loader',
+                options: {
+                    compilerOptions: this.typescriptCompilerOptions
+                }
+            }
+        };
+    }
     createWebpackPlugins() {
         var _a;
         const plugins = [];
@@ -151,15 +164,34 @@ class TypeScriptBuildEngine {
         }
         return plugins;
     }
+    get transpileLibFolderPaths() {
+        return this.variables.transpileLibraries
+            .filter(packageName => packageName && packageName.startsWith('../') === false)
+            .map(packageName => {
+            let libFolder = path.join(this.finder.npmFolder, packageName);
+            if (libFolder.endsWith(path.sep) === false) {
+                libFolder += path.sep;
+            }
+            return libFolder;
+        });
+    }
     createWebpackRules() {
         const rules = [
             this.typescriptWebpackRules,
+            this.vueCssWebpackRules,
             this.vueWebpackRules,
-            this.templatesWebpackRules,
-            this.vueCssWebpackRules
+            this.htmlWebpackRules,
         ];
         if (this.useBabel) {
             rules.push(this.jsBabelWebpackRules);
+        }
+        if (this.typescriptCompilerOptions.target) {
+            if (this.typescriptCompilerOptions.target < TypeScript.ScriptTarget.ESNext) {
+                const libFolders = this.transpileLibFolderPaths;
+                if (libFolders.length) {
+                    rules.push(this.transpileWebpackRulesForLibraries(libFolders));
+                }
+            }
         }
         if (this.variables.reactRefresh) {
             rules.unshift(this.reactRefreshWebpackRules);

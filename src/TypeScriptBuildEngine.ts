@@ -117,7 +117,7 @@ export class TypeScriptBuildEngine {
     /**
      * Gets a configured HTML template rules for webpack.
      */
-    get templatesWebpackRules(): webpack.RuleSetRule {
+    get htmlWebpackRules(): webpack.RuleSetRule {
         return {
             test: /\.html?$/,
             exclude: /node_modules/,
@@ -195,6 +195,22 @@ export class TypeScriptBuildEngine {
         };
     }
 
+    /**
+     * Gets JS libraries transpile rules for webpack.
+     */
+    transpileWebpackRulesForLibraries(folders: string[]): webpack.RuleSetRule {
+        return {
+            test: /\.js$/,
+            include: folders,
+            use: {
+                loader: LoaderPaths.typescript,
+                ident: 'js-lib-loader',
+                options: {
+                    compilerOptions: this.typescriptCompilerOptions
+                }
+            }
+        };
+    }
 
     /**
      * Returns webpack plugins array.
@@ -218,6 +234,18 @@ export class TypeScriptBuildEngine {
         return plugins;
     }
 
+    get transpileLibFolderPaths(): string[] {
+        return this.variables.transpileLibraries
+            .filter(packageName => packageName && packageName.startsWith('../') === false)
+            .map(packageName => {
+                let libFolder = path.join(this.finder.npmFolder, packageName);
+                if (libFolder.endsWith(path.sep) === false) {
+                    libFolder += path.sep;
+                }
+                return libFolder;
+            });
+    }
+
     /**
      * Returns webpack rules array using input TypeScript configuration and Babel flag.
      * @param tsCompilerOptions 
@@ -226,13 +254,23 @@ export class TypeScriptBuildEngine {
     createWebpackRules(): webpack.RuleSetRule[] {
         const rules = [
             this.typescriptWebpackRules,
+            this.vueCssWebpackRules,
             this.vueWebpackRules,
-            this.templatesWebpackRules,
-            this.vueCssWebpackRules
+            this.htmlWebpackRules,  // Vue Loader Error if HTML Loader is defined before it!
         ];
 
         if (this.useBabel) {
             rules.push(this.jsBabelWebpackRules);
+        }
+
+        if (this.typescriptCompilerOptions.target) {
+            if (this.typescriptCompilerOptions.target < TypeScript.ScriptTarget.ESNext) {
+                const libFolders = this.transpileLibFolderPaths;
+                if (libFolders.length) {
+                    // console.log(libFolders);
+                    rules.push(this.transpileWebpackRulesForLibraries(libFolders));
+                }
+            }
         }
 
         if (this.variables.reactRefresh) {

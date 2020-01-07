@@ -1,6 +1,6 @@
 import * as fse from 'fs-extra';
 import * as upath from 'upath';
-import { ProjectSettings } from './ProjectSettings';
+import { ProjectSettings } from './BuildVariables';
 import Ajv = require('ajv');
 import { Shout } from '../Shout';
 const settingsJsonSchemaPath = require.resolve('../../schemas/settings.json');
@@ -32,6 +32,7 @@ export async function readProjectSettingsFrom(folder: string): Promise<ProjectSe
         copy: [],
         namespace: undefined,
         port1: 0,
+        transpileLibraries: []
     };
 
     const ajv = new Ajv();

@@ -23,7 +23,8 @@ function compileVariables(buildFlags, projectSettings, userSettings, dotEnv, typ
         port1: projectSettings.port1,
         https: buildFlags.https,
         reactRefresh: buildFlags.reactRefresh,
-        typescriptConfiguration: typescriptConfiguration
+        typescriptConfiguration: typescriptConfiguration,
+        transpileLibraries: []
     };
     if (variables.reactRefresh) {
         variables.serve = true;

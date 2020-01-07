@@ -20,11 +20,8 @@ class PathFinder {
     get babelConfiguration() {
         return upath.join(this.root, '.babelrc');
     }
-    get inputFolderName() {
-        return this.variables.input;
-    }
     get inputFolderPath() {
-        return upath.join(this.root, this.inputFolderName);
+        return upath.join(this.root, this.variables.input);
     }
     get jsInputFolder() {
         return upath.join(this.inputFolderPath, 'js');
@@ -41,11 +38,8 @@ class PathFinder {
     get scssGlob() {
         return upath.join(this.cssInputFolder, '**', '*.scss');
     }
-    get outputFolderName() {
-        return this.variables.output;
-    }
     get outputFolderPath() {
-        return upath.join(this.root, this.outputFolderName);
+        return upath.join(this.root, this.variables.output);
     }
     get jsOutputFolder() {
         return upath.join(this.outputFolderPath, 'js');

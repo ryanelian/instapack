@@ -25,7 +25,8 @@ ava_1.default('Compile Variables: Simple', t => {
         externals: {},
         namespace: 'instapack',
         copy: [],
-        port1: 0
+        port1: 0,
+        transpileLibraries: []
     }, {
         mute: false,
         packageManager: 'yarn'
@@ -79,7 +80,8 @@ ava_1.default('Compile Variables: Simple', t => {
                 module: "esnext",
                 moduleResolution: "node"
             }
-        }
+        },
+        transpileLibraries: []
     };
     t.deepEqual(result, expected);
 });
@@ -114,7 +116,8 @@ ava_1.default('Compile Variables: Overrides', t => {
                 "files": ["webfonts/**"],
                 "destination": "webfonts"
             }],
-        port1: 20178
+        port1: 20178,
+        transpileLibraries: ['vue']
     }, {
         mute: true,
         packageManager: 'npm'
@@ -175,7 +178,8 @@ ava_1.default('Compile Variables: Overrides', t => {
                 module: "esnext",
                 moduleResolution: "node"
             }
-        }
+        },
+        transpileLibraries: ['vue']
     };
     t.deepEqual(result, expected);
 });

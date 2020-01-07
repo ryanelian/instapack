@@ -23,6 +23,7 @@ ava_1.default('Project Settings: Not Found', async (t) => {
         namespace: undefined,
         copy: [],
         port1: 0,
+        transpileLibraries: []
     };
     t.deepEqual(settings, result);
 });
@@ -50,6 +51,7 @@ ava_1.default('Project Settings: Valid', async (t) => {
         namespace: 'instapack',
         copy: [],
         port1: 32101,
+        transpileLibraries: []
     };
     t.deepEqual(settings, result);
 });

@@ -9,7 +9,8 @@ interface CoreTypeScriptLoaderOptions {
 
 export = function (this: loader.LoaderContext, source: string): void {
     const options: CoreTypeScriptLoaderOptions = getOptions(this);
-
+    // console.log(this.resourcePath);
+    
     if (!options.compilerOptions) {
         this.emitError(new Error('TypeScript compiler options was not provided to Core TypeScript Loader!'));
         return;
@@ -27,7 +28,6 @@ export = function (this: loader.LoaderContext, source: string): void {
     }
 
     if (this.sourceMap && result.sourceMapText) {
-        // console.log(this.resourcePath);
         const sm: RawSourceMap = JSON.parse(result.sourceMapText);
         sm.sources = [this.resourcePath];
         this.callback(null, result.outputText, sm);

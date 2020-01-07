@@ -2,10 +2,8 @@ import * as fse from 'fs-extra';
 import * as upath from 'upath';
 import chalk = require('chalk');
 
-import { CommandLineFlags } from "./variables-factory/CommandLineFlags";
 import { readProjectSettingsFrom } from './variables-factory/ReadProjectSettings';
 import { readDotEnvFrom } from './variables-factory/EnvParser';
-import { compileVariables } from './variables-factory/CompileVariables';
 import { PathFinder } from './variables-factory/PathFinder';
 import { restorePackages, setupHttps } from './ProcessInvoke';
 import { Shout } from './Shout';
@@ -14,6 +12,7 @@ import { tryReadTypeScriptConfigJson } from './TypescriptConfigParser';
 import { mergePackageJson } from './MergePackageJson';
 import { getSettings, setSetting } from './user-settings/UserSettingsManager';
 import { UserSettingsPath } from './user-settings/UserSettingsPath';
+import { uniteBuildVariables, CommandLineFlags } from './variables-factory/BuildVariables';
 
 /**
  * Exposes methods for developing a web app client project.
@@ -79,16 +78,16 @@ export = class InstapackProgram {
      */
     async build(taskName: string, flags: CommandLineFlags): Promise<void> {
         // parallel async IO
-        const projectSettings = readProjectSettingsFrom(this.projectFolder);
-        const dotEnv = readDotEnvFrom(this.projectFolder);
-        const userSettings = await getSettings();
-        const typescriptConfiguration = tryReadTypeScriptConfigJson(this.projectFolder);
+        const projectSettingsAsync = readProjectSettingsFrom(this.projectFolder);
+        const dotEnvAsync = readDotEnvFrom(this.projectFolder);
+        const userSettingsAsync = getSettings();
+        const typescriptConfigurationAsync = tryReadTypeScriptConfigJson(this.projectFolder);
 
-        const variables = compileVariables(flags,
-            await projectSettings,
-            userSettings,
-            await dotEnv,
-            await typescriptConfiguration
+        const variables = uniteBuildVariables(flags,
+            await projectSettingsAsync,
+            await userSettingsAsync,
+            await dotEnvAsync,
+            await typescriptConfigurationAsync
         );
 
         if (variables.packageManager !== 'disabled') {

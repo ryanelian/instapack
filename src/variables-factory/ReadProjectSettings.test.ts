@@ -2,7 +2,7 @@ import test from "ava";
 import * as upath from 'upath';
 
 import { readProjectSettingsFrom } from "./ReadProjectSettings";
-import { ProjectSettings } from "./ProjectSettings";
+import { ProjectSettings } from "./BuildVariables";
 
 const root = process.cwd();
 const fixtures = upath.join(root, 'fixtures');
@@ -27,6 +27,7 @@ test('Project Settings: Not Found', async t => {
         namespace: undefined,
         copy: [],
         port1: 0,
+        transpileLibraries: []
     };
 
     t.deepEqual(settings, result);
@@ -72,6 +73,7 @@ test('Project Settings: Valid', async t => {
         namespace: 'instapack',
         copy: [],
         port1: 32101,
+        transpileLibraries: []
     };
 
     t.deepEqual(settings, result);

@@ -4,7 +4,6 @@ const upath = require("upath");
 const chalk = require("chalk");
 const ReadProjectSettings_1 = require("./variables-factory/ReadProjectSettings");
 const EnvParser_1 = require("./variables-factory/EnvParser");
-const CompileVariables_1 = require("./variables-factory/CompileVariables");
 const PathFinder_1 = require("./variables-factory/PathFinder");
 const ProcessInvoke_1 = require("./ProcessInvoke");
 const Shout_1 = require("./Shout");
@@ -13,6 +12,7 @@ const TypescriptConfigParser_1 = require("./TypescriptConfigParser");
 const MergePackageJson_1 = require("./MergePackageJson");
 const UserSettingsManager_1 = require("./user-settings/UserSettingsManager");
 const UserSettingsPath_1 = require("./user-settings/UserSettingsPath");
+const BuildVariables_1 = require("./variables-factory/BuildVariables");
 module.exports = class InstapackProgram {
     constructor(projectFolder) {
         this.projectFolder = upath.normalize(projectFolder);
@@ -47,11 +47,11 @@ module.exports = class InstapackProgram {
         }
     }
     async build(taskName, flags) {
-        const projectSettings = ReadProjectSettings_1.readProjectSettingsFrom(this.projectFolder);
-        const dotEnv = EnvParser_1.readDotEnvFrom(this.projectFolder);
-        const userSettings = await UserSettingsManager_1.getSettings();
-        const typescriptConfiguration = TypescriptConfigParser_1.tryReadTypeScriptConfigJson(this.projectFolder);
-        const variables = CompileVariables_1.compileVariables(flags, await projectSettings, userSettings, await dotEnv, await typescriptConfiguration);
+        const projectSettingsAsync = ReadProjectSettings_1.readProjectSettingsFrom(this.projectFolder);
+        const dotEnvAsync = EnvParser_1.readDotEnvFrom(this.projectFolder);
+        const userSettingsAsync = UserSettingsManager_1.getSettings();
+        const typescriptConfigurationAsync = TypescriptConfigParser_1.tryReadTypeScriptConfigJson(this.projectFolder);
+        const variables = BuildVariables_1.uniteBuildVariables(flags, await projectSettingsAsync, await userSettingsAsync, await dotEnvAsync, await typescriptConfigurationAsync);
         if (variables.packageManager !== 'disabled') {
             const finder = new PathFinder_1.PathFinder(variables);
             const packageJsonPath = finder.packageJson;

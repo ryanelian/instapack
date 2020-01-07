@@ -92,6 +92,16 @@
                 ]
             }
         },
+        "transpileLibraries": {
+            "$id": "#/properties/transpileLibraries",
+            "type": "array",
+            "items": {
+                "$id": "#/properties/transpileLibraries/items",
+                "type": "string",
+                "minLength": 1,
+                "pattern": "^(.*)$"
+            }
+        },
         "copy": {
             "$id": "#/properties/copy",
             "type": "array",

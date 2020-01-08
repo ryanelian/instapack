@@ -6,6 +6,7 @@ const readline = require("readline");
 const ProgressBar = require("progress");
 const follow_redirects_1 = require("follow-redirects");
 const fse = require("fs-extra");
+const upath = require("upath");
 const UserSettingsPath_1 = require("./user-settings/UserSettingsPath");
 function execWithConsoleOutput(command) {
     return ChildProcess.execSync(command, {
@@ -21,14 +22,38 @@ async function isCommandExist(command) {
         return false;
     }
 }
-async function restorePackages(packageManager) {
-    if (!packageManager) {
-        packageManager = 'yarn';
+async function restorePackages(packageManager, root) {
+    if (packageManager === 'disabled') {
+        return;
     }
-    if (packageManager === 'yarn') {
-        const yarnExists = await isCommandExist('yarn');
-        if (!yarnExists) {
-            packageManager = 'npm';
+    const packageJson = upath.join(root, 'package.json');
+    const packageJsonExists = await fse.pathExists(packageJson);
+    if (!packageJsonExists) {
+        console.log('package.json does not exists in project root folder, skipping package restore.');
+        return;
+    }
+    const yarnLock = upath.join(root, 'yarn.lock');
+    const npmLock = upath.join(root, 'package-lock.json');
+    let lock = false;
+    if (await fse.pathExists(yarnLock)) {
+        lock = true;
+        packageManager = 'yarn';
+        console.log('yarn.lock exists in project root folder. Using Yarn package manager...');
+    }
+    else if (await fse.pathExists(npmLock)) {
+        lock = true;
+        packageManager = 'npm';
+        console.log('package-lock.json exists in project root folder. Using npm package manager...');
+    }
+    if (!lock) {
+        if (!packageManager) {
+            packageManager = 'yarn';
+        }
+        if (packageManager === 'yarn') {
+            const yarnExists = await isCommandExist('yarn');
+            if (!yarnExists) {
+                packageManager = 'npm';
+            }
         }
     }
     switch (packageManager) {
@@ -72,7 +97,7 @@ async function downloadMkcert() {
         const data = [];
         follow_redirects_1.https.get(downloadUri, res => {
             if (res.statusCode !== 200) {
-                reject(new Error('Error downloading mkcert, status code: ' + res.statusCode));
+                reject(new Error('Error downloading mkcert, HTTP Status Code: ' + res.statusCode));
                 return;
             }
             const contentLength = res.headers['content-length'];

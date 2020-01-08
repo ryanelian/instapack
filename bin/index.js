@@ -4,7 +4,6 @@ const upath = require("upath");
 const chalk = require("chalk");
 const ReadProjectSettings_1 = require("./variables-factory/ReadProjectSettings");
 const EnvParser_1 = require("./variables-factory/EnvParser");
-const PathFinder_1 = require("./variables-factory/PathFinder");
 const ProcessInvoke_1 = require("./ProcessInvoke");
 const Shout_1 = require("./Shout");
 const ToolOrchestrator_1 = require("./ToolOrchestrator");
@@ -52,21 +51,11 @@ module.exports = class InstapackProgram {
         const userSettingsAsync = UserSettingsManager_1.getSettings();
         const typescriptConfigurationAsync = TypescriptConfigParser_1.tryReadTypeScriptConfigJson(this.projectFolder);
         const variables = BuildVariables_1.uniteBuildVariables(flags, await projectSettingsAsync, await userSettingsAsync, await dotEnvAsync, await typescriptConfigurationAsync);
-        if (variables.packageManager !== 'disabled') {
-            const finder = new PathFinder_1.PathFinder(variables);
-            const packageJsonPath = finder.packageJson;
-            const packageJsonExists = await fse.pathExists(packageJsonPath);
-            if (packageJsonExists) {
-                try {
-                    await ProcessInvoke_1.restorePackages(variables.packageManager);
-                }
-                catch (error) {
-                    Shout_1.Shout.error('when restoring package:', error);
-                }
-            }
-            else {
-                Shout_1.Shout.warning('unable to find', chalk.cyan(packageJsonPath), chalk.grey('skipping package restore...'));
-            }
+        try {
+            await ProcessInvoke_1.restorePackages(variables.packageManager, variables.root);
+        }
+        catch (error) {
+            Shout_1.Shout.error('when restoring package:', error);
         }
         if (variables.https) {
             const httpsOK = await this.ensureSetupHttps();

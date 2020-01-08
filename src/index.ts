@@ -90,19 +90,10 @@ export = class InstapackProgram {
             await typescriptConfigurationAsync
         );
 
-        if (variables.packageManager !== 'disabled') {
-            const finder = new PathFinder(variables);
-            const packageJsonPath = finder.packageJson;
-            const packageJsonExists = await fse.pathExists(packageJsonPath);
-            if (packageJsonExists) {
-                try {
-                    await restorePackages(variables.packageManager);
-                } catch (error) {
-                    Shout.error('when restoring package:', error);
-                }
-            } else {
-                Shout.warning('unable to find', chalk.cyan(packageJsonPath), chalk.grey('skipping package restore...'));
-            }
+        try {
+            await restorePackages(variables.packageManager, variables.root);
+        } catch (error) {
+            Shout.error('when restoring package:', error);
         }
 
         if (variables.https) {

@@ -70,7 +70,7 @@ If using [the latest Visual Studio Code](https://code.visualstudio.com/), it sho
 
 ## Design Philosophies
 
-- Zero configurations: Hyper-opinionated front-end project build system. **It just works!** :sparkling_heart:
+- *Zero Configurations*: Hyper-opinionated front-end project build system. **It just works!** :sparkling_heart:
 
 - Beginner-friendly: Lower the barrier of entry for developing a modern web app. :balloon:
 
@@ -78,7 +78,7 @@ If using [the latest Visual Studio Code](https://code.visualstudio.com/), it sho
 
 - Built-in new project scaffold tool for assorted JS frameworks. :gift:
 
-- Improve source code quality and maintainability with type hints and compile-time checks. :eyeglasses:
+- Improve source code quality and maintainability with type hints, recommended lints, and compile-time checks. :eyeglasses:
 
 - Rich debugging experience: set breakpoints, view variables, and step into the TypeScript source code! :mag:
 
@@ -116,7 +116,7 @@ Scaffolds a new instapack project into current working directory. **All template
 
 - `angularjs` for developing a legacy web app targeting ES5 browsers (Internet Explorer 10+) using [AngularJS 1.7](https://angularjs.org/) and [Bootstrap 3](http://getbootstrap.com/docs/3.3/).
 
-  - This template is a museum and should NOT be used for developing new projects.
+  - This template is a museum and should NOT be used for developing new projects. If ES5 support is actually needed, Vue 2 + `"target": "ES5"` (in `tsconfig.json`) is highly recommended.
 
   - Includes [jquery-validation-unobtrusive](https://github.com/aspnet/jquery-validation-unobtrusive) for ASP.NET MVC client-side validation.
 
@@ -188,6 +188,8 @@ instapack puts configurations inside `package.json` to reduce project files clut
 
 - `alias` allows overriding module `import` calls from all files, including dependencies. [Read more ↗](https://webpack.js.org/configuration/resolve/)
 
+  - [TypeScript `paths` compiler options will be merged with alias option.](https://github.com/ryanelian/instapack#typescript-custom-paths-module-resolution)
+
 - `externals` allows rewriting module `import` calls from all files, including dependencies, to globally exposed objects via `window` object. [Read more ↗](https://webpack.js.org/configuration/externals/)
 
   - This technique enables usage of scripts hosted on [CDN such as unpkg](https://unpkg.com/)!
@@ -212,6 +214,9 @@ import jQuery from 'jquery';
 
 // into something similar to this...
 // const jQuery = window["$"];
+
+// allowing CDN to be used instead of bundling the library:
+// <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 ```
 
 - `copy` allows copying static assets from the npm folder (`node_modules`) into the project output folder (e.g. `wwwroot`) during build.
@@ -253,56 +258,9 @@ import jQuery from 'jquery';
 
 - instapack will not resolve symlinks if TypeScript compiler option `preserveSymlinks` is set to `true`
 
-## TypeScript Custom Paths Module Resolution
+## Babel Integration
 
-[TypeScript allows importing modules using non-relative path request query using the `paths` (and `baseUrl`) compiler options in `tsconfig.json`](https://www.typescriptlang.org/docs/handbook/module-resolution.html#path-mapping)
-
-instapack attempts to mimic TypeScript module resolution behavior when building the project. For example:
-
-```json
-{
-  "compilerOptions": {
-    "baseUrl": "./client/js",
-    "paths": {
-        "*": [
-            "*",
-            "globals/*"
-        ],
-        "stuff": ["lib/stuff"],
-        "stuff/*": ["lib/stuff/*"]
-    }
-  }
-}
-```
-
-**Will be automatically translated into instapack `alias` options:**
-
-```json
-{
-    "stuff$": [ "D:/project/client/js/lib/stuff" ],
-    "stuff": [ "D:/project/client/js/lib/stuff" ]
-}
-```
-
-> `$` suffix in `alias` options key signify an exact query string match.
-
-**AND the internal webpack `resolve.modules` option:**
-
-```json
-[
-  "D:/project/client/js",
-  "D:/project/client/js/globals",
-  "node_modules"
-]
-```
-
-These options allow unusual module imports using non-relative paths:
-
-```ts
-import { x } from 'stuff';      // might resolve to /client/js/lib/stuff/index.ts
-import { y } from 'stuff/y';    // might resolve to /client/js/lib/stuff/y.ts
-import { xyz } from 'abc/def';  // might resolve to /client/js/abc/def.ts or /client/js/globals/abc/def.ts
-```
+instapack supports [`.babelrc`](https://babeljs.io/docs/usage/babelrc/) in the project root folder. **Babel transformations will be applied AFTER TypeScript compilation.**
 
 ## ESLint Integration
 
@@ -412,14 +370,6 @@ yarn add eslint-plugin-react -D
 }
 ```
 
-## Babel Integration
-
-instapack supports [`.babelrc`](https://babeljs.io/docs/usage/babelrc/) in the project root folder. **Babel transformations will be applied AFTER TypeScript compilation.** Here are some use cases where this feature can be useful:
-
-- Babel may be used instead of TypeScript to transpile JS to ES5: set TypeScript `target` to `esnext` then use [`@babel/preset-env`](https://github.com/babel/babel/tree/master/packages/babel-preset-env)
-
-- Babel may be used instead of TypeScript to compile JSX: set TypeScript `jsx` to `preserve` then use the framework-compatible JSX plugin. For example: `@babel/preset-react`, `babel-plugin-transform-vue-jsx`, `babel-plugin-inferno`
-
 ## Hot Reload Development Mode
 
 Hot Reload development mode allows a developer to update application code while preserving runtime states, without triggering browser refresh when not needed.
@@ -440,17 +390,27 @@ Compiling a JS project using this mode will:
 [01:24:28] Inject <script> D:/VS/project/wwwroot/js/ipack.js --> http://localhost:28080/ipack.js
 ```
 
-> No changes should be required for the `<script src="...">` in the app itself!
+The project should be able to continue referencing the physical script files. However, if the script injections are not working for some reason, please reference the dev server scripts manually:
+
+```jsx
+if (Environment.IsDevelopment){
+  <script src="http://localhost:28080/ipack.dll.js"></script>
+  <script src="http://localhost:28080/ipack.js"></script>
+} else {
+  <script src="/js/ipack.dll.js"></script>
+  <script src="/js/ipack.js"></script>
+}
+```
 
 ### Vue.js
 
 Hot Reload for Vue.js projects using Single-File Component format (`.vue`) has been enabled out of the box.
 
-> No further configurations necessary!
+> No further configurations necessary! :tada:
 
 ### React
 
-When using `--experimental-react-refresh` build flag, Fast Refresh / Hot Reload for React projects has been enabled out of the box without requiring any code changes!
+When using `--experimental-react-refresh` build flag, Fast Refresh (Hot Reload) for React projects has been enabled out of the box without requiring any code changes!
 
 > If not using React Refresh, use [react-hot-loader](https://github.com/gaearon/react-hot-loader) package and manually configure the project using instructions provided.
 
@@ -563,8 +523,6 @@ export default class Hello extends Vue {
 
 > Enhance development experience using fabulous :star2: intellisense with Visual Studio 2017 [15.8 improved Vue.js support](https://blogs.msdn.microsoft.com/visualstudio/2018/08/14/visual-studio-2017-version-15-8/) or [Vetur](https://marketplace.visualstudio.com/items?itemName=octref.vetur) extension for Visual Studio Code!
 
-- The HTML `<template>` will be compiled Ahead-of-Time (AoT) for greater app startup performance!
-
 - [A global TypeScript definition file for `*.vue` module](https://github.com/ryanelian/instapack/blob/master/templates/vue/client/js/vue-shim.d.ts) is required for importing the `.vue` file from TypeScript using ESM syntax.
 
 - Basic CSS support in `<style>` (or `<style scoped>` or `<style module>`) code blocks should work, but Sass cannot be used and the resulting CSS will NOT be auto-prefixed and minified. 
@@ -597,9 +555,7 @@ instapack also has a custom Node-like but [standard-compliant Sass module system
 
 - Includes files relative to the source in a named folder, but as `index.scss` or `_index.scss` ([Standard Sass behavior](https://github.com/sass/sass/issues/690)) or `index.css`
 
-- Includes files resolved from `node_modules` 
-
-  - Also reads `package.json` to resolve `.css` file in the `style` field!
+- Includes files resolved from `node_modules` and reads `package.json` to resolve `.css` file in the `style` field!
 
 ## Environment Variables
 
@@ -625,11 +581,62 @@ Build flag `--env` accepts object-like notation:
 
 **For example:** `ipack --env.FOO=bar --env.HELLO=world`
 
+## TypeScript Custom Paths Module Resolution
+
+[TypeScript allows importing modules using non-relative path request query using the `paths` (and `baseUrl`) compiler options in `tsconfig.json`](https://www.typescriptlang.org/docs/handbook/module-resolution.html#path-mapping)
+
+instapack attempts to mimic TypeScript module resolution behavior when building the project. For example:
+
+```json
+{
+  "compilerOptions": {
+    "baseUrl": "./client/js",
+    "paths": {
+        "*": [
+            "*",
+            "globals/*"
+        ],
+        "stuff": ["lib/stuff"],
+        "stuff/*": ["lib/stuff/*"]
+    }
+  }
+}
+```
+
+**Will be automatically translated into instapack `alias` options:**
+
+```json
+{
+    "stuff$": [ "D:/project/client/js/lib/stuff" ],
+    "stuff": [ "D:/project/client/js/lib/stuff" ]
+}
+```
+
+> `$` suffix in `alias` options key signify an exact query string match.
+
+**AND the internal webpack `resolve.modules` option:**
+
+```json
+[
+  "D:/project/client/js",
+  "D:/project/client/js/globals",
+  "node_modules"
+]
+```
+
+These options allow unusual module imports using non-relative paths:
+
+```ts
+import { x } from 'stuff';      // might resolve to /client/js/lib/stuff/index.ts
+import { y } from 'stuff/y';    // might resolve to /client/js/lib/stuff/y.ts
+import { xyz } from 'abc/def';  // might resolve to /client/js/abc/def.ts or /client/js/globals/abc/def.ts
+```
+
 ## Release Cadence
 
 Starting version 4.0.0, instapack follows [Semantic Versioning](http://semver.org/).
 
-Bi-weekly releases (usually on 14th and 28th date of each month) will be performed for updating package dependencies. Bug reports will be dealt promptly. These actions will increment the patch version.
+Bug reports will be dealt promptly. Periodic maintenance will be also done by updating dependencies version. These actions will increment the patch version.
 
 New non-breaking features will increment the minor version. Breaking changes will increment the major version. [View breaking changes here.](BREAKING.md)
 

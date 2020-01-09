@@ -5141,10 +5141,10 @@ safe-regex@^1.1.0:
   resolved "https://registry.yarnpkg.com/safer-buffer/-/safer-buffer-2.1.2.tgz#44fa161b0187b9549dd84bb91802f9bd8385cd6a"
   integrity sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==
 
-sass@1.24.3:
-  version "1.24.3"
-  resolved "https://registry.yarnpkg.com/sass/-/sass-1.24.3.tgz#ee2ced4953e79343da0d54d96d6e6e1af6d44290"
-  integrity sha512-RGpAeX0xAKUCcT9bNjVd2qcnqz9JkeDFXXLTclpuHJ4JfE8F1xC8SkasNroXqyDTRNFL4phPkvAN2Q8auAJfBQ==
+sass@1.24.4:
+  version "1.24.4"
+  resolved "https://registry.yarnpkg.com/sass/-/sass-1.24.4.tgz#aa50575a9ed2b9e9645b5599156fd149bdad9eaa"
+  integrity sha512-SqizkIEEcVPzmK1tYdlNRl/RSXMEwGcifL9GD+S2p9rEPdj6ycRbk4PWZs0jwlajNSyBPo/SXRB81i22SG0jmw==
   dependencies:
     chokidar ">=2.0.0 <4.0.0"
 

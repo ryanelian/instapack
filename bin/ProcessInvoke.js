@@ -32,18 +32,18 @@ async function restorePackages(packageManager, root) {
         console.log('package.json does not exists in project root folder, skipping package restore.');
         return;
     }
-    const yarnLock = upath.join(root, 'yarn.lock');
     const npmLock = upath.join(root, 'package-lock.json');
+    const yarnLock = upath.join(root, 'yarn.lock');
     let lock = false;
-    if (await fse.pathExists(yarnLock)) {
-        lock = true;
-        packageManager = 'yarn';
-        console.log('yarn.lock exists in project root folder. Using Yarn package manager...');
-    }
-    else if (await fse.pathExists(npmLock)) {
+    if (await fse.pathExists(npmLock)) {
         lock = true;
         packageManager = 'npm';
         console.log('package-lock.json exists in project root folder. Using npm package manager...');
+    }
+    else if (await fse.pathExists(yarnLock)) {
+        lock = true;
+        packageManager = 'yarn';
+        console.log('yarn.lock exists in project root folder. Using Yarn package manager...');
     }
     if (!lock) {
         if (!packageManager) {

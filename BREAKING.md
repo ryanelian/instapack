@@ -18,7 +18,7 @@ Here are the list of breaking changes when upgrading between instapack major (or
 
 - Dropped the End-of-Life (01-2020) Node.js version 8!
 
-- Automatic Node.js Polyfills Removed (webpack 5)
+- [Automatic Node.js Polyfills Removed](https://github.com/webpack/node-libs-browser) (webpack 5)
 
 - `.mjs` and `.wasm` are no longer resolved by default due to webpack 5 disabling them by default (Requiring `experiments.mjs: true` and `experiments: { asyncWebAssembly: true, importAsync: true }` https://github.com/webpack/changelog-v5#experiments)
 
@@ -36,13 +36,19 @@ Here are the list of breaking changes when upgrading between instapack major (or
 
 - JS build: Exclude `/node_modules/` path from TypeScript, Vue, HTML and CSS loaders. 
 
-  - Explanation: Secure, Contain and Protect projects against bundling *UNCOMPILED* (non-JS) libraries source code!
+  - Explanation: Protect projects against bundling *UNCOMPILED* (non-JS) libraries source code!
 
   - **Example 1:** Imagine someone wrote a `.vue` library in CoffeeScript + Less CSS, shipped it to npm, and expects consumers to compile the thing themselves. instapack will fail to compile that library despite supporting `.vue` file.
 
   - **Example 2:** Imagine someone wrote a `.ts` library, shipped it to npm, and expects only TypeScript users to import it as-is. He'd be right, except COMPILE ERROR! That library only can be compiled with a specific version of TypeScript `2` and failed to be compiled with the latest TypeScript `3` used by instapack for some reason.
 
-  - **Example 3:** Imagine someone shipped an unbundled JS library which automatically applies CSS when run. However, that library source code imports plain CSS files AND depends on **YOUR specific webpack configuration to do the job...** (Not independently unlike [CSS-in-JS](https://cssinjs.org))
+  - **Example 3:** Imagine someone shipped an unbundled JS library which automatically applies CSS when run. However, that library source code imports plain CSS files AND depends on **YOUR specific webpack configuration to do the job...**
+
+  - What to do when you encounter a library like this?
+  
+    1. Use other library which actually ships normal JS on npm.
+
+    2. Fork it / `git submodule` it. Transpile and bundle the library to proper ES5 yourself.
 
 ## 7.0.0
 

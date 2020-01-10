@@ -144,7 +144,7 @@ export class PathFinder {
      * ipack.js
      */
     get jsOutputFileName(): string {
-        return this.variables.jsOut;
+        return upath.addExt(this.variables.jsOut, '.js');
     }
 
     /**
@@ -179,7 +179,7 @@ export class PathFinder {
      * ipack.css
      */
     get cssOutputFileName(): string {
-        return this.variables.cssOut;
+        return upath.addExt(this.variables.cssOut, '.css');
     }
 
     /**

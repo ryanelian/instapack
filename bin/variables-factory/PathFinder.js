@@ -67,7 +67,7 @@ class PathFinder {
         return upath.join(this.outputFolderPath, 'js');
     }
     get jsOutputFileName() {
-        return this.variables.jsOut;
+        return upath.addExt(this.variables.jsOut, '.js');
     }
     get jsChunkFileName() {
         return upath.removeExt(this.jsOutputFileName, '.js') + '.[name].js';
@@ -82,7 +82,7 @@ class PathFinder {
         return upath.join(this.outputFolderPath, 'css');
     }
     get cssOutputFileName() {
-        return this.variables.cssOut;
+        return upath.addExt(this.variables.cssOut, '.css');
     }
     get cssOutputFilePath() {
         return upath.join(this.cssOutputFolder, this.cssOutputFileName);

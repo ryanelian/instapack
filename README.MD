@@ -252,8 +252,6 @@ import jQuery from 'jquery';
 }
 ```
 
-- `transpileLibraries` accepts an array of strings of package names, forcing transpilation of `.js` files bundled from those packages in the `node_modules` folder using the TypeScript compiler, following the `target` compiler option in `tsconfig.json`
-
 - `port1` can be set for declaring a static port number to be used by the Hot Reload server. If not set or is already used, the port number will be randomized. [Read more ↓](#hot-reload-development-mode)
 
 - instapack will not resolve symlinks if TypeScript compiler option `preserveSymlinks` is set to `true`

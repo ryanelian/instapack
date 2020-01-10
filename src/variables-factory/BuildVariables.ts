@@ -50,11 +50,6 @@ export interface ProjectSettings {
      * Gets the library manager asset copy build options.
      */
     copy: CopyOption[];
-
-    /**
-     * Gets a list of JS packages to be transpiled when bundled.
-     */
-    transpileLibraries: string[];
 }
 
 export interface CopyOption {

@@ -23,6 +23,10 @@ class TypeScriptBuildEngine {
         this.variables = variables;
         this.finder = new PathFinder_1.PathFinder(variables);
         this.typescriptCompilerOptions = TypescriptConfigParser_1.parseTypescriptConfig(variables.root, variables.typescriptConfiguration).options;
+        if (this.typescriptCompilerOptions.target === TypeScript.ScriptTarget.ES3) {
+            Shout_1.Shout.warning('instapack does not support targeting ES3! JS build target has been set to ES5.');
+            this.typescriptCompilerOptions.target = TypeScript.ScriptTarget.ES5;
+        }
         this.typescriptCompilerOptions.noEmit = false;
         this.typescriptCompilerOptions.emitDeclarationOnly = false;
         this.typescriptCompilerOptions.sourceMap = variables.sourceMap;
@@ -137,12 +141,12 @@ class TypeScriptBuildEngine {
             }
         };
     }
-    transpileWebpackRulesForLibraries(folders) {
+    get transpileLibrariesWebpackRules() {
         return {
             test: /\.js$/,
-            include: folders,
+            include: /node_modules/,
             use: {
-                loader: LoaderPaths_1.LoaderPaths.typescript,
+                loader: LoaderPaths_1.LoaderPaths.transpileLibraries,
                 ident: 'js-lib-loader',
                 options: {
                     compilerOptions: this.typescriptCompilerOptions
@@ -164,17 +168,6 @@ class TypeScriptBuildEngine {
         }
         return plugins;
     }
-    get transpileLibFolderPaths() {
-        return this.variables.transpileLibraries
-            .filter(packageName => packageName && packageName.startsWith('../') === false)
-            .map(packageName => {
-            let libFolder = path.join(this.finder.npmFolder, packageName);
-            if (libFolder.endsWith(path.sep) === false) {
-                libFolder += path.sep;
-            }
-            return libFolder;
-        });
-    }
     createWebpackRules() {
         const rules = [
             this.typescriptWebpackRules,
@@ -185,13 +178,8 @@ class TypeScriptBuildEngine {
         if (this.useBabel) {
             rules.push(this.jsBabelWebpackRules);
         }
-        if (this.typescriptCompilerOptions.target) {
-            if (this.typescriptCompilerOptions.target < TypeScript.ScriptTarget.ESNext) {
-                const libFolders = this.transpileLibFolderPaths;
-                if (libFolders.length) {
-                    rules.push(this.transpileWebpackRulesForLibraries(libFolders));
-                }
-            }
+        if (this.typescriptCompilerOptions.target === TypeScript.ScriptTarget.ES5) {
+            rules.push(this.transpileLibrariesWebpackRules);
         }
         if (this.variables.reactRefresh) {
             rules.unshift(this.reactRefreshWebpackRules);
@@ -278,8 +266,6 @@ class TypeScriptBuildEngine {
     }
     getECMAScriptVersion() {
         switch (this.typescriptCompilerOptions.target) {
-            case TypeScript.ScriptTarget.ES3:
-                return 5;
             case TypeScript.ScriptTarget.ES5:
                 return 5;
             case TypeScript.ScriptTarget.ES2015:

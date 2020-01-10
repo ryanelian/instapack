@@ -55,6 +55,7 @@
     "@babel/core": "7.7.7",
     "@babel/plugin-syntax-dynamic-import": "7.7.4",
     "@webhotelier/webpack-fast-refresh": "1.2.6",
+    "acorn": "7.1.0",
     "ajv": "6.10.2",
     "autoprefixer": "9.7.3",
     "babel-loader": "8.0.6",
@@ -89,6 +90,7 @@
     "yargs": "15.1.0"
   },
   "devDependencies": {
+    "@types/acorn": "^4.0.5",
     "@types/autoprefixer": "^9.6.1",
     "@types/eslint": "^6.1.3",
     "@types/follow-redirects": "^1.8.0",

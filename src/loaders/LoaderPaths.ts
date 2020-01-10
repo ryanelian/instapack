@@ -8,5 +8,5 @@ export const LoaderPaths = {
     vue: require.resolve('vue-loader'),
     vueStyle: require.resolve('vue-style-loader'),
     css: require.resolve('css-loader'),
-    libGuard: require.resolve('./LibGuardLoader')
+    transpileLibraries: require.resolve('./TranspileLibraryLoader')
 }

@@ -24,7 +24,7 @@ Here are the list of breaking changes when upgrading between instapack major (or
 
 - JS Build: Plain `.css` files will no longer be build, only `<style>` code blocks in `.vue` files.
 
-- JS library transpilation is now opt-in via `package.json` option: `transpileLibraries`
+- JS Build: Dependencies syntax level checking and transpilation will only be enabled for ES5 build target.
 
 - Production bundle will now use hidden source maps. 
 

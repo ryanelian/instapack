@@ -26,8 +26,7 @@ test('Project Settings: Not Found', async t => {
         externals: {},
         namespace: undefined,
         copy: [],
-        port1: 0,
-        transpileLibraries: []
+        port1: 0
     };
 
     t.deepEqual(settings, result);
@@ -72,8 +71,7 @@ test('Project Settings: Valid', async t => {
         },
         namespace: 'instapack',
         copy: [],
-        port1: 32101,
-        transpileLibraries: []
+        port1: 32101
     };
 
     t.deepEqual(settings, result);

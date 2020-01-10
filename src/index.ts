@@ -4,7 +4,6 @@ import chalk = require('chalk');
 
 import { readProjectSettingsFrom } from './variables-factory/ReadProjectSettings';
 import { readDotEnvFrom } from './variables-factory/EnvParser';
-import { PathFinder } from './variables-factory/PathFinder';
 import { restorePackages, setupHttps } from './ProcessInvoke';
 import { Shout } from './Shout';
 import { ToolOrchestrator } from './ToolOrchestrator';

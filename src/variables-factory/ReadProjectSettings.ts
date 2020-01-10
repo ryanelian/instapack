@@ -31,8 +31,7 @@ export async function readProjectSettingsFrom(folder: string): Promise<ProjectSe
         externals: {},
         copy: [],
         namespace: undefined,
-        port1: 0,
-        transpileLibraries: []
+        port1: 0
     };
 
     const ajv = new Ajv();

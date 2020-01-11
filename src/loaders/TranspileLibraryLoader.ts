@@ -42,13 +42,13 @@ export = function (this: loader.LoaderContext, source: string): void {
     compilerOptions.moduleResolution = TypeScript.ModuleResolutionKind.NodeJs;
     compilerOptions.allowJs = true;
     compilerOptions.allowSyntheticDefaultImports = true;
-    compilerOptions.downlevelIteration = true;
 
     compilerOptions.module = baseCompilerOptions.module ?? TypeScript.ModuleKind.ESNext;
     compilerOptions.importHelpers = baseCompilerOptions.importHelpers;
     compilerOptions.sourceMap = baseCompilerOptions.sourceMap;
     compilerOptions.inlineSources = baseCompilerOptions.inlineSources;
     compilerOptions.experimentalDecorators = baseCompilerOptions.experimentalDecorators;
+    compilerOptions.downlevelIteration = baseCompilerOptions.downlevelIteration; // requires polyfills
 
     const result = TypeScript.transpileModule(source, {
         compilerOptions: compilerOptions,

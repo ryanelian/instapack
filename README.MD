@@ -539,21 +539,21 @@ instapack also has a custom Node-like but [standard-compliant Sass module system
 
   - **The query path explicitly ends with `.css` extension.** :warning: 
 
-    - NOT included: `@import './thing.css';`
+    - NOT compiled: `@import './thing.css'`
 
-    - Included: `@import './thing';`
+    - Compiled and included: `@import './thing'` or `@use './thing'`
 
   - The query path is syntactically defined as a `url()`
 
   - The argument has a [media query](https://developer.mozilla.org/en-US/docs/Web/CSS/Media_Queries/Using_media_queries) and/or a [supports query](https://developer.mozilla.org/en-US/docs/Web/CSS/@supports).
 
-- Includes `.scss` and `.css` files relative to the source. ([Standard Sass behavior](https://sass-lang.com/documentation/at-rules/use#load-paths))
+- Includes `[name].scss` and `[name].css` files relative to the source, including `_[name].scss` partial files. ([Standard Sass behavior](https://sass-lang.com/documentation/at-rules/use#load-paths))
 
-  - Includes _partial.scss files, but NOT _partial.css files!
-
-- Includes files relative to the source in a named folder, but as `index.scss` or `_index.scss` ([Standard Sass behavior](https://github.com/sass/sass/issues/690)) or `index.css`
+- Includes index files in a named folder relative to the source: `[name]/index.scss` or `[name]/_index.scss` ([Standard Sass behavior](https://github.com/sass/sass/issues/690)) or `[name]/index.css`
 
 - Includes files resolved from `node_modules` and reads `package.json` to resolve `.css` file in the `style` field!
+
+  - **Therefore, if a library requires `import 'library/dist/library.css'` in JS / webpack using CSS Loader, the Sass project equivalent import would be: `@use 'library/dist/library'`**
 
 ## Environment Variables
 

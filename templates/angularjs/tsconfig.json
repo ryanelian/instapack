@@ -12,7 +12,6 @@
       "ES2016.Array.Include",
       "ES2017.Object",
       "ES2017.String",
-      "ES2018.AsyncIterable",
       "ES2018.Promise",
       "ES2019.Array",
       "ES2019.Object",

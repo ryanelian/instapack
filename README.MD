@@ -122,8 +122,6 @@ Scaffolds a new instapack project into current working directory. **All template
 
 If no template parameter is provided, `vue` will be chosen. :vulcan_salute:
 
-> Most templates are armed with `axios` REST library, which plays nice with [NSwag Studio](https://github.com/RicoSuter/NSwag/releases)-generated TypeScript API clients!
-
 ### build [project]
 
 Performs compilation of selected project type. Available projects: `all`, `js`, `css` and `copy`. If no project parameter is provided, `all` will be chosen.

@@ -489,7 +489,7 @@ Imports strongly-typed, static JSON file in the TypeScript project using the `im
 // ESM syntax
 import settings from './settings.json';
 
-// CJS syntax (any)
+// CJS syntax
 const settingsCJS = require('./settings.json');
 ```
 
@@ -501,29 +501,43 @@ instapack can compile `.vue` files:
 
 ```vue
 <template>
-<h1>Hello from {{ compiler }} and {{ framework }}!</h1>
+    <h1>Hello from {{ compiler }} and {{ framework }}!</h1>
 </template>
 
 <script lang="ts">
 import Vue from 'vue';
 import Component from 'vue-class-component';
+
 @Component({
     props: ['framework', 'compiler']
 })
 export default class Hello extends Vue {
-    framework: string;
-    compiler: string;
+    framework: string | undefined;
+    compiler: string | undefined;
 }
 </script>
 ```
 
-> Enhance development experience using fabulous :star2: intellisense with Visual Studio 2017 [15.8 improved Vue.js support](https://blogs.msdn.microsoft.com/visualstudio/2018/08/14/visual-studio-2017-version-15-8/) or [Vetur](https://marketplace.visualstudio.com/items?itemName=octref.vetur) extension for Visual Studio Code!
+```ts
+import Hello from './Hello.vue';
+```
 
-- [A global TypeScript definition file for `*.vue` module](https://github.com/ryanelian/instapack/blob/master/templates/vue/client/js/vue-shim.d.ts) is required for importing the `.vue` file from TypeScript using ESM syntax.
+- A global TypeScript definition file for `*.vue` module is required for importing Vue components from TypeScript:
+
+```ts
+// vue-shim.d.ts
+
+declare module "*.vue" {
+    import Vue from "vue";
+    export default Vue;
+}
+```
 
 - Basic CSS support in `<style>` (or `<style scoped>` or `<style module>`) code blocks should work, but Sass cannot be used and the resulting CSS will NOT be auto-prefixed and minified. 
 
-- Projects with matching `vue-template-compiler` dependency (compiler version === Vue version) will be built using that specific compiler instead of using instapack built-in `vue-template-compiler`.
+- Projects with matching `vue-template-compiler` dependency (compiler version === Vue version) will be built using that specific compiler instead of using instapack built-in `vue-template-compiler`
+
+> When using Visual Studio Code, install [Vetur](https://marketplace.visualstudio.com/items?itemName=octref.vetur) extension to get syntax highlighting and TypeScript intellisense.
 
 ### Sass CSS Module System
 

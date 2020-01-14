@@ -24,6 +24,8 @@ jobs:
 
   - script: >
       npm install -g rimraf &&
+      rimraf node_modules &&
+      npm install --production &&
       npm install -g yarn
     displayName: 'Prepare Full-Cycle Tests'
       

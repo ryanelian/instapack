@@ -27,6 +27,8 @@ jobs:
     - name: Prepare for instapack full-cycle tests
       run: |
         npm install -g rimraf
+        rimraf node_modules
+        npm install --production
         ipack set package-manager npm
     - name: instapack full-cycle test - Vue
       run: |

@@ -16,7 +16,6 @@
   <a href="https://github.com/ryanelian/instapack/actions"><img alt="GitHub Actions" src="https://github.com/ryanelian/instapack/workflows/Node%20CI/badge.svg" /></a>
   <a href="https://ryanelian.visualstudio.com/instapack/_build/latest?definitionId=1"><img alt="Build Status" src="https://ryanelian.visualstudio.com/instapack/_apis/build/status/ryanelian.instapack" /></a>
   <a href="https://dependabot.com"><img alt="Dependabot Status" src="https://api.dependabot.com/badges/status?host=github&repo=ryanelian/instapack" /></a>
-  <a href="https://app.fossa.com/projects/git%2Bgithub.com%2Fryanelian%2Finstapack?ref=badge_small"><img alt="FOSSA Status" src="https://app.fossa.com/api/projects/git%2Bgithub.com%2Fryanelian%2Finstapack.svg?type=small" /></a>
 </p>
 
 ## Install
@@ -92,7 +91,7 @@ If using [the latest Visual Studio Code](https://code.visualstudio.com/), it sho
 
 **instapack is a first-class end-to-end TypeScript and Sass build tool. :tophat:** Meaning, it comes with an assurance to compile projects written using standard TypeScript or Sass successfully regardless of frameworks used. :statue_of_liberty: This mindset is the differentiating factor between instapack and other CLI tools, which tend to be designed framework-first but TypeScript-second! 
 
-instapack is battle-tested :hocho: and is designed to cover *most normal use cases* when developing a modern web app. Powered by [webpack](https://webpack.js.org), instapack effortlessly consumes modern JS modules (ES, CommonJS, UMD) and more (plain HTML templates, Vue SFC, TypeScript JSX).
+instapack is battle-tested :hocho: and is designed to cover most normal use cases when developing a modern web app. Powered by [webpack](https://webpack.js.org), instapack effortlessly consumes modern JS modules (ES, CommonJS, UMD) and more (plain HTML templates, Vue SFC, TypeScript JSX).
 
 With this powerful tool, you can save time :watch:, save precious SSD space :space_invader:, and save yourself from the pain of manually maintaining project build scripts! :coffee:
 
@@ -460,7 +459,7 @@ const $ = require('jquery');
 
 ### HTML Modules
 
-Imports an `.html` file to be minified and then stringified. This technique is invaluable for working with frameworks relying on HTML-based templates such as AngularJS:
+Imports an `.html` file to be minified and stringified. This technique is invaluable for working with frameworks relying on HTML-based templates such as AngularJS:
 
 ```ts
 // ESM syntax
@@ -497,7 +496,9 @@ const settingsCJS = require('./settings.json');
 
 ### Vue Single-File Components
 
-instapack can compile `.vue` files:
+```ts
+import Hello from './Hello.vue';
+```
 
 ```vue
 <template>
@@ -518,10 +519,6 @@ export default class Hello extends Vue {
 </script>
 ```
 
-```ts
-import Hello from './Hello.vue';
-```
-
 - A global TypeScript definition file for `*.vue` module is required for importing Vue components from TypeScript:
 
 ```ts
@@ -533,9 +530,7 @@ declare module "*.vue" {
 }
 ```
 
-- Basic CSS support in `<style>` (or `<style scoped>` or `<style module>`) code blocks should work, but Sass cannot be used and the resulting CSS will NOT be auto-prefixed and minified. 
-
-- Projects with matching `vue-template-compiler` dependency (compiler version === Vue version) will be built using that specific compiler instead of using instapack built-in `vue-template-compiler`
+- Basic CSS in `<style>` (or `<style scoped>` or `<style module>`) code blocks should work, but Sass CANNOT be used and the resulting CSS will NOT be auto-prefixed and minified. 
 
 > When using Visual Studio Code, install [Vetur](https://marketplace.visualstudio.com/items?itemName=octref.vetur) extension to get syntax highlighting and TypeScript intellisense.
 

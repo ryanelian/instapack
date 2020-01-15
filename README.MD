@@ -141,7 +141,7 @@ In addition, build flags are available:
 
 - `--no-sourcemaps` disables source maps, producing undebuggable outputs. :bug: (Slightly improves build speed)
 
-- `--stats` generates `stats.json` next to the TypeScript build outputs, which can be analyzed by a third-party tool: [webpack-bundle-analyzer](https://www.npmjs.com/package/webpack-bundle-analyzer). For sanity, this flag will be ignored when using `-d` or `-w` flags.
+- `--stats` generates `stats.json` next to the TypeScript build outputs, which can be analyzed by a third-party tool: [webpack-bundle-analyzer](https://www.npmjs.com/package/webpack-bundle-analyzer). This flag will be ignored during watch mode.
 
 - `--cow` allows overwriting files in output folder by `copy` assets build tool.
 

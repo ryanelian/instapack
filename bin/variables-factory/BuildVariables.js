@@ -14,7 +14,7 @@ function uniteBuildVariables(commandLineFlags, projectSettings, userSettings, do
         variables.production = false;
         variables.watch = true;
     }
-    if (!variables.production || variables.watch) {
+    if (variables.watch) {
         variables.stats = false;
     }
     if (!variables.watch) {

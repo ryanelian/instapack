@@ -344,15 +344,16 @@ export class TypeScriptBuildEngine {
             devtool: this.webpackConfigurationDevTool,
             optimization: {     // https://medium.com/webpack/webpack-4-mode-and-optimization-5423a6bc597a
                 noEmitOnErrors: true,   // https://dev.to/flexdinesh/upgrade-to-webpack-4---5bc5
-                chunkIds: 'natural',    // https://blog.logrocket.com/new-features-in-webpack-5-2559755adf5e/
                 splitChunks: {          // https://webpack.js.org/plugins/split-chunks-plugin/
+                    minSize: 1,
+                    maxAsyncRequests: Infinity,
                     cacheGroups: {
                         vendors: {
                             name: 'dll',
                             test: /[\\/]node_modules[\\/]/,
-                            chunks: 'all',
+                            chunks: 'initial',
                             enforce: true,
-                            priority: -10
+                            priority: 99
                         }
                     }
                 }
@@ -515,7 +516,7 @@ export class TypeScriptBuildEngine {
             await this.watch(webpackConfiguration);
         } else {
             const stats = await this.buildOnce(webpackConfiguration);
-            if (this.variables.stats && this.variables.production) {
+            if (this.variables.stats) {
                 await fse.outputJson(this.finder.statsJsonFilePath, stats.toJson());
             }
         }

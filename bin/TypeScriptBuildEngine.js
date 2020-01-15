@@ -233,15 +233,16 @@ class TypeScriptBuildEngine {
             devtool: this.webpackConfigurationDevTool,
             optimization: {
                 noEmitOnErrors: true,
-                chunkIds: 'natural',
                 splitChunks: {
+                    minSize: 1,
+                    maxAsyncRequests: Infinity,
                     cacheGroups: {
                         vendors: {
                             name: 'dll',
                             test: /[\\/]node_modules[\\/]/,
-                            chunks: 'all',
+                            chunks: 'initial',
                             enforce: true,
-                            priority: -10
+                            priority: 99
                         }
                     }
                 }
@@ -368,7 +369,7 @@ class TypeScriptBuildEngine {
         }
         else {
             const stats = await this.buildOnce(webpackConfiguration);
-            if (this.variables.stats && this.variables.production) {
+            if (this.variables.stats) {
                 await fse.outputJson(this.finder.statsJsonFilePath, stats.toJson());
             }
         }

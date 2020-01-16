@@ -1,7 +1,6 @@
 import * as fse from 'fs-extra';
 import * as upath from 'upath';
 import * as TypeScript from 'typescript';
-import jsonc = require('strip-json-comments');
 import { Shout } from './Shout';
 import chalk = require('chalk');
 
@@ -30,6 +29,11 @@ const fallbackTypeScriptConfig = {
     }
 };
 
+/**
+ * Attempts to convert TypeScript configuration JSON object to the actual TypeScript configuration object.
+ * @param folder 
+ * @param json 
+ */
 export function parseTypescriptConfig(folder: string, json: unknown): TypeScript.ParsedCommandLine {
     // apparently TypeScript.parseJsonConfigFileContent modifies the input object!
     // deep copy the object for unit test sanity...
@@ -38,25 +42,27 @@ export function parseTypescriptConfig(folder: string, json: unknown): TypeScript
     // https://github.com/Microsoft/TypeScript/blob/master/src/compiler/commandLineParser.ts#L992
     const tsconfig = TypeScript.parseJsonConfigFileContent(o, TypeScript.sys, folder);
     if (tsconfig.errors.length) {
-        throw Error(tsconfig.errors[0].messageText.toString());
+        const errorMessage = tsconfig.errors.map(Q => Q.messageText.toString()).join("\n\n");
+        throw Error(errorMessage);
     }
     // console.log(tsconfig);
     return tsconfig;
 }
 
+/**
+ * Attempt to read tsconfig.json in the specified folder and return an equivalent JSON object.
+ * If failed, fallback to instapack default TypeScript configuration.
+ * @param folder 
+ */
 export async function tryReadTypeScriptConfigJson(folder: string): Promise<unknown> {
     const tsconfigJsonPath = upath.join(folder, 'tsconfig.json');
 
     try {
         const tsconfigRaw = await fse.readFile(tsconfigJsonPath, 'utf8');
-        const tsconfig = JSON.parse(jsonc(tsconfigRaw));
-        const tryParse = parseTypescriptConfig(folder, tsconfig);
-        const errorMessage = tryParse.errors.join('\n\n');
-        if (tryParse.errors.length) {
-            throw new Error(errorMessage);
-        }
-
-        return tsconfig;
+        const parse = TypeScript.parseConfigFileTextToJson(tsconfigJsonPath, tsconfigRaw);
+        // console.log(parse.config);
+        parseTypescriptConfig(folder, parse.config);
+        return parse.config;
     } catch (error) {
         Shout.error('when reading', chalk.cyan(tsconfigJsonPath), error);
         Shout.warning('Using the default fallback TypeScript configuration!');

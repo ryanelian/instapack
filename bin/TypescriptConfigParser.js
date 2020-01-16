@@ -3,7 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const fse = require("fs-extra");
 const upath = require("upath");
 const TypeScript = require("typescript");
-const jsonc = require("strip-json-comments");
 const Shout_1 = require("./Shout");
 const chalk = require("chalk");
 const fallbackTypeScriptConfig = {
@@ -33,7 +32,8 @@ function parseTypescriptConfig(folder, json) {
     const o = JSON.parse(JSON.stringify(json));
     const tsconfig = TypeScript.parseJsonConfigFileContent(o, TypeScript.sys, folder);
     if (tsconfig.errors.length) {
-        throw Error(tsconfig.errors[0].messageText.toString());
+        const errorMessage = tsconfig.errors.map(Q => Q.messageText.toString()).join("\n\n");
+        throw Error(errorMessage);
     }
     return tsconfig;
 }
@@ -42,13 +42,9 @@ async function tryReadTypeScriptConfigJson(folder) {
     const tsconfigJsonPath = upath.join(folder, 'tsconfig.json');
     try {
         const tsconfigRaw = await fse.readFile(tsconfigJsonPath, 'utf8');
-        const tsconfig = JSON.parse(jsonc(tsconfigRaw));
-        const tryParse = parseTypescriptConfig(folder, tsconfig);
-        const errorMessage = tryParse.errors.join('\n\n');
-        if (tryParse.errors.length) {
-            throw new Error(errorMessage);
-        }
-        return tsconfig;
+        const parse = TypeScript.parseConfigFileTextToJson(tsconfigJsonPath, tsconfigRaw);
+        parseTypescriptConfig(folder, parse.config);
+        return parse.config;
     }
     catch (error) {
         Shout_1.Shout.error('when reading', chalk.cyan(tsconfigJsonPath), error);

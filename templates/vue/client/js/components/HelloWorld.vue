@@ -1,5 +1,11 @@
 <template>
-    <h1>Hello from {{ compiler }} and {{ framework }}!</h1>
+    <div class="alert alert-success">
+        <fa-icon
+            icon="check"
+            class="mr-3"
+        ></fa-icon>
+        Hello from instapack and Vue!
+    </div>
 </template>
 
 <script lang="ts">
@@ -7,10 +13,7 @@ import Vue from 'vue';
 import Component from 'vue-class-component';
 
 @Component({
-    props: ['framework', 'compiler']
 })
 export default class HelloWorld extends Vue {
-    framework: string | undefined;
-    compiler: string | undefined;
 }
 </script>

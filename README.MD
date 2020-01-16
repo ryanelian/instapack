@@ -164,7 +164,6 @@ instapack puts configurations inside `package.json` to reduce project files clut
   "instapack": {
     "output": "wwwroot",
     "alias": {
-      "vue": "vue/dist/vue.esm",
       "vee-validate": "vee-validate/dist/vee-validate.full"
     }
   }

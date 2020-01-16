@@ -1,27 +1,31 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import ReactDOM from 'react-dom';
-import { Hello } from "./components/Hello";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 
-interface MapLike<T> {
-    [key: string]: T;
-}
+/**
+ * A factory function returning a Promise of React default-exported Component Class Module.
+ */
+type ReactAsyncComponentClassFactory = () => Promise<{
+    default: React.ComponentClass;
+}>;
 
-// Allow developer to register all components into a map object to be rendered by tag name.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const renders: MapLike<React.ComponentClass<any, any>> = {};
-renders['Hello'] = Hello;
-
-for (const tag in renders) {
-    const Component = renders[tag];
-    const elements = document.getElementsByTagName(tag);
-
-    for (const e of elements) {
-        const attributes: MapLike<string> = {};
-        for (const attr of e.attributes) {
-            attributes[attr.name] = attr.value;
-        }
-        ReactDOM.render(<Component {...attributes}></Component>, e);
+/**
+ * For each matching HTML Elements, render and mount a React Component asynchronously without props.
+ * @param selector HTML Element selector query
+ * @param lazyComponent React Async Component Class Factory function
+ */
+function renderAsyncComponent(selector: string, lazyComponent: ReactAsyncComponentClassFactory): void {
+    for (const el of document.querySelectorAll(selector)) {
+        const LazyComponent = React.lazy(lazyComponent);
+        const fallback = <FontAwesomeIcon icon={faSpinner} pulse></FontAwesomeIcon>
+        const render = <Suspense fallback={fallback}>
+            <LazyComponent></LazyComponent>
+        </Suspense>;
+        ReactDOM.render(render, el);
     }
 }
 
-// now you can do <Hello compiler="instapack" framework="react"></Hello> in DOM!
+renderAsyncComponent('Hello', () => import('./components/Hello'));
+// now <Hello></Hello> can be invoked in DOM!
+// add more components to be rendered in DOM here ^

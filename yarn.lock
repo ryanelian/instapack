@@ -1183,9 +1183,9 @@ camelcase@^5.0.0, camelcase@^5.3.1:
   integrity sha512-L28STB170nwWS63UjtlEOE3dldQApaJXZkOI1uMFfzf3rRuPegHaHesyee+YxQ+W6SvRDQV6UrdOdRiR153wJg==
 
 caniuse-lite@^1.0.30001017, caniuse-lite@^1.0.30001020:
-  version "1.0.30001020"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001020.tgz#3f04c1737500ffda78be9beb0b5c1e2070e15926"
-  integrity sha512-yWIvwA68wRHKanAVS1GjN8vajAv7MBFshullKCeq/eKpK7pJBVDgFFEqvgWTkcP2+wIDeQGYFRXECjKZnLkUjA==
+  version "1.0.30001021"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001021.tgz#e75ed1ef6dbadd580ac7e7720bb16f07b083f254"
+  integrity sha512-wuMhT7/hwkgd8gldgp2jcrUjOU9RXJ4XxGumQeOsUr91l3WwmM68Cpa/ymCnWEDqakwFXhuDQbaKNHXBPgeE9g==
 
 chalk@3.0.0, chalk@^3.0.0:
   version "3.0.0"
@@ -1814,9 +1814,9 @@ ee-first@1.1.1:
   integrity sha1-WQxhFWsK4vTwJVcyoViyZrxWsh0=
 
 electron-to-chromium@^1.3.322:
-  version "1.3.334"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.334.tgz#0588359f4ac5c4185ebacdf5fc7e1937e2c99872"
-  integrity sha512-RcjJhpsVaX0X6ntu/WSBlW9HE9pnCgXS9B8mTUObl1aDxaiOa0Lu+NMveIS5IDC+VELzhM32rFJDCC+AApVwcA==
+  version "1.3.335"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.335.tgz#5fb6084a25cb1e2542df91e62b62e1931a602303"
+  integrity sha512-ngKsDGd/xr2lAZvilxTfdvfEiQKmavyXd6irlswaHnewmXoz6JgbM9FUNwgp3NFIUHHegh1F87H8f5BJ8zABxw==
 
 emittery@^0.5.1:
   version "0.5.1"
@@ -1878,9 +1878,9 @@ error-ex@^1.3.1:
     is-arrayish "^0.2.1"
 
 es-abstract@^1.17.0-next.1:
-  version "1.17.1"
-  resolved "https://registry.yarnpkg.com/es-abstract/-/es-abstract-1.17.1.tgz#1331afa4cba2628b63e988104b9846c2d631b380"
-  integrity sha512-WmWNHWmm/LDwK8jaeZic/g6sU1ZckM+vvOyCV1qFRhJJ6hzve6DRgthNQB7Lra1ocrw68HexLKYgtdxIPcb3Fg==
+  version "1.17.2"
+  resolved "https://registry.yarnpkg.com/es-abstract/-/es-abstract-1.17.2.tgz#965b10af56597b631da15872c17a405e86c1fd46"
+  integrity sha512-YoKuru3Lyoy7yVTBSH2j7UxTqe/je3dWAruC0sHvZX1GNd5zX8SSLvQqEgO9b3Ex8IW+goFI9arEEsFIbulhOw==
   dependencies:
     es-to-primitive "^1.2.1"
     function-bind "^1.1.1"
@@ -3724,7 +3724,7 @@ negotiator@0.6.2:
   resolved "https://registry.yarnpkg.com/negotiator/-/negotiator-0.6.2.tgz#feacf7ccf525a77ae9634436a64883ffeca346fb"
   integrity sha512-hZXc7K2e+PgeI1eDBe/10Ard4ekbfrrqG8Ep+8Jmf4JID2bNg7NvCPOZN+kfF574pFQI7mum2AUqDidoKqcTOw==
 
-neo-async@^2.5.0, neo-async@^2.6.1:
+neo-async@^2.6.1:
   version "2.6.1"
   resolved "https://registry.yarnpkg.com/neo-async/-/neo-async-2.6.1.tgz#ac27ada66167fa8849a6addd837f6b189ad2081c"
   integrity sha512-iyam8fBuCUpWeKPGpaNMetEocMt364qkCsfL9JuhjXX6dRnguRVOfk2GZaDpPjcOKiiXCPINZC1GczQ7iTq3Zw==
@@ -5150,7 +5150,7 @@ term-size@^2.1.0:
   resolved "https://registry.yarnpkg.com/term-size/-/term-size-2.1.1.tgz#f81ec25854af91a480d2f9d0c77ffcb26594ed1a"
   integrity sha512-UqvQSch04R+69g4RDhrslmGvGL3ucDRX/U+snYW0Mab4uCAyKSndUksaoqlJ81QKSpRnIsuOYQCbC2ZWx2896A==
 
-terser-webpack-plugin@^2.2.1:
+terser-webpack-plugin@^2.3.1:
   version "2.3.2"
   resolved "https://registry.yarnpkg.com/terser-webpack-plugin/-/terser-webpack-plugin-2.3.2.tgz#6d3d1b0590c8f729bfbaeb7fb2528b8b62db4c74"
   integrity sha512-SmvB/6gtEPv+CJ88MH5zDOsZdKXPS/Uzv2//e90+wM1IHFUhsguPKEILgzqrM1nQ4acRXN/SV4Obr55SXC+0oA==
@@ -5506,14 +5506,13 @@ vue-template-es2015-compiler@^1.9.0:
   resolved "https://registry.yarnpkg.com/vue-template-es2015-compiler/-/vue-template-es2015-compiler-1.9.1.tgz#1ee3bc9a16ecbf5118be334bb15f9c46f82f5825"
   integrity sha512-4gDntzrifFnCEvyoO8PqyJDmguXgVPxKiIxrBKjIowvL9l+N66196+72XVYR8BBf1Uv1Fgt3bGevJ+sEmxfZzw==
 
-watchpack@2.0.0-beta.10:
-  version "2.0.0-beta.10"
-  resolved "https://registry.yarnpkg.com/watchpack/-/watchpack-2.0.0-beta.10.tgz#6e4a5b16bda08a5a3ce9851f166a45a8860066bb"
-  integrity sha512-JR/S6jbW/hC+xAHG+AxZjkIH/yCxC/yQfCJT8FnZDrZf//tCd6O3wtcEuCkgFmWVERC2IdnlYvmzwa1RJJKg0A==
+watchpack@2.0.0-beta.12:
+  version "2.0.0-beta.12"
+  resolved "https://registry.yarnpkg.com/watchpack/-/watchpack-2.0.0-beta.12.tgz#bed6878b020c8f43f5b88b7031dfb2b2092755f5"
+  integrity sha512-vUJN6XQCBqrUkyX74WNopUvASMLqgicYGA5nO/FwSfdmLQgrfy44Z+Jl2YHHHXy/gDO6RlbArR26YQGeIWfoAg==
   dependencies:
     glob-to-regexp "^0.4.1"
     graceful-fs "^4.1.2"
-    neo-async "^2.5.0"
 
 wbuf@^1.1.0, wbuf@^1.7.3:
   version "1.7.3"
@@ -5603,10 +5602,10 @@ webpack-sources@^1.4.3:
     source-list-map "^2.0.0"
     source-map "~0.6.1"
 
-webpack@5.0.0-beta.11:
-  version "5.0.0-beta.11"
-  resolved "https://registry.yarnpkg.com/webpack/-/webpack-5.0.0-beta.11.tgz#6326501cb99e8d0ad3eb92698c8f9d7405f42a85"
-  integrity sha512-vDdx5RXAE8b0BZMQCpoKXSkEAJ3xjYbnzExK+WZbIaf1WT7RBJXI7w3J/luhgGhCVGnfr3dmJg1o4DqGuuGa+w==
+webpack@5.0.0-beta.12:
+  version "5.0.0-beta.12"
+  resolved "https://registry.yarnpkg.com/webpack/-/webpack-5.0.0-beta.12.tgz#3651a0fa6b9ad973b9608305601c08b84c24b402"
+  integrity sha512-a6YqL0l1xQ/B2GcIF1jS6AMlCK7VFoy0O+/2uBK6LjrNX8d85snl0nmEWkBzy9Zwm+orrOZs6deBfkSe6UkHnw==
   dependencies:
     "@webassemblyjs/ast" "1.8.5"
     "@webassemblyjs/helper-module-context" "1.8.5"
@@ -5627,8 +5626,8 @@ webpack@5.0.0-beta.11:
     pkg-dir "^4.2.0"
     schema-utils "^2.5.0"
     tapable "2.0.0-beta.9"
-    terser-webpack-plugin "^2.2.1"
-    watchpack "2.0.0-beta.10"
+    terser-webpack-plugin "^2.3.1"
+    watchpack "2.0.0-beta.12"
     webpack-sources "2.0.0-beta.8"
 
 websocket-driver@>=0.5.1:

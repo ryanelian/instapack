@@ -21,7 +21,7 @@
     "linq": "^3.2.1",
     "luxon": "^1.21.3",
     "sweetalert": "^2.1.2",
-    "ts-polyfill": "^3.7.4",
+    "ts-polyfill": "^3.7.5",
     "tslib": "^1.10.0",
     "vee-validate": "^3.2.1",
     "vue": "^2.6.11",
@@ -35,7 +35,7 @@
     "eslint-plugin-vue": "^6.1.2",
     "jquery": "^3.4.1",
     "popper.js": "^1.16.0",
-    "typescript": "^3.7.4",
+    "typescript": "^3.7.5",
     "vue-eslint-parser": "^7.0.0"
   }
 }

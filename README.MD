@@ -14,7 +14,6 @@
   <a href="https://www.npmjs.com/package/instapack"><img alt="npm" src="https://badgen.net/npm/v/instapack?icon=npm" /></a>
   <a href="https://github.com/ryanelian/instapack/blob/master/LICENSE"><img alt="MIT License" src="https://badgen.net/npm/license/instapack" /></a>
   <a href="https://github.com/ryanelian/instapack/actions"><img alt="GitHub Actions" src="https://github.com/ryanelian/instapack/workflows/Node%20CI/badge.svg" /></a>
-  <a href="https://ryanelian.visualstudio.com/instapack/_build/latest?definitionId=1"><img alt="Build Status" src="https://ryanelian.visualstudio.com/instapack/_apis/build/status/ryanelian.instapack" /></a>
   <a href="https://dependabot.com"><img alt="Dependabot Status" src="https://api.dependabot.com/badges/status?host=github&repo=ryanelian/instapack" /></a>
 </p>
 

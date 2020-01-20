@@ -4,13 +4,11 @@ on: [push]
 
 jobs:
   build:
-
-    runs-on: ubuntu-latest
-
     strategy:
       matrix:
         node-version: [10.x, 12.x]
-
+        platform: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.platform }}
     steps:
     - uses: actions/checkout@v1
     - name: Use Node.js ${{ matrix.node-version }}
@@ -19,7 +17,7 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - name: npm restore, build & test
       run: |
-        npm link
+        npm link --loglevel error
         npm run build --if-present
         npm test
       env:
@@ -28,8 +26,7 @@ jobs:
       run: |
         npm install -g rimraf
         rimraf node_modules
-        npm install --production
-        ipack set package-manager npm
+        npm install --production --loglevel error
     - name: instapack full-cycle test - Vue
       run: |
         rimraf ./demo

@@ -6,7 +6,7 @@ import { readProjectSettingsFrom } from './variables-factory/ReadProjectSettings
 import { readDotEnvFrom } from './variables-factory/EnvParser';
 import { restorePackages, setupHttps } from './ProcessInvoke';
 import { Shout } from './Shout';
-import { ToolOrchestrator } from './ToolOrchestrator';
+import { BuildRunner } from './BuildRunner';
 import { tryReadTypeScriptConfigJson } from './TypescriptConfigParser';
 import { mergePackageJson } from './MergePackageJson';
 import { getSettings, setSetting } from './user-settings/UserSettingsManager';
@@ -103,9 +103,9 @@ export = class InstapackProgram {
             }
         }
 
-        const tm = new ToolOrchestrator(variables);
-        tm.outputBuildInformation();
-        tm.build(taskName);
+        const builder = new BuildRunner(variables);
+        builder.outputBuildInformation();
+        builder.build(taskName);
     }
 
     /**

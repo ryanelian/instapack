@@ -4,12 +4,12 @@ const fse = require("fs-extra");
 const chalk = require("chalk");
 const Shout_1 = require("./Shout");
 const PathFinder_1 = require("./variables-factory/PathFinder");
-const RunWorker_1 = require("./workers/RunWorker");
-const VoiceAssistant_1 = require("./VoiceAssistant");
-class ToolOrchestrator {
+const BuildWorkerManager_1 = require("./BuildWorkerManager");
+class BuildRunner {
     constructor(variables) {
         this.variables = variables;
         this.finder = new PathFinder_1.PathFinder(this.variables);
+        this.buildWorker = new BuildWorkerManager_1.BuildWorkerManager();
     }
     outputBuildInformation() {
         if (this.variables.reactRefresh) {
@@ -53,53 +53,33 @@ class ToolOrchestrator {
         }
         return exist;
     }
-    async build(taskName) {
-        switch (taskName) {
-            case 'all':
-                this.build('js');
-                this.build('css');
-                this.build('copy');
-                return;
-            case 'js': {
-                const valid = await this.validateJsBuildTask();
-                if (valid) {
-                    RunWorker_1.runTypeScriptBuildWorker(this.variables).catch(error => {
-                        Shout_1.Shout.fatal(`during JS build:`, error);
-                        const va = new VoiceAssistant_1.VoiceAssistant(this.variables.mute);
-                        va.speak(`JAVASCRIPT BUILD FATAL ERROR!`);
-                    });
-                    RunWorker_1.runTypeScriptCheckWorker(this.variables).catch(error => {
-                        Shout_1.Shout.fatal(`during type-checking:`, error);
-                        const va = new VoiceAssistant_1.VoiceAssistant(this.variables.mute);
-                        va.speak(`TYPE CHECK FATAL ERROR!`);
-                    });
-                }
-                return;
+    build(taskName) {
+        if (taskName === 'all') {
+            this.build('js');
+            this.build('css');
+            this.build('copy');
+        }
+        else if (taskName === 'js') {
+            const valid = this.validateJsBuildTask();
+            if (valid) {
+                this.buildWorker.runJsBuildWorker(this.variables);
+                this.buildWorker.runTypeCheckBuildWorker(this.variables);
             }
-            case 'css': {
-                const valid = await this.validateCssBuildTask();
-                if (valid) {
-                    RunWorker_1.runSassBuildWorker(this.variables).catch(error => {
-                        Shout_1.Shout.fatal(`during CSS build:`, error);
-                        const va = new VoiceAssistant_1.VoiceAssistant(this.variables.mute);
-                        va.speak(`CSS BUILD FATAL ERROR!`);
-                    });
-                }
-                return;
+        }
+        else if (taskName === 'css') {
+            const valid = this.validateCssBuildTask();
+            if (valid) {
+                this.buildWorker.runCssBuildWorker(this.variables);
             }
-            case 'copy': {
-                if (this.variables.copy.length) {
-                    RunWorker_1.runCopyBuildWorker(this.variables).catch(error => {
-                        Shout_1.Shout.fatal(`during Copy Assets job:`, error);
-                        const va = new VoiceAssistant_1.VoiceAssistant(this.variables.mute);
-                        va.speak(`COPY ASSETS FATAL ERROR!`);
-                    });
-                }
-                return;
+        }
+        else if (taskName === 'copy') {
+            if (this.variables.copy.length) {
+                this.buildWorker.runCopyBuildWorker(this.variables);
             }
-            default:
-                throw Error('Task `' + taskName + '` does not exists!');
+        }
+        else {
+            throw new Error(`Unknown build name: ${taskName}`);
         }
     }
 }
-exports.ToolOrchestrator = ToolOrchestrator;
+exports.BuildRunner = BuildRunner;

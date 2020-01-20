@@ -6,7 +6,7 @@ const ReadProjectSettings_1 = require("./variables-factory/ReadProjectSettings")
 const EnvParser_1 = require("./variables-factory/EnvParser");
 const ProcessInvoke_1 = require("./ProcessInvoke");
 const Shout_1 = require("./Shout");
-const ToolOrchestrator_1 = require("./ToolOrchestrator");
+const BuildRunner_1 = require("./BuildRunner");
 const TypescriptConfigParser_1 = require("./TypescriptConfigParser");
 const MergePackageJson_1 = require("./MergePackageJson");
 const UserSettingsManager_1 = require("./user-settings/UserSettingsManager");
@@ -64,9 +64,9 @@ module.exports = class InstapackProgram {
                 return;
             }
         }
-        const tm = new ToolOrchestrator_1.ToolOrchestrator(variables);
-        tm.outputBuildInformation();
-        tm.build(taskName);
+        const builder = new BuildRunner_1.BuildRunner(variables);
+        builder.outputBuildInformation();
+        builder.build(taskName);
     }
     async scaffold(template) {
         const templateFolder = upath.join(__dirname, '../templates', template);

@@ -1,6 +1,6 @@
 {
   "name": "instapack",
-  "version": "8.0.0-beta.2",
+  "version": "8.0.0-beta.3",
   "description": "All-in-one TypeScript and Sass compiler for web applications!",
   "keywords": [
     "typescript",
@@ -100,8 +100,8 @@
     "@types/webpack": "^4.41.2",
     "@types/webpack-dev-server": "^3.9.0",
     "@types/yargs": "^15.0.0",
-    "@typescript-eslint/eslint-plugin": "2.16.0",
-    "@typescript-eslint/parser": "2.16.0",
+    "@typescript-eslint/eslint-plugin": "2.17.0",
+    "@typescript-eslint/parser": "2.17.0",
     "ava": "3.0.0",
     "eslint": "6.8.0"
   },

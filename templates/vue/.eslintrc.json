@@ -4,7 +4,8 @@
         "eslint:recommended",
         "plugin:vue/recommended",
         "plugin:@typescript-eslint/eslint-recommended",
-        "plugin:@typescript-eslint/recommended"
+        "plugin:@typescript-eslint/recommended",
+        "prettier/vue"
     ],
     "parserOptions": {
         "parser": "@typescript-eslint/parser",
@@ -14,10 +15,5 @@
     "env": {
         "browser": true,
         "commonjs": true
-    },
-    "rules": {
-        "vue/html-indent": ["warn", 4],
-        "vue/singleline-html-element-content-newline": "off",
-        "vue/html-self-closing": "off"
     }
 }

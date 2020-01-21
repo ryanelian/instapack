@@ -257,7 +257,7 @@ instapack supports [`.babelrc`](https://babeljs.io/docs/usage/babelrc/) in the p
 
 ## ESLint Integration
 
-instapack 8.0.0 supports [ESLint configuration](https://eslint.org/docs/user-guide/configuring), applied directly in-memory to TypeScript source code during type-check phase. 
+instapack 8.0.0 supports [ESLint configuration](https://eslint.org/docs/user-guide/configuring), applied directly in-memory to TypeScript source code during type-check.
 
 > Source code will be linted only when it can be compiled correctly.
 
@@ -294,12 +294,12 @@ yarn add eslint typescript @typescript-eslint/eslint-plugin @typescript-eslint/p
 
 Out of the box, instapack lints `<script lang="ts"></script>` in Vue Single-File Components without any special ESLint configuration for Vue.js! :heavy_check_mark:
 
-**However, these lint errors will not be visible in Visual Studio Code...** To remedy this issue, add two more packages to the project and use the following special ESLint configuration instead:
+**However, these lint errors will not be visible in Visual Studio Code...** To remedy this issue, add these packages to the project and use the following special ESLint configuration instead:
 
 ```bash
-npm install eslint-plugin-vue vue-eslint-parser -D
+npm install eslint-plugin-vue vue-eslint-parser eslint-config-prettier -D
 # or...
-yarn add eslint-plugin-vue vue-eslint-parser -D
+yarn add eslint-plugin-vue vue-eslint-parser eslint-config-prettier -D
 ```
 
 ```json
@@ -309,7 +309,8 @@ yarn add eslint-plugin-vue vue-eslint-parser -D
         "eslint:recommended",
         "plugin:vue/recommended",
         "plugin:@typescript-eslint/eslint-recommended",
-        "plugin:@typescript-eslint/recommended"
+        "plugin:@typescript-eslint/recommended",
+        "prettier/vue"
     ],
     "parserOptions": {
         "parser": "@typescript-eslint/parser",
@@ -319,11 +320,6 @@ yarn add eslint-plugin-vue vue-eslint-parser -D
     "env": {
         "browser": true,
         "commonjs": true
-    },
-    "rules": {
-        "vue/html-indent": ["warn", 4],
-        "vue/singleline-html-element-content-newline": "off",
-        "vue/html-self-closing": "off"
     }
 }
 ```
@@ -528,7 +524,7 @@ declare module "*.vue" {
 }
 ```
 
-- Basic CSS in `<style>` (or `<style scoped>` or `<style module>`) code blocks should work, but Sass CANNOT be used and the resulting CSS will NOT be auto-prefixed and minified. 
+- Basic CSS in `<style>` (or `<style scoped>` or `<style module>`) code blocks should work, but Sass CANNOT be used and the resulting CSS will NOT be auto-prefixed and minified. **You are advised to write CSS using the instapack Sass project instead!**
 
 > When using Visual Studio Code, install [Vetur](https://marketplace.visualstudio.com/items?itemName=octref.vetur) extension to get syntax highlighting and TypeScript intellisense.
 
@@ -538,7 +534,7 @@ instapack also has a custom Node-like but [standard-compliant Sass module system
 
 > **HEADS UP!** The Sass team discourages the continued use of the `@import` rule. Sass will gradually phase it out over the next few years, and eventually remove it from the language entirely. Prefer the `@use` rule instead.
 
-- [According to the official Sass CSS Imports specification](https://github.com/sass/sass/blob/master/accepted/css-imports.md#handling-an-import-rule), these imports will be treated as *'plain CSS'* `@import` rules (file not included in resulting bundle):
+- [According to the official Sass CSS Imports specification](https://github.com/sass/sass/blob/master/accepted/css-imports.md#handling-an-import-rule), these imports will be treated as 'Plain CSS' `@import` **(file not included in resulting bundle)**:
 
   - The imported URL / query path begins with `http://` or `https://`
 

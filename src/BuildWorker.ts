@@ -17,7 +17,9 @@ async function stayAlive(): Promise<never> {
 export async function jsWorker(variables: BuildVariables): Promise<void> {
     const tool = new TypeScriptBuildEngine(variables);
     await tool.build();
-    await stayAlive();
+    if (variables.watch) {
+        await stayAlive();
+    }
 }
 
 export async function typeCheckWorker(variables: BuildVariables): Promise<void> {

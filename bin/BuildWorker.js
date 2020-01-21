@@ -13,7 +13,9 @@ async function stayAlive() {
 async function jsWorker(variables) {
     const tool = new TypeScriptBuildEngine_1.TypeScriptBuildEngine(variables);
     await tool.build();
-    await stayAlive();
+    if (variables.watch) {
+        await stayAlive();
+    }
 }
 exports.jsWorker = jsWorker;
 async function typeCheckWorker(variables) {

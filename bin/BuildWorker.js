@@ -6,10 +6,14 @@ const SassBuildTool_1 = require("./SassBuildTool");
 const CopyBuildTool_1 = require("./CopyBuildTool");
 const VoiceAssistant_1 = require("./VoiceAssistant");
 const Shout_1 = require("./Shout");
+async function stayAlive() {
+    return new Promise(() => {
+    });
+}
 async function jsWorker(variables) {
     const tool = new TypeScriptBuildEngine_1.TypeScriptBuildEngine(variables);
     await tool.build();
-    while (variables.watch) { }
+    await stayAlive();
 }
 exports.jsWorker = jsWorker;
 async function typeCheckWorker(variables) {
@@ -17,7 +21,7 @@ async function typeCheckWorker(variables) {
     tool.typeCheck();
     if (variables.watch) {
         tool.watch();
-        while (variables.watch) { }
+        await stayAlive();
     }
 }
 exports.typeCheckWorker = typeCheckWorker;
@@ -26,7 +30,7 @@ async function cssWorker(variables) {
     await tool.buildWithStopwatch();
     if (variables.watch) {
         tool.watch();
-        while (variables.watch) { }
+        await stayAlive();
     }
 }
 exports.cssWorker = cssWorker;

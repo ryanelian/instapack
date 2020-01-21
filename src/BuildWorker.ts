@@ -8,10 +8,16 @@ import { CopyBuildTool } from "./CopyBuildTool";
 import { VoiceAssistant } from './VoiceAssistant';
 import { Shout } from "./Shout";
 
+async function stayAlive(): Promise<never> {
+    return new Promise<never>(() => {
+        /* never resolve to allow build workers to run forever */
+    });
+}
+
 export async function jsWorker(variables: BuildVariables): Promise<void> {
     const tool = new TypeScriptBuildEngine(variables);
     await tool.build();
-    while (variables.watch) { /* stay alive */ }
+    await stayAlive();
 }
 
 export async function typeCheckWorker(variables: BuildVariables): Promise<void> {
@@ -19,7 +25,7 @@ export async function typeCheckWorker(variables: BuildVariables): Promise<void> 
     tool.typeCheck();
     if (variables.watch) {
         tool.watch();
-        while (variables.watch) { /* stay alive */ }
+        await stayAlive();
     }
 }
 
@@ -29,7 +35,7 @@ export async function cssWorker(variables: BuildVariables): Promise<void> {
     await tool.buildWithStopwatch();
     if (variables.watch) {
         tool.watch();
-        while (variables.watch) { /* stay alive */ }
+        await stayAlive();
     }
 }
 
@@ -66,7 +72,7 @@ buildMaps['copy'] = {
     worker: copyWorker
 };
 
-// is forked process:
+// run when child_process.fork:
 if (process.send) {
     process.on('message', (param: BuildWorkerParameters) => {
         // console.log(param);

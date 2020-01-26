@@ -26,9 +26,15 @@
 
 ### Per-Project (consistent build)
 
-First, open command prompt in the project folder and install instapack locally: `npm install instapack@[version] -D -E`
+When requiring a specific instapack version to build a project, a local installation may be desirable over global installation. (For example: synchronizing instapack version used by the CI and the development team)
 
-Then invoke instapack using command: `npx ipack`
+First, ensure `package.json` exists in the project folder. (If not, run `npm init -y`)
+
+Then, open command prompt in the said folder and install instapack locally: `npm install instapack@[INSERT_PACKAGE_VERSION_HERE] -D -E`
+
+The local instapack can then be invoked using `npx ipack` command. Alternatively, use [npm run scripts](https://docs.npmjs.com/cli/run-script).
+
+> All the above `npm` commands can be replaced by [`pnpm`](https://pnpm.js.org/) to allow downloading instapack once (per exact version) across multiple projects in the same drive letter in the same machine!
 
 ## Quick Start Guide
 

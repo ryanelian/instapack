@@ -26,8 +26,8 @@
     "bootstrap": "^4.4.1",
     "jquery": "^3.4.1",
     "linq": "^3.2.1",
-    "luxon": "^1.21.3",
-    "popper.js": "^1.16.0",
+    "luxon": "^1.22.0",
+    "popper.js": "^1.16.1",
     "sweetalert": "^2.1.2",
     "ts-polyfill": "^3.7.5",
     "tslib": "^1.10.0"

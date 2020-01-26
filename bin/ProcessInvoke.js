@@ -51,7 +51,7 @@ async function restorePackages(packageManager, root) {
         if (lockFileExists) {
             lock = true;
             packageManager = lockFilesPackageManager[i];
-            console.log(`Project lock file exists: ${lockFilePath}\nUsing ${packageManager} package manager...`);
+            console.log(`Project lock file exists: ${lockFilePath}\nRestoring packages using ${packageManager}...`);
         }
     }
     if (!lock) {

@@ -32,7 +32,7 @@ Here are the list of breaking changes when upgrading between instapack major (or
 
 - The default package manager is now set to `npm` due to uncertainty surrounding Yarn 2 Plug'n'Play not supported by TypeScript (and Visual Studio)!
 
-  - instapack will force-use `npm` if `package-lock.json` is found first, but will force-use `yarn` if `yarn.lock` is found for backward compatibility.
+  - instapack will force-use package manager which lock file is found first. Priority: `pnpm` > `npm` > `yarn`
 
 ## 7.3.0
 

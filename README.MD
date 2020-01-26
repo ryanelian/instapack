@@ -149,9 +149,9 @@ In addition, build flags are available:
 
 ### set <key> <value>
 
-- `package-manager` allows setting default package manager to be used for restoring and integrity-checking `node_modules` prior build. Possible values: `npm`, `yarn`, `disabled` (default: `npm`)
+- `package-manager` allows setting default package manager to be used for restoring and integrity-checking `node_modules` prior build. Possible values: `npm`, `pnpm`, `yarn`, `disabled` (default: `npm`)
 
-> **Yarn 2 is incompatible with instapack due to [Plug'n'Play](https://yarnpkg.com/features/pnp) module loading [not supported by TypeScript](https://github.com/microsoft/TypeScript/issues/28289) (and Visual Studio)!** Thus, the `yarn` setting refers to the legacy Yarn 1.
+> **Yarn 2 is incompatible with instapack due to [Plug'n'Play](https://yarnpkg.com/features/pnp) [NOT SUPPORTED by TypeScript](https://github.com/microsoft/TypeScript/issues/28289) (and Visual Studio)!** Thus, the `yarn` setting refers to the legacy Yarn 1.
 
 - `mute` disables voice assistant on build fails during watch mode when set to `true`. Possible values: `true` and `false` (default: `false`)
 

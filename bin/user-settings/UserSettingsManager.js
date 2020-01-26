@@ -12,7 +12,7 @@ const validators = Object.freeze({
     'mute': (x) => ['true', 'false'].includes(x)
 });
 const defaultSettings = Object.freeze({
-    packageManager: 'yarn',
+    packageManager: 'npm',
     mute: false,
 });
 exports.userSettingsOptions = Object.freeze(Object.keys(validators));

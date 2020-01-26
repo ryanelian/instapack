@@ -16,7 +16,7 @@ const validators: Readonly<MapLike<ValidatorFunction>> = Object.freeze({
 });
 
 const defaultSettings: Readonly<UserSettings> = Object.freeze({
-    packageManager: 'yarn',
+    packageManager: 'npm',
     mute: false,
 });
 

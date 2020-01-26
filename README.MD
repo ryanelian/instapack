@@ -26,9 +26,9 @@
 
 ### Per-Project (consistent build)
 
-First, open command prompt in the project folder and install instapack locally: `npm install instapack@[version] -D -E` or `yarn add instapack@[version] -D -E`
+First, open command prompt in the project folder and install instapack locally: `npm install instapack@[version] -D -E`
 
-Then invoke instapack using command: `npx ipack` or `yarn ipack`
+Then invoke instapack using command: `npx ipack`
 
 ## Quick Start Guide
 
@@ -89,11 +89,11 @@ If using [the latest Visual Studio Code](https://code.visualstudio.com/), it sho
 
 ## But... Why?
 
-**instapack is a first-class end-to-end TypeScript and Sass build tool. :tophat:** Meaning, it comes with an assurance to compile projects written using standard TypeScript or Sass successfully regardless of frameworks used. :statue_of_liberty: This mindset is the differentiating factor between instapack and other CLI tools, which tend to be designed framework-first but TypeScript-second! 
+**instapack is a first-class end-to-end TypeScript and Sass build tool. :tophat:** Meaning, it comes with an assurance to compile projects written using standard TypeScript or Sass successfully regardless of frameworks used. :statue_of_liberty: This mindset is the differentiating factor between instapack and other CLI tools, which tend to be designed framework-first but TypeScript-second!
 
 instapack is battle-tested :hocho: and is designed to cover most normal use cases when developing a modern web app. Powered by [webpack](https://webpack.js.org), instapack effortlessly consumes modern JS modules (ES, CommonJS, UMD) and more (plain HTML templates, Vue SFC, TypeScript JSX).
 
-With this powerful tool, you can save time :watch:, save precious SSD space :space_invader:, and save yourself from the pain of manually maintaining project build scripts! :coffee:
+With this powerful tool, you can save time :watch:, save precious SSD space :space_invader:, and save yourself from the pain of maintaining project build scripts! :coffee:
 
 ## Commands
 
@@ -149,7 +149,9 @@ In addition, build flags are available:
 
 ### set <key> <value>
 
-- `package-manager` allows setting default package manager to be used for restoring and integrity-checking `node_modules` prior build. Possible values: `yarn`, `npm`, `disabled` (default: `yarn`)
+- `package-manager` allows setting default package manager to be used for restoring and integrity-checking `node_modules` prior build. Possible values: `npm`, `yarn`, `disabled` (default: `npm`)
+
+> **Yarn 2 is incompatible with instapack due to [Plug'n'Play](https://yarnpkg.com/features/pnp) module loading [not supported by TypeScript](https://github.com/microsoft/TypeScript/issues/28289) (and Visual Studio)!** Thus, the `yarn` setting refers to the legacy Yarn 1.
 
 - `mute` disables voice assistant on build fails during watch mode when set to `true`. Possible values: `true` and `false` (default: `false`)
 
@@ -266,8 +268,6 @@ Here is an example `.eslintrc.json` placed in the project root (next to `tsconfi
 
 ```bash
 npm install eslint typescript @typescript-eslint/eslint-plugin @typescript-eslint/parser -D
-# or...
-yarn add eslint typescript @typescript-eslint/eslint-plugin @typescript-eslint/parser -D
 ```
 
 ```json
@@ -299,8 +299,6 @@ Out of the box, instapack lints `<script lang="ts"></script>` in Vue Single-File
 
 ```bash
 npm install eslint-plugin-vue vue-eslint-parser eslint-config-prettier -D
-# or...
-yarn add eslint-plugin-vue vue-eslint-parser eslint-config-prettier -D
 ```
 
 ```json
@@ -331,8 +329,6 @@ For React projects, add one additional package and use this `.eslintrc.json` ins
 
 ```bash
 npm install eslint-plugin-react -D
-# or...
-yarn add eslint-plugin-react -D
 ```
 
 ```json
@@ -402,7 +398,7 @@ Hot Reload for Vue.js projects using Single-File Component format (`.vue`) has b
 
 When using `--experimental-react-refresh` build flag, Fast Refresh (Hot Reload) for React projects has been enabled out of the box without requiring any code changes!
 
-> If not using React Refresh, use [react-hot-loader](https://github.com/gaearon/react-hot-loader) package and manually configure the project using instructions provided.
+> If not using React Refresh, use [react-hot-loader](https://github.com/gaearon/react-hot-loader) package and configure the project manually, following the instructions provided.
 
 ## Module Systems
 
@@ -660,7 +656,9 @@ Yes, absolutely!
 
 **If it worked when using standard JS, it WILL work with instapack.** (Other frameworks not shipped in new project templates such as Angular 2+, Preact, Inferno.js, Mithril.js are known to be working with instapack.)
 
-Add the packages required for your project using npm / Yarn and then start hacking. We'll take care of the outputs.
+Add the packages required for your project and then start hacking. We'll take care of the outputs.
+
+If there are newer major frameworks requiring custom file compilation (like `.vue`) AND it happened to support TypeScript, please create an issue to allow instapack to be modified to support such formats.
 
 ### Is it even safe to target ES2015?
 
@@ -817,15 +815,9 @@ This is the preferred way of doing things because:
 
 - Generally, prevent front-end projects from screwing around with each other's code.
 
-### My package restore / IDE is slow. Help!
+### My package restore / IDE on Windows is slow. Help!
 
-Windows Defender or other anti-virus software apparently slow down package restores and IDEs when opening projects.
-
-For this very reason, it is highly recommended to:
-
-- Add anti-virus exclusion to Yarn installation folder: `C:\Program Files (x86)\Yarn`. To double check, type: `where.exe yarn`
-
-- Add anti-virus exclusion to Yarn cache folder: `C:\Users\Ryan\AppData\Local\Yarn`. To double check, type: `yarn cache dir`
+Windows Defender or other anti-virus software apparently slow down package restores and IDEs when opening projects. The remedy to this issue is to:
 
 - Add anti-virus exclusion to NodeJS installation folder: `C:\Program Files\nodejs`. To double check, type: `where.exe node`
 

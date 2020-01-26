@@ -34,6 +34,10 @@ async function isCommandExist(command: string): Promise<boolean> {
  * @param packageManager
  */
 export async function restorePackages(packageManager: string, root: string): Promise<void> {
+    if (!packageManager) {
+        packageManager = 'npm';
+    }
+
     if (packageManager === 'disabled') {
         return;
     }
@@ -60,10 +64,6 @@ export async function restorePackages(packageManager: string, root: string): Pro
     }
 
     if (!lock) {
-        if (!packageManager) {
-            packageManager = 'yarn';
-        }
-
         if (packageManager === 'yarn') {
             const yarnExists = await isCommandExist('yarn');
             if (!yarnExists) {
@@ -80,7 +80,7 @@ export async function restorePackages(packageManager: string, root: string): Pro
             break;
         }
         case 'npm': {
-            execWithConsoleOutput('npm install');
+            execWithConsoleOutput('npm install --loglevel error');
             break;
         }
         default: {

@@ -23,6 +23,9 @@ async function isCommandExist(command) {
     }
 }
 async function restorePackages(packageManager, root) {
+    if (!packageManager) {
+        packageManager = 'npm';
+    }
     if (packageManager === 'disabled') {
         return;
     }
@@ -46,9 +49,6 @@ async function restorePackages(packageManager, root) {
         console.log('yarn.lock exists in project root folder. Using Yarn package manager...');
     }
     if (!lock) {
-        if (!packageManager) {
-            packageManager = 'yarn';
-        }
         if (packageManager === 'yarn') {
             const yarnExists = await isCommandExist('yarn');
             if (!yarnExists) {
@@ -62,7 +62,7 @@ async function restorePackages(packageManager, root) {
             break;
         }
         case 'npm': {
-            execWithConsoleOutput('npm install');
+            execWithConsoleOutput('npm install --loglevel error');
             break;
         }
         default: {

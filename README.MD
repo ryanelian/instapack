@@ -258,8 +258,6 @@ import jQuery from 'jquery';
 
 - `port1` can be set for declaring a static port number to be used by the Hot Reload server. If not set or is already used, the port number will be randomized. [Read more ↓](#hot-reload-development-mode)
 
-- instapack will not resolve symlinks if TypeScript compiler option `preserveSymlinks` is set to `true`
-
 ## Babel Integration
 
 instapack supports [`.babelrc`](https://babeljs.io/docs/usage/babelrc/) in the project root folder. **Babel transformations will be applied AFTER TypeScript compilation.**
@@ -633,6 +631,8 @@ import { x } from 'stuff';      // might resolve to /client/js/lib/stuff/index.t
 import { y } from 'stuff/y';    // might resolve to /client/js/lib/stuff/y.ts
 import { xyz } from 'abc/def';  // might resolve to /client/js/abc/def.ts or /client/js/globals/abc/def.ts
 ```
+
+instapack will also not resolve symlinks if TypeScript compiler option `preserveSymlinks` is set to `true`
 
 ## Release Cadence
 

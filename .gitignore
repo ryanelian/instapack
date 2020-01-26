@@ -6,6 +6,7 @@ www
 # lock files
 templates/**/yarn.lock
 templates/**/package-lock.json
+templates/**/pnpm-lock.yaml
 
 # log files
 *.log

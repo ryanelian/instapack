@@ -2,21 +2,21 @@ import * as fse from 'fs-extra';
 import { UserSettings } from './UserSettings';
 import { UserSettingsPath } from './UserSettingsPath';
 
-function convertKebabToCamelCase(s: string): string {
-    return s.toLowerCase().replace(/-[a-z]/g, ss => {
-        return ss[1].toUpperCase();
-    });
-}
-
 type ValidatorFunction = (x: string) => boolean;
 
 const validators: Readonly<MapLike<ValidatorFunction>> = Object.freeze({
-    'package-manager': (x: string) => ['yarn', 'npm', 'disabled'].includes(x),
+    'package-manager': (x: string) => ['npm', 'yarn', 'pnpm', 'disabled'].includes(x),
     'mute': (x: string) => ['true', 'false'].includes(x)
 });
 
+const keyMap: Readonly<MapLike<string>> = Object.freeze({
+    'package-manager': 'packageManager',
+    'packageManager': 'package-manager',
+    'mute': 'mute'
+});
+
 const defaultSettings: Readonly<UserSettings> = Object.freeze({
-    packageManager: 'yarn',
+    packageManager: 'npm',
     mute: false,
 });
 
@@ -30,8 +30,12 @@ export async function getSettings(): Promise<UserSettings> {
         for (const key in defaultSettings) {
             const value = currentSettings[key];
             // avoid reading invalid settings... (reset to good known default settings)
-            if (value && validators[key](value)) {
-                settings[key] = currentSettings[key];
+            if (value) {
+                const validatorKey = keyMap[key];
+                const validator = validators[validatorKey];
+                if (validator(value)) {
+                    settings[key] = currentSettings[key];
+                }
             }
         }
     } catch (error) {
@@ -53,7 +57,7 @@ export async function setSetting(key: string, value: string): Promise<string> {
         throw new Error('Invalid setting value! Please refer to README.');
     }
 
-    const trueKey = convertKebabToCamelCase(key);
+    const trueKey = keyMap[key];
     let trueValue: string | boolean | number = value;
     try {
         trueValue = JSON.parse(value);

@@ -22,7 +22,17 @@ async function isCommandExist(command) {
         return false;
     }
 }
+async function usePackageManagerWithFallback(packageManager) {
+    const exists = await isCommandExist(packageManager);
+    if (!exists) {
+        packageManager = 'npm';
+    }
+    return packageManager;
+}
 async function restorePackages(packageManager, root) {
+    if (!packageManager) {
+        packageManager = 'npm';
+    }
     if (packageManager === 'disabled') {
         return;
     }
@@ -32,29 +42,20 @@ async function restorePackages(packageManager, root) {
         console.log('package.json does not exists in project root folder, skipping package restore.');
         return;
     }
-    const npmLock = upath.join(root, 'package-lock.json');
-    const yarnLock = upath.join(root, 'yarn.lock');
     let lock = false;
-    if (await fse.pathExists(npmLock)) {
-        lock = true;
-        packageManager = 'npm';
-        console.log('package-lock.json exists in project root folder. Using npm package manager...');
-    }
-    else if (await fse.pathExists(yarnLock)) {
-        lock = true;
-        packageManager = 'yarn';
-        console.log('yarn.lock exists in project root folder. Using Yarn package manager...');
+    const lockFiles = ['pnpm-lock.yaml', 'package-lock.json', 'yarn.lock'];
+    const lockFilesPackageManager = ['pnpm', 'npm', 'yarn'];
+    for (let i = 0; i < lockFiles.length; i++) {
+        const lockFilePath = upath.join(root, lockFiles[i]);
+        const lockFileExists = await fse.pathExists(lockFilePath);
+        if (lockFileExists) {
+            lock = true;
+            packageManager = lockFilesPackageManager[i];
+            console.log(`Project lock file exists: ${lockFilePath}\nUsing ${packageManager} package manager...`);
+        }
     }
     if (!lock) {
-        if (!packageManager) {
-            packageManager = 'yarn';
-        }
-        if (packageManager === 'yarn') {
-            const yarnExists = await isCommandExist('yarn');
-            if (!yarnExists) {
-                packageManager = 'npm';
-            }
-        }
+        packageManager = await usePackageManagerWithFallback(packageManager);
     }
     switch (packageManager) {
         case 'yarn': {
@@ -62,7 +63,11 @@ async function restorePackages(packageManager, root) {
             break;
         }
         case 'npm': {
-            execWithConsoleOutput('npm install');
+            execWithConsoleOutput('npm install --loglevel error');
+            break;
+        }
+        case 'pnpm': {
+            execWithConsoleOutput('pnpm install');
             break;
         }
         default: {

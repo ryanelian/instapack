@@ -30,6 +30,10 @@ Here are the list of breaking changes when upgrading between instapack major (or
 
   - Developers using Google Chrome can still load the separated source map file by right-clicking the JS source code viewer in the Debugger and selecting "Add source map..."
 
+- The default package manager is now set to `npm` due to uncertainty surrounding Yarn 2 Plug'n'Play not supported by TypeScript (and Visual Studio)!
+
+  - instapack will force-use package manager which lock file is found first. Priority: `pnpm` > `npm` > `yarn`
+
 ## 7.3.0
 
 - `port2` option is no longer being used and is obsoleted.

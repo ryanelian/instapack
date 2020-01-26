@@ -2,17 +2,17 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const fse = require("fs-extra");
 const UserSettingsPath_1 = require("./UserSettingsPath");
-function convertKebabToCamelCase(s) {
-    return s.toLowerCase().replace(/-[a-z]/g, ss => {
-        return ss[1].toUpperCase();
-    });
-}
 const validators = Object.freeze({
-    'package-manager': (x) => ['yarn', 'npm', 'disabled'].includes(x),
+    'package-manager': (x) => ['npm', 'yarn', 'pnpm', 'disabled'].includes(x),
     'mute': (x) => ['true', 'false'].includes(x)
 });
+const keyMap = Object.freeze({
+    'package-manager': 'packageManager',
+    'packageManager': 'package-manager',
+    'mute': 'mute'
+});
 const defaultSettings = Object.freeze({
-    packageManager: 'yarn',
+    packageManager: 'npm',
     mute: false,
 });
 exports.userSettingsOptions = Object.freeze(Object.keys(validators));
@@ -22,8 +22,12 @@ async function getSettings() {
         const currentSettings = await fse.readJson(UserSettingsPath_1.UserSettingsPath.settings);
         for (const key in defaultSettings) {
             const value = currentSettings[key];
-            if (value && validators[key](value)) {
-                settings[key] = currentSettings[key];
+            if (value) {
+                const validatorKey = keyMap[key];
+                const validator = validators[validatorKey];
+                if (validator(value)) {
+                    settings[key] = currentSettings[key];
+                }
             }
         }
     }
@@ -42,7 +46,7 @@ async function setSetting(key, value) {
     if (!valid) {
         throw new Error('Invalid setting value! Please refer to README.');
     }
-    const trueKey = convertKebabToCamelCase(key);
+    const trueKey = keyMap[key];
     let trueValue = value;
     try {
         trueValue = JSON.parse(value);

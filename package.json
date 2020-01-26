@@ -46,6 +46,7 @@
   },
   "scripts": {
     "compile": "tsc",
+    "compile:watch": "tsc -w",
     "lint": "eslint src/** --ext ts --env node --fix",
     "build": "npm run compile && npm run lint",
     "test": "ava --verbose",
@@ -64,6 +65,7 @@
     "clean-css": "4.2.2",
     "css-loader": "3.4.2",
     "dotenv": "8.2.0",
+    "enhanced-resolve": "5.0.0-beta.4",
     "fast-glob": "3.1.1",
     "fibers": "4.0.2",
     "follow-redirects": "1.9.1",
@@ -81,6 +83,7 @@
     "typescript": "3.7.5",
     "upath": "1.2.0",
     "vue-loader": "15.8.3",
+    "vue-style-loader": "4.1.2",
     "vue-template-compiler": "2.6.11",
     "webpack": "5.0.0-beta.12",
     "webpack-dev-server": "3.10.1",
@@ -103,9 +106,7 @@
     "@typescript-eslint/eslint-plugin": "2.17.0",
     "@typescript-eslint/parser": "2.17.0",
     "ava": "3.0.0",
-    "eslint": "6.8.0"
-  },
-  "resolutions": {
-    "**/@types/node": "12"
+    "eslint": "6.8.0",
+    "memory-fs": "0.5.0"
   }
 }

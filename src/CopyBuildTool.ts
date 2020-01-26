@@ -1,4 +1,4 @@
-import { BuildVariables } from "./variables-factory/BuildVariables";
+import { BuildVariables, CopyOption } from "./variables-factory/BuildVariables";
 import { Shout } from "./Shout";
 import { VoiceAssistant } from "./VoiceAssistant";
 import { prettyHrTime } from "./PrettyUnits";
@@ -7,7 +7,6 @@ import * as upath from 'upath';
 import * as fse from 'fs-extra';
 import { PathFinder } from "./variables-factory/PathFinder";
 import FastGlob = require("fast-glob");
-import { CopyOption } from "./variables-factory/BuildVariables";
 
 export class CopyBuildTool {
 

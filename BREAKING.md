@@ -12,6 +12,8 @@ Here are the list of breaking changes when upgrading between instapack major (or
 
 - Dropped the community-deprecated TSLint in favor of ESLint-TypeScript integrations. https://github.com/palantir/tslint/issues/4534
 
+  - Rules migration guide: https://github.com/typescript-eslint/typescript-eslint/blob/master/packages/eslint-plugin/ROADMAP.md
+
 - Dropped the (already-obsoleted) `.vue.html` module compilation. 
 
   - Developers using this feature should migrate to `.vue` Single-File Component instead.

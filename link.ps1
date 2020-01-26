@@ -1,4 +1,4 @@
-npm link --loglevel error
-git reset --hard
-Remove-Item package-lock.json
-yarn install --frozen-lockfile
+pnpm install
+pnpm link
+ipack --version
+ipack set package-manager pnpm

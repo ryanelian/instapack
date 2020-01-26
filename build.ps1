@@ -1,3 +1,3 @@
-Remove-Item .\bin\ -Recurse
-npm run build
-npm test
+rimraf ./bin
+pnpm run build
+pnpm test

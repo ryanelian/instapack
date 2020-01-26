@@ -1,3 +1,4 @@
+pnpm install -g typescript rimraf npm-check-updates license-checker
 pnpm install
 pnpm link
 ipack --version

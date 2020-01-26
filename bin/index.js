@@ -75,19 +75,20 @@ module.exports = class InstapackProgram {
             Shout_1.Shout.error('Unable to find new project template for:', chalk.cyan(template));
             return;
         }
-        let mergedPackageJson;
+        let projectPackageJson = undefined;
         const projectPackageJsonPath = upath.join(this.projectFolder, 'package.json');
         const templatePackageJsonPath = upath.join(templateFolder, 'package.json');
-        if (await fse.pathExists(projectPackageJsonPath) && await fse.pathExists(templatePackageJsonPath)) {
-            const projectPackageJson = await fse.readJson(projectPackageJsonPath);
-            const templatePackageJson = await fse.readJson(templatePackageJsonPath);
-            mergedPackageJson = MergePackageJson_1.mergePackageJson(projectPackageJson, templatePackageJson);
+        const templatePackageJsonExistsAsync = fse.pathExists(templatePackageJsonPath);
+        if (await fse.pathExists(projectPackageJsonPath)) {
+            projectPackageJson = await fse.readJson(projectPackageJsonPath);
         }
         console.log('Initializing new project using template:', chalk.cyan(template));
         console.log('Scaffolding project into your web app...');
         await fse.copy(templateFolder, this.projectFolder);
-        if (mergedPackageJson) {
+        if (projectPackageJson && await templatePackageJsonExistsAsync) {
             console.log(`Merging ${chalk.blue('package.json')}...`);
+            const templatePackageJson = await fse.readJson(templatePackageJsonPath);
+            const mergedPackageJson = MergePackageJson_1.mergePackageJson(projectPackageJson, templatePackageJson);
             await fse.writeJson(projectPackageJsonPath, mergedPackageJson, {
                 spaces: 2
             });

@@ -13,7 +13,7 @@ export function objectSortByKeys(input: object): MapLike<unknown> {
     return output;
 }
 
-interface PackageJsonPartial {
+export interface PackageJsonPartial {
     [key: string]: unknown;
     instapack: unknown;
     devDependencies: MapLike<string> | undefined;

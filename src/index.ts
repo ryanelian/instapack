@@ -8,7 +8,7 @@ import { restorePackages, setupHttps } from './ProcessInvoke';
 import { Shout } from './Shout';
 import { BuildRunner } from './BuildRunner';
 import { tryReadTypeScriptConfigJson } from './TypescriptConfigParser';
-import { mergePackageJson } from './MergePackageJson';
+import { mergePackageJson, PackageJsonPartial } from './MergePackageJson';
 import { getSettings, setSetting } from './user-settings/UserSettingsManager';
 import { UserSettingsPath } from './user-settings/UserSettingsPath';
 import { uniteBuildVariables, CommandLineFlags } from './variables-factory/BuildVariables';
@@ -121,23 +121,27 @@ export = class InstapackProgram {
             return;
         }
 
-        let mergedPackageJson: unknown;
+        let projectPackageJson: PackageJsonPartial | undefined = undefined;
         const projectPackageJsonPath = upath.join(this.projectFolder, 'package.json');
         const templatePackageJsonPath = upath.join(templateFolder, 'package.json');
-        if (await fse.pathExists(projectPackageJsonPath) && await fse.pathExists(templatePackageJsonPath)) {
-            // would override, should merge fields instead: instapack, dependencies, and devDependencies
-            const projectPackageJson = await fse.readJson(projectPackageJsonPath);
-            const templatePackageJson = await fse.readJson(templatePackageJsonPath);
+        const templatePackageJsonExistsAsync = fse.pathExists(templatePackageJsonPath);
 
-            mergedPackageJson = mergePackageJson(projectPackageJson, templatePackageJson);
+        if (await fse.pathExists(projectPackageJsonPath)) {
+            // read project package.json first because it will get overwritten by fse.copy below...
+            projectPackageJson = await fse.readJson(projectPackageJsonPath);
         }
 
         console.log('Initializing new project using template:', chalk.cyan(template));
         console.log('Scaffolding project into your web app...');
         await fse.copy(templateFolder, this.projectFolder);
 
-        if (mergedPackageJson) {
+        if (projectPackageJson && await templatePackageJsonExistsAsync) {
+            // package.json override, should merge fields instead: instapack, dependencies, and devDependencies
             console.log(`Merging ${chalk.blue('package.json')}...`);
+
+            const templatePackageJson = await fse.readJson(templatePackageJsonPath);
+            const mergedPackageJson = mergePackageJson(projectPackageJson, templatePackageJson);
+
             await fse.writeJson(projectPackageJsonPath, mergedPackageJson, {
                 spaces: 2
             });

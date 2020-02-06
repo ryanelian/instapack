@@ -670,7 +670,7 @@ If there are newer major frameworks requiring custom file compilation (like `.vu
 
 As of June 2017, all major browsers (except Internet Explorer) supports ES2015. iOS 10.3 and above supports ES2015.
 
-[Internet Explorer 11 and Windows 7 are no longer supported by Microsoft and no longer receive security patches](https://support.microsoft.com/en-us/help/17621/internet-explorer-downloads). The new Chromium-based Microsoft Edge browser update is now available for enterprise customers running Windows 7 (Download: https://www.microsoft.com/en-us/edge), [which is supported for that OS until *at least* July 15, 2021](https://www.neowin.net/news/microsoft-will-support-edge-on-windows-7-for-at-least-18-months/) and [supports IE Mode Compatibility for legacy sites](https://docs.microsoft.com/en-us/deployedge/edge-ie-mode).
+[Internet Explorer 11 and Windows 7 are no longer supported by Microsoft and no longer receive security patches](https://support.microsoft.com/en-us/help/17621/internet-explorer-downloads). The new Chromium-based Microsoft Edge browser update is now available for enterprise customers running Windows 7 (Download: https://www.microsoft.com/en-us/edge), [which is supported for that OS until *at least* July 15, 2021](https://www.neowin.net/news/microsoft-will-support-edge-on-windows-7-for-at-least-18-months/) and [supports IE Mode for legacy websites (e.g. ActiveX) backward compatibility](https://docs.microsoft.com/en-us/deployedge/edge-ie-mode).
 
 ### How to build instapack projects using Docker?
 

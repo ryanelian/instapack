@@ -6,9 +6,9 @@
     "output": "wwwroot"
   },
   "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "^1.2.26",
-    "@fortawesome/free-regular-svg-icons": "^5.12.0",
-    "@fortawesome/free-solid-svg-icons": "^5.12.0",
+    "@fortawesome/fontawesome-svg-core": "^1.2.27",
+    "@fortawesome/free-regular-svg-icons": "^5.12.1",
+    "@fortawesome/free-solid-svg-icons": "^5.12.1",
     "@fortawesome/react-fontawesome": "^0.1.8",
     "@types/luxon": "^1.21.0",
     "@types/react": "^16.9.19",
@@ -19,23 +19,23 @@
     "bootstrap": "^4.4.1",
     "linq": "^3.2.1",
     "luxon": "^1.22.0",
-    "mobx": "^5.15.3",
+    "mobx": "^5.15.4",
     "mobx-react": "^6.1.5",
     "popper.js": "^1.16.1",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "react-popper": "^1.3.7",
     "react-transition-group": "^4.3.0",
-    "reactstrap": "^8.4.0",
+    "reactstrap": "^8.4.1",
     "sweetalert": "^2.1.2",
     "ts-polyfill": "^3.7.5",
     "tslib": "^1.10.0"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^2.17.0",
-    "@typescript-eslint/parser": "^2.17.0",
+    "@typescript-eslint/eslint-plugin": "^2.19.0",
+    "@typescript-eslint/parser": "^2.19.0",
     "eslint": "^6.8.0",
-    "eslint-plugin-react": "^7.18.0",
+    "eslint-plugin-react": "^7.18.3",
     "jquery": "^3.4.1",
     "typescript": "^3.7.5"
   }

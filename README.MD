@@ -660,7 +660,7 @@ ipack --version
 
 Yes, absolutely! 
 
-**If it worked when using standard JS, it WILL work with instapack.** (Other frameworks not shipped in new project templates such as Angular 2+, Preact, Inferno.js, Mithril.js are known to be working with instapack.)
+**If it worked when using normal JS, it WILL work with instapack.** (Other frameworks not shipped in new project templates such as Angular 2+, Preact, Inferno.js, Mithril.js are known to be working with instapack.)
 
 Add the packages required for your project and then start hacking. We'll take care of the outputs.
 
@@ -670,6 +670,8 @@ If there are newer major frameworks requiring custom file compilation (like `.vu
 
 As of June 2017, all major browsers (except Internet Explorer) supports ES2015. iOS 10.3 and above supports ES2015.
 
+[Internet Explorer 11 and Windows 7 are no longer supported by Microsoft and no longer receive security patches](https://support.microsoft.com/en-us/help/17621/internet-explorer-downloads). The new Chromium-based Microsoft Edge browser update is now available for enterprise customers running Windows 7 (Download: https://www.microsoft.com/en-us/edge), [which is supported for that OS until *at least* July 15, 2021](https://www.neowin.net/news/microsoft-will-support-edge-on-windows-7-for-at-least-18-months/) and [supports IE Mode Compatibility for legacy sites](https://docs.microsoft.com/en-us/deployedge/edge-ie-mode).
+
 ### How to build instapack projects using Docker?
 
 This is a sample Dockerfile build recipe for building ASP.NET Core + instapack project:
@@ -677,20 +679,20 @@ This is a sample Dockerfile build recipe for building ASP.NET Core + instapack p
 > This recipe assumes that the project `Dockerfile` is located in the root `/` solution folder (next to `/MyApp.sln`), with the ASP.NET Core + instapack project located in `/MyApp` (`/MyApp/MyApp.csproj` and `/MyApp/package.json`)
 
 ```Dockerfile
-FROM node:12-alpine AS instapack
+FROM node:12-slim AS instapack
 RUN npm install -g instapack
 COPY . /src
 WORKDIR /src/MyApp
 RUN ipack
 
-FROM mcr.microsoft.com/dotnet/core/sdk:3.0 as build
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1 as build
 COPY --from=instapack /src /src
 WORKDIR /src/MyApp
 RUN dotnet restore
 RUN dotnet publish -c Release
 
-FROM mcr.microsoft.com/dotnet/core/aspnet:3.0 as runtime
-COPY --from=build /src/MyApp/bin/Release/netcoreapp3.0/publish /app
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1 as runtime
+COPY --from=build /src/MyApp/bin/Release/netcoreapp3.1/publish /app
 WORKDIR /app
 ENTRYPOINT ["dotnet", "MyApp.dll"]
 ```
@@ -763,8 +765,6 @@ Replace the `url` parameter with the correct URL of your app, then press **F5** 
 ### I thought files should not be bundled because of HTTP/2?
 
 [Nope.](https://medium.com/@asyncmax/the-right-way-to-bundle-your-assets-for-faster-sites-over-http-2-437c37efe3ff)
-
-Also, in IIS, HTTP/2 is only supported when using Windows Server 2016. Many of our customers are still using Windows Server 2012 R2 to date.
 
 ### Can I change the index.ts / index.scss entry point?
 

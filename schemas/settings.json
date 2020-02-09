@@ -48,6 +48,10 @@
             "minLength": 1,
             "pattern": "^(.*)$"
         },
+        "umdLibraryMode": {
+            "$id": "#/properties/umdLibraryMode",
+            "type": "boolean"
+        },
         "alias": {
             "$id": "#/properties/alias",
             "type": "object",

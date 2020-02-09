@@ -190,6 +190,8 @@ instapack puts configurations inside `package.json` to reduce project files clut
 
   - For example: `namespace: "instapack"` enables accessing `export function foo()` as `window.instapack.foo()` (which then can be invoked via [Blazor JS Interop](https://docs.microsoft.com/en-us/aspnet/core/blazor/javascript-interop?view=aspnetcore-3.0): `await JsRuntime.InvokeAsync<string>("instapack.foo");`)
 
+- `umdLibraryMode` allows building a single [UMD](https://github.com/umdjs/umd) JS bundle (without `.dll.js` file). This configuration should be used when building a library package.
+
 - `alias` allows overriding module `import` calls from all files, including dependencies. [Read more ↗](https://webpack.js.org/configuration/resolve/)
 
   - [TypeScript `paths` compiler options will be merged with alias option.](https://github.com/ryanelian/instapack#typescript-custom-paths-module-resolution)

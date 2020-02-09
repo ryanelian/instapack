@@ -154,7 +154,7 @@ class TypeScriptBuildEngine {
             }
         };
     }
-    createWebpackPlugins() {
+    get webpackPlugins() {
         var _a;
         const plugins = [];
         const typescriptTarget = (_a = this.typescriptCompilerOptions.target, (_a !== null && _a !== void 0 ? _a : TypeScript.ScriptTarget.ES3));
@@ -168,7 +168,7 @@ class TypeScriptBuildEngine {
         }
         return plugins;
     }
-    createWebpackRules() {
+    get webpackRules() {
         const rules = [
             this.typescriptWebpackRules,
             this.vueCssWebpackRules,
@@ -199,71 +199,81 @@ class TypeScriptBuildEngine {
         return 'eval-source-map';
     }
     createWebpackConfiguration() {
-        const alias = TypeScriptPathsTranslator_1.mergeTypeScriptPathAlias(this.typescriptCompilerOptions, this.finder.root, this.variables.alias);
-        const wildcards = TypeScriptPathsTranslator_1.getWildcardModules(this.typescriptCompilerOptions, this.finder.root);
-        const rules = this.createWebpackRules();
-        const plugins = this.createWebpackPlugins();
-        const webpackEntry = path.normalize(this.finder.jsEntry);
-        const webpackOutputJsFolder = path.normalize(this.finder.jsOutputFolder);
         const config = {
-            entry: webpackEntry,
-            output: {
-                filename: (data) => {
-                    if (data.chunk.name === 'main') {
-                        return this.finder.jsOutputFileName;
-                    }
-                    else {
-                        return this.finder.jsChunkFileName;
-                    }
-                },
-                chunkFilename: this.finder.jsChunkFileName,
-                path: webpackOutputJsFolder,
-                publicPath: 'js/',
-                library: this.variables.namespace
-            },
+            entry: path.normalize(this.finder.jsEntry),
+            output: this.webpackOutputOptions,
             externals: this.variables.externals,
-            resolve: {
-                extensions: ['.ts', '.tsx', '.js', '.jsx', '.vue', '.json'],
-                alias: alias
-            },
+            resolve: this.webpackResolveOptions,
+            plugins: this.webpackPlugins,
             module: {
-                rules: rules
+                rules: this.webpackRules
             },
             mode: (this.variables.production ? 'production' : 'development'),
             devtool: this.webpackConfigurationDevTool,
-            optimization: {
-                noEmitOnErrors: true,
-                splitChunks: {
-                    minSize: 1,
-                    maxAsyncRequests: Infinity,
-                    cacheGroups: {
-                        vendors: {
-                            name: 'dll',
-                            test: /[\\/]node_modules[\\/]/,
-                            chunks: 'initial',
-                            enforce: true,
-                            priority: 99
-                        }
-                    }
-                }
-            },
+            optimization: this.webpackOptimizationOptions,
             performance: {
                 hints: false
-            },
-            plugins: plugins
+            }
         };
-        if (config.output) {
-            config.output['ecmaVersion'] = this.getECMAScriptVersion();
+        return config;
+    }
+    get webpackOutputOptions() {
+        const output = {
+            filename: (data) => {
+                if (data.chunk.name === 'main') {
+                    return this.finder.jsOutputFileName;
+                }
+                else {
+                    return this.finder.jsChunkFileName;
+                }
+            },
+            chunkFilename: this.finder.jsChunkFileName,
+            path: path.normalize(this.finder.jsOutputFolder),
+            publicPath: 'js/',
+            library: this.variables.namespace
+        };
+        if (this.variables.umdLibraryMode) {
+            output.libraryTarget = "umd";
         }
-        if (config.resolve) {
-            if (wildcards) {
-                config.resolve.modules = wildcards;
-            }
-            if (this.typescriptCompilerOptions.preserveSymlinks) {
-                config.resolve.symlinks = false;
-            }
+        return Object.assign(output, {
+            ecmaVersion: this.getECMAScriptVersion()
+        });
+    }
+    get webpackResolveOptions() {
+        const alias = TypeScriptPathsTranslator_1.mergeTypeScriptPathAlias(this.typescriptCompilerOptions, this.finder.root, this.variables.alias);
+        const wildcards = TypeScriptPathsTranslator_1.getWildcardModules(this.typescriptCompilerOptions, this.finder.root);
+        const config = {
+            extensions: ['.ts', '.tsx', '.js', '.jsx', '.vue', '.json'],
+            alias: alias
+        };
+        if (wildcards) {
+            config.modules = wildcards;
+        }
+        if (this.typescriptCompilerOptions.preserveSymlinks) {
+            config.symlinks = false;
         }
         return config;
+    }
+    get webpackOptimizationOptions() {
+        const optz = {
+            noEmitOnErrors: true,
+        };
+        if (this.variables.umdLibraryMode === false) {
+            optz.splitChunks = {
+                minSize: 1,
+                maxAsyncRequests: Infinity,
+                cacheGroups: {
+                    vendors: {
+                        name: 'dll',
+                        test: /[\\/]node_modules[\\/]/,
+                        chunks: 'initial',
+                        enforce: true,
+                        priority: 99
+                    }
+                }
+            };
+        }
+        return optz;
     }
     getECMAScriptVersion() {
         switch (this.typescriptCompilerOptions.target) {

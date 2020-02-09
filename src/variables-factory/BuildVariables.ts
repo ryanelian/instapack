@@ -47,6 +47,11 @@ export interface ProjectSettings {
     namespace: string | undefined;
 
     /**
+     * Allows the project to be built as a single initial UMD bundle.
+     */
+    umdLibraryMode: boolean;
+
+    /**
      * Gets the library manager asset copy build options.
      */
     copy: CopyOption[];

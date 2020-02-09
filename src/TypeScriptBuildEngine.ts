@@ -219,9 +219,9 @@ export class TypeScriptBuildEngine {
     }
 
     /**
-     * Returns webpack plugins array.
+     * Gets webpack plugins array.
      */
-    createWebpackPlugins(): webpack.Plugin[] {
+    get webpackPlugins(): webpack.Plugin[] {
         const plugins: webpack.Plugin[] = [];
 
         const typescriptTarget = this.typescriptCompilerOptions.target ?? TypeScript.ScriptTarget.ES3;
@@ -241,11 +241,9 @@ export class TypeScriptBuildEngine {
     }
 
     /**
-     * Returns webpack rules array using input TypeScript configuration and Babel flag.
-     * @param tsCompilerOptions 
-     * @param useBabel 
+     * Gets webpack rules array using input TypeScript configuration and Babel flag.
      */
-    createWebpackRules(): webpack.RuleSetRule[] {
+    get webpackRules(): webpack.RuleSetRule[] {
         const rules = [
             this.typescriptWebpackRules,
             this.vueCssWebpackRules,
@@ -295,95 +293,112 @@ export class TypeScriptBuildEngine {
      * Returns webpack configuration from blended instapack settings and build flags.
      */
     createWebpackConfiguration(): webpack.Configuration {
+        const config: webpack.Configuration = {
+            // webpack configuration errors if using UNIX path in Windows!
+            entry: path.normalize(this.finder.jsEntry),
+            output: this.webpackOutputOptions,
+            externals: this.variables.externals,
+            resolve: this.webpackResolveOptions,
+            plugins: this.webpackPlugins,
+            module: {
+                rules: this.webpackRules
+            },
+            mode: (this.variables.production ? 'production' : 'development'),
+            devtool: this.webpackConfigurationDevTool,
+            optimization: this.webpackOptimizationOptions,
+            performance: { // https://webpack.js.org/configuration/performance
+                hints: false
+            }
+        };
+
+        return config;
+    }
+
+    get webpackOutputOptions(): webpack.Output {
+        const output: webpack.Output = {
+            filename: (data): string => {
+                if (data.chunk.name === 'main') {
+                    return this.finder.jsOutputFileName
+                } else {
+                    // when no dynamically imported modules, 
+                    // dll / vendor asset becomes initial chunk! 
+                    return this.finder.jsChunkFileName;
+                }
+            },
+            chunkFilename: this.finder.jsChunkFileName,
+            path: path.normalize(this.finder.jsOutputFolder),
+            publicPath: 'js/',
+            library: this.variables.namespace
+        };
+
+        if (this.variables.umdLibraryMode) {
+            output.libraryTarget = "umd";
+        }
+
+        return Object.assign(output, {
+            // https://webpack.js.org/configuration/output/#outputecmaversion
+            ecmaVersion: this.getECMAScriptVersion()
+        });
+    }
+
+    get webpackResolveOptions(): webpack.Resolve {
+        // apparently we don't need to normalize paths for alias and wildcards.
         const alias = mergeTypeScriptPathAlias(this.typescriptCompilerOptions, this.finder.root, this.variables.alias);
         const wildcards = getWildcardModules(this.typescriptCompilerOptions, this.finder.root);
         // console.log(alias);
         // console.log(wildcards);
 
-        const rules = this.createWebpackRules();
-        const plugins = this.createWebpackPlugins();
-
-        // webpack configuration errors if using UNIX path in Windows!
-        const webpackEntry = path.normalize(this.finder.jsEntry);
-        const webpackOutputJsFolder = path.normalize(this.finder.jsOutputFolder);
-        // apparently we don't need to normalize paths for alias and wildcards.
-
-        const config: webpack.Configuration = {
-            entry: webpackEntry,
-            output: {
-                filename: (data): string => {
-                    if (data.chunk.name === 'main') {
-                        return this.finder.jsOutputFileName
-                    } else {
-                        // when no dynamically imported modules, 
-                        // dll / vendor asset becomes initial chunk! 
-                        return this.finder.jsChunkFileName;
-                    }
-                },
-                chunkFilename: this.finder.jsChunkFileName,
-                path: webpackOutputJsFolder,
-                publicPath: 'js/',
-                library: this.variables.namespace
-            },
-            externals: this.variables.externals,
-            resolve: {
-                // .vue automatic resolution follows vue-cli behavior, although is still required in TypeScript...
-                // .html module import must now be explicit!
-                // .mjs causes runtime error when `module.exports` is being used instead of `export`. (Experimental in Webpack 5, requires experiments.mjs: true)
-                // .wasm requires adding `application/wasm` MIME to web server (both IIS and Kestrel). (Experimental in Webpack 5, requires experiments: { asyncWebAssembly: true, importAsync: true })
-                extensions: ['.ts', '.tsx', '.js', '.jsx', '.vue', '.json'],
-                // the following type definition requires @types/webpack@5
-                // https://github.com/webpack/webpack/issues/6817
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                alias: alias as any
-            },
-            module: {
-                rules: rules
-            },
-            mode: (this.variables.production ? 'production' : 'development'),
-            devtool: this.webpackConfigurationDevTool,
-            optimization: {     // https://medium.com/webpack/webpack-4-mode-and-optimization-5423a6bc597a
-                noEmitOnErrors: true,   // https://dev.to/flexdinesh/upgrade-to-webpack-4---5bc5
-                splitChunks: {          // https://webpack.js.org/plugins/split-chunks-plugin/
-                    minSize: 1,
-                    maxAsyncRequests: Infinity,
-                    cacheGroups: {
-                        vendors: {
-                            name: 'dll',
-                            test: /[\\/]node_modules[\\/]/,
-                            chunks: 'initial',
-                            enforce: true,
-                            priority: 99
-                        }
-                    }
-                }
-            },
-            performance: {
-                hints: false    // https://webpack.js.org/configuration/performance
-            },
-            plugins: plugins
+        const config: webpack.Resolve = {
+            // .vue automatic resolution follows vue-cli behavior, although is still required in TypeScript...
+            // .html module import must now be explicit!
+            // .mjs causes runtime error when `module.exports` is being used instead of `export`. (Experimental in Webpack 5, requires experiments.mjs: true)
+            // .wasm requires adding `application/wasm` MIME to web server (both IIS and Kestrel). (Experimental in Webpack 5, requires experiments: { asyncWebAssembly: true, importAsync: true })
+            extensions: ['.ts', '.tsx', '.js', '.jsx', '.vue', '.json'],
+            // the following type definition requires @types/webpack@5
+            // https://github.com/webpack/webpack/issues/6817
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            alias: alias as any
         };
 
-        if (config.output) {
-            // https://webpack.js.org/configuration/output/#outputecmaversion
-            config.output['ecmaVersion'] = this.getECMAScriptVersion();
+        if (wildcards) {
+            config.modules = wildcards;
         }
 
-        if (config.resolve) {
-            if (wildcards) {
-                config.resolve.modules = wildcards;
-            }
-
-            // https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-5.html#the---preservesymlinks-compiler-flag
-            // This flag also exhibits the opposite behavior to Webpack’s resolve.symlinks option 
-            // (TypeScript’s preserveSymlinks true === Webpack’s resolve.symlinks to false) and vice-versa.
-            // https://webpack.js.org/configuration/resolve/#resolvesymlinks defaults to true
-            if (this.typescriptCompilerOptions.preserveSymlinks) {
-                config.resolve.symlinks = false;
-            }
+        // https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-5.html#the---preservesymlinks-compiler-flag
+        // This flag also exhibits the opposite behavior to Webpack’s resolve.symlinks option 
+        // (TypeScript’s preserveSymlinks true === Webpack’s resolve.symlinks to false) and vice-versa.
+        // https://webpack.js.org/configuration/resolve/#resolvesymlinks defaults to true
+        if (this.typescriptCompilerOptions.preserveSymlinks) {
+            config.symlinks = false;
         }
 
         return config;
+    }
+
+    get webpackOptimizationOptions(): webpack.Options.Optimization {
+        // https://medium.com/webpack/webpack-4-mode-and-optimization-5423a6bc597a
+        const optz: webpack.Options.Optimization = {
+            noEmitOnErrors: true,   // https://dev.to/flexdinesh/upgrade-to-webpack-4---5bc5
+        };
+
+        if (this.variables.umdLibraryMode === false) {
+            // https://webpack.js.org/plugins/split-chunks-plugin/
+            optz.splitChunks = {
+                minSize: 1,
+                maxAsyncRequests: Infinity,
+                cacheGroups: {
+                    vendors: {
+                        name: 'dll',
+                        test: /[\\/]node_modules[\\/]/,
+                        chunks: 'initial',
+                        enforce: true,
+                        priority: 99
+                    }
+                }
+            }
+        }
+
+        return optz;
     }
 
     getECMAScriptVersion(): number {

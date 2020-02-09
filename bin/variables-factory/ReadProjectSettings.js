@@ -29,6 +29,7 @@ async function readProjectSettingsFrom(folder) {
         externals: {},
         copy: [],
         namespace: undefined,
+        umdLibraryMode: false,
         port1: 0
     };
     const ajv = new Ajv();

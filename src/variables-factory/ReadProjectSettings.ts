@@ -31,6 +31,7 @@ export async function readProjectSettingsFrom(folder: string): Promise<ProjectSe
         externals: {},
         copy: [],
         namespace: undefined,
+        umdLibraryMode: false,
         port1: 0
     };
 

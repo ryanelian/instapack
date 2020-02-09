@@ -190,7 +190,7 @@ instapack puts configurations inside `package.json` to reduce project files clut
 
   - For example: `namespace: "instapack"` enables accessing `export function foo()` as `window.instapack.foo()` (which then can be invoked via [Blazor JS Interop](https://docs.microsoft.com/en-us/aspnet/core/blazor/javascript-interop?view=aspnetcore-3.0): `await JsRuntime.InvokeAsync<string>("instapack.foo");`)
 
-- `umdLibraryProject` can be set to `true` to allow building a single [UMD](https://github.com/umdjs/umd) JS bundle (without `.dll.js` file). Use this option when developing a library package! (npm or Razor Class Library)
+- `umdLibraryProject` can be set to `true` to allow building a single-entry-point (without `.dll.js` file) [UMD](https://github.com/umdjs/umd) JS bundle. Use this option when developing a library package! (e.g. npm or Razor Class Library)
 
   - Use `namespace` option to name your UMD module. Not setting `namespace` option will result in the assignment of all properties returned by the entry point be assigned directly to the root object.
 

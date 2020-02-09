@@ -19,10 +19,10 @@
     "bootstrap": "^4.4.1",
     "linq": "^3.2.1",
     "luxon": "^1.22.0",
-    "sweetalert": "^2.1.2",
+    "sweetalert2": "^9.7.2",
     "ts-polyfill": "^3.7.5",
     "tslib": "^1.10.0",
-    "vee-validate": "^3.2.3",
+    "vee-validate": "^3.2.4",
     "vue": "^2.6.11",
     "vue-class-component": "^7.2.2",
     "vue-template-compiler": "^2.6.11"

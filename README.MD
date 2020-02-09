@@ -190,7 +190,7 @@ instapack puts configurations inside `package.json` to reduce project files clut
 
   - For example: `namespace: "instapack"` enables accessing `export function foo()` as `window.instapack.foo()` (which then can be invoked via [Blazor JS Interop](https://docs.microsoft.com/en-us/aspnet/core/blazor/javascript-interop?view=aspnetcore-3.0): `await JsRuntime.InvokeAsync<string>("instapack.foo");`)
 
-- `umdLibraryMode` can be set to `true` to allow building a single [UMD](https://github.com/umdjs/umd) JS bundle (without `.dll.js` file). Use this option when developing a library package! (npm or Razor Class Library)
+- `umdLibraryProject` can be set to `true` to allow building a single [UMD](https://github.com/umdjs/umd) JS bundle (without `.dll.js` file). Use this option when developing a library package! (npm or Razor Class Library)
 
 - `alias` allows overriding module `import` calls from all files, including dependencies. [Read more ↗](https://webpack.js.org/configuration/resolve/)
 

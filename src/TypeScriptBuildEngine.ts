@@ -331,7 +331,7 @@ export class TypeScriptBuildEngine {
             library: this.variables.namespace
         };
 
-        if (this.variables.umdLibraryMode) {
+        if (this.variables.umdLibraryProject) {
             output.libraryTarget = "umd";
         }
 
@@ -381,7 +381,7 @@ export class TypeScriptBuildEngine {
             noEmitOnErrors: true,   // https://dev.to/flexdinesh/upgrade-to-webpack-4---5bc5
         };
 
-        if (this.variables.umdLibraryMode === false) {
+        if (this.variables.umdLibraryProject === false) {
             // https://webpack.js.org/plugins/split-chunks-plugin/
             optz.splitChunks = {
                 minSize: 1,

@@ -232,7 +232,7 @@ class TypeScriptBuildEngine {
             publicPath: 'js/',
             library: this.variables.namespace
         };
-        if (this.variables.umdLibraryMode) {
+        if (this.variables.umdLibraryProject) {
             output.libraryTarget = "umd";
         }
         return Object.assign(output, {
@@ -258,7 +258,7 @@ class TypeScriptBuildEngine {
         const optz = {
             noEmitOnErrors: true,
         };
-        if (this.variables.umdLibraryMode === false) {
+        if (this.variables.umdLibraryProject === false) {
             optz.splitChunks = {
                 minSize: 1,
                 maxAsyncRequests: Infinity,

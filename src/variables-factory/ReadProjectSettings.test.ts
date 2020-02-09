@@ -25,7 +25,7 @@ test('Project Settings: Not Found', async t => {
         alias: {},
         externals: {},
         namespace: undefined,
-        umdLibraryMode: false,
+        umdLibraryProject: false,
         copy: [],
         port1: 0
     };
@@ -71,7 +71,7 @@ test('Project Settings: Valid', async t => {
             jquery: '$'
         },
         namespace: 'instapack',
-        umdLibraryMode: true,
+        umdLibraryProject: true,
         copy: [],
         port1: 32101
     };

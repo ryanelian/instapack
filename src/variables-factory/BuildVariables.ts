@@ -49,7 +49,7 @@ export interface ProjectSettings {
     /**
      * Allows the project to be built as a single initial UMD bundle.
      */
-    umdLibraryMode: boolean;
+    umdLibraryProject: boolean;
 
     /**
      * Gets the library manager asset copy build options.

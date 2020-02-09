@@ -21,7 +21,7 @@ ava_1.default('Project Settings: Not Found', async (t) => {
         alias: {},
         externals: {},
         namespace: undefined,
-        umdLibraryMode: false,
+        umdLibraryProject: false,
         copy: [],
         port1: 0
     };
@@ -49,7 +49,7 @@ ava_1.default('Project Settings: Valid', async (t) => {
             jquery: '$'
         },
         namespace: 'instapack',
-        umdLibraryMode: true,
+        umdLibraryProject: true,
         copy: [],
         port1: 32101
     };

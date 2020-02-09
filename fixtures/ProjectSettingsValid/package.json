@@ -11,7 +11,7 @@
             "jquery": "$"
         },
         "namespace": "instapack",
-        "umdLibraryMode": true,
+        "umdLibraryProject": true,
         "port1": 32101
     }
 }

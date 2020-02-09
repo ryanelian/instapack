@@ -192,6 +192,8 @@ instapack puts configurations inside `package.json` to reduce project files clut
 
 - `umdLibraryProject` can be set to `true` to allow building a single [UMD](https://github.com/umdjs/umd) JS bundle (without `.dll.js` file). Use this option when developing a library package! (npm or Razor Class Library)
 
+  - Use `namespace` option to name your UMD module. Not setting `namespace` option will result in the assignment of all properties returned by the entry point be assigned directly to the root object.
+
 - `alias` allows overriding module `import` calls from all files, including dependencies. [Read more ↗](https://webpack.js.org/configuration/resolve/)
 
   - [TypeScript `paths` compiler options will be merged with alias option.](https://github.com/ryanelian/instapack#typescript-custom-paths-module-resolution)

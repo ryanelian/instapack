@@ -74,7 +74,7 @@
     "loader-utils": "1.2.3",
     "merge-source-map": "1.1.0",
     "portfinder": "1.0.25",
-    "postcss": "7.0.26",
+    "postcss": "7.0.27",
     "progress": "2.0.3",
     "react-refresh": "0.7.2",
     "sass": "1.25.0",

@@ -20,11 +20,11 @@
 
 ## Install
 
-### Machine-Wide (simpler and convenient)
+### Option A: Machine-Wide (simpler and convenient)
 
 `npm install -g instapack`
 
-### Per-Project (consistent build)
+### Option B: Per-Project (consistent build)
 
 When requiring a specific instapack version to build a project, a local installation may be desirable over global installation. (For example: synchronizing instapack version used by the CI and the development team)
 
@@ -32,7 +32,7 @@ First, ensure `package.json` exists in the project folder. (If not, run `npm ini
 
 Then, open command prompt in the said folder and install instapack locally: `npm install instapack@[INSERT_PACKAGE_VERSION_HERE] -D -E`
 
-The local instapack can then be invoked using `npx ipack` command. Alternatively, use [npm run scripts](https://docs.npmjs.com/cli/run-script).
+The local instapack can then be invoked using `npx ipack` command. Alternatively, setup [npm run scripts](https://docs.npmjs.com/cli/run-script).
 
 > All the above `npm` commands can be replaced by [`pnpm`](https://pnpm.js.org/) to allow downloading instapack once (per exact version) across multiple projects in the same drive letter in the same machine!
 
@@ -178,9 +178,9 @@ instapack puts configurations inside `package.json` to reduce project files clut
 }
 ```
 
-- `input` allows setting the input folder name. By default, it is set to `client`
+- `input` allows setting the input folder path. By default, it is set to `client`
 
-- `output` allows setting the output folder name. By default, it is set to `wwwroot`
+- `output` allows setting the output folder path. By default, it is set to `wwwroot`
 
 - `jsOut` allows setting the JS output file name. By default, it is set to `ipack.js`
 
@@ -774,7 +774,7 @@ Replace the `url` parameter with the correct URL of your app, then press **F5** 
 
 Nope.
 
-### Can I change the js / css folder name?
+### Can I change the js / css output sub-folder name?
 
 Nope.
 

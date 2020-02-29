@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.12.1",
+    "@types/jquery": "^3.3.33",
     "@types/luxon": "^1.21.0",
     "@types/requirejs": "^2.1.31",
     "bootstrap": "^4.4.1",
@@ -28,8 +29,8 @@
     "linq": "^3.2.1",
     "luxon": "^1.22.0",
     "popper.js": "^1.16.1",
-    "sweetalert2": "^9.7.2",
+    "sweetalert2": "^9.8.2",
     "ts-polyfill": "^3.8.2",
-    "tslib": "^1.11.0"
+    "tslib": "^1.11.1"
   }
 }

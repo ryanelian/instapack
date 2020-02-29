@@ -11,8 +11,8 @@
     "axios": "^0.19.2",
     "linq": "^3.2.1",
     "luxon": "^1.22.0",
-    "sweetalert2": "^9.7.2",
+    "sweetalert2": "^9.8.2",
     "ts-polyfill": "^3.8.2",
-    "tslib": "^1.11.0"
+    "tslib": "^1.11.1"
   }
 }

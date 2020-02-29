@@ -19,23 +19,23 @@
     "bootstrap": "^4.4.1",
     "linq": "^3.2.1",
     "luxon": "^1.22.0",
-    "sweetalert2": "^9.7.2",
+    "sweetalert2": "^9.8.2",
     "ts-polyfill": "^3.8.2",
-    "tslib": "^1.11.0",
+    "tslib": "^1.11.1",
     "vee-validate": "^3.2.5",
     "vue": "^2.6.11",
     "vue-class-component": "^7.2.3",
     "vue-template-compiler": "^2.6.11"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^2.20.0",
-    "@typescript-eslint/parser": "^2.20.0",
+    "@typescript-eslint/eslint-plugin": "^2.21.0",
+    "@typescript-eslint/parser": "^2.21.0",
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.10.0",
     "eslint-plugin-vue": "^6.2.1",
     "jquery": "^3.4.1",
     "popper.js": "^1.16.1",
-    "typescript": "^3.8.2",
+    "typescript": "^3.8.3",
     "vue-eslint-parser": "^7.0.0"
   }
 }

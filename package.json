@@ -56,7 +56,7 @@
     "@babel/core": "7.8.6",
     "@babel/plugin-syntax-dynamic-import": "7.8.3",
     "@webhotelier/webpack-fast-refresh": "1.2.6",
-    "acorn": "7.1.0",
+    "acorn": "7.1.1",
     "ajv": "6.12.0",
     "autoprefixer": "9.7.4",
     "babel-loader": "8.0.6",
@@ -85,7 +85,7 @@
     "vue-loader": "15.9.0",
     "vue-style-loader": "4.1.2",
     "vue-template-compiler": "2.6.11",
-    "webpack": "5.0.0-beta.13",
+    "webpack": "5.0.0-beta.14",
     "webpack-dev-server": "3.10.3",
     "which": "2.0.2",
     "yargs": "15.1.0"
@@ -103,9 +103,9 @@
     "@types/webpack": "^4.41.7",
     "@types/webpack-dev-server": "^3.10.0",
     "@types/yargs": "^15.0.4",
-    "@typescript-eslint/eslint-plugin": "2.21.0",
-    "@typescript-eslint/parser": "2.21.0",
-    "ava": "3.4.0",
+    "@typescript-eslint/eslint-plugin": "2.22.0",
+    "@typescript-eslint/parser": "2.22.0",
+    "ava": "3.5.0",
     "eslint": "6.8.0",
     "memory-fs": "0.5.0"
   }

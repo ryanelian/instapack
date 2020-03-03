@@ -293,9 +293,18 @@ export class TypeScriptBuildEngine {
      * Returns webpack configuration from blended instapack settings and build flags.
      */
     createWebpackConfiguration(): webpack.Configuration {
+        // https://github.com/webpack/webpack/releases/tag/v5.0.0-beta.14
+        const entry = {
+            main: {
+                // webpack configuration errors if using UNIX path in Windows!
+                import: [this.finder.jsEntry],
+                filename: this.finder.jsOutputFileName
+            }
+        };
+
         const config: webpack.Configuration = {
-            // webpack configuration errors if using UNIX path in Windows!
-            entry: path.normalize(this.finder.jsEntry),
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            entry: entry as any,
             output: this.webpackOutputOptions,
             externals: this.variables.externals,
             resolve: this.webpackResolveOptions,
@@ -316,16 +325,7 @@ export class TypeScriptBuildEngine {
 
     get webpackOutputOptions(): webpack.Output {
         const output: webpack.Output = {
-            filename: (data): string => {
-                if (data.chunk.name === 'main') {
-                    return this.finder.jsOutputFileName
-                } else {
-                    // when no dynamically imported modules, 
-                    // dll / vendor asset becomes initial chunk! 
-                    return this.finder.jsChunkFileName;
-                }
-            },
-            chunkFilename: this.finder.jsChunkFileName,
+            filename: this.finder.jsChunkFileName,
             path: path.normalize(this.finder.jsOutputFolder),
             publicPath: 'js/',
             library: this.variables.namespace

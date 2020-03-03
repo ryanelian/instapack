@@ -157,7 +157,7 @@ class TypeScriptBuildEngine {
     get webpackPlugins() {
         var _a;
         const plugins = [];
-        const typescriptTarget = (_a = this.typescriptCompilerOptions.target, (_a !== null && _a !== void 0 ? _a : TypeScript.ScriptTarget.ES3));
+        const typescriptTarget = (_a = this.typescriptCompilerOptions.target) !== null && _a !== void 0 ? _a : TypeScript.ScriptTarget.ES3;
         plugins.push(new InstapackBuildPlugin_1.InstapackBuildPlugin(this.variables, typescriptTarget));
         plugins.push(new vue_loader_1.VueLoaderPlugin());
         if (Object.keys(this.variables.env).length > 0) {
@@ -199,8 +199,14 @@ class TypeScriptBuildEngine {
         return 'eval-source-map';
     }
     createWebpackConfiguration() {
+        const entry = {
+            main: {
+                import: [this.finder.jsEntry],
+                filename: this.finder.jsOutputFileName
+            }
+        };
         const config = {
-            entry: path.normalize(this.finder.jsEntry),
+            entry: entry,
             output: this.webpackOutputOptions,
             externals: this.variables.externals,
             resolve: this.webpackResolveOptions,
@@ -219,15 +225,7 @@ class TypeScriptBuildEngine {
     }
     get webpackOutputOptions() {
         const output = {
-            filename: (data) => {
-                if (data.chunk.name === 'main') {
-                    return this.finder.jsOutputFileName;
-                }
-                else {
-                    return this.finder.jsChunkFileName;
-                }
-            },
-            chunkFilename: this.finder.jsChunkFileName,
+            filename: this.finder.jsChunkFileName,
             path: path.normalize(this.finder.jsOutputFolder),
             publicPath: 'js/',
             library: this.variables.namespace

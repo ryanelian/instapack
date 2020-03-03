@@ -33,7 +33,7 @@ module.exports = function (source) {
     compilerOptions.moduleResolution = TypeScript.ModuleResolutionKind.NodeJs;
     compilerOptions.allowJs = true;
     compilerOptions.allowSyntheticDefaultImports = true;
-    compilerOptions.module = (_a = baseCompilerOptions.module, (_a !== null && _a !== void 0 ? _a : TypeScript.ModuleKind.ESNext));
+    compilerOptions.module = (_a = baseCompilerOptions.module) !== null && _a !== void 0 ? _a : TypeScript.ModuleKind.ESNext;
     compilerOptions.importHelpers = baseCompilerOptions.importHelpers;
     compilerOptions.sourceMap = baseCompilerOptions.sourceMap;
     compilerOptions.inlineSources = baseCompilerOptions.inlineSources;

@@ -88,7 +88,7 @@
     "webpack": "5.0.0-beta.14",
     "webpack-dev-server": "3.10.3",
     "which": "2.0.2",
-    "yargs": "15.1.0"
+    "yargs": "15.3.0"
   },
   "devDependencies": {
     "@types/acorn": "^4.0.5",

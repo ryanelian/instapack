@@ -32,7 +32,7 @@ First, ensure `package.json` exists in the project folder. (If not, run `npm ini
 
 Then, open command prompt in the said folder and install instapack locally: `npm install instapack@[INSERT_PACKAGE_VERSION_HERE] -D -E`
 
-The local instapack can then be invoked using `npx ipack` command. Alternatively, setup [npm run scripts](https://docs.npmjs.com/cli/run-script).
+The local instapack can then be invoked using `npx instapack` command. Alternatively, setup [npm run scripts](https://docs.npmjs.com/cli/run-script).
 
 > All the above `npm` commands can be replaced by [`pnpm`](https://pnpm.js.org/) to allow downloading instapack once (per exact version) across multiple projects in the same drive letter in the same machine!
 
@@ -369,32 +369,6 @@ npm install eslint-plugin-react -D
 Hot Reload development mode allows a developer to update application code while preserving runtime states, without triggering browser refresh when not needed.
 
 instapack supports Hot Reload for popular JS frameworks by using `--serve` or `-s` flags, which also enables `watch` and `dev` modes automatically.
-
-Compiling a JS project using this mode will:
-
-- Redirect the JS outputs to the build server (instead of the physical JS output folder).
-
-- Create script injections in place of the usual JS output files, directed to respective scripts on the build server.
-
-```
-[01:24:26] Hot Reload Server running on http://localhost:28080/
-[01:24:28] ipack.dll.js 6.25 MB in http://localhost:28080/
-[01:24:28] ipack.js 62.5 kB in http://localhost:28080/
-[01:24:28] Inject <script> D:/VS/project/wwwroot/js/ipack.dll.js --> http://localhost:28080/ipack.dll.js
-[01:24:28] Inject <script> D:/VS/project/wwwroot/js/ipack.js --> http://localhost:28080/ipack.js
-```
-
-The project should be able to continue referencing the physical script files. However, if the script injections are not working for some reason, please reference the dev server scripts manually:
-
-```jsx
-if (Environment.IsDevelopment){
-  <script src="http://localhost:28080/ipack.dll.js"></script>
-  <script src="http://localhost:28080/ipack.js"></script>
-} else {
-  <script src="/js/ipack.dll.js"></script>
-  <script src="/js/ipack.js"></script>
-}
-```
 
 ### Vue.js
 

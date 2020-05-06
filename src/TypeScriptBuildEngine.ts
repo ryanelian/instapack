@@ -345,7 +345,7 @@ export class TypeScriptBuildEngine {
                 publicPath: 'js/',
                 library: this.variables.namespace,
                 ecmaVersion: this.getECMAScriptVersion(),
-                libraryTarget: 'umd'
+                libraryTarget: (this.variables.umdLibraryProject ? 'umd' : undefined)
             },
             externals: this.variables.externals,
             resolve: this.webpackResolveOptions,

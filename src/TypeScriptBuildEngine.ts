@@ -2,7 +2,8 @@ import * as path from 'path';
 import * as fse from 'fs-extra';
 import chalk = require('chalk');
 import webpack = require('webpack');
-import webpackDevServer = require('webpack-dev-server');
+import { WebpackPluginServe } from 'webpack-plugin-serve';
+import { CleanWebpackPlugin } from 'clean-webpack-plugin';
 import portfinder = require('portfinder');
 import * as TypeScript from 'typescript';
 import { VueLoaderPlugin } from 'vue-loader';
@@ -17,6 +18,7 @@ import { parseTypescriptConfig } from './TypescriptConfigParser';
 import { InstapackBuildPlugin } from './plugins/InstapackBuildPlugin';
 import { mergeTypeScriptPathAlias, getWildcardModules } from './TypeScriptPathsTranslator';
 import { UserSettingsPath } from './user-settings/UserSettingsPath';
+import type { WebpackRuleSetUseLoader } from './WebpackInternalTypes';
 
 /**
  * Contains methods for compiling a TypeScript project.
@@ -32,6 +34,13 @@ export class TypeScriptBuildEngine {
     private useBabel = false;
 
     private vueTemplateCompiler: unknown;
+
+    private port = 28080;
+
+    private certificates: {
+        key: Buffer;
+        cert: Buffer;
+    } | undefined = undefined;
 
     /**
      * Constructs a new instance of TypeScriptBuildTool using the specified settings and build flags. 
@@ -72,7 +81,7 @@ export class TypeScriptBuildEngine {
      * Gets a configured TypeScript rules for webpack.
      */
     get typescriptWebpackRules(): webpack.RuleSetRule {
-        const loaders: webpack.RuleSetLoader[] = [];
+        const loaders: WebpackRuleSetUseLoader[] = [];
 
         // webpack loaders are declared in reverse / right-to-left!
         // babel(typescript(source_code))
@@ -138,12 +147,12 @@ export class TypeScriptBuildEngine {
      * Gets CSS rules for webpack to prevent explosion during vue compile.
      */
     get vueCssWebpackRules(): webpack.RuleSetRule {
-        const vueStyleLoader: webpack.RuleSetLoader = {
+        const vueStyleLoader: WebpackRuleSetUseLoader = {
             loader: LoaderPaths.vueStyle,
             ident: 'vue-style-loader'
         };
         // https://vue-loader.vuejs.org/guide/css-modules.html#usage
-        const cssModulesLoader: webpack.RuleSetLoader = {
+        const cssModulesLoader: WebpackRuleSetUseLoader = {
             loader: LoaderPaths.css,
             ident: 'vue-css-module-loader',
             options: {
@@ -154,7 +163,7 @@ export class TypeScriptBuildEngine {
                 url: false
             }
         };
-        const cssLoader: webpack.RuleSetLoader = {
+        const cssLoader: WebpackRuleSetUseLoader = {
             loader: LoaderPaths.css,
             ident: 'vue-css-loader',
             options: {
@@ -221,20 +230,42 @@ export class TypeScriptBuildEngine {
     /**
      * Gets webpack plugins array.
      */
-    get webpackPlugins(): webpack.Plugin[] {
-        const plugins: webpack.Plugin[] = [];
+    get webpackPlugins(): webpack.WebpackPluginInstance[] {
+        const plugins: webpack.WebpackPluginInstance[] = [];
 
         const typescriptTarget = this.typescriptCompilerOptions.target ?? TypeScript.ScriptTarget.ES3;
         plugins.push(new InstapackBuildPlugin(this.variables, typescriptTarget));
 
-        plugins.push(new VueLoaderPlugin());
+        // webpack 5 declaration is not compatible with webpack 4 declarations!
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        plugins.push(new VueLoaderPlugin() as any);
 
         if (Object.keys(this.variables.env).length > 0) {
             plugins.push(new webpack.EnvironmentPlugin(this.variables.env));
         }
 
+        if (this.variables.serve) {
+            plugins.push(new WebpackPluginServe({
+                host: 'localhost',
+                port: this.port,
+                https: this.certificates,
+                headers: { // https://github.com/shellscape/webpack-plugin-serve/blob/master/recipes/custom-headers.md
+                    'Access-Control-Allow-Origin': '*',
+                    'Cache-Control': 'no-store'
+                },
+                progress: 'minimal',
+                log: {
+                    level: 'error'
+                }
+            }))
+        }
+
         if (this.variables.reactRefresh) {
             plugins.push(new ReactRefreshWebpackPlugin());
+        }
+
+        if (this.variables.production) {
+            plugins.push(new CleanWebpackPlugin());
         }
 
         return plugins;
@@ -272,7 +303,7 @@ export class TypeScriptBuildEngine {
     /**
      * Get the suitable webpack configuration dev tool for the job, according to instapack settings.
      */
-    get webpackConfigurationDevTool(): boolean | 'hidden-source-map' | 'source-map' | 'eval-source-map' {
+    get webpackConfigurationDevTool(): false | 'hidden-source-map' | 'source-map' | 'eval-source-map' {
         if (this.variables.sourceMap === false) {
             return false;
         }
@@ -296,16 +327,26 @@ export class TypeScriptBuildEngine {
         // https://github.com/webpack/webpack/releases/tag/v5.0.0-beta.14
         const entry = {
             main: {
+                filename: this.finder.jsOutputFileName,
                 // webpack configuration errors if using UNIX path in Windows!
-                import: [this.finder.jsEntry],
-                filename: this.finder.jsOutputFileName
+                import: [this.finder.jsEntry] as [string, ...string[]],
             }
         };
 
+        if (this.variables.serve) {
+            entry.main.import.push(require.resolve('webpack-plugin-serve/client'));
+        }
+
         const config: webpack.Configuration = {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            entry: entry as any,
-            output: this.webpackOutputOptions,
+            entry: entry,
+            output: {
+                filename: this.finder.jsChunkFileName,
+                path: path.normalize(this.finder.jsOutputFolder),
+                publicPath: 'js/',
+                library: this.variables.namespace,
+                ecmaVersion: this.getECMAScriptVersion(),
+                libraryTarget: 'umd'
+            },
             externals: this.variables.externals,
             resolve: this.webpackResolveOptions,
             plugins: this.webpackPlugins,
@@ -314,50 +355,48 @@ export class TypeScriptBuildEngine {
             },
             mode: (this.variables.production ? 'production' : 'development'),
             devtool: this.webpackConfigurationDevTool,
-            optimization: this.webpackOptimizationOptions,
+            optimization: {
+                noEmitOnErrors: true
+            },
             performance: { // https://webpack.js.org/configuration/performance
                 hints: false
             }
         };
 
+        if (!this.variables.umdLibraryProject && config.optimization) {
+            // https://webpack.js.org/plugins/split-chunks-plugin/
+            config.optimization.splitChunks = {
+                minSize: 1,
+                maxAsyncRequests: Infinity,
+                cacheGroups: {
+                    vendors: {
+                        name: 'dll',
+                        test: /[\\/]node_modules[\\/]/,
+                        chunks: 'initial',
+                        enforce: true,
+                        priority: 99
+                    }
+                }
+            }
+        }
+
         return config;
     }
 
-    get webpackOutputOptions(): webpack.Output {
-        const output: webpack.Output = {
-            filename: this.finder.jsChunkFileName,
-            path: path.normalize(this.finder.jsOutputFolder),
-            publicPath: 'js/',
-            library: this.variables.namespace
-        };
-
-        if (this.variables.umdLibraryProject) {
-            output.libraryTarget = "umd";
-        }
-
-        return Object.assign(output, {
-            // https://webpack.js.org/configuration/output/#outputecmaversion
-            ecmaVersion: this.getECMAScriptVersion()
-        });
-    }
-
-    get webpackResolveOptions(): webpack.Resolve {
+    get webpackResolveOptions(): webpack.ResolveOptions {
         // apparently we don't need to normalize paths for alias and wildcards.
         const alias = mergeTypeScriptPathAlias(this.typescriptCompilerOptions, this.finder.root, this.variables.alias);
         const wildcards = getWildcardModules(this.typescriptCompilerOptions, this.finder.root);
         // console.log(alias);
         // console.log(wildcards);
 
-        const config: webpack.Resolve = {
+        const config: webpack.ResolveOptions = {
             // .vue automatic resolution follows vue-cli behavior, although is still required in TypeScript...
             // .html module import must now be explicit!
             // .mjs causes runtime error when `module.exports` is being used instead of `export`. (Experimental in Webpack 5, requires experiments.mjs: true)
             // .wasm requires adding `application/wasm` MIME to web server (both IIS and Kestrel). (Experimental in Webpack 5, requires experiments: { asyncWebAssembly: true, importAsync: true })
             extensions: ['.ts', '.tsx', '.js', '.jsx', '.vue', '.json'],
-            // the following type definition requires @types/webpack@5
-            // https://github.com/webpack/webpack/issues/6817
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            alias: alias as any
+            alias: alias
         };
 
         if (wildcards) {
@@ -373,32 +412,6 @@ export class TypeScriptBuildEngine {
         }
 
         return config;
-    }
-
-    get webpackOptimizationOptions(): webpack.Options.Optimization {
-        // https://medium.com/webpack/webpack-4-mode-and-optimization-5423a6bc597a
-        const optz: webpack.Options.Optimization = {
-            noEmitOnErrors: true,   // https://dev.to/flexdinesh/upgrade-to-webpack-4---5bc5
-        };
-
-        if (this.variables.umdLibraryProject === false) {
-            // https://webpack.js.org/plugins/split-chunks-plugin/
-            optz.splitChunks = {
-                minSize: 1,
-                maxAsyncRequests: Infinity,
-                cacheGroups: {
-                    vendors: {
-                        name: 'dll',
-                        test: /[\\/]node_modules[\\/]/,
-                        chunks: 'initial',
-                        enforce: true,
-                        priority: 99
-                    }
-                }
-            }
-        }
-
-        return optz;
     }
 
     getECMAScriptVersion(): number {
@@ -455,79 +468,33 @@ export class TypeScriptBuildEngine {
     }
 
     /**
-     * Runs the hot reload server using provided webpack configuration.
-     * @param webpackConfiguration 
-     */
-    async runDevServer(webpackConfiguration: webpack.Configuration, port: number): Promise<void> {
-        if (!webpackConfiguration.output) {
-            throw new Error('Unexpected undefined value: webpack configuration output object.');
-        }
-        const schema = this.variables.https ? 'https' : 'http';
-        webpackConfiguration.output.publicPath = `${schema}://localhost:${port}/`;
-
-        const devServerOptions: webpackDevServer.Configuration = {
-            hot: true,
-            contentBase: false,     // don't serve static files from project folder LOL
-            port: port,             // for some reason, WDS not using port from listen() parameter
-            headers: {              // CORS
-                'Access-Control-Allow-Origin': '*'
-            },
-            noInfo: true,           // supress messages like the webpack bundle information
-            stats: 'none'           // stats are outputted via instapack build plugin
-        };
-
-        if (this.variables.https) {
-            const certFileAsync = fse.readFile(UserSettingsPath.certFile);
-            const keyFileAsync = fse.readFile(UserSettingsPath.keyFile);
-            // https://webpack.js.org/configuration/dev-server/#devserverhttps
-            devServerOptions.https = {
-                key: await keyFileAsync,
-                cert: await certFileAsync
-            }
-            // https://webpack.js.org/configuration/dev-server/#devserverhttp2
-            // If devServer.http2 is not explicitly set to false, 
-            // it will default to true when devServer.https is enabled.
-        }
-
-        webpackDevServer.addDevServerEntrypoints(webpackConfiguration, devServerOptions);
-        const compiler = webpack(webpackConfiguration);
-        const devServer = new webpackDevServer(compiler, devServerOptions);
-
-        const createServerTask = new Promise<void>((ok, reject) => {
-            // 'localhost' parameter MUST be written, otherwise error callback WILL NOT work! 
-            devServer.listen(port, 'localhost', error => {
-                if (error) {
-                    reject(error);
-                    return;
-                }
-
-                ok();
-            });
-        });
-
-        await createServerTask;
-        Shout.timed(chalk.yellow('Hot Reload'), `server running on http://localhost:${chalk.green(port)}/`);
-    }
-
-    /**
      * Runs the TypeScript build engine.
      */
     async build(): Promise<void> {
         this.useBabel = await fse.pathExists(this.finder.babelConfiguration);
         this.vueTemplateCompiler = await resolveVueTemplateCompiler(this.finder.root);
-        const webpackConfiguration = this.createWebpackConfiguration();
 
         if (this.variables.serve) {
-            let basePort = 28080;
-            if (this.variables.port1) {
-                basePort = this.variables.port1;
-            }
-            const port = await portfinder.getPortPromise({
-                port: basePort
+            this.port = await portfinder.getPortPromise({
+                port: this.port
             });
+            const host = `${this.variables.https ? 'https' : 'http'}://localhost:${chalk.green(this.port)}`;
+            Shout.timed(chalk.yellow('Hot Reload'), `server running on ${host}`);
+        }
 
-            await this.runDevServer(webpackConfiguration, port);
-        } else if (this.variables.watch) {
+        if (this.variables.https) {
+            const certFileAsync = fse.readFile(UserSettingsPath.certFile);
+            const keyFileAsync = fse.readFile(UserSettingsPath.keyFile);
+            // https://webpack.js.org/configuration/dev-server/#devserverhttps
+            this.certificates = {
+                key: await keyFileAsync,
+                cert: await certFileAsync
+            }
+        }
+
+        const webpackConfiguration = this.createWebpackConfiguration();
+
+        if (this.variables.watch) {
             await this.watch(webpackConfiguration);
         } else {
             const stats = await this.buildOnce(webpackConfiguration);

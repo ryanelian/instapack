@@ -1,4 +1,3 @@
-import { loader } from 'webpack';
 import * as TypeScript from 'typescript';
 import { getOptions } from 'loader-utils';
 import { RawSourceMap } from 'source-map';
@@ -22,7 +21,8 @@ function isES5(source: string): boolean {
     }
 }
 
-export = function (this: loader.LoaderContext, source: string): void {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export = function (this: any, source: string): void {
     const options: TranspileLibraryLoaderOptions = getOptions(this);
     if (!options || !options.compilerOptions) {
         this.emitError(new Error('TypeScript compiler options was not provided to Transpile Library Loader!'));

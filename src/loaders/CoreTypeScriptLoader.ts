@@ -1,4 +1,3 @@
-import { loader } from 'webpack';
 import * as TypeScript from 'typescript';
 import { getOptions } from 'loader-utils';
 import { RawSourceMap } from 'source-map';
@@ -7,7 +6,8 @@ interface CoreTypeScriptLoaderOptions {
     compilerOptions?: TypeScript.CompilerOptions;
 }
 
-export = function (this: loader.LoaderContext, source: string): void {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export = function (this: any, source: string): void {
     const options: CoreTypeScriptLoaderOptions = getOptions(this);
     // console.log(this.resourcePath);
     

@@ -1,4 +1,3 @@
-import { loader } from 'webpack';
 import { minify } from 'html-minifier';
 import { SourceMapGenerator, RawSourceMap } from 'source-map';
 
@@ -34,7 +33,8 @@ const minifierOptions = {
     useShortDoctype: false
 };
 
-export = function (this: loader.LoaderContext, html: string): void {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export = function (this: any, html: string): void {
     let template = minify(html, minifierOptions).trim();
     template = 'module.exports = ' + JSON.stringify(template);
     // console.log(this.resourcePath);

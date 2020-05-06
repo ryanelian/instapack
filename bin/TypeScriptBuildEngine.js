@@ -4,7 +4,8 @@ const path = require("path");
 const fse = require("fs-extra");
 const chalk = require("chalk");
 const webpack = require("webpack");
-const webpackDevServer = require("webpack-dev-server");
+const webpack_plugin_serve_1 = require("webpack-plugin-serve");
+const clean_webpack_plugin_1 = require("clean-webpack-plugin");
 const portfinder = require("portfinder");
 const TypeScript = require("typescript");
 const vue_loader_1 = require("vue-loader");
@@ -20,6 +21,8 @@ const UserSettingsPath_1 = require("./user-settings/UserSettingsPath");
 class TypeScriptBuildEngine {
     constructor(variables) {
         this.useBabel = false;
+        this.port = 28080;
+        this.certificates = undefined;
         this.variables = variables;
         this.finder = new PathFinder_1.PathFinder(variables);
         this.typescriptCompilerOptions = TypescriptConfigParser_1.parseTypescriptConfig(variables.root, variables.typescriptConfiguration).options;
@@ -163,8 +166,26 @@ class TypeScriptBuildEngine {
         if (Object.keys(this.variables.env).length > 0) {
             plugins.push(new webpack.EnvironmentPlugin(this.variables.env));
         }
+        if (this.variables.serve) {
+            plugins.push(new webpack_plugin_serve_1.WebpackPluginServe({
+                host: 'localhost',
+                port: this.port,
+                https: this.certificates,
+                headers: {
+                    'Access-Control-Allow-Origin': '*',
+                    'Cache-Control': 'no-store'
+                },
+                progress: 'minimal',
+                log: {
+                    level: 'error'
+                }
+            }));
+        }
         if (this.variables.reactRefresh) {
             plugins.push(new ReactRefreshWebpackPlugin());
+        }
+        if (this.variables.production) {
+            plugins.push(new clean_webpack_plugin_1.CleanWebpackPlugin());
         }
         return plugins;
     }
@@ -201,13 +222,23 @@ class TypeScriptBuildEngine {
     createWebpackConfiguration() {
         const entry = {
             main: {
+                filename: this.finder.jsOutputFileName,
                 import: [this.finder.jsEntry],
-                filename: this.finder.jsOutputFileName
             }
         };
+        if (this.variables.serve) {
+            entry.main.import.push(require.resolve('webpack-plugin-serve/client'));
+        }
         const config = {
             entry: entry,
-            output: this.webpackOutputOptions,
+            output: {
+                filename: this.finder.jsChunkFileName,
+                path: path.normalize(this.finder.jsOutputFolder),
+                publicPath: 'js/',
+                library: this.variables.namespace,
+                ecmaVersion: this.getECMAScriptVersion(),
+                libraryTarget: 'umd'
+            },
             externals: this.variables.externals,
             resolve: this.webpackResolveOptions,
             plugins: this.webpackPlugins,
@@ -216,26 +247,29 @@ class TypeScriptBuildEngine {
             },
             mode: (this.variables.production ? 'production' : 'development'),
             devtool: this.webpackConfigurationDevTool,
-            optimization: this.webpackOptimizationOptions,
+            optimization: {
+                noEmitOnErrors: true
+            },
             performance: {
                 hints: false
             }
         };
-        return config;
-    }
-    get webpackOutputOptions() {
-        const output = {
-            filename: this.finder.jsChunkFileName,
-            path: path.normalize(this.finder.jsOutputFolder),
-            publicPath: 'js/',
-            library: this.variables.namespace
-        };
-        if (this.variables.umdLibraryProject) {
-            output.libraryTarget = "umd";
+        if (!this.variables.umdLibraryProject && config.optimization) {
+            config.optimization.splitChunks = {
+                minSize: 1,
+                maxAsyncRequests: Infinity,
+                cacheGroups: {
+                    vendors: {
+                        name: 'dll',
+                        test: /[\\/]node_modules[\\/]/,
+                        chunks: 'initial',
+                        enforce: true,
+                        priority: 99
+                    }
+                }
+            };
         }
-        return Object.assign(output, {
-            ecmaVersion: this.getECMAScriptVersion()
-        });
+        return config;
     }
     get webpackResolveOptions() {
         const alias = TypeScriptPathsTranslator_1.mergeTypeScriptPathAlias(this.typescriptCompilerOptions, this.finder.root, this.variables.alias);
@@ -251,27 +285,6 @@ class TypeScriptBuildEngine {
             config.symlinks = false;
         }
         return config;
-    }
-    get webpackOptimizationOptions() {
-        const optz = {
-            noEmitOnErrors: true,
-        };
-        if (this.variables.umdLibraryProject === false) {
-            optz.splitChunks = {
-                minSize: 1,
-                maxAsyncRequests: Infinity,
-                cacheGroups: {
-                    vendors: {
-                        name: 'dll',
-                        test: /[\\/]node_modules[\\/]/,
-                        chunks: 'initial',
-                        enforce: true,
-                        priority: 99
-                    }
-                }
-            };
-        }
-        return optz;
     }
     getECMAScriptVersion() {
         switch (this.typescriptCompilerOptions.target) {
@@ -319,60 +332,26 @@ class TypeScriptBuildEngine {
             });
         });
     }
-    async runDevServer(webpackConfiguration, port) {
-        if (!webpackConfiguration.output) {
-            throw new Error('Unexpected undefined value: webpack configuration output object.');
+    async build() {
+        this.useBabel = await fse.pathExists(this.finder.babelConfiguration);
+        this.vueTemplateCompiler = await CompilerResolver_1.resolveVueTemplateCompiler(this.finder.root);
+        if (this.variables.serve) {
+            this.port = await portfinder.getPortPromise({
+                port: this.port
+            });
+            const host = `${this.variables.https ? 'https' : 'http'}://localhost:${chalk.green(this.port)}`;
+            Shout_1.Shout.timed(chalk.yellow('Hot Reload'), `server running on ${host}`);
         }
-        const schema = this.variables.https ? 'https' : 'http';
-        webpackConfiguration.output.publicPath = `${schema}://localhost:${port}/`;
-        const devServerOptions = {
-            hot: true,
-            contentBase: false,
-            port: port,
-            headers: {
-                'Access-Control-Allow-Origin': '*'
-            },
-            noInfo: true,
-            stats: 'none'
-        };
         if (this.variables.https) {
             const certFileAsync = fse.readFile(UserSettingsPath_1.UserSettingsPath.certFile);
             const keyFileAsync = fse.readFile(UserSettingsPath_1.UserSettingsPath.keyFile);
-            devServerOptions.https = {
+            this.certificates = {
                 key: await keyFileAsync,
                 cert: await certFileAsync
             };
         }
-        webpackDevServer.addDevServerEntrypoints(webpackConfiguration, devServerOptions);
-        const compiler = webpack(webpackConfiguration);
-        const devServer = new webpackDevServer(compiler, devServerOptions);
-        const createServerTask = new Promise((ok, reject) => {
-            devServer.listen(port, 'localhost', error => {
-                if (error) {
-                    reject(error);
-                    return;
-                }
-                ok();
-            });
-        });
-        await createServerTask;
-        Shout_1.Shout.timed(chalk.yellow('Hot Reload'), `server running on http://localhost:${chalk.green(port)}/`);
-    }
-    async build() {
-        this.useBabel = await fse.pathExists(this.finder.babelConfiguration);
-        this.vueTemplateCompiler = await CompilerResolver_1.resolveVueTemplateCompiler(this.finder.root);
         const webpackConfiguration = this.createWebpackConfiguration();
-        if (this.variables.serve) {
-            let basePort = 28080;
-            if (this.variables.port1) {
-                basePort = this.variables.port1;
-            }
-            const port = await portfinder.getPortPromise({
-                port: basePort
-            });
-            await this.runDevServer(webpackConfiguration, port);
-        }
-        else if (this.variables.watch) {
+        if (this.variables.watch) {
             await this.watch(webpackConfiguration);
         }
         else {

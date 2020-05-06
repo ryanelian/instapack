@@ -1,6 +1,3 @@
-import * as url from 'url';
-import * as upath from 'upath';
-import * as fse from 'fs-extra';
 import * as TypeScript from 'typescript';
 import webpack = require("webpack");
 import chalk = require("chalk");
@@ -10,14 +7,9 @@ import { VoiceAssistant } from "../VoiceAssistant";
 import { prettyBytes, prettyMilliseconds } from "../PrettyUnits";
 import { BuildVariables } from "../variables-factory/BuildVariables";
 import { PathFinder } from "../variables-factory/PathFinder";
+import type { WebpackError, InstapackStats } from '../WebpackInternalTypes';
 
 export class InstapackBuildPlugin {
-
-    /**
-     * Keep track of Hot Reload script injection file names already created.
-     */
-    private readonly wormholes: Set<string> = new Set<string>();
-
     variables: BuildVariables;
 
     finder: PathFinder;
@@ -48,25 +40,12 @@ export class InstapackBuildPlugin {
                 compilation.hooks.afterHash.tap('typescript-minify-notify', () => {
                     Shout.timed('TypeScript compilation finished! Minifying bundles...');
                 });
-
-                // https://github.com/webpack/tapable/issues/116
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                return undefined as any;
             });
         }
 
         compiler.hooks.done.tapPromise('display-build-results', async stats => {
             const statsObject = stats.toJson(this.statsSerializeEssentialOption);
-            const outputPublicPath = compiler.options.output?.publicPath;
-            this.displayBuildResults(statsObject, outputPublicPath);
-
-            if (this.variables.serve) {
-                if (outputPublicPath) {
-                    await this.putInjectionScripts(statsObject, outputPublicPath);
-                } else {
-                    Shout.error(new Error('instapack: Cannot create injection scripts due to undefined output.publicPath webpack option!'));
-                }
-            }
+            this.displayBuildResults(statsObject);
 
             if (statsObject.time) {
                 const t = prettyMilliseconds(statsObject.time);
@@ -80,7 +59,7 @@ export class InstapackBuildPlugin {
     /**
      * Get stat objects required for instapack build logs.
      */
-    get statsSerializeEssentialOption(): webpack.Stats.ToJsonOptions {
+    get statsSerializeEssentialOption(): unknown {
         return {
             assets: true,
             cached: false,
@@ -88,7 +67,7 @@ export class InstapackBuildPlugin {
             children: false,
             chunkModules: false,
             chunkOrigins: false,
-            chunks: this.variables.serve,
+            chunks: false,
             depth: false,
             entrypoints: false,
             env: false,
@@ -109,13 +88,13 @@ export class InstapackBuildPlugin {
         };
     }
 
-    formatError(error): string {
-        // webpack 5 might have changed error / warning stats data to array of objects
+    formatError(error: string | WebpackError): string {
+        // webpack 5 have changed error / warning stats data to array of objects
         // instead of array of strings https://github.com/webpack/webpack/issues/9802#issuecomment-569966784
-        if (error.stack) {
+        if (typeof error === 'object' && error.stack) {
             return `${error.moduleId} (${error.loc})\n ${error.stack}`;
         } else {
-            return error;
+            return error?.toString();
         }
     }
 
@@ -123,20 +102,18 @@ export class InstapackBuildPlugin {
      * Interact with user via CLI output when TypeScript build is finished.
      * @param stats 
      */
-    displayBuildResults(stats: webpack.Stats.ToJsonOutput, outputPublicPath: string | undefined): void {
-        const errors: string[] = stats.errors;
-        if (errors.length) {
-            const errorMessage = errors.map(Q => this.formatError(Q)).join('\n\n') + '\n';
+    displayBuildResults(stats: InstapackStats): void {
+        if (stats.errors.length) {
+            const errorMessage = stats.errors.map(Q => this.formatError(Q)).join('\n\n') + '\n';
             Shout.error('during JS build:');
             console.error(chalk.red(errorMessage));
-            this.va.speak(`JAVA SCRIPT BUILD: ${errors.length} ERROR!`);
+            this.va.speak(`JAVA SCRIPT BUILD: ${stats.errors.length} ERROR!`);
         } else {
             this.va.rewind();
         }
 
-        const warnings: string[] = stats.warnings;
-        if (warnings.length) {
-            const warningMessage = warnings.map(Q => this.formatError(Q)).join('\n\n') + '\n';
+        if (stats.warnings.length) {
+            const warningMessage = stats.warnings.map(Q => this.formatError(Q)).join('\n\n') + '\n';
             Shout.warning('during JS build:');
             console.warn(chalk.yellow(warningMessage));
         }
@@ -145,72 +122,10 @@ export class InstapackBuildPlugin {
             for (const asset of stats.assets) {
                 if (asset.emitted) {
                     const kb = prettyBytes(asset.size);
-                    const where = 'in ' + (this.variables.serve ? outputPublicPath : this.finder.jsOutputFolder);
+                    const where = `in ${this.finder.jsOutputFolder}`;
                     Shout.timed(chalk.blue(asset.name), chalk.magenta(kb), chalk.grey(where));
                 }
             }
         }
-    }
-
-    async putInjectionScripts(stats: webpack.Stats.ToJsonOutput, outputPublicPath: string): Promise<void> {
-        if (!stats.chunks) {
-            Shout.error(new Error('Cannot create injection scripts due to undefined stats chunk!'));
-            return;
-        }
-
-        const tasks: Promise<void>[] = [];
-        for (const chunk of stats.chunks) {
-            if (chunk.initial === false) {
-                continue;
-            }
-
-            for (const file of chunk.files) {
-                if (file.includes('.hot-update.js')) {
-                    continue;
-                }
-
-                if (this.wormholes.has(file)) {
-                    continue;
-                }
-
-                const task = this.putInjectionScript(file, outputPublicPath);
-                tasks.push(task);
-                this.wormholes.add(file);
-            }
-        }
-
-        try {
-            await Promise.all(tasks);
-        } catch (error) {
-            Shout.error('creating injection scripts!', error);
-        }
-    }
-
-    /**
-     * Create an injection script in place of the output file.
-     */
-    putInjectionScript(fileName: string, outputPublicPath: string): Promise<void> {
-        const physicalFilePath = upath.join(this.finder.jsOutputFolder, fileName);
-        const hotUri = url.resolve(outputPublicPath, fileName);
-        Shout.timed(`Inject <script> ${chalk.cyan(physicalFilePath)} --> ${chalk.cyan(hotUri)}`);
-        const hotProxy = this.createInjectionScriptToHotReloadingScript(hotUri);
-        return fse.outputFile(physicalFilePath, hotProxy);
-    }
-
-    /**
-     * Create a fake physical source code for importing the real hot-reloading source code.
-     * @param uri 
-     */
-    createInjectionScriptToHotReloadingScript(uri: string): string {
-        // https://developer.mozilla.org/en-US/docs/Glossary/IIFE
-        return `// instapack Script Injection: automagically reference the real hot-reloading script
-(function () {
-    var body = document.getElementsByTagName('body')[0];
-
-    var target = document.createElement('script');
-    target.src = '${uri}';
-    body.appendChild(target);
-})();
-`;
     }
 }

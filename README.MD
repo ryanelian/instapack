@@ -30,7 +30,7 @@ When requiring a specific instapack version to build a project, a local installa
 
 First, ensure `package.json` exists in the project folder. (If not, run `npm init -y`)
 
-Then, open command prompt in the said folder and install instapack locally: `npm install instapack@[INSERT_PACKAGE_VERSION_HERE] -D -E`
+Then, open command prompt in that folder to install instapack locally: `npm install instapack@[INSERT_PACKAGE_VERSION_HERE] -D -E`
 
 The local instapack can then be invoked using `npx instapack` command. Alternatively, setup [npm run scripts](https://docs.npmjs.com/cli/run-script).
 
@@ -97,7 +97,7 @@ If using [the latest Visual Studio Code](https://code.visualstudio.com/), it sho
 
 **instapack is a first-class end-to-end TypeScript and Sass build tool. :tophat:** Meaning, it comes with an assurance to compile projects written using standard TypeScript or Sass successfully regardless of frameworks used. :statue_of_liberty: This mindset is the differentiating factor between instapack and other CLI tools, which tend to be designed framework-first but TypeScript-second!
 
-instapack is battle-tested :hocho: and is designed to cover most normal use cases when developing a modern web app. Powered by [webpack](https://webpack.js.org), instapack effortlessly consumes modern JS modules (ES, CommonJS, UMD) and more (plain HTML templates, Vue SFC, TypeScript JSX).
+instapack is battle-tested :hocho: and is designed to cover most normal use cases when developing a modern web app. Powered by [webpack](https://webpack.js.org), instapack readily consumes modern JS modules (ES, CommonJS, UMD) and more (plain HTML templates, Vue SFC, TypeScript JSX).
 
 With this powerful tool, you can save time :watch:, save precious SSD space :space_invader:, and save yourself from the pain of maintaining project build scripts! :coffee:
 

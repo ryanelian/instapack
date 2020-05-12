@@ -2,7 +2,13 @@
 
 Here are the list of breaking changes when upgrading between instapack major (or minor) versions.
 
-## 8.0.0
+## 8.0.0-beta.10
+
+- Hot Reload now outputs to real file system.
+
+- Production build now cleans the JS output folder.
+
+## 8.0.0-beta.8
 
 - Build flag `--hot` / `-h` is changed to `--serve` / `-s` to reduce confusion with `--help`
 

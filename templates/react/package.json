@@ -16,7 +16,7 @@
     "@types/reactstrap": "^8.4.2",
     "@types/requirejs": "^2.1.31",
     "axios": "^0.19.2",
-    "bootstrap": "^4.4.1",
+    "bootstrap": "^4.5.0",
     "linq": "^3.2.2",
     "luxon": "^1.24.1",
     "mobx": "^5.15.4",
@@ -27,14 +27,14 @@
     "reactstrap": "^8.4.1",
     "sweetalert2": "^9.10.13",
     "ts-polyfill": "^3.8.2",
-    "tslib": "^1.11.2"
+    "tslib": "^1.12.0"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "2.31.0",
-    "@typescript-eslint/parser": "2.31.0",
-    "eslint": "^7.0.0",
+    "@typescript-eslint/eslint-plugin": "2.33.0",
+    "@typescript-eslint/parser": "2.33.0",
+    "eslint": "6.8.0",
     "eslint-plugin-react": "^7.19.0",
     "jquery": "^3.5.1",
-    "typescript": "^3.8.3"
+    "typescript": "^3.9.2"
   }
 }

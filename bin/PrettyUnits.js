@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.prettyHrTime = exports.prettyMilliseconds = exports.prettySeconds = exports.prettyBytes = exports.stringifyExponent = exports.siDegree = void 0;
 const nanoUnitPrefix = ['n', 'µ', 'm'];
 const bigUnitPrefix = ['', 'k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'];
 function siDegree(x) {

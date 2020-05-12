@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.tryReadTypeScriptConfigJson = exports.parseTypescriptConfig = void 0;
 const fse = require("fs-extra");
 const upath = require("upath");
 const TypeScript = require("typescript");

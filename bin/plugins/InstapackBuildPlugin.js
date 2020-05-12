@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.InstapackBuildPlugin = void 0;
 const TypeScript = require("typescript");
 const chalk = require("chalk");
 const Shout_1 = require("../Shout");

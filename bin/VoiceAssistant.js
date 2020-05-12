@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.VoiceAssistant = void 0;
 const say = require("say");
 class VoiceAssistant {
     constructor(silent = false) {

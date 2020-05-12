@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.setSetting = exports.getSettings = exports.userSettingsOptions = void 0;
 const fse = require("fs-extra");
 const UserSettingsPath_1 = require("./UserSettingsPath");
 const validators = Object.freeze({

@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Shout = void 0;
 const chalk = require("chalk");
 const upath = require("upath");
 const fse = require("fs-extra");

@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.TypeScriptCheckerTool = void 0;
 const TypeScript = require("typescript");
 const chalk = require("chalk");
 const fse = require("fs-extra");

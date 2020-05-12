@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.parseTypeScriptInVueFile = void 0;
 const VueTemplateCompiler = require("vue-template-compiler");
 function parseTypeScriptInVueFile(raw) {
     const parse = VueTemplateCompiler.parseComponent(raw);

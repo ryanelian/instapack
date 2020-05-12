@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.uniteBuildVariables = void 0;
 function uniteBuildVariables(commandLineFlags, projectSettings, userSettings, dotEnv, typescriptConfiguration) {
     const a = Object.assign({
         typescriptConfiguration: typescriptConfiguration,

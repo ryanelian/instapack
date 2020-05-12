@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.TypeScriptBuildEngine = void 0;
 const path = require("path");
 const fse = require("fs-extra");
 const chalk = require("chalk");

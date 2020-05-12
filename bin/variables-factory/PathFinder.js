@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.PathFinder = void 0;
 const upath = require("upath");
 class PathFinder {
     constructor(variables) {

@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.mergePackageJson = exports.objectSortByKeys = void 0;
 function objectSortByKeys(input) {
     const output = {};
     const keys = Object.keys(input).sort();

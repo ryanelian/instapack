@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.getWildcardModules = exports.mergeTypeScriptPathAlias = void 0;
 const upath = require("upath");
 const Shout_1 = require("./Shout");
 const chalk = require("chalk");

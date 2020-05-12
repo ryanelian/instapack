@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.setupHttps = exports.downloadMkcert = exports.askUserDownloadMkcert = exports.restorePackages = exports.execWithConsoleOutput = void 0;
 const ChildProcess = require("child_process");
 const which = require("which");
 const readline = require("readline");

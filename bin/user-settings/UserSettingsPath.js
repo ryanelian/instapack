@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.UserSettingsPath = void 0;
 const upath = require("upath");
 const OS = require("os");
 const userFolderPath = upath.join(OS.homedir(), 'instapack');

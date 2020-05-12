@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.TypeScriptSourceStore = void 0;
 const upath = require("upath");
 const fse = require("fs-extra");
 const crypto_1 = require("crypto");

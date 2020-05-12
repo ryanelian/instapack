@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.BuildWorkerManager = void 0;
 const child_process_1 = require("child_process");
 class BuildWorkerManager {
     constructor() {

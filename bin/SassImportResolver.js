@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.sassImport = void 0;
 const upath = require("upath");
 const resolve = require("enhanced-resolve");
 const fs = require("fs");

@@ -9,7 +9,6 @@ const postcss = require("postcss");
 const autoprefixer = require("autoprefixer");
 const CleanCSS = require("clean-css");
 const mergeSourceMap = require("merge-source-map");
-const Fiber = require("fibers");
 const PrettyUnits_1 = require("./PrettyUnits");
 const Shout_1 = require("./Shout");
 const PathFinder_1 = require("./variables-factory/PathFinder");
@@ -48,7 +47,7 @@ class SassBuildTool {
     }
     async compileSassProject(virtualSassOutputPath) {
         const cssInput = this.finder.cssEntry;
-        let sassOptions = {
+        const sassOptions = {
             file: cssInput,
             outFile: virtualSassOutputPath,
             data: await fse.readFile(cssInput, 'utf8'),
@@ -56,9 +55,6 @@ class SassBuildTool {
             sourceMapContents: this.variables.sourceMap,
             importer: SassImportResolver_1.sassImporter,
         };
-        sassOptions = Object.assign(sassOptions, {
-            'fiber': Fiber
-        });
         const sassResult = await this.runSassAsync(sassOptions);
         const result = {
             css: sassResult.css.toString('utf8')

@@ -36,6 +36,7 @@ program.command({
         }).option('https', {
             describe: 'Enables HTTPS Hot Reload dev server. (Requires mkcert to be installed)'
         }).option('experimental-react-refresh', {
+            alias: 'R',
             describe: 'Enables Fast Refresh for React with dev server.'
         }).option('sourcemaps', {
             default: true,

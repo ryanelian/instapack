@@ -1,13 +1,19 @@
 import * as path from 'path';
 import * as fse from 'fs-extra';
 import chalk = require('chalk');
-import webpack = require('webpack');
-import { WebpackPluginServe } from 'webpack-plugin-serve';
-import { CleanWebpackPlugin } from 'clean-webpack-plugin';
 import portfinder = require('portfinder');
 import * as TypeScript from 'typescript';
 import { VueLoaderPlugin } from 'vue-loader';
+
+import webpack = require('webpack');
+import { CleanWebpackPlugin } from 'clean-webpack-plugin';
+import { WebpackPluginServe } from 'webpack-plugin-serve';
 import ReactRefreshWebpackPlugin = require('@webhotelier/webpack-fast-refresh');
+const webpackPluginServeClientJS = require.resolve('webpack-plugin-serve/client');
+const reactRefreshWebpackLoaderJS = require.resolve('@webhotelier/webpack-fast-refresh/loader.js');
+const reactRefreshWebpackRuntimeJS = require.resolve('@webhotelier/webpack-fast-refresh/runtime.js');
+const reactRefreshBabelPluginJS = require.resolve('react-refresh/babel');
+const babelPluginDynamicImportJS = require.resolve('@babel/plugin-syntax-dynamic-import');
 
 import { resolveVueTemplateCompiler } from './CompilerResolver';
 import { Shout } from './Shout';
@@ -18,7 +24,6 @@ import { parseTypescriptConfig } from './TypescriptConfigParser';
 import { InstapackBuildPlugin } from './plugins/InstapackBuildPlugin';
 import { mergeTypeScriptPathAlias, getWildcardModules } from './TypeScriptPathsTranslator';
 import { UserSettingsPath } from './user-settings/UserSettingsPath';
-import type { WebpackRuleSetUseLoader } from './WebpackInternalTypes';
 
 /**
  * Contains methods for compiling a TypeScript project.
@@ -68,11 +73,11 @@ export class TypeScriptBuildEngine {
      */
     get jsBabelWebpackRules(): webpack.RuleSetRule {
         return {
-            test: /\.js$/,
+            test: /\.jsx?$/,
             exclude: /node_modules/,
             use: {
                 loader: LoaderPaths.babel,
-                ident: 'babel-js-loader'
+                ident: 'babel-js'
             }
         };
     }
@@ -81,25 +86,28 @@ export class TypeScriptBuildEngine {
      * Gets a configured TypeScript rules for webpack.
      */
     get typescriptWebpackRules(): webpack.RuleSetRule {
-        const loaders: WebpackRuleSetUseLoader[] = [];
-
-        // webpack loaders are declared in reverse / right-to-left!
-        // babel(typescript(source_code))
-
-        if (this.useBabel) {
-            loaders.push({
-                loader: LoaderPaths.babel,
-                ident: 'babel-typescript-loader'
-            })
-        }
-
-        loaders.push({
+        const loaders: {
+            ident: string;
+            loader: string;
+            options?: {
+                [key: string]: unknown;
+            };
+        }[] = [{
             loader: LoaderPaths.typescript,
-            ident: 'typescript-loader',
+            ident: 'typescript',
             options: {
                 compilerOptions: this.typescriptCompilerOptions
             }
-        });
+        }];
+
+        if (this.useBabel) {
+            // Babel post-processing should be done after TypeScript compilation.
+            // webpack rules are run from right-to-left / LIFO.
+            loaders.unshift({
+                loader: LoaderPaths.babel,
+                ident: 'babel-typescript'
+            });
+        }
 
         const tsRules: webpack.RuleSetRule = {
             test: /\.tsx?$/,
@@ -119,7 +127,7 @@ export class TypeScriptBuildEngine {
             exclude: /node_modules/,
             use: [{
                 loader: LoaderPaths.vue,
-                ident: 'vue-loader',
+                ident: 'vue',
                 options: {
                     compiler: this.vueTemplateCompiler,
                     transformAssetUrls: {},     // remove <img> src and SVG <image> xlink:href resolution
@@ -138,7 +146,7 @@ export class TypeScriptBuildEngine {
             exclude: /node_modules/,
             use: [{
                 loader: LoaderPaths.html,
-                ident: 'html-loader'
+                ident: 'html-txt'
             }]
         };
     }
@@ -147,14 +155,14 @@ export class TypeScriptBuildEngine {
      * Gets CSS rules for webpack to prevent explosion during vue compile.
      */
     get vueCssWebpackRules(): webpack.RuleSetRule {
-        const vueStyleLoader: WebpackRuleSetUseLoader = {
+        const vueStyleLoader = {
             loader: LoaderPaths.vueStyle,
-            ident: 'vue-style-loader'
+            ident: 'vue-style'
         };
         // https://vue-loader.vuejs.org/guide/css-modules.html#usage
-        const cssModulesLoader: WebpackRuleSetUseLoader = {
+        const cssModulesLoader = {
             loader: LoaderPaths.css,
-            ident: 'vue-css-module-loader',
+            ident: 'vue-css-module',
             options: {
                 // enable CSS Modules
                 modules: {
@@ -163,9 +171,9 @@ export class TypeScriptBuildEngine {
                 url: false
             }
         };
-        const cssLoader: WebpackRuleSetUseLoader = {
+        const cssLoader = {
             loader: LoaderPaths.css,
-            ident: 'vue-css-loader',
+            ident: 'vue-css',
             options: {
                 url: false
             }
@@ -194,19 +202,26 @@ export class TypeScriptBuildEngine {
      * Gets JS Babel transpile rules for webpack.
      */
     get reactRefreshWebpackRules(): webpack.RuleSetRule {
+        const loader1 = {
+            loader: reactRefreshWebpackLoaderJS,
+            ident: 'react-fast-refresh'
+        };
+
+        const loader2 = {
+            loader: LoaderPaths.babel,
+            ident: 'react-fast-refresh-babel',
+            options: {
+                plugins: [
+                    babelPluginDynamicImportJS,
+                    reactRefreshBabelPluginJS,
+                ]
+            }
+        };
+
         return {
             test: /\.[jt]sx?$/,
             exclude: /node_modules/,
-            use: {
-                loader: LoaderPaths.babel,
-                ident: 'babel-react-refresh-loader',
-                options: {
-                    plugins: [
-                        require.resolve('@babel/plugin-syntax-dynamic-import'),
-                        require.resolve('react-refresh/babel'),
-                    ]
-                }
-            }
+            use: [loader2, loader1]
         };
     }
 
@@ -219,7 +234,7 @@ export class TypeScriptBuildEngine {
             include: /node_modules/,
             use: {
                 loader: LoaderPaths.transpileLibraries,
-                ident: 'js-lib-loader',
+                ident: 'js-libraries-to-es5',
                 options: {
                     compilerOptions: this.typescriptCompilerOptions
                 }
@@ -249,10 +264,6 @@ export class TypeScriptBuildEngine {
                 host: 'localhost',
                 port: this.port,
                 https: this.certificates,
-                headers: { // https://github.com/shellscape/webpack-plugin-serve/blob/master/recipes/custom-headers.md
-                    'Access-Control-Allow-Origin': '*',
-                    'Cache-Control': 'no-store'
-                },
                 progress: 'minimal',
                 log: {
                     level: 'error'
@@ -334,7 +345,11 @@ export class TypeScriptBuildEngine {
         };
 
         if (this.variables.serve) {
-            entry.main.import.push(require.resolve('webpack-plugin-serve/client'));
+            entry.main.import.push(webpackPluginServeClientJS);
+
+            if (this.variables.reactRefresh) {
+                entry.main.import.unshift(reactRefreshWebpackRuntimeJS);
+            }
         }
 
         const config: webpack.Configuration = {

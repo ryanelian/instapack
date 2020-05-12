@@ -139,11 +139,11 @@ In addition, build flags are available:
 
 - `--serve` or `-s` enables **Hot Reload** development mode using dedicated build server. :recycle: [Read more ↓](#hot-reload-development-mode)
 
-- `--https` augments `--serve` flag, allowing the Hot Reload dev server to use `https://` protocol.
+- `--https` can be used with `--serve` flag, allowing the Hot Reload dev server to use `https://` protocol.
 
   - This feature requires [mkcert](https://github.com/FiloSottile/mkcert) third-party utility to be installed and available on the CLI path.
 
-- `--experimental-react-refresh` enables dev server with [React Fast Refresh](https://facebook.github.io/react-native/blog/2019/09/18/version-0.61) (new native Hot Reload).
+- `--experimental-react-refresh` or `-R` enables dev server with [React Fast Refresh](https://facebook.github.io/react-native/blog/2019/09/18/version-0.61) (new native Hot Reload).
 
 - `--no-sourcemaps` disables source maps, producing undebuggable outputs. :bug: (Slightly improves build speed)
 

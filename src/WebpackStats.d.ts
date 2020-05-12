@@ -15,20 +15,3 @@ export interface InstapackStats {
     warnings: string[];
     assets: WebpackAsset[];
 }
-
-export interface WebpackRuleSetUseLoader {
-    /**
-     * Unique loader options identifier.
-     */
-    ident?: string;
-    /**
-     * Loader name.
-     */
-    loader?: string;
-    /**
-     * Loader options.
-     */
-    options?: {
-        [key: string]: unknown;
-    };
-}

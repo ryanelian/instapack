@@ -3,13 +3,18 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const path = require("path");
 const fse = require("fs-extra");
 const chalk = require("chalk");
-const webpack = require("webpack");
-const webpack_plugin_serve_1 = require("webpack-plugin-serve");
-const clean_webpack_plugin_1 = require("clean-webpack-plugin");
 const portfinder = require("portfinder");
 const TypeScript = require("typescript");
 const vue_loader_1 = require("vue-loader");
+const webpack = require("webpack");
+const clean_webpack_plugin_1 = require("clean-webpack-plugin");
+const webpack_plugin_serve_1 = require("webpack-plugin-serve");
 const ReactRefreshWebpackPlugin = require("@webhotelier/webpack-fast-refresh");
+const webpackPluginServeClientJS = require.resolve('webpack-plugin-serve/client');
+const reactRefreshWebpackLoaderJS = require.resolve('@webhotelier/webpack-fast-refresh/loader.js');
+const reactRefreshWebpackRuntimeJS = require.resolve('@webhotelier/webpack-fast-refresh/runtime.js');
+const reactRefreshBabelPluginJS = require.resolve('react-refresh/babel');
+const babelPluginDynamicImportJS = require.resolve('@babel/plugin-syntax-dynamic-import');
 const CompilerResolver_1 = require("./CompilerResolver");
 const Shout_1 = require("./Shout");
 const PathFinder_1 = require("./variables-factory/PathFinder");
@@ -37,29 +42,28 @@ class TypeScriptBuildEngine {
     }
     get jsBabelWebpackRules() {
         return {
-            test: /\.js$/,
+            test: /\.jsx?$/,
             exclude: /node_modules/,
             use: {
                 loader: LoaderPaths_1.LoaderPaths.babel,
-                ident: 'babel-js-loader'
+                ident: 'babel-js'
             }
         };
     }
     get typescriptWebpackRules() {
-        const loaders = [];
+        const loaders = [{
+                loader: LoaderPaths_1.LoaderPaths.typescript,
+                ident: 'typescript',
+                options: {
+                    compilerOptions: this.typescriptCompilerOptions
+                }
+            }];
         if (this.useBabel) {
-            loaders.push({
+            loaders.unshift({
                 loader: LoaderPaths_1.LoaderPaths.babel,
-                ident: 'babel-typescript-loader'
+                ident: 'babel-typescript'
             });
         }
-        loaders.push({
-            loader: LoaderPaths_1.LoaderPaths.typescript,
-            ident: 'typescript-loader',
-            options: {
-                compilerOptions: this.typescriptCompilerOptions
-            }
-        });
         const tsRules = {
             test: /\.tsx?$/,
             exclude: /node_modules/,
@@ -73,7 +77,7 @@ class TypeScriptBuildEngine {
             exclude: /node_modules/,
             use: [{
                     loader: LoaderPaths_1.LoaderPaths.vue,
-                    ident: 'vue-loader',
+                    ident: 'vue',
                     options: {
                         compiler: this.vueTemplateCompiler,
                         transformAssetUrls: {},
@@ -88,18 +92,18 @@ class TypeScriptBuildEngine {
             exclude: /node_modules/,
             use: [{
                     loader: LoaderPaths_1.LoaderPaths.html,
-                    ident: 'html-loader'
+                    ident: 'html-txt'
                 }]
         };
     }
     get vueCssWebpackRules() {
         const vueStyleLoader = {
             loader: LoaderPaths_1.LoaderPaths.vueStyle,
-            ident: 'vue-style-loader'
+            ident: 'vue-style'
         };
         const cssModulesLoader = {
             loader: LoaderPaths_1.LoaderPaths.css,
-            ident: 'vue-css-module-loader',
+            ident: 'vue-css-module',
             options: {
                 modules: {
                     localIdentName: '[local]_[contenthash:8]'
@@ -109,7 +113,7 @@ class TypeScriptBuildEngine {
         };
         const cssLoader = {
             loader: LoaderPaths_1.LoaderPaths.css,
-            ident: 'vue-css-loader',
+            ident: 'vue-css',
             options: {
                 url: false
             }
@@ -129,19 +133,24 @@ class TypeScriptBuildEngine {
         };
     }
     get reactRefreshWebpackRules() {
+        const loader1 = {
+            loader: reactRefreshWebpackLoaderJS,
+            ident: 'react-fast-refresh'
+        };
+        const loader2 = {
+            loader: LoaderPaths_1.LoaderPaths.babel,
+            ident: 'react-fast-refresh-babel',
+            options: {
+                plugins: [
+                    babelPluginDynamicImportJS,
+                    reactRefreshBabelPluginJS,
+                ]
+            }
+        };
         return {
             test: /\.[jt]sx?$/,
             exclude: /node_modules/,
-            use: {
-                loader: LoaderPaths_1.LoaderPaths.babel,
-                ident: 'babel-react-refresh-loader',
-                options: {
-                    plugins: [
-                        require.resolve('@babel/plugin-syntax-dynamic-import'),
-                        require.resolve('react-refresh/babel'),
-                    ]
-                }
-            }
+            use: [loader2, loader1]
         };
     }
     get transpileLibrariesWebpackRules() {
@@ -150,7 +159,7 @@ class TypeScriptBuildEngine {
             include: /node_modules/,
             use: {
                 loader: LoaderPaths_1.LoaderPaths.transpileLibraries,
-                ident: 'js-lib-loader',
+                ident: 'js-libraries-to-es5',
                 options: {
                     compilerOptions: this.typescriptCompilerOptions
                 }
@@ -171,10 +180,6 @@ class TypeScriptBuildEngine {
                 host: 'localhost',
                 port: this.port,
                 https: this.certificates,
-                headers: {
-                    'Access-Control-Allow-Origin': '*',
-                    'Cache-Control': 'no-store'
-                },
                 progress: 'minimal',
                 log: {
                     level: 'error'
@@ -227,7 +232,10 @@ class TypeScriptBuildEngine {
             }
         };
         if (this.variables.serve) {
-            entry.main.import.push(require.resolve('webpack-plugin-serve/client'));
+            entry.main.import.push(webpackPluginServeClientJS);
+            if (this.variables.reactRefresh) {
+                entry.main.import.unshift(reactRefreshWebpackRuntimeJS);
+            }
         }
         const config = {
             entry: entry,

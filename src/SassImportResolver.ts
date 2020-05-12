@@ -1,25 +1,6 @@
 import * as upath from 'upath';
-import { ResolverFactory } from 'enhanced-resolve';
-import { ImporterReturnType } from 'sass';
+import resolve = require("enhanced-resolve");
 import fs = require('fs');
-
-/**
- * Invoke enhanced-resolve custom resolver as a Promise.
- * @param lookupStartPath 
- * @param request 
- */
-function resolveAsync(customResolver, lookupStartPath: string, request: string): Promise<string> {
-    return new Promise<string>((ok, reject) => {
-        customResolver.resolve({}, lookupStartPath, request, {}, (error: Error, resolution: string) => {
-            if (error) {
-                reject(error);
-            } else {
-                // import resolution can be Windows / non-UNIX path!
-                ok(resolution);
-            }
-        });
-    });
-}
 
 /**
  * Implements a smarter Sass @import logic,
@@ -27,7 +8,7 @@ function resolveAsync(customResolver, lookupStartPath: string, request: string):
  * @param source 
  * @param request 
  */
-export async function sassImport(source: string, request: string): Promise<string> {
+export function sassImport(source: string, request: string): string {
     // https://github.com/ryanelian/instapack/issues/99
     // source               :   "E:/VS/MyProject/client/css/index.scss"
     // request / @import    :   "@ryan/something"
@@ -45,7 +26,7 @@ export async function sassImport(source: string, request: string): Promise<strin
             partialFolderLookups.push('node_modules');
         }
 
-        const partialSassResolver = ResolverFactory.createResolver({
+        const resolvePartialSCSS = resolve.create.sync({
             fileSystem: fs,
             extensions: ['.scss'],
             modules: partialFolderLookups,
@@ -59,13 +40,13 @@ export async function sassImport(source: string, request: string): Promise<strin
         // 3: E:/VS/MyProject/client/css/@ryan/_something.scss      (Standard)
         // 8: E:/VS/MyProject/node_modules/@ryan/_something.scss    (Standard+)
         try {
-            return await resolveAsync(partialSassResolver, lookupStartPath, partialRequest);
+            return resolvePartialSCSS(lookupStartPath, partialRequest);
         } catch (ex) {
             // continue module resolution
         }
     }
 
-    const sassResolver = ResolverFactory.createResolver({
+    const resolveSCSS = resolve.create.sync({
         fileSystem: fs,
         extensions: ['.scss'],
         modules: [lookupStartPath, 'node_modules'],
@@ -81,12 +62,12 @@ export async function sassImport(source: string, request: string): Promise<strin
     // 7: E:/VS/MyProject/node_modules/@ryan/something/_index.scss      (Standard+)
     // 7: E:/VS/MyProject/node_modules/@ryan/something/index.scss       (Standard+)
     try {
-        return await resolveAsync(sassResolver, lookupStartPath, request);
+        return resolveSCSS(lookupStartPath, request);
     } catch (ex) {
         // continue module resolution
     }
 
-    const cssResolver = ResolverFactory.createResolver({
+    const resolveCSS = resolve.create.sync({
         fileSystem: fs,
         extensions: ['.css'],
         modules: [lookupStartPath, 'node_modules'],
@@ -99,18 +80,7 @@ export async function sassImport(source: string, request: string): Promise<strin
     // 9: E:/VS/MyProject/node_modules/@ryan/something.css                  (Standard+)
     // 9: E:/VS/MyProject/node_modules/@ryan/something/index.css            (Standard+)
     // 10: E:/VS/MyProject/node_modules/@ryan/something/package.json:style  (Custom, Node-like)
-    return await resolveAsync(cssResolver, lookupStartPath, request);
+    return resolveCSS(lookupStartPath, request);
 
     // Standard+: when using node-sass includePaths option set to the node_modules folder. (Older instapack behavior)
-}
-
-export function sassImporter(request: string, source: string, done: (data: ImporterReturnType) => void): void {
-    sassImport(source, request).then(resolution => {
-        // console.log(source, '+', request, '=', resolution); console.log();
-        done({
-            file: resolution
-        });
-    }).catch(error => {
-        done(error);
-    });
 }

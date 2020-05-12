@@ -1,21 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const upath = require("upath");
-const enhanced_resolve_1 = require("enhanced-resolve");
+const resolve = require("enhanced-resolve");
 const fs = require("fs");
-function resolveAsync(customResolver, lookupStartPath, request) {
-    return new Promise((ok, reject) => {
-        customResolver.resolve({}, lookupStartPath, request, {}, (error, resolution) => {
-            if (error) {
-                reject(error);
-            }
-            else {
-                ok(resolution);
-            }
-        });
-    });
-}
-async function sassImport(source, request) {
+function sassImport(source, request) {
     const lookupStartPath = upath.dirname(source);
     const requestFileName = upath.basename(request);
     const requestDir = upath.dirname(request);
@@ -24,7 +12,7 @@ async function sassImport(source, request) {
         if (requestDir !== '.') {
             partialFolderLookups.push('node_modules');
         }
-        const partialSassResolver = enhanced_resolve_1.ResolverFactory.createResolver({
+        const resolvePartialSCSS = resolve.create.sync({
             fileSystem: fs,
             extensions: ['.scss'],
             modules: partialFolderLookups,
@@ -34,12 +22,12 @@ async function sassImport(source, request) {
         const partialFileName = '_' + upath.addExt(requestFileName, '.scss');
         const partialRequest = upath.join(requestDir, partialFileName);
         try {
-            return await resolveAsync(partialSassResolver, lookupStartPath, partialRequest);
+            return resolvePartialSCSS(lookupStartPath, partialRequest);
         }
         catch (ex) {
         }
     }
-    const sassResolver = enhanced_resolve_1.ResolverFactory.createResolver({
+    const resolveSCSS = resolve.create.sync({
         fileSystem: fs,
         extensions: ['.scss'],
         modules: [lookupStartPath, 'node_modules'],
@@ -47,26 +35,16 @@ async function sassImport(source, request) {
         descriptionFiles: [],
     });
     try {
-        return await resolveAsync(sassResolver, lookupStartPath, request);
+        return resolveSCSS(lookupStartPath, request);
     }
     catch (ex) {
     }
-    const cssResolver = enhanced_resolve_1.ResolverFactory.createResolver({
+    const resolveCSS = resolve.create.sync({
         fileSystem: fs,
         extensions: ['.css'],
         modules: [lookupStartPath, 'node_modules'],
         mainFields: ['style']
     });
-    return await resolveAsync(cssResolver, lookupStartPath, request);
+    return resolveCSS(lookupStartPath, request);
 }
 exports.sassImport = sassImport;
-function sassImporter(request, source, done) {
-    sassImport(source, request).then(resolution => {
-        done({
-            file: resolution
-        });
-    }).catch(error => {
-        done(error);
-    });
-}
-exports.sassImporter = sassImporter;

@@ -13,7 +13,7 @@ import { prettyHrTime } from './PrettyUnits';
 import { Shout } from './Shout';
 import { BuildVariables } from './variables-factory/BuildVariables';
 import { PathFinder } from './variables-factory/PathFinder';
-import { sassImporter } from './SassImportResolver';
+import { sassImport } from './SassImportResolver';
 import { VoiceAssistant } from './VoiceAssistant';
 
 /**
@@ -42,22 +42,6 @@ export class SassBuildTool {
         this.variables = variables;
         this.finder = new PathFinder(variables);
         this.va = new VoiceAssistant(variables.mute);
-    }
-
-    /**
-     * Asynchronously run Sass as a Promise.
-     * @param options 
-     */
-    runSassAsync(options: sass.Options): Promise<sass.Result> {
-        return new Promise<sass.Result>((ok, reject) => {
-            sass.render(options, (error, result) => {
-                if (error) {
-                    reject(error);
-                } else {
-                    ok(result);
-                }
-            });
-        });
     }
 
     /**
@@ -94,17 +78,20 @@ export class SassBuildTool {
     async compileSassProject(virtualSassOutputPath: string): Promise<CssBuildResult> {
         const cssInput = this.finder.cssEntry;
 
-        const sassOptions: sass.Options = {
+        // Sync Sass is FASTER than Async Sass, according to author @nex3
+        const sassResult = sass.renderSync({
             file: cssInput,
             outFile: virtualSassOutputPath,
             data: await fse.readFile(cssInput, 'utf8'),
 
             sourceMap: this.variables.sourceMap,
             sourceMapContents: this.variables.sourceMap,
-            importer: sassImporter,
-        };
-
-        const sassResult = await this.runSassAsync(sassOptions);
+            importer: (request, source) => {
+                return {
+                    file: sassImport(source, request)
+                };
+            },
+        });
 
         const result: CssBuildResult = {
             css: sassResult.css.toString('utf8')

@@ -20,18 +20,6 @@ class SassBuildTool {
         this.finder = new PathFinder_1.PathFinder(variables);
         this.va = new VoiceAssistant_1.VoiceAssistant(variables.mute);
     }
-    runSassAsync(options) {
-        return new Promise((ok, reject) => {
-            sass.render(options, (error, result) => {
-                if (error) {
-                    reject(error);
-                }
-                else {
-                    ok(result);
-                }
-            });
-        });
-    }
     get virtualSassOutputFilePath() {
         return upath.join(this.finder.root, '(intermediate)', '(sass-output).css');
     }
@@ -47,15 +35,18 @@ class SassBuildTool {
     }
     async compileSassProject(virtualSassOutputPath) {
         const cssInput = this.finder.cssEntry;
-        const sassOptions = {
+        const sassResult = sass.renderSync({
             file: cssInput,
             outFile: virtualSassOutputPath,
             data: await fse.readFile(cssInput, 'utf8'),
             sourceMap: this.variables.sourceMap,
             sourceMapContents: this.variables.sourceMap,
-            importer: SassImportResolver_1.sassImporter,
-        };
-        const sassResult = await this.runSassAsync(sassOptions);
+            importer: (request, source) => {
+                return {
+                    file: SassImportResolver_1.sassImport(source, request)
+                };
+            },
+        });
         const result = {
             css: sassResult.css.toString('utf8')
         };

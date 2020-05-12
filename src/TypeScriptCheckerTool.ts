@@ -94,9 +94,12 @@ export class TypeScriptCheckerTool {
         const finder = new PathFinder(variables);
 
         const tsconfig = parseTypescriptConfig(variables.root, variables.typescriptConfiguration);
-        const compilerOptions = tsconfig.options;
+        let target: TypeScript.ScriptTarget = TypeScript.ScriptTarget.ES5;
+        if (tsconfig.options.target) { // if not ES3 or undefined
+            target = tsconfig.options.target;
+        }
 
-        const sourceStore = new TypeScriptSourceStore(compilerOptions.target || TypeScript.ScriptTarget.ES5);
+        const sourceStore = new TypeScriptSourceStore(target);
         const loadSourceTask = sourceStore.loadFolder(finder.jsInputFolder);
         const eslintCtor = await tryGetProjectESLint(finder.root, finder.jsEntry);
         let versionAnnounce = `Using TypeScript ${chalk.green(TypeScript.version)} `;
@@ -111,7 +114,7 @@ export class TypeScriptCheckerTool {
         }
         Shout.timed(versionAnnounce);
         await loadSourceTask;
-        return new TypeScriptCheckerTool(sourceStore, compilerOptions, variables.mute, eslint);
+        return new TypeScriptCheckerTool(sourceStore, tsconfig.options, variables.mute, eslint);
     }
 
     /**

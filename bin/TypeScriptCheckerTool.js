@@ -38,8 +38,11 @@ class TypeScriptCheckerTool {
     static async createToolAsync(variables) {
         const finder = new PathFinder_1.PathFinder(variables);
         const tsconfig = TypescriptConfigParser_1.parseTypescriptConfig(variables.root, variables.typescriptConfiguration);
-        const compilerOptions = tsconfig.options;
-        const sourceStore = new TypeScriptSourceStore_1.TypeScriptSourceStore(compilerOptions.target || TypeScript.ScriptTarget.ES5);
+        let target = TypeScript.ScriptTarget.ES5;
+        if (tsconfig.options.target) {
+            target = tsconfig.options.target;
+        }
+        const sourceStore = new TypeScriptSourceStore_1.TypeScriptSourceStore(target);
         const loadSourceTask = sourceStore.loadFolder(finder.jsInputFolder);
         const eslintCtor = await CompilerResolver_1.tryGetProjectESLint(finder.root, finder.jsEntry);
         let versionAnnounce = `Using TypeScript ${chalk.green(TypeScript.version)} `;
@@ -55,7 +58,7 @@ class TypeScriptCheckerTool {
         }
         Shout_1.Shout.timed(versionAnnounce);
         await loadSourceTask;
-        return new TypeScriptCheckerTool(sourceStore, compilerOptions, variables.mute, eslint);
+        return new TypeScriptCheckerTool(sourceStore, tsconfig.options, variables.mute, eslint);
     }
     typeCheck() {
         const tsc = TypeScript.createProgram(this.sourceStore.sourcePaths, this.compilerOptions, this.host);

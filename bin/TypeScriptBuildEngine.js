@@ -31,8 +31,8 @@ class TypeScriptBuildEngine {
         this.variables = variables;
         this.finder = new PathFinder_1.PathFinder(variables);
         this.typescriptCompilerOptions = TypescriptConfigParser_1.parseTypescriptConfig(variables.root, variables.typescriptConfiguration).options;
-        if (this.typescriptCompilerOptions.target === TypeScript.ScriptTarget.ES3) {
-            Shout_1.Shout.warning('instapack does not support targeting ES3! JS build target has been set to ES5.');
+        if (!this.typescriptCompilerOptions.target) {
+            Shout_1.Shout.warning('instapack does not support targeting ES3! JS build target has been set to ES5. (TypeScript compiler options)');
             this.typescriptCompilerOptions.target = TypeScript.ScriptTarget.ES5;
         }
         this.typescriptCompilerOptions.noEmit = false;

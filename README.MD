@@ -143,7 +143,7 @@ In addition, build flags are available:
 
   - This feature requires [mkcert](https://github.com/FiloSottile/mkcert) third-party utility to be installed and available on the CLI path.
 
-- `--experimental-react-refresh` or `-R` enables dev server with [React Fast Refresh](https://facebook.github.io/react-native/blog/2019/09/18/version-0.61) (new native Hot Reload).
+- `--experimental-react-refresh` or `-R` enables dev server with [React Fast Refresh](https://reactnative.dev/docs/fast-refresh) (new native Hot Reload).
 
 - `--no-sourcemaps` disables source maps, producing undebuggable outputs. :bug: (Slightly improves build speed)
 
@@ -380,7 +380,7 @@ Hot Reload for Vue.js projects using Single-File Component format (`.vue`) has b
 
 When using `--experimental-react-refresh` build flag, Fast Refresh (Hot Reload) for React projects has been enabled out of the box without requiring any code changes!
 
-> If not using React Refresh, use [react-hot-loader](https://github.com/gaearon/react-hot-loader) package and configure the project manually, following the instructions provided.
+> If not using Fast Refresh, use [react-hot-loader](https://github.com/gaearon/react-hot-loader) package and configure the project manually, following the instructions provided.
 
 ## Module Systems
 

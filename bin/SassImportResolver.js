@@ -3,7 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.sassImport = void 0;
 const upath = require("upath");
 const resolve = require("enhanced-resolve");
-const fs = require("fs");
 function sassImport(source, request) {
     const lookupStartPath = upath.dirname(source);
     const requestFileName = upath.basename(request);
@@ -14,7 +13,6 @@ function sassImport(source, request) {
             partialFolderLookups.push('node_modules');
         }
         const resolvePartialSCSS = resolve.create.sync({
-            fileSystem: fs,
             extensions: ['.scss'],
             modules: partialFolderLookups,
             mainFiles: [],
@@ -29,7 +27,6 @@ function sassImport(source, request) {
         }
     }
     const resolveSCSS = resolve.create.sync({
-        fileSystem: fs,
         extensions: ['.scss'],
         modules: [lookupStartPath, 'node_modules'],
         mainFiles: ['_index', 'index'],
@@ -41,7 +38,6 @@ function sassImport(source, request) {
     catch (ex) {
     }
     const resolveCSS = resolve.create.sync({
-        fileSystem: fs,
         extensions: ['.css'],
         modules: [lookupStartPath, 'node_modules'],
         mainFields: ['style']

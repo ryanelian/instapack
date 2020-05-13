@@ -1,6 +1,5 @@
 import * as upath from 'upath';
 import resolve = require("enhanced-resolve");
-import fs = require('fs');
 
 /**
  * Implements a smarter Sass @import logic,
@@ -27,7 +26,6 @@ export function sassImport(source: string, request: string): string {
         }
 
         const resolvePartialSCSS = resolve.create.sync({
-            fileSystem: fs,
             extensions: ['.scss'],
             modules: partialFolderLookups,
             mainFiles: [],
@@ -47,7 +45,6 @@ export function sassImport(source: string, request: string): string {
     }
 
     const resolveSCSS = resolve.create.sync({
-        fileSystem: fs,
         extensions: ['.scss'],
         modules: [lookupStartPath, 'node_modules'],
         mainFiles: ['_index', 'index'],
@@ -68,7 +65,6 @@ export function sassImport(source: string, request: string): string {
     }
 
     const resolveCSS = resolve.create.sync({
-        fileSystem: fs,
         extensions: ['.css'],
         modules: [lookupStartPath, 'node_modules'],
         mainFields: ['style']

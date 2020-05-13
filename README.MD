@@ -30,11 +30,24 @@ When requiring a specific instapack version to build a project, a local installa
 
 First, ensure `package.json` exists in the project folder. (If not, run `npm init -y`)
 
-Then, open command prompt in that folder to install instapack locally: `npm install instapack@[INSERT_PACKAGE_VERSION_HERE] -D -E`
+Then, open command prompt in that folder to install instapack locally: `npm install instapack@[WRITE_VERSION_HERE] -D -E`
 
-The local instapack can then be invoked using `npx instapack` command. Alternatively, setup [npm run scripts](https://docs.npmjs.com/cli/run-script).
+The local instapack can then be invoked using `npx instapack` command.
 
-> All the above `npm` commands can be replaced by [`pnpm`](https://pnpm.js.org/) to allow downloading instapack once (per exact version) across multiple projects in the same drive letter in the same machine!
+----
+
+Alternatively, setup [npm run scripts](https://docs.npmjs.com/cli/run-script) in `package.json` to enable `npm run prod` or `npm run dev`:
+
+```json
+{
+  "scripts": {
+    "prod": "ipack",
+    "dev": "ipack -dw"
+  }
+}
+```
+
+> All the above `npm` commands can be replaced by [`pnpm`](https://pnpm.js.org/) to allow downloading instapack once (per exact version in the same drive letter) across multiple projects!
 
 ## Quick Start Guide
 
@@ -513,7 +526,7 @@ instapack also has a custom Node-like but [standard-compliant Sass module system
 
 > **HEADS UP!** The Sass team discourages the continued use of the `@import` rule. Sass will gradually phase it out over the next few years, and eventually remove it from the language entirely. Prefer the `@use` rule instead.
 
-- [According to the official Sass CSS Imports specification](https://github.com/sass/sass/blob/master/accepted/css-imports.md#handling-an-import-rule), these imports will be treated as 'Plain CSS' `@import` **(file not included in resulting bundle)**:
+- [According to the official Sass CSS Imports specification](https://github.com/sass/sass/blob/master/accepted/css-imports.md#handling-an-import-rule), these imports will be treated as 'Plain CSS' `@import` **(file NOT included in resulting bundle)**:
 
   - The imported URL / query path begins with `http://` or `https://`
 
@@ -533,7 +546,7 @@ instapack also has a custom Node-like but [standard-compliant Sass module system
 
 - Includes files resolved from `node_modules` and reads `package.json` to resolve `.css` file in the `style` field!
 
-  - **Therefore, if a library requires `import 'library/dist/library.css'` in JS / webpack using CSS Loader, the Sass project equivalent import would be: `@use 'library/dist/library'`**
+  - For example, this JS code `import 'library/dist/library.css'` is equivalent to **the Sass project import: `@use 'library/dist/library'`**
 
 ## Environment Variables
 

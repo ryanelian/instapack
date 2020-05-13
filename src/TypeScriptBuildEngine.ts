@@ -252,8 +252,7 @@ export class TypeScriptBuildEngine {
         plugins.push(new InstapackBuildPlugin(this.variables, typescriptTarget));
 
         // webpack 5 declaration is not compatible with webpack 4 declarations!
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        plugins.push(new VueLoaderPlugin() as any);
+        plugins.push(new VueLoaderPlugin() as webpack.WebpackPluginInstance);
 
         if (Object.keys(this.variables.env).length > 0) {
             plugins.push(new webpack.EnvironmentPlugin(this.variables.env));

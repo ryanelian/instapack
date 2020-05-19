@@ -58,7 +58,7 @@
     "@webhotelier/webpack-fast-refresh": "5.0.1",
     "acorn": "7.2.0",
     "ajv": "6.12.2",
-    "autoprefixer": "9.7.6",
+    "autoprefixer": "9.8.0",
     "babel-loader": "8.1.0",
     "chalk": "4.0.0",
     "chokidar": "3.4.0",

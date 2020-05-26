@@ -293,6 +293,7 @@ npm install eslint typescript @typescript-eslint/eslint-plugin @typescript-eslin
 
 ```json
 {
+    "root": true,
     "parser": "@typescript-eslint/parser",
     "extends": [
         "eslint:recommended",
@@ -324,6 +325,7 @@ npm install eslint-plugin-vue vue-eslint-parser eslint-config-prettier -D
 
 ```json
 {
+    "root": true,
     "parser": "vue-eslint-parser",
     "extends": [
         "eslint:recommended",
@@ -354,6 +356,7 @@ npm install eslint-plugin-react -D
 
 ```json
 {
+    "root": true,
     "parser": "@typescript-eslint/parser",
     "extends": [
         "eslint:recommended",

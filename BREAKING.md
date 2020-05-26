@@ -4,7 +4,15 @@ Here are the list of breaking changes when upgrading between instapack major (or
 
 ## 8.0.0-beta.12
 
-- instapack now supports ESLint 7 + TypeScript-ESLint 3.
+- instapack now supports ESLint 7 + TypeScript-ESLint 3!
+
+  - Migration guide: https://eslint.org/docs/user-guide/migrating-to-7.0.0
+
+  - Migration guide when using instapack templates:
+
+    - Run to update dependencies: `npm install eslint typescript @typescript-eslint/eslint-plugin @typescript-eslint/parser -D`
+
+    - Add `"root": true,` to `.eslintrc.json`
 
 ## 8.0.0-beta.10
 

@@ -3,6 +3,8 @@ import chalk = require('chalk');
 import * as fse from 'fs-extra';
 import { watch } from 'chokidar';
 import type { ESLint, LintMessage } from 'eslint';
+import allSettled = require('promise.allsettled');
+allSettled.shim(); // will be a no-op if not needed
 
 import { prettyHrTime } from './PrettyUnits';
 import { Shout } from './Shout';
@@ -19,9 +21,9 @@ import { tryGetProjectESLint } from './CompilerResolver';
 export class TypeScriptCheckerTool {
 
     /**
-     * Gets the path finder utility.
+     * Gets the instapack build variables.
      */
-    private finder: PathFinder;
+    private variables: BuildVariables;
 
     /**
      * Gets the shared TypeScript compiler options.
@@ -50,13 +52,13 @@ export class TypeScriptCheckerTool {
      * @param settings 
      */
     private constructor(
-        finder: PathFinder,
+        variables: BuildVariables,
         sourceStore: TypeScriptSourceStore,
         compilerOptions: TypeScript.CompilerOptions,
         silent: boolean,
         eslint: ESLint | undefined) {
 
-        this.finder = finder;
+        this.variables = variables;
         this.sourceStore = sourceStore;
         this.eslint = eslint;
         this.va = new VoiceAssistant(silent);
@@ -120,52 +122,69 @@ export class TypeScriptCheckerTool {
 
         Shout.timed(versionAnnounce);
         await loadSourceTask;
-        return new TypeScriptCheckerTool(finder, sourceStore, tsconfig.options, variables.mute, eslint?.linter);
+        return new TypeScriptCheckerTool(variables, sourceStore, tsconfig.options, variables.mute, eslint?.linter);
+    }
+
+    /**
+     * Type-checks all userland files in a TypeScript program.
+     * If ESLint is enabled, run lint on files with no type errors.
+     */
+    createTypeCheckTasks(): Promise<string[]>[] {
+        // console.log(this.sourceStore.sourcePaths);
+        const tsc = TypeScript.createProgram(this.sourceStore.sourcePaths, this.compilerOptions, this.host);
+        const finder = new PathFinder(this.variables);
+        const jsInputFolder = finder.jsInputFolder;
+
+        return tsc.getSourceFiles().filter(source => {
+            // do not type-check files inside node_modules...
+            // the filename SHOULD be UNIX path (because upath)
+            // console.log(source.fileName);
+            return source.fileName.startsWith(jsInputFolder);
+        }).map(async source => {
+            const diagnostics = tsc.getSemanticDiagnostics(source)
+                .concat(tsc.getSyntacticDiagnostics(source));
+            const tsErrors = this.renderDiagnostics(diagnostics);
+            if (tsErrors.length) {
+                return tsErrors;
+            }
+
+            const lintErrors: string[] = [];
+            if (this.eslint) {
+                const lintResults = await this.eslint.lintText(source.getFullText(), {
+                    filePath: source.fileName
+                });
+
+                for (const lintResult of lintResults) {
+                    for (const lintMessage of lintResult.messages) {
+                        const renderLintErrorMessage = this.renderLintErrorMessage(source.fileName, lintMessage);
+                        lintErrors.push(renderLintErrorMessage);
+                    }
+                }
+            }
+            return lintErrors;
+        });
     }
 
     /**
      * Performs TypeScript compile-time checks and lints against the project.
      */
     async typeCheck(): Promise<void> {
-        // console.log(this.sourceStore.sourcePaths);
-        const tsc = TypeScript.createProgram(this.sourceStore.sourcePaths, this.compilerOptions, this.host);
         Shout.timed('Type-checking start...');
         const start = process.hrtime();
 
         try {
+            // Promise.all is fail-fast
+            // Promise.allSettled is fail-safe, which allows all files to be type-checked and linted correctly
+            const settledTasks = await Promise.allSettled(this.createTypeCheckTasks());
+            // console.log(settledTasks);
             const errors: string[] = [];
-            for (const source of tsc.getSourceFiles()) {
-                // the filename SHOULD be UNIX path becacuse TypeScriptSourceStore.parseThenStoreSource
-                if (source.fileName.startsWith(this.finder.jsInputFolder) == false) {
-                    // do not check files in node_modules folder
-                    continue;
-                }
-                // console.log(source.fileName);
-
-                const diagnostics = tsc.getSemanticDiagnostics(source)
-                    .concat(tsc.getSyntacticDiagnostics(source));
-
-                const newErrors = this.renderDiagnostics(diagnostics);
-                for (const error of newErrors) {
-                    errors.push(error);
-                }
-
-                if (newErrors.length === 0 && this.eslint) {
-                    try {
-                        const lintResults = await this.eslint.lintText(source.getFullText(), {
-                            filePath: source.fileName
-                        });
-
-                        for (const lintResult of lintResults) {
-                            for (const lintMessage of lintResult.messages) {
-                                const renderLintErrorMessage = this.renderLintErrorMessage(source.fileName, lintMessage);
-                                errors.push(renderLintErrorMessage);
-                            }
-                        }
-                    } catch (ex) {
-                        // this should not happen because we checked for configuration prior type-checking
-                        Shout.error(ex);
+            for (const task of settledTasks) {
+                if (task.status === 'fulfilled') {
+                    if (task.value.length) {
+                        errors.push(...task.value);
                     }
+                } else {
+                    Shout.error('during type-check: ', task.reason);
                 }
             }
 
@@ -188,7 +207,7 @@ export class TypeScriptCheckerTool {
      * @param diagnostics 
      */
     renderDiagnostics(diagnostics: TypeScript.Diagnostic[]): string[] {
-        const errors = diagnostics.map(diagnostic => {
+        return diagnostics.map(diagnostic => {
             let error = chalk.red('TS' + diagnostic.code) + ' ';
 
             if (diagnostic.file && diagnostic.start) {
@@ -200,8 +219,6 @@ export class TypeScriptCheckerTool {
             error += TypeScript.flattenDiagnosticMessageText(diagnostic.messageText, "\n");
             return error;
         });
-
-        return errors;
     }
 
     /**

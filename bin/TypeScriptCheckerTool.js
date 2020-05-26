@@ -5,6 +5,8 @@ const TypeScript = require("typescript");
 const chalk = require("chalk");
 const fse = require("fs-extra");
 const chokidar_1 = require("chokidar");
+const allSettled = require("promise.allsettled");
+allSettled.shim();
 const PrettyUnits_1 = require("./PrettyUnits");
 const Shout_1 = require("./Shout");
 const PathFinder_1 = require("./variables-factory/PathFinder");
@@ -13,8 +15,8 @@ const TypeScriptSourceStore_1 = require("./TypeScriptSourceStore");
 const VoiceAssistant_1 = require("./VoiceAssistant");
 const CompilerResolver_1 = require("./CompilerResolver");
 class TypeScriptCheckerTool {
-    constructor(finder, sourceStore, compilerOptions, silent, eslint) {
-        this.finder = finder;
+    constructor(variables, sourceStore, compilerOptions, silent, eslint) {
+        this.variables = variables;
         this.sourceStore = sourceStore;
         this.eslint = eslint;
         this.va = new VoiceAssistant_1.VoiceAssistant(silent);
@@ -56,39 +58,50 @@ class TypeScriptCheckerTool {
         }
         Shout_1.Shout.timed(versionAnnounce);
         await loadSourceTask;
-        return new TypeScriptCheckerTool(finder, sourceStore, tsconfig.options, variables.mute, eslint === null || eslint === void 0 ? void 0 : eslint.linter);
+        return new TypeScriptCheckerTool(variables, sourceStore, tsconfig.options, variables.mute, eslint === null || eslint === void 0 ? void 0 : eslint.linter);
+    }
+    createTypeCheckTasks() {
+        const tsc = TypeScript.createProgram(this.sourceStore.sourcePaths, this.compilerOptions, this.host);
+        const finder = new PathFinder_1.PathFinder(this.variables);
+        const jsInputFolder = finder.jsInputFolder;
+        return tsc.getSourceFiles().filter(source => {
+            return source.fileName.startsWith(jsInputFolder);
+        }).map(async (source) => {
+            const diagnostics = tsc.getSemanticDiagnostics(source)
+                .concat(tsc.getSyntacticDiagnostics(source));
+            const tsErrors = this.renderDiagnostics(diagnostics);
+            if (tsErrors.length) {
+                return tsErrors;
+            }
+            const lintErrors = [];
+            if (this.eslint) {
+                const lintResults = await this.eslint.lintText(source.getFullText(), {
+                    filePath: source.fileName
+                });
+                for (const lintResult of lintResults) {
+                    for (const lintMessage of lintResult.messages) {
+                        const renderLintErrorMessage = this.renderLintErrorMessage(source.fileName, lintMessage);
+                        lintErrors.push(renderLintErrorMessage);
+                    }
+                }
+            }
+            return lintErrors;
+        });
     }
     async typeCheck() {
-        const tsc = TypeScript.createProgram(this.sourceStore.sourcePaths, this.compilerOptions, this.host);
         Shout_1.Shout.timed('Type-checking start...');
         const start = process.hrtime();
         try {
+            const settledTasks = await Promise.allSettled(this.createTypeCheckTasks());
             const errors = [];
-            for (const source of tsc.getSourceFiles()) {
-                if (source.fileName.startsWith(this.finder.jsInputFolder) == false) {
-                    continue;
-                }
-                const diagnostics = tsc.getSemanticDiagnostics(source)
-                    .concat(tsc.getSyntacticDiagnostics(source));
-                const newErrors = this.renderDiagnostics(diagnostics);
-                for (const error of newErrors) {
-                    errors.push(error);
-                }
-                if (newErrors.length === 0 && this.eslint) {
-                    try {
-                        const lintResults = await this.eslint.lintText(source.getFullText(), {
-                            filePath: source.fileName
-                        });
-                        for (const lintResult of lintResults) {
-                            for (const lintMessage of lintResult.messages) {
-                                const renderLintErrorMessage = this.renderLintErrorMessage(source.fileName, lintMessage);
-                                errors.push(renderLintErrorMessage);
-                            }
-                        }
+            for (const task of settledTasks) {
+                if (task.status === 'fulfilled') {
+                    if (task.value.length) {
+                        errors.push(...task.value);
                     }
-                    catch (ex) {
-                        Shout_1.Shout.error(ex);
-                    }
+                }
+                else {
+                    Shout_1.Shout.error('during type-check: ', task.reason);
                 }
             }
             if (errors.length > 0) {
@@ -107,7 +120,7 @@ class TypeScriptCheckerTool {
         }
     }
     renderDiagnostics(diagnostics) {
-        const errors = diagnostics.map(diagnostic => {
+        return diagnostics.map(diagnostic => {
             let error = chalk.red('TS' + diagnostic.code) + ' ';
             if (diagnostic.file && diagnostic.start) {
                 const realFileName = this.sourceStore.getFilePath(diagnostic.file.fileName);
@@ -117,7 +130,6 @@ class TypeScriptCheckerTool {
             error += TypeScript.flattenDiagnosticMessageText(diagnostic.messageText, "\n");
             return error;
         });
-        return errors;
     }
     renderLintErrorMessage(fileName, lintError) {
         const lintErrorMessage = chalk.red('ESLint') + ' '

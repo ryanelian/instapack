@@ -242,7 +242,7 @@ import jQuery from 'jquery';
 
 - `copy` allows copying static assets from the npm folder (`node_modules`) into the project output folder (e.g. `wwwroot`) during build.
 
-  - **This is a PREVIEW feature** inspired by [Visual Studio LibMan](https://docs.microsoft.com/en-us/aspnet/core/client-side/libman/libman-vs?view=aspnetcore-3.0).
+  - **This is a BETA feature** inspired by [Visual Studio LibMan](https://docs.microsoft.com/en-us/aspnet/core/client-side/libman/libman-vs?view=aspnetcore-3.0).
 
   - `library` accepts a package name. The package MUST be installed in the project `package.json` and cannot be transient implicit / merely a sub-dependency of other packages.
 
@@ -281,7 +281,7 @@ instapack supports [`.babelrc`](https://babeljs.io/docs/usage/babelrc/) in the p
 
 ## ESLint Integration
 
-instapack 8.0.0 supports [ESLint configuration](https://eslint.org/docs/user-guide/configuring), applied directly in-memory to TypeScript source code during type-check.
+instapack 8 supports [ESLint 7 configuration](https://eslint.org/docs/user-guide/configuring), applied directly in-memory to TypeScript source code during type-check.
 
 > Source code will be linted only when it can be compiled correctly.
 

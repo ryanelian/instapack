@@ -21,7 +21,7 @@ async function jsWorker(variables) {
 exports.jsWorker = jsWorker;
 async function typeCheckWorker(variables) {
     const tool = await TypeScriptCheckerTool_1.TypeScriptCheckerTool.createToolAsync(variables);
-    tool.typeCheck();
+    await tool.typeCheck();
     if (variables.watch) {
         tool.watch();
         await stayAlive();

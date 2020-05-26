@@ -2,7 +2,6 @@ import * as fse from 'fs-extra';
 import resolve = require('enhanced-resolve');
 import { Shout } from './Shout';
 import chalk = require('chalk');
-import { CLIEngine } from 'eslint';
 import VueTemplateCompiler = require('vue-template-compiler');
 import * as upath from 'upath';
 
@@ -11,8 +10,8 @@ function resolveAsync(basePath: string, query: string): Promise<string> {
         resolve(basePath, query, (err: Error, result: string) => {
             if (err) {
                 reject(err);
-            } 
-            else if (!result){
+            }
+            else if (!result) {
                 reject(`Resolve resulted in undefined value: ${basePath} imports ${query}`)
             }
             else {
@@ -38,7 +37,7 @@ async function tryGetProjectPackageVersion(projectBasePath: string, packageName:
     }
 }
 
-async function tryGetProjectPackage(projectBasePath: string, packageName: string): Promise<unknown> {
+async function tryGetProjectPackage<T>(projectBasePath: string, packageName: string): Promise<T | undefined> {
     try {
         let modulePath = await resolveAsync(projectBasePath, packageName);
         modulePath = upath.toUnix(modulePath);
@@ -67,8 +66,6 @@ export async function resolveVue2TemplateCompiler(projectBasePath: string): Prom
             Shout.warning(`Project vue (${vueVersion}) and vue-template-compiler (${vueCompilerVersion}) version mismatch!`
                 + chalk.grey(`
 Fix the project package.json and make sure to use the same version for both:
-    yarn add vue-template-compiler@${vueVersion} -D -E
-                        OR
     npm install vue-template-compiler@${vueVersion} -D -E
 `));
             Shout.warning('Fallback to instapack default built-in Vue Template Compiler...');
@@ -83,8 +80,6 @@ Fix the project package.json and make sure to use the same version for both:
             Shout.warning(`instapack built-in vue-template-compiler (${instapackVueCompilerVersion}) and project vue (${vueVersion}) version mismatch!`
                 + chalk.grey(`
 This may introduce bugs to the application. Please add a custom vue-template-compiler dependency to the project:
-    yarn add vue-template-compiler@${vueVersion} -D -E
-                        OR
     npm install vue-template-compiler@${vueVersion} -D -E
 `));
         }
@@ -93,22 +88,34 @@ This may introduce bugs to the application. Please add a custom vue-template-com
     }
 }
 
-interface ESLintConstructor {
-    new(options: CLIEngine.Options): CLIEngine;
+import type { ESLint } from 'eslint';
+type ESLintModuleType = typeof import('eslint');
+
+interface ProjectESLint {
+    linter: ESLint;
     version: string;
 }
 
-export async function tryGetProjectESLint(projectBasePath: string, indexTsPath: string): Promise<ESLintConstructor | undefined> {
+export async function tryGetProjectESLint(projectBasePath: string, indexTsPath: string): Promise<ProjectESLint | undefined> {
     try {
-        const eslint = await tryGetProjectPackage(projectBasePath, 'eslint') as {
-            CLIEngine: ESLintConstructor;
-        };
-        // console.log(eslint);
-        const cliEngine = new eslint.CLIEngine({});
-        cliEngine.getConfigForFile(indexTsPath);
-        // const config = cliEngine.getConfigForFile(indexTsPath);
+        const eslintModule = await tryGetProjectPackage<ESLintModuleType>(projectBasePath, 'eslint');
+        if (!eslintModule) {
+            return undefined;
+        }
+
+        const ESLint = eslintModule.ESLint;
+        const linter = new ESLint({
+            cwd: projectBasePath
+        });
+
+        // const config =
+        await linter.calculateConfigForFile(indexTsPath);
         // console.log(config);
-        return eslint.CLIEngine;
+
+        return {
+            linter: linter,
+            version: ESLint.version
+        };
     } catch (error) {
         // console.log(error);
         return undefined;

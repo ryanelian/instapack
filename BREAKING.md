@@ -2,6 +2,10 @@
 
 Here are the list of breaking changes when upgrading between instapack major (or minor) versions.
 
+## 8.0.0-beta.12
+
+- instapack now supports ESLint 7 + TypeScript-ESLint 3.
+
 ## 8.0.0-beta.10
 
 - Hot Reload now outputs to real file system.

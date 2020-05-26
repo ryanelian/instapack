@@ -38,7 +38,6 @@ dependencies:
 devDependencies:
   '@types/acorn': 4.0.5
   '@types/autoprefixer': 9.7.2
-  '@types/eslint': 6.8.1
   '@types/follow-redirects': 1.8.0
   '@types/fs-extra': 9.0.1
   '@types/node': 12.12.42
@@ -336,13 +335,6 @@ packages:
     dev: true
     resolution:
       integrity: sha512-OCutwjDZ4aFS6PB1UZ988C4YgwlBHJd6wCeQqaLdmadZ/7e+w79+hbMUFC1QXDNCmdyoRfAFdm0RypzwR+Qpag==
-  /@types/eslint/6.8.1:
-    dependencies:
-      '@types/estree': 0.0.44
-      '@types/json-schema': 7.0.4
-    dev: true
-    resolution:
-      integrity: sha512-eutiEpQ4SN7kdF8QVDPyiSSy7ZFM+werJVw6/mRxLGbG4oet6/p81WFjSIcuY9PzM+dsu25Yh5EAUmQ9aJC1gg==
   /@types/estree/0.0.44:
     dev: true
     resolution:
@@ -5782,7 +5774,6 @@ specifiers:
   '@babel/plugin-syntax-dynamic-import': 7.8.3
   '@types/acorn': ^4.0.5
   '@types/autoprefixer': ^9.7.2
-  '@types/eslint': ^6.8.1
   '@types/follow-redirects': ^1.8.0
   '@types/fs-extra': ^9.0.1
   '@types/node': ^12.12.42

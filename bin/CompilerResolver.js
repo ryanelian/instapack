@@ -62,8 +62,6 @@ async function resolveVue2TemplateCompiler(projectBasePath) {
             Shout_1.Shout.warning(`Project vue (${vueVersion}) and vue-template-compiler (${vueCompilerVersion}) version mismatch!`
                 + chalk.grey(`
 Fix the project package.json and make sure to use the same version for both:
-    yarn add vue-template-compiler@${vueVersion} -D -E
-                        OR
     npm install vue-template-compiler@${vueVersion} -D -E
 `));
             Shout_1.Shout.warning('Fallback to instapack default built-in Vue Template Compiler...');
@@ -78,8 +76,6 @@ Fix the project package.json and make sure to use the same version for both:
             Shout_1.Shout.warning(`instapack built-in vue-template-compiler (${instapackVueCompilerVersion}) and project vue (${vueVersion}) version mismatch!`
                 + chalk.grey(`
 This may introduce bugs to the application. Please add a custom vue-template-compiler dependency to the project:
-    yarn add vue-template-compiler@${vueVersion} -D -E
-                        OR
     npm install vue-template-compiler@${vueVersion} -D -E
 `));
         }
@@ -89,10 +85,19 @@ This may introduce bugs to the application. Please add a custom vue-template-com
 exports.resolveVue2TemplateCompiler = resolveVue2TemplateCompiler;
 async function tryGetProjectESLint(projectBasePath, indexTsPath) {
     try {
-        const eslint = await tryGetProjectPackage(projectBasePath, 'eslint');
-        const cliEngine = new eslint.CLIEngine({});
-        cliEngine.getConfigForFile(indexTsPath);
-        return eslint.CLIEngine;
+        const eslintModule = await tryGetProjectPackage(projectBasePath, 'eslint');
+        if (!eslintModule) {
+            return undefined;
+        }
+        const ESLint = eslintModule.ESLint;
+        const linter = new ESLint({
+            cwd: projectBasePath
+        });
+        await linter.calculateConfigForFile(indexTsPath);
+        return {
+            linter: linter,
+            version: ESLint.version
+        };
     }
     catch (error) {
         return undefined;

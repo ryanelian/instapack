@@ -13,7 +13,8 @@ const TypeScriptSourceStore_1 = require("./TypeScriptSourceStore");
 const VoiceAssistant_1 = require("./VoiceAssistant");
 const CompilerResolver_1 = require("./CompilerResolver");
 class TypeScriptCheckerTool {
-    constructor(sourceStore, compilerOptions, silent, eslint) {
+    constructor(finder, sourceStore, compilerOptions, silent, eslint) {
+        this.finder = finder;
         this.sourceStore = sourceStore;
         this.eslint = eslint;
         this.va = new VoiceAssistant_1.VoiceAssistant(silent);
@@ -45,30 +46,26 @@ class TypeScriptCheckerTool {
         }
         const sourceStore = new TypeScriptSourceStore_1.TypeScriptSourceStore(target);
         const loadSourceTask = sourceStore.loadFolder(finder.jsInputFolder);
-        const eslintCtor = await CompilerResolver_1.tryGetProjectESLint(finder.root, finder.jsEntry);
+        const eslint = await CompilerResolver_1.tryGetProjectESLint(variables.root, finder.jsEntry);
         let versionAnnounce = `Using TypeScript ${chalk.green(TypeScript.version)} `;
-        if (eslintCtor) {
-            versionAnnounce += `+ ESLint ${chalk.green(eslintCtor.version)}`;
+        if (eslint) {
+            versionAnnounce += `+ ESLint ${chalk.green(eslint.version)}`;
         }
         else {
             versionAnnounce += chalk.grey('(ESLint disabled)');
         }
-        let eslint;
-        if (eslintCtor) {
-            eslint = new eslintCtor({});
-        }
         Shout_1.Shout.timed(versionAnnounce);
         await loadSourceTask;
-        return new TypeScriptCheckerTool(sourceStore, tsconfig.options, variables.mute, eslint);
+        return new TypeScriptCheckerTool(finder, sourceStore, tsconfig.options, variables.mute, eslint === null || eslint === void 0 ? void 0 : eslint.linter);
     }
-    typeCheck() {
+    async typeCheck() {
         const tsc = TypeScript.createProgram(this.sourceStore.sourcePaths, this.compilerOptions, this.host);
         Shout_1.Shout.timed('Type-checking start...');
         const start = process.hrtime();
         try {
             const errors = [];
             for (const source of tsc.getSourceFiles()) {
-                if (source.fileName.endsWith('.d.ts')) {
+                if (source.fileName.startsWith(this.finder.jsInputFolder) == false) {
                     continue;
                 }
                 const diagnostics = tsc.getSemanticDiagnostics(source)
@@ -79,10 +76,12 @@ class TypeScriptCheckerTool {
                 }
                 if (newErrors.length === 0 && this.eslint) {
                     try {
-                        const eslintReport = this.eslint.executeOnText(source.getFullText(), source.fileName);
-                        for (const result of eslintReport.results) {
-                            for (const lintError of result.messages) {
-                                const renderLintErrorMessage = this.renderLintErrorMessage(source.fileName, lintError);
+                        const lintResults = await this.eslint.lintText(source.getFullText(), {
+                            filePath: source.fileName
+                        });
+                        for (const lintResult of lintResults) {
+                            for (const lintMessage of lintResult.messages) {
+                                const renderLintErrorMessage = this.renderLintErrorMessage(source.fileName, lintMessage);
                                 errors.push(renderLintErrorMessage);
                             }
                         }
@@ -133,12 +132,9 @@ class TypeScriptCheckerTool {
         const debounce = () => {
             clearTimeout(debounced);
             debounced = setTimeout(() => {
-                try {
-                    this.typeCheck();
-                }
-                catch (error) {
-                    Shout_1.Shout.fatal('during type-checking!', error);
-                }
+                this.typeCheck().catch(err => {
+                    Shout_1.Shout.fatal('during type-checking!', err);
+                });
             }, 300);
         };
         chokidar_1.watch(this.sourceStore.typeCheckGlobs, {

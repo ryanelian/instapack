@@ -1,8 +1,8 @@
 import * as TypeScript from 'typescript';
-import * as ESLint from 'eslint';
 import chalk = require('chalk');
 import * as fse from 'fs-extra';
 import { watch } from 'chokidar';
+import type { ESLint, LintMessage } from 'eslint';
 
 import { prettyHrTime } from './PrettyUnits';
 import { Shout } from './Shout';
@@ -17,6 +17,12 @@ import { tryGetProjectESLint } from './CompilerResolver';
  * Contains methods for static-checking TypeScript projects. 
  */
 export class TypeScriptCheckerTool {
+
+    /**
+     * Gets the path finder utility.
+     */
+    private finder: PathFinder;
+
     /**
      * Gets the shared TypeScript compiler options.
      */
@@ -30,7 +36,7 @@ export class TypeScriptCheckerTool {
     /**
      * Gets the ESLint service, if available.
      */
-    private readonly eslint: ESLint.CLIEngine | undefined;
+    private readonly eslint: ESLint | undefined;
 
     /**
      * Gets the TypeScript cache management object.
@@ -44,11 +50,13 @@ export class TypeScriptCheckerTool {
      * @param settings 
      */
     private constructor(
+        finder: PathFinder,
         sourceStore: TypeScriptSourceStore,
         compilerOptions: TypeScript.CompilerOptions,
         silent: boolean,
-        eslint: ESLint.CLIEngine | undefined) {
+        eslint: ESLint | undefined) {
 
+        this.finder = finder;
         this.sourceStore = sourceStore;
         this.eslint = eslint;
         this.va = new VoiceAssistant(silent);
@@ -101,26 +109,24 @@ export class TypeScriptCheckerTool {
 
         const sourceStore = new TypeScriptSourceStore(target);
         const loadSourceTask = sourceStore.loadFolder(finder.jsInputFolder);
-        const eslintCtor = await tryGetProjectESLint(finder.root, finder.jsEntry);
+        const eslint = await tryGetProjectESLint(variables.root, finder.jsEntry);
+
         let versionAnnounce = `Using TypeScript ${chalk.green(TypeScript.version)} `;
-        if (eslintCtor) {
-            versionAnnounce += `+ ESLint ${chalk.green(eslintCtor.version)}`;
+        if (eslint) {
+            versionAnnounce += `+ ESLint ${chalk.green(eslint.version)}`;
         } else {
             versionAnnounce += chalk.grey('(ESLint disabled)');
         }
-        let eslint: ESLint.CLIEngine | undefined;
-        if (eslintCtor) {
-            eslint = new eslintCtor({});
-        }
+
         Shout.timed(versionAnnounce);
         await loadSourceTask;
-        return new TypeScriptCheckerTool(sourceStore, tsconfig.options, variables.mute, eslint);
+        return new TypeScriptCheckerTool(finder, sourceStore, tsconfig.options, variables.mute, eslint?.linter);
     }
 
     /**
      * Performs TypeScript compile-time checks and lints against the project.
      */
-    typeCheck(): void {
+    async typeCheck(): Promise<void> {
         // console.log(this.sourceStore.sourcePaths);
         const tsc = TypeScript.createProgram(this.sourceStore.sourcePaths, this.compilerOptions, this.host);
         Shout.timed('Type-checking start...');
@@ -129,9 +135,12 @@ export class TypeScriptCheckerTool {
         try {
             const errors: string[] = [];
             for (const source of tsc.getSourceFiles()) {
-                if (source.fileName.endsWith('.d.ts')) {
+                // the filename SHOULD be UNIX path becacuse TypeScriptSourceStore.parseThenStoreSource
+                if (source.fileName.startsWith(this.finder.jsInputFolder) == false) {
+                    // do not check files in node_modules folder
                     continue;
                 }
+                // console.log(source.fileName);
 
                 const diagnostics = tsc.getSemanticDiagnostics(source)
                     .concat(tsc.getSyntacticDiagnostics(source));
@@ -141,40 +150,15 @@ export class TypeScriptCheckerTool {
                     errors.push(error);
                 }
 
-                // import ASTConvert = require('@typescript-eslint/typescript-estree/dist/ast-converter');
-                // https://github.com/typescript-eslint/typescript-eslint/tree/master/packages/typescript-estree#api
-                // let txt = source.getFullText();
-                // let ast = ASTConvert.astConverter(source, {
-                //     tsconfigRootDir: process.cwd(),
-                //     filePath: source.fileName,
-                //     code: txt,
-                //     tokens: [],
-                //     comment: true,
-                //     comments: [],
-                //     jsx: true,
-                //     useJSXTextNode: true,
-
-                //     range: false,
-                //     loc: false,
-                //     strict: false,
-                //     log: console.log,
-                //     projects: [],
-                //     errorOnUnknownASTType: false,
-                //     errorOnTypeScriptSyntacticAndSemanticIssues: false,
-                //     extraFileExtensions: [],
-                //     preserveNodeMaps: undefined,
-                //     createDefaultProgram: false,
-                // }, false);
-                // let eslintSource = new eslint.SourceCode(txt, ast.estree as eslint.AST.Program);
-
                 if (newErrors.length === 0 && this.eslint) {
                     try {
-                        // we need to do this because Linter cannot find rules dynamically, only CLIEngine!
-                        const eslintReport = this.eslint.executeOnText(source.getFullText(), source.fileName);
+                        const lintResults = await this.eslint.lintText(source.getFullText(), {
+                            filePath: source.fileName
+                        });
 
-                        for (const result of eslintReport.results) {
-                            for (const lintError of result.messages) {
-                                const renderLintErrorMessage = this.renderLintErrorMessage(source.fileName, lintError);
+                        for (const lintResult of lintResults) {
+                            for (const lintMessage of lintResult.messages) {
+                                const renderLintErrorMessage = this.renderLintErrorMessage(source.fileName, lintMessage);
                                 errors.push(renderLintErrorMessage);
                             }
                         }
@@ -225,7 +209,7 @@ export class TypeScriptCheckerTool {
      * @param fileName 
      * @param lintError 
      */
-    renderLintErrorMessage(fileName: string, lintError: ESLint.Linter.LintMessage): string {
+    renderLintErrorMessage(fileName: string, lintError: LintMessage): string {
         const lintErrorMessage = chalk.red('ESLint') + ' '
             + chalk.red(fileName) + ' '
             + chalk.yellow(`(${lintError.line},${lintError.column})`) + ': '
@@ -244,11 +228,9 @@ export class TypeScriptCheckerTool {
         const debounce = (): void => {
             clearTimeout(debounced);
             debounced = setTimeout(() => {
-                try {
-                    this.typeCheck();
-                } catch (error) {
-                    Shout.fatal('during type-checking!', error);
-                }
+                this.typeCheck().catch(err => {
+                    Shout.fatal('during type-checking!', err);
+                });
             }, 300);
         };
 

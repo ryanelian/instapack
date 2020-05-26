@@ -24,7 +24,7 @@ export async function jsWorker(variables: BuildVariables): Promise<void> {
 
 export async function typeCheckWorker(variables: BuildVariables): Promise<void> {
     const tool = await TypeScriptCheckerTool.createToolAsync(variables);
-    tool.typeCheck();
+    await tool.typeCheck();
     if (variables.watch) {
         tool.watch();
         await stayAlive();

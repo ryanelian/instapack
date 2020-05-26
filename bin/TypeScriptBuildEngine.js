@@ -343,7 +343,7 @@ class TypeScriptBuildEngine {
     }
     async build() {
         this.useBabel = await fse.pathExists(this.finder.babelConfiguration);
-        this.vueTemplateCompiler = await CompilerResolver_1.resolveVueTemplateCompiler(this.finder.root);
+        this.vueTemplateCompiler = await CompilerResolver_1.resolveVue2TemplateCompiler(this.finder.root);
         if (this.variables.serve) {
             this.port = await portfinder.getPortPromise({
                 port: this.port

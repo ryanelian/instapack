@@ -5,7 +5,7 @@ import * as DotEnv from 'dotenv';
 /**
  * Attempt to parse .env file in the folder.
  */
-export async function readDotEnvFrom(folder: string): Promise<MapLike<string>> {
+export async function readDotEnvFrom(folder: string): Promise<Record<string, string>> {
     const file = upath.join(folder, '.env');
 
     if (await fse.pathExists(file) === false) {
@@ -16,10 +16,10 @@ export async function readDotEnvFrom(folder: string): Promise<MapLike<string>> {
     return DotEnv.parse(dotEnvRaw);
 }
 
-export function parseCliEnvFlags(yargsEnv: unknown): MapLike<string> {
+export function parseCliEnvFlags(yargsEnv: unknown): Record<string, string> {
     // console.log(yargsEnv);
 
-    const env: MapLike<string> = {};
+    const env: Record<string, string> = {};
     if (yargsEnv && typeof yargsEnv === 'object' && Array.isArray(yargsEnv) === false) {
         for (const key in yargsEnv) {
             env[key] = yargsEnv[key].toString();

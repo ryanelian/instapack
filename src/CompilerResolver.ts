@@ -1,36 +1,30 @@
 import * as fse from 'fs-extra';
-import { ResolverFactory } from 'enhanced-resolve';
+import resolve = require('enhanced-resolve');
 import { Shout } from './Shout';
 import chalk = require('chalk');
 import { CLIEngine } from 'eslint';
 import VueTemplateCompiler = require('vue-template-compiler');
 import * as upath from 'upath';
 
-interface EnhancedResolver {
-    resolve: (context: {}, lookupStartPath: string, request: string, resolveContext: {}, callback: (error: Error, resolution: string) => void) => void;
-}
-
-/**
- * Invoke enhanced-resolve custom resolver as a Promise.
- * @param lookupStartPath 
- * @param request 
- */
-function resolveAsync(customResolver: EnhancedResolver, lookupStartPath: string, request: string): Promise<string> {
+function resolveAsync(basePath: string, query: string): Promise<string> {
     return new Promise<string>((ok, reject) => {
-        customResolver.resolve({}, lookupStartPath, request, {}, (error: Error, resolution: string) => {
-            if (error) {
-                reject(error);
-            } else {
-                // import resolution can be Windows / non-UNIX path!
-                ok(resolution);
+        resolve(basePath, query, (err: Error, result: string) => {
+            if (err) {
+                reject(err);
+            } 
+            else if (!result){
+                reject(`Resolve resulted in undefined value: ${basePath} imports ${query}`)
+            }
+            else {
+                ok(result);
             }
         });
     });
 }
 
-async function tryGetProjectPackageVersion(resolver: EnhancedResolver, projectBasePath: string, packageName: string): Promise<string | undefined> {
+async function tryGetProjectPackageVersion(projectBasePath: string, packageName: string): Promise<string | undefined> {
     try {
-        let jsonPath = await resolveAsync(resolver, projectBasePath, packageName + '/package.json');
+        let jsonPath = await resolveAsync(projectBasePath, packageName + '/package.json');
         jsonPath = upath.toUnix(jsonPath);
         if (jsonPath.startsWith(projectBasePath) === false) {
             // explicitly prevent resolution in parent folder...
@@ -44,9 +38,9 @@ async function tryGetProjectPackageVersion(resolver: EnhancedResolver, projectBa
     }
 }
 
-async function tryGetProjectPackage(resolver: EnhancedResolver, projectBasePath: string, packageName: string): Promise<unknown> {
+async function tryGetProjectPackage(projectBasePath: string, packageName: string): Promise<unknown> {
     try {
-        let modulePath = await resolveAsync(resolver, projectBasePath, packageName);
+        let modulePath = await resolveAsync(projectBasePath, packageName);
         modulePath = upath.toUnix(modulePath);
         if (modulePath.startsWith(projectBasePath) === false) {
             // explicitly prevent resolution in parent folder...
@@ -58,16 +52,12 @@ async function tryGetProjectPackage(resolver: EnhancedResolver, projectBasePath:
     }
 }
 
-export async function resolveVueTemplateCompiler(projectBasePath: string): Promise<unknown> {
-    const resolver: EnhancedResolver = ResolverFactory.createResolver({
-        fileSystem: fse
-    });
-
+export async function resolveVue2TemplateCompiler(projectBasePath: string): Promise<unknown> {
     const instapackVueCompilerVersion: string = require('vue-template-compiler/package.json')['version'];
-    const vueVersion = await tryGetProjectPackageVersion(resolver, projectBasePath, 'vue');
+    const vueVersion = await tryGetProjectPackageVersion(projectBasePath, 'vue');
 
     try {
-        const vueCompilerVersion = await tryGetProjectPackageVersion(resolver, projectBasePath, 'vue-template-compiler');
+        const vueCompilerVersion = await tryGetProjectPackageVersion(projectBasePath, 'vue-template-compiler');
 
         if (!vueVersion || !vueCompilerVersion) {
             throw new Error('Project Vue / Vue Template Compiler packages are not found.');
@@ -85,7 +75,7 @@ Fix the project package.json and make sure to use the same version for both:
             throw new Error('Project vue and vue-template-compiler version mismatched!');
         }
 
-        const compilerPath = await resolveAsync(resolver, projectBasePath, 'vue-template-compiler');
+        const compilerPath = await resolveAsync(projectBasePath, 'vue-template-compiler');
         Shout.timed('Using project Vue Template Compiler', chalk.green(vueCompilerVersion));
         return require(compilerPath);
     } catch (err) {
@@ -109,12 +99,8 @@ interface ESLintConstructor {
 }
 
 export async function tryGetProjectESLint(projectBasePath: string, indexTsPath: string): Promise<ESLintConstructor | undefined> {
-    const resolver: EnhancedResolver = ResolverFactory.createResolver({
-        fileSystem: fse
-    });
-
     try {
-        const eslint = await tryGetProjectPackage(resolver, projectBasePath, 'eslint') as {
+        const eslint = await tryGetProjectPackage(projectBasePath, 'eslint') as {
             CLIEngine: ESLintConstructor;
         };
         // console.log(eslint);

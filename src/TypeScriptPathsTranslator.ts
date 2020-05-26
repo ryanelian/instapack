@@ -21,8 +21,8 @@ function convertTypeScriptPathToWebpackAliasPath(rootPath: string, baseUrl: stri
     return result;
 }
 
-function convertMapSetOfStringToArray(arg: MapLike<Set<string>>): MapLike<string[]> {
-    const result: MapLike<string[]> = {};
+function convertMapSetOfStringToArray(arg: Record<string, Set<string>>): Record<string, string[]> {
+    const result: Record<string, string[]> = {};
 
     for (const key in arg) {
         const value = Array.from(arg[key]);
@@ -99,8 +99,8 @@ resolve.modules
 /**
  * Translates tsconfig.json paths into webpack-compatible aliases!
  */
-export function mergeTypeScriptPathAlias(compilerOptions: CompilerOptions, rootPath: string, alias: MapLike<string>): MapLike<string[]> {
-    const result: MapLike<Set<string>> = {};
+export function mergeTypeScriptPathAlias(compilerOptions: CompilerOptions, rootPath: string, alias: Record<string, string>): Record<string, string[]> {
+    const result: Record<string, Set<string>> = {};
     for (const key in alias) {
         const value = alias[key];
         result[key] = new Set<string>([value]);

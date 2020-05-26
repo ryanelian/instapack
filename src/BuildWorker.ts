@@ -52,7 +52,7 @@ interface BuildWorkerMetadata {
     voicedName: string;
 }
 
-const buildMaps: MapLike<BuildWorkerMetadata> = {};
+const buildMaps: Record<string, BuildWorkerMetadata> = {};
 buildMaps['js'] = {
     commandLineName: 'JS',
     voicedName: 'JAVA SCRIPT',

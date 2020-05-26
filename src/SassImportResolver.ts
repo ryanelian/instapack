@@ -15,7 +15,7 @@ export function sassImport(source: string, request: string): string {
     const lookupStartPath = upath.dirname(source);        // E:/VS/MyProject/client/css/
     const requestFileName = upath.basename(request);      // something
     const requestDir = upath.dirname(request);            // @ryan/
-
+    
     if (requestFileName.startsWith('_') === false) {
         const partialFolderLookups = [lookupStartPath];
         if (requestDir !== '.') {
@@ -38,7 +38,10 @@ export function sassImport(source: string, request: string): string {
         // 3: E:/VS/MyProject/client/css/@ryan/_something.scss      (Standard)
         // 8: E:/VS/MyProject/node_modules/@ryan/_something.scss    (Standard+)
         try {
-            return resolvePartialSCSS(lookupStartPath, partialRequest);
+            const result = resolvePartialSCSS(lookupStartPath, partialRequest);
+            if (result) {
+                return result;
+            }
         } catch (ex) {
             // continue module resolution
         }
@@ -59,7 +62,10 @@ export function sassImport(source: string, request: string): string {
     // 7: E:/VS/MyProject/node_modules/@ryan/something/_index.scss      (Standard+)
     // 7: E:/VS/MyProject/node_modules/@ryan/something/index.scss       (Standard+)
     try {
-        return resolveSCSS(lookupStartPath, request);
+        const result = resolveSCSS(lookupStartPath, request);
+        if (result) {
+            return result;
+        }
     } catch (ex) {
         // continue module resolution
     }
@@ -76,7 +82,12 @@ export function sassImport(source: string, request: string): string {
     // 9: E:/VS/MyProject/node_modules/@ryan/something.css                  (Standard+)
     // 9: E:/VS/MyProject/node_modules/@ryan/something/index.css            (Standard+)
     // 10: E:/VS/MyProject/node_modules/@ryan/something/package.json:style  (Custom, Node-like)
-    return resolveCSS(lookupStartPath, request);
+    const cssResult = resolveCSS(lookupStartPath, request);
+    if (cssResult) {
+        return cssResult;
+    } else {
+        throw new Error(`CSS module not found: ${source} importing ${request}`);
+    }
 
     // Standard+: when using node-sass includePaths option set to the node_modules folder. (Older instapack behavior)
 }

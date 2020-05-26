@@ -15,7 +15,7 @@ const reactRefreshWebpackRuntimeJS = require.resolve('@webhotelier/webpack-fast-
 const reactRefreshBabelPluginJS = require.resolve('react-refresh/babel');
 const babelPluginDynamicImportJS = require.resolve('@babel/plugin-syntax-dynamic-import');
 
-import { resolveVueTemplateCompiler } from './CompilerResolver';
+import { resolveVue2TemplateCompiler } from './CompilerResolver';
 import { Shout } from './Shout';
 import { BuildVariables } from './variables-factory/BuildVariables';
 import { PathFinder } from './variables-factory/PathFinder';
@@ -486,7 +486,7 @@ export class TypeScriptBuildEngine {
      */
     async build(): Promise<void> {
         this.useBabel = await fse.pathExists(this.finder.babelConfiguration);
-        this.vueTemplateCompiler = await resolveVueTemplateCompiler(this.finder.root);
+        this.vueTemplateCompiler = await resolveVue2TemplateCompiler(this.finder.root);
 
         if (this.variables.serve) {
             this.port = await portfinder.getPortPromise({

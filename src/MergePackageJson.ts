@@ -2,8 +2,8 @@
  * Sort an map-like object by its keys.
  * @param input 
  */
-export function objectSortByKeys(input: object): MapLike<unknown> {
-    const output: MapLike<unknown> = {};
+export function objectSortByKeys(input: Record<string, unknown>): Record<string, unknown> {
+    const output: Record<string, unknown> = {};
 
     const keys = Object.keys(input).sort();
     for (const key of keys) {
@@ -16,8 +16,8 @@ export function objectSortByKeys(input: object): MapLike<unknown> {
 export interface PackageJsonPartial {
     [key: string]: unknown;
     instapack: unknown;
-    devDependencies: MapLike<string> | undefined;
-    dependencies: MapLike<string> | undefined;
+    devDependencies: Record<string, string> | undefined;
+    dependencies: Record<string, string> | undefined;
 }
 
 /**

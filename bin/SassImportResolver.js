@@ -21,7 +21,10 @@ function sassImport(source, request) {
         const partialFileName = '_' + upath.addExt(requestFileName, '.scss');
         const partialRequest = upath.join(requestDir, partialFileName);
         try {
-            return resolvePartialSCSS(lookupStartPath, partialRequest);
+            const result = resolvePartialSCSS(lookupStartPath, partialRequest);
+            if (result) {
+                return result;
+            }
         }
         catch (ex) {
         }
@@ -33,7 +36,10 @@ function sassImport(source, request) {
         descriptionFiles: [],
     });
     try {
-        return resolveSCSS(lookupStartPath, request);
+        const result = resolveSCSS(lookupStartPath, request);
+        if (result) {
+            return result;
+        }
     }
     catch (ex) {
     }
@@ -42,6 +48,12 @@ function sassImport(source, request) {
         modules: [lookupStartPath, 'node_modules'],
         mainFields: ['style']
     });
-    return resolveCSS(lookupStartPath, request);
+    const cssResult = resolveCSS(lookupStartPath, request);
+    if (cssResult) {
+        return cssResult;
+    }
+    else {
+        throw new Error(`CSS module not found: ${source} importing ${request}`);
+    }
 }
 exports.sassImport = sassImport;

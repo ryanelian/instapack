@@ -1,27 +1,30 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.tryGetProjectESLint = exports.resolveVueTemplateCompiler = void 0;
+exports.tryGetProjectESLint = exports.resolveVue2TemplateCompiler = void 0;
 const fse = require("fs-extra");
-const enhanced_resolve_1 = require("enhanced-resolve");
+const resolve = require("enhanced-resolve");
 const Shout_1 = require("./Shout");
 const chalk = require("chalk");
 const VueTemplateCompiler = require("vue-template-compiler");
 const upath = require("upath");
-function resolveAsync(customResolver, lookupStartPath, request) {
+function resolveAsync(basePath, query) {
     return new Promise((ok, reject) => {
-        customResolver.resolve({}, lookupStartPath, request, {}, (error, resolution) => {
-            if (error) {
-                reject(error);
+        resolve(basePath, query, (err, result) => {
+            if (err) {
+                reject(err);
+            }
+            else if (!result) {
+                reject(`Resolve resulted in undefined value: ${basePath} imports ${query}`);
             }
             else {
-                ok(resolution);
+                ok(result);
             }
         });
     });
 }
-async function tryGetProjectPackageVersion(resolver, projectBasePath, packageName) {
+async function tryGetProjectPackageVersion(projectBasePath, packageName) {
     try {
-        let jsonPath = await resolveAsync(resolver, projectBasePath, packageName + '/package.json');
+        let jsonPath = await resolveAsync(projectBasePath, packageName + '/package.json');
         jsonPath = upath.toUnix(jsonPath);
         if (jsonPath.startsWith(projectBasePath) === false) {
             return undefined;
@@ -34,9 +37,9 @@ async function tryGetProjectPackageVersion(resolver, projectBasePath, packageNam
         return undefined;
     }
 }
-async function tryGetProjectPackage(resolver, projectBasePath, packageName) {
+async function tryGetProjectPackage(projectBasePath, packageName) {
     try {
-        let modulePath = await resolveAsync(resolver, projectBasePath, packageName);
+        let modulePath = await resolveAsync(projectBasePath, packageName);
         modulePath = upath.toUnix(modulePath);
         if (modulePath.startsWith(projectBasePath) === false) {
             return undefined;
@@ -47,14 +50,11 @@ async function tryGetProjectPackage(resolver, projectBasePath, packageName) {
         return undefined;
     }
 }
-async function resolveVueTemplateCompiler(projectBasePath) {
-    const resolver = enhanced_resolve_1.ResolverFactory.createResolver({
-        fileSystem: fse
-    });
+async function resolveVue2TemplateCompiler(projectBasePath) {
     const instapackVueCompilerVersion = require('vue-template-compiler/package.json')['version'];
-    const vueVersion = await tryGetProjectPackageVersion(resolver, projectBasePath, 'vue');
+    const vueVersion = await tryGetProjectPackageVersion(projectBasePath, 'vue');
     try {
-        const vueCompilerVersion = await tryGetProjectPackageVersion(resolver, projectBasePath, 'vue-template-compiler');
+        const vueCompilerVersion = await tryGetProjectPackageVersion(projectBasePath, 'vue-template-compiler');
         if (!vueVersion || !vueCompilerVersion) {
             throw new Error('Project Vue / Vue Template Compiler packages are not found.');
         }
@@ -69,7 +69,7 @@ Fix the project package.json and make sure to use the same version for both:
             Shout_1.Shout.warning('Fallback to instapack default built-in Vue Template Compiler...');
             throw new Error('Project vue and vue-template-compiler version mismatched!');
         }
-        const compilerPath = await resolveAsync(resolver, projectBasePath, 'vue-template-compiler');
+        const compilerPath = await resolveAsync(projectBasePath, 'vue-template-compiler');
         Shout_1.Shout.timed('Using project Vue Template Compiler', chalk.green(vueCompilerVersion));
         return require(compilerPath);
     }
@@ -86,13 +86,10 @@ This may introduce bugs to the application. Please add a custom vue-template-com
         return VueTemplateCompiler;
     }
 }
-exports.resolveVueTemplateCompiler = resolveVueTemplateCompiler;
+exports.resolveVue2TemplateCompiler = resolveVue2TemplateCompiler;
 async function tryGetProjectESLint(projectBasePath, indexTsPath) {
-    const resolver = enhanced_resolve_1.ResolverFactory.createResolver({
-        fileSystem: fse
-    });
     try {
-        const eslint = await tryGetProjectPackage(resolver, projectBasePath, 'eslint');
+        const eslint = await tryGetProjectPackage(projectBasePath, 'eslint');
         const cliEngine = new eslint.CLIEngine({});
         cliEngine.getConfigForFile(indexTsPath);
         return eslint.CLIEngine;

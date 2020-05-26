@@ -4,12 +4,12 @@ import { UserSettingsPath } from './UserSettingsPath';
 
 type ValidatorFunction = (x: string) => boolean;
 
-const validators: Readonly<MapLike<ValidatorFunction>> = Object.freeze({
+const validators: Readonly<Record<string, ValidatorFunction>> = Object.freeze({
     'package-manager': (x: string) => ['npm', 'yarn', 'pnpm', 'disabled'].includes(x),
     'mute': (x: string) => ['true', 'false'].includes(x)
 });
 
-const keyMap: Readonly<MapLike<string>> = Object.freeze({
+const keyMap: Readonly<Record<string, string>> = Object.freeze({
     'package-manager': 'packageManager',
     'packageManager': 'package-manager',
     'mute': 'mute'

@@ -34,12 +34,12 @@ export interface ProjectSettings {
     /**
      * Replaces dependency imports to another dependency. For example: {'vue': 'vue/dist/vue.esm'}
      */
-    alias: MapLike<string>;
+    alias: Record<string, string>;
 
     /**
      * Rewrites dependency imports to a global object. For example: {'jquery': '$'}
      */
-    externals: MapLike<string | string[] | MapLike<string | string[]>>;
+    externals: Record<string, string | string[] | Record<string, string | string[]>>;
 
     /**
      * Gets the global object reference name for root exported modules.
@@ -101,7 +101,7 @@ export interface CommandLineFlags {
     /**
      * Gets the user-supplied environment variables from CLI or .env file.
      */
-    env: MapLike<string>;
+    env: Record<string, string>;
 
     /**
      * Gets the output JS stats build flags, for production build only. 
@@ -139,7 +139,7 @@ export function uniteBuildVariables(
     commandLineFlags: CommandLineFlags,
     projectSettings: ProjectSettings,
     userSettings: UserSettings,
-    dotEnv: MapLike<string>,
+    dotEnv: Record<string, string>,
     typescriptConfiguration: unknown
 ): BuildVariables {
 

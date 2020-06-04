@@ -26,7 +26,7 @@ module.exports = function (source) {
         this.callback(null, source);
         return;
     }
-    console.log(`${chalk.yellow("Transpiling to ES5")}: ${this.resourcePath}`);
+    console.log(`${chalk.yellowBright("Transpiling to ES5")}: ${this.resourcePath}`);
     const baseCompilerOptions = options.compilerOptions;
     const compilerOptions = TypeScript.getDefaultCompilerOptions();
     compilerOptions.target = TypeScript.ScriptTarget.ES5;

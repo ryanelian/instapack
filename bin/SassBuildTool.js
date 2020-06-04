@@ -136,7 +136,7 @@ class SassBuildTool {
         this.va.rewind();
     }
     async buildWithStopwatch() {
-        Shout_1.Shout.timed('Compiling', chalk.cyan('index.scss'), chalk.grey('in ' + this.finder.cssInputFolder + '/'));
+        Shout_1.Shout.timed('Compiling', chalk.cyanBright('index.scss'), chalk.grey('in ' + this.finder.cssInputFolder + '/'));
         const start = process.hrtime();
         try {
             await this.build();
@@ -146,7 +146,7 @@ class SassBuildTool {
             this.va.speak('CSS COMPILE ERROR!');
             if (error['formatted']) {
                 const formatted = 'Sass Compile' + error['formatted'].trim();
-                render = chalk.red(formatted);
+                render = chalk.redBright(formatted);
                 console.error('\n' + render + '\n');
             }
             else {
@@ -155,7 +155,7 @@ class SassBuildTool {
         }
         finally {
             const time = PrettyUnits_1.prettyHrTime(process.hrtime(start));
-            Shout_1.Shout.timed('Finished CSS build after', chalk.green(time));
+            Shout_1.Shout.timed('Finished CSS build after', chalk.greenBright(time));
         }
     }
     watch() {

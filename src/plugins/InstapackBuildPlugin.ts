@@ -29,8 +29,8 @@ export class InstapackBuildPlugin {
         const t = TypeScript.ScriptTarget[this.languageTarget].toUpperCase();
 
         compiler.hooks.compile.tap('typescript-compile-start', () => {
-            Shout.timed('Compiling', chalk.cyan('index.ts'),
-                '>>', chalk.yellow(t),
+            Shout.timed('Compiling', chalk.cyanBright('index.ts'),
+                '>>', chalk.yellowBright(t),
                 chalk.grey('in ' + this.finder.jsInputFolder + '/')
             );
         });
@@ -49,7 +49,7 @@ export class InstapackBuildPlugin {
 
             if (statsObject.time) {
                 const t = prettyMilliseconds(statsObject.time);
-                Shout.timed('Finished JS build after', chalk.green(t));
+                Shout.timed('Finished JS build after', chalk.greenBright(t));
             } else {
                 Shout.timed('Finished JS build.');
             }
@@ -106,7 +106,7 @@ export class InstapackBuildPlugin {
         if (stats.errors.length) {
             const errorMessage = stats.errors.map(Q => this.formatError(Q)).join('\n\n') + '\n';
             Shout.error('during JS build:');
-            console.error(chalk.red(errorMessage));
+            console.error(chalk.redBright(errorMessage));
             this.va.speak(`JAVA SCRIPT BUILD: ${stats.errors.length} ERROR!`);
         } else {
             this.va.rewind();
@@ -115,7 +115,7 @@ export class InstapackBuildPlugin {
         if (stats.warnings.length) {
             const warningMessage = stats.warnings.map(Q => this.formatError(Q)).join('\n\n') + '\n';
             Shout.warning('during JS build:');
-            console.warn(chalk.yellow(warningMessage));
+            console.warn(chalk.yellowBright(warningMessage));
         }
 
         if (stats.assets) {
@@ -123,7 +123,7 @@ export class InstapackBuildPlugin {
                 if (asset.emitted) {
                     const kb = prettyBytes(asset.size);
                     const where = `in ${this.finder.jsOutputFolder}`;
-                    Shout.timed(chalk.blue(asset.name), chalk.magenta(kb), chalk.grey(where));
+                    Shout.timed(chalk.blueBright(asset.name), chalk.magentaBright(kb), chalk.grey(where));
                 }
             }
         }

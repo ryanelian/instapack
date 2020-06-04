@@ -1,5 +1,6 @@
 import { minify } from 'html-minifier';
 import { SourceMapGenerator, RawSourceMap } from 'source-map';
+import { LoaderContext } from './LoaderContext';
 
 const minifierOptions = {
     caseSensitive: false,
@@ -33,8 +34,7 @@ const minifierOptions = {
     useShortDoctype: false
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export = function (this: any, html: string): void {
+export = function (this: LoaderContext, html: string): void {
     let template = minify(html, minifierOptions).trim();
     template = 'module.exports = ' + JSON.stringify(template);
     // console.log(this.resourcePath);

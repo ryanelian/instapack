@@ -1,13 +1,13 @@
 import * as TypeScript from 'typescript';
 import { getOptions } from 'loader-utils';
 import { RawSourceMap } from 'source-map';
+import { LoaderContext } from './LoaderContext';
 
 interface CoreTypeScriptLoaderOptions {
     compilerOptions?: TypeScript.CompilerOptions;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export = function (this: any, source: string): void {
+export = function (this: LoaderContext, source: string): void {
     const options: CoreTypeScriptLoaderOptions = getOptions(this);
     // console.log(this.resourcePath);
     

@@ -27,7 +27,7 @@ export class CopyBuildTool {
             const count = await this.build();
             let message = `Copy Assets job: Successfully copied ${count} files`;
             if (this.variables.copyOverwrite) {
-                message += chalk.yellow(' (overwrites: on)')
+                message += chalk.yellowBright(' (overwrites: on)')
             } else {
                 message += chalk.grey(' (overwrites: off)');
             }
@@ -39,7 +39,7 @@ export class CopyBuildTool {
         }
         finally {
             const time = prettyHrTime(process.hrtime(start));
-            Shout.timed('Finished Copy Assets job after', chalk.green(time));
+            Shout.timed('Finished Copy Assets job after', chalk.greenBright(time));
         }
     }
 
@@ -126,7 +126,7 @@ export class CopyBuildTool {
             // need to do this to squash folder navigations ('../')
             const relativeFilePath = upath.relative(libraryPath, absoluteFilePath);
             if (relativeFilePath.startsWith('../')) {
-                Shout.warning(`Copy skip: ${chalk.cyan(file)} is outside library ${chalk.cyan(job.library)} folder!`);
+                Shout.warning(`Copy skip: ${chalk.cyanBright(file)} is outside library ${chalk.cyanBright(job.library)} folder!`);
                 continue;
             }
 
@@ -193,7 +193,7 @@ export class CopyBuildTool {
             if (dependencies.has(job.library)) {
                 copyTasks.push(this.tryCopy(job));
             } else {
-                Shout.error(`Copy skip: Project package.json has no ${chalk.cyan(job.library)} dependency!`);
+                Shout.error(`Copy skip: Project package.json has no ${chalk.cyanBright(job.library)} dependency!`);
             }
         }
 

@@ -32,8 +32,8 @@ module.exports = class InstapackProgram {
         const certExistsAsync = fse.pathExists(UserSettingsPath_1.UserSettingsPath.certFile);
         const keyExistsAsync = fse.pathExists(UserSettingsPath_1.UserSettingsPath.keyFile);
         if (await certExistsAsync && await keyExistsAsync) {
-            Shout_1.Shout.timed('Using existing HTTPS cert file: ' + chalk.cyan(UserSettingsPath_1.UserSettingsPath.certFile));
-            Shout_1.Shout.timed('Using existing HTTPS key file: ' + chalk.cyan(UserSettingsPath_1.UserSettingsPath.keyFile));
+            Shout_1.Shout.timed('Using existing HTTPS cert file: ' + chalk.cyanBright(UserSettingsPath_1.UserSettingsPath.certFile));
+            Shout_1.Shout.timed('Using existing HTTPS key file: ' + chalk.cyanBright(UserSettingsPath_1.UserSettingsPath.keyFile));
             return true;
         }
         try {
@@ -72,7 +72,7 @@ module.exports = class InstapackProgram {
         const templateFolder = upath.join(__dirname, '../templates', template);
         const exist = await fse.pathExists(templateFolder);
         if (!exist) {
-            Shout_1.Shout.error('Unable to find new project template for:', chalk.cyan(template));
+            Shout_1.Shout.error('Unable to find new project template for:', chalk.cyanBright(template));
             return;
         }
         let projectPackageJson = undefined;
@@ -82,18 +82,18 @@ module.exports = class InstapackProgram {
         if (await fse.pathExists(projectPackageJsonPath)) {
             projectPackageJson = await fse.readJson(projectPackageJsonPath);
         }
-        console.log('Initializing new project using template:', chalk.cyan(template));
+        console.log('Initializing new project using template:', chalk.cyanBright(template));
         console.log('Scaffolding project into your web app...');
         await fse.copy(templateFolder, this.projectFolder);
         if (projectPackageJson && await templatePackageJsonExistsAsync) {
-            console.log(`Merging ${chalk.blue('package.json')}...`);
+            console.log(`Merging ${chalk.blueBright('package.json')}...`);
             const templatePackageJson = await fse.readJson(templatePackageJsonPath);
             const mergedPackageJson = MergePackageJson_1.mergePackageJson(projectPackageJson, templatePackageJson);
             await fse.writeJson(projectPackageJsonPath, mergedPackageJson, {
                 spaces: 2
             });
         }
-        console.log(chalk.green('Scaffold completed.'), 'To build the app, type:', chalk.yellow('ipack'));
+        console.log(chalk.greenBright('Scaffold completed.'), 'To build the app, type:', chalk.yellowBright('ipack'));
     }
     async changeUserSettings(key, value) {
         try {

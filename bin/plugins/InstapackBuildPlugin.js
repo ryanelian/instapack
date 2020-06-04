@@ -17,7 +17,7 @@ class InstapackBuildPlugin {
     apply(compiler) {
         const t = TypeScript.ScriptTarget[this.languageTarget].toUpperCase();
         compiler.hooks.compile.tap('typescript-compile-start', () => {
-            Shout_1.Shout.timed('Compiling', chalk.cyan('index.ts'), '>>', chalk.yellow(t), chalk.grey('in ' + this.finder.jsInputFolder + '/'));
+            Shout_1.Shout.timed('Compiling', chalk.cyanBright('index.ts'), '>>', chalk.yellowBright(t), chalk.grey('in ' + this.finder.jsInputFolder + '/'));
         });
         if (this.variables.production) {
             compiler.hooks.compilation.tap('typescript-minify-notify', compilation => {
@@ -31,7 +31,7 @@ class InstapackBuildPlugin {
             this.displayBuildResults(statsObject);
             if (statsObject.time) {
                 const t = PrettyUnits_1.prettyMilliseconds(statsObject.time);
-                Shout_1.Shout.timed('Finished JS build after', chalk.green(t));
+                Shout_1.Shout.timed('Finished JS build after', chalk.greenBright(t));
             }
             else {
                 Shout_1.Shout.timed('Finished JS build.');
@@ -78,7 +78,7 @@ class InstapackBuildPlugin {
         if (stats.errors.length) {
             const errorMessage = stats.errors.map(Q => this.formatError(Q)).join('\n\n') + '\n';
             Shout_1.Shout.error('during JS build:');
-            console.error(chalk.red(errorMessage));
+            console.error(chalk.redBright(errorMessage));
             this.va.speak(`JAVA SCRIPT BUILD: ${stats.errors.length} ERROR!`);
         }
         else {
@@ -87,14 +87,14 @@ class InstapackBuildPlugin {
         if (stats.warnings.length) {
             const warningMessage = stats.warnings.map(Q => this.formatError(Q)).join('\n\n') + '\n';
             Shout_1.Shout.warning('during JS build:');
-            console.warn(chalk.yellow(warningMessage));
+            console.warn(chalk.yellowBright(warningMessage));
         }
         if (stats.assets) {
             for (const asset of stats.assets) {
                 if (asset.emitted) {
                     const kb = PrettyUnits_1.prettyBytes(asset.size);
                     const where = `in ${this.finder.jsOutputFolder}`;
-                    Shout_1.Shout.timed(chalk.blue(asset.name), chalk.magenta(kb), chalk.grey(where));
+                    Shout_1.Shout.timed(chalk.blueBright(asset.name), chalk.magentaBright(kb), chalk.grey(where));
                 }
             }
         }

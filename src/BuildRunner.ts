@@ -31,20 +31,20 @@ export class BuildRunner {
      */
     outputBuildInformation(): void {
         if (this.variables.reactRefresh) {
-            Shout.warning(`Experimental ${chalk.yellow('React Fast Refresh')} dev server is enabled!`);
+            Shout.warning(`Experimental ${chalk.yellowBright('React Fast Refresh')} dev server is enabled!`);
         }
 
         if (this.variables.production) {
-            Shout.timed(chalk.yellow("Production"), "Mode: Build optimizations are enabled.");
+            Shout.timed(chalk.yellowBright("Production"), "Mode: Build optimizations are enabled.");
         } else {
-            Shout.timed(chalk.yellow("Development"), "Mode: Build optimizations are", chalk.red("DISABLED!"), chalk.grey("(Fast build)"));
+            Shout.timed(chalk.yellowBright("Development"), "Mode: Build optimizations are", chalk.redBright("DISABLED!"), chalk.grey("(Fast build)"));
         }
 
         if (this.variables.watch) {
-            Shout.timed(chalk.yellow("Watch"), "Mode: Source code will be automatically compiled on changes.");
+            Shout.timed(chalk.yellowBright("Watch"), "Mode: Source code will be automatically compiled on changes.");
         }
 
-        let smState = chalk.yellow(this.variables.sourceMap ? 'Enabled' : 'Disabled');
+        let smState = chalk.yellowBright(this.variables.sourceMap ? 'Enabled' : 'Disabled');
         if (this.variables.production) {
             smState = smState + ' ' + chalk.grey('(Hidden)');
         } else if (this.variables.watch) {
@@ -53,7 +53,7 @@ export class BuildRunner {
         Shout.timed('Source Maps:', smState);
 
         if (this.variables.stats) {
-            Shout.timed('JS build stats:', chalk.cyan(this.finder.statsJsonFilePath));
+            Shout.timed('JS build stats:', chalk.cyanBright(this.finder.statsJsonFilePath));
         }
     }
 
@@ -66,7 +66,7 @@ export class BuildRunner {
         const checkEntry = fse.pathExists(entry);
 
         if (await checkEntry === false) {
-            Shout.timed('Entry file', chalk.cyan(entry), 'was not found.', chalk.red('Aborting JS build!'));
+            Shout.timed('Entry file', chalk.cyanBright(entry), 'was not found.', chalk.redBright('Aborting JS build!'));
             return false;
         }
 
@@ -81,7 +81,7 @@ export class BuildRunner {
         const entry = this.finder.cssEntry;
         const exist = await fse.pathExists(entry);
         if (!exist) {
-            Shout.timed('Entry file', chalk.cyan(entry), 'was not found.', chalk.red('Aborting CSS build!'));
+            Shout.timed('Entry file', chalk.cyanBright(entry), 'was not found.', chalk.redBright('Aborting CSS build!'));
         }
         return exist;
     }

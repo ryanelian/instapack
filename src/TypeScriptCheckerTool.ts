@@ -113,9 +113,9 @@ export class TypeScriptCheckerTool {
         const loadSourceTask = sourceStore.loadFolder(finder.jsInputFolder);
         const eslint = await tryGetProjectESLint(variables.root, finder.jsEntry);
 
-        let versionAnnounce = `Using TypeScript ${chalk.green(TypeScript.version)} `;
+        let versionAnnounce = `Using TypeScript ${chalk.greenBright(TypeScript.version)} `;
         if (eslint) {
-            versionAnnounce += `+ ESLint ${chalk.green(eslint.version)}`;
+            versionAnnounce += `+ ESLint ${chalk.greenBright(eslint.version)}`;
         } else {
             versionAnnounce += chalk.grey('(ESLint disabled)');
         }
@@ -194,11 +194,11 @@ export class TypeScriptCheckerTool {
                 console.error(errorsOut);
             } else {
                 this.va.rewind();
-                console.log(chalk.green('Types OK') + chalk.grey(': Successfully checked TypeScript project without errors.'));
+                console.log(chalk.greenBright('Types OK') + chalk.grey(': Successfully checked TypeScript project without errors.'));
             }
         } finally {
             const time = prettyHrTime(process.hrtime(start));
-            Shout.timed('Finished type-check after', chalk.green(time));
+            Shout.timed('Finished type-check after', chalk.greenBright(time));
         }
     }
 
@@ -208,12 +208,12 @@ export class TypeScriptCheckerTool {
      */
     renderDiagnostics(diagnostics: TypeScript.Diagnostic[]): string[] {
         return diagnostics.map(diagnostic => {
-            let error = chalk.red('TS' + diagnostic.code) + ' ';
+            let error = chalk.redBright('TS' + diagnostic.code) + ' ';
 
             if (diagnostic.file && diagnostic.start) {
                 const realFileName = this.sourceStore.getFilePath(diagnostic.file.fileName);
                 const { line, character } = diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start);
-                error += chalk.red(realFileName) + ' ' + chalk.yellow(`(${line + 1},${character + 1})`) + ':\n';
+                error += chalk.redBright(realFileName) + ' ' + chalk.yellowBright(`(${line + 1},${character + 1})`) + ':\n';
             }
 
             error += TypeScript.flattenDiagnosticMessageText(diagnostic.messageText, "\n");
@@ -227,9 +227,9 @@ export class TypeScriptCheckerTool {
      * @param lintError 
      */
     renderLintErrorMessage(fileName: string, lintError: LintMessage): string {
-        const lintErrorMessage = chalk.red('ESLint') + ' '
-            + chalk.red(fileName) + ' '
-            + chalk.yellow(`(${lintError.line},${lintError.column})`) + ': '
+        const lintErrorMessage = chalk.redBright('ESLint') + ' '
+            + chalk.redBright(fileName) + ' '
+            + chalk.yellowBright(`(${lintError.line},${lintError.column})`) + ': '
             + chalk.grey(lintError.ruleId) + '\n'
             + lintError.message;
 

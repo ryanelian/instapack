@@ -3,6 +3,7 @@ import { getOptions } from 'loader-utils';
 import { RawSourceMap } from 'source-map';
 import acorn = require('acorn');
 import chalk = require('chalk');
+import { LoaderContext } from './LoaderContext';
 
 interface TranspileLibraryLoaderOptions {
     compilerOptions?: TypeScript.CompilerOptions;
@@ -21,8 +22,7 @@ function isES5(source: string): boolean {
     }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export = function (this: any, source: string): void {
+export = function (this: LoaderContext, source: string): void {
     const options: TranspileLibraryLoaderOptions = getOptions(this);
     if (!options || !options.compilerOptions) {
         this.emitError(new Error('TypeScript compiler options was not provided to Transpile Library Loader!'));
@@ -33,7 +33,7 @@ export = function (this: any, source: string): void {
         this.callback(null, source);
         return;
     }
-    console.log(`${chalk.yellow("Transpiling to ES5")}: ${this.resourcePath}`);
+    console.log(`${chalk.yellowBright("Transpiling to ES5")}: ${this.resourcePath}`);
 
     const baseCompilerOptions = options.compilerOptions;
 

@@ -56,8 +56,8 @@ export = class InstapackProgram {
         const keyExistsAsync = fse.pathExists(UserSettingsPath.keyFile);
 
         if (await certExistsAsync && await keyExistsAsync) {
-            Shout.timed('Using existing HTTPS cert file: ' + chalk.cyan(UserSettingsPath.certFile))
-            Shout.timed('Using existing HTTPS key file: ' + chalk.cyan(UserSettingsPath.keyFile))
+            Shout.timed('Using existing HTTPS cert file: ' + chalk.cyanBright(UserSettingsPath.certFile))
+            Shout.timed('Using existing HTTPS key file: ' + chalk.cyanBright(UserSettingsPath.keyFile))
             return true;
         }
 
@@ -117,7 +117,7 @@ export = class InstapackProgram {
 
         const exist = await fse.pathExists(templateFolder);
         if (!exist) {
-            Shout.error('Unable to find new project template for:', chalk.cyan(template));
+            Shout.error('Unable to find new project template for:', chalk.cyanBright(template));
             return;
         }
 
@@ -131,13 +131,13 @@ export = class InstapackProgram {
             projectPackageJson = await fse.readJson(projectPackageJsonPath);
         }
 
-        console.log('Initializing new project using template:', chalk.cyan(template));
+        console.log('Initializing new project using template:', chalk.cyanBright(template));
         console.log('Scaffolding project into your web app...');
         await fse.copy(templateFolder, this.projectFolder);
 
         if (projectPackageJson && await templatePackageJsonExistsAsync) {
             // package.json override, should merge fields instead: instapack, dependencies, and devDependencies
-            console.log(`Merging ${chalk.blue('package.json')}...`);
+            console.log(`Merging ${chalk.blueBright('package.json')}...`);
 
             const templatePackageJson = await fse.readJson(templatePackageJsonPath);
             const mergedPackageJson = mergePackageJson(projectPackageJson, templatePackageJson);
@@ -147,7 +147,7 @@ export = class InstapackProgram {
             });
         }
 
-        console.log(chalk.green('Scaffold completed.'), 'To build the app, type:', chalk.yellow('ipack'));
+        console.log(chalk.greenBright('Scaffold completed.'), 'To build the app, type:', chalk.yellowBright('ipack'));
     }
 
     /**

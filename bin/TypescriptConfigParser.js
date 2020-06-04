@@ -48,7 +48,7 @@ async function tryReadTypeScriptConfigJson(folder) {
         return parse.config;
     }
     catch (error) {
-        Shout_1.Shout.error('when reading', chalk.cyan(tsconfigJsonPath), error);
+        Shout_1.Shout.error('when reading', chalk.cyanBright(tsconfigJsonPath), error);
         Shout_1.Shout.warning('Using the default fallback TypeScript configuration!');
         console.log(fallbackTypeScriptConfig);
         return fallbackTypeScriptConfig;

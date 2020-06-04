@@ -34,7 +34,7 @@ function mergeTypeScriptPathAlias(compilerOptions, rootPath, alias) {
         return convertMapSetOfStringToArray(result);
     }
     if (compilerOptions.baseUrl === undefined) {
-        Shout_1.Shout.warning(chalk.cyan('tsconfig.json'), 'paths are defined, but baseUrl is not!', chalk.grey('(Ignoring paths)'));
+        Shout_1.Shout.warning(chalk.cyanBright('tsconfig.json'), 'paths are defined, but baseUrl is not!', chalk.grey('(Ignoring paths)'));
         return convertMapSetOfStringToArray(result);
     }
     for (const key in compilerOptions.paths) {

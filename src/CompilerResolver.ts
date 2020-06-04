@@ -52,7 +52,9 @@ async function tryGetProjectPackage<T>(projectBasePath: string, packageName: str
 }
 
 export async function resolveVue2TemplateCompiler(projectBasePath: string): Promise<unknown> {
-    const instapackVueCompilerVersion: string = require('vue-template-compiler/package.json')['version'];
+    const vuePackageJsonPath = require.resolve('vue-template-compiler/package.json');
+    const vuePackageJson = await fse.readJSON(vuePackageJsonPath);
+    const instapackVueCompilerVersion: string = vuePackageJson['version'];
     const vueVersion = await tryGetProjectPackageVersion(projectBasePath, 'vue');
 
     try {
@@ -73,7 +75,7 @@ Fix the project package.json and make sure to use the same version for both:
         }
 
         const compilerPath = await resolveAsync(projectBasePath, 'vue-template-compiler');
-        Shout.timed('Using project Vue Template Compiler', chalk.green(vueCompilerVersion));
+        Shout.timed('Using project Vue Template Compiler', chalk.greenBright(vueCompilerVersion));
         return require(compilerPath);
     } catch (err) {
         if (vueVersion && vueVersion !== instapackVueCompilerVersion) {

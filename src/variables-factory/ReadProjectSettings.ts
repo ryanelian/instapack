@@ -40,7 +40,7 @@ export async function readProjectSettingsFrom(folder: string): Promise<ProjectSe
     const validate = ajv.compile(settingsJsonSchema);
 
     const packageJsonPath = upath.join(folder, 'package.json');
-    // console.log('Loading settings ' + chalk.cyan(json));
+    // console.log('Loading settings ' + chalk.cyanBright(json));
 
     const x = await tryReadPackageJsonInstapackSettings(packageJsonPath);
     // console.log(x);

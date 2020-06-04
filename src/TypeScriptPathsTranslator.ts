@@ -113,7 +113,7 @@ export function mergeTypeScriptPathAlias(compilerOptions: CompilerOptions, rootP
     }
 
     if (compilerOptions.baseUrl === undefined) {
-        Shout.warning(chalk.cyan('tsconfig.json'),
+        Shout.warning(chalk.cyanBright('tsconfig.json'),
             'paths are defined, but baseUrl is not!',
             chalk.grey('(Ignoring paths)'));
         return convertMapSetOfStringToArray(result);

@@ -51,7 +51,9 @@ async function tryGetProjectPackage(projectBasePath, packageName) {
     }
 }
 async function resolveVue2TemplateCompiler(projectBasePath) {
-    const instapackVueCompilerVersion = require('vue-template-compiler/package.json')['version'];
+    const vuePackageJsonPath = require.resolve('vue-template-compiler/package.json');
+    const vuePackageJson = await fse.readJSON(vuePackageJsonPath);
+    const instapackVueCompilerVersion = vuePackageJson['version'];
     const vueVersion = await tryGetProjectPackageVersion(projectBasePath, 'vue');
     try {
         const vueCompilerVersion = await tryGetProjectPackageVersion(projectBasePath, 'vue-template-compiler');
@@ -68,7 +70,7 @@ Fix the project package.json and make sure to use the same version for both:
             throw new Error('Project vue and vue-template-compiler version mismatched!');
         }
         const compilerPath = await resolveAsync(projectBasePath, 'vue-template-compiler');
-        Shout_1.Shout.timed('Using project Vue Template Compiler', chalk.green(vueCompilerVersion));
+        Shout_1.Shout.timed('Using project Vue Template Compiler', chalk.greenBright(vueCompilerVersion));
         return require(compilerPath);
     }
     catch (err) {

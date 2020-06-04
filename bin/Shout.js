@@ -22,10 +22,10 @@ function concatenateTokens(tokens) {
     for (const token of tokens) {
         if (token instanceof Error) {
             if (token.stack) {
-                message += '\n' + chalk.red(token.stack);
+                message += '\n' + chalk.redBright(token.stack);
             }
             else {
-                message += '\n' + chalk.red(token.toString());
+                message += '\n' + chalk.redBright(token.toString());
             }
         }
         else {
@@ -42,34 +42,34 @@ exports.Shout = {
     },
     error: function (...tokens) {
         const message = concatenateTokens(tokens);
-        const output = '\n' + chalk.red('ERROR') + message + '\n';
+        const output = '\n' + chalk.redBright('ERROR') + message + '\n';
         console.error(output);
     },
     fatal: function (...tokens) {
         const message = concatenateTokens(tokens);
-        const output = '\n' + chalk.red('FATAL ERROR') + message + '\n';
+        const output = '\n' + chalk.redBright('FATAL ERROR') + message + '\n';
         console.error(output);
     },
     warning: function (...tokens) {
         const message = concatenateTokens(tokens);
-        const output = chalk.yellow('WARNING') + message;
+        const output = chalk.yellowBright('WARNING') + message;
         console.warn(output);
     },
     typescript: function (...tokens) {
         const message = concatenateTokens(tokens);
-        const output = chalk.blue('TypeScript') + message;
+        const output = chalk.blueBright('TypeScript') + message;
         console.log(output);
     },
     sass: function (...tokens) {
         const message = concatenateTokens(tokens);
-        const output = chalk.magenta('Sass') + message;
+        const output = chalk.magentaBright('Sass') + message;
         console.log(output);
     },
     fileOutput(filePath, content) {
         const bundle = Buffer.from(content, 'utf8');
         const info = upath.parse(filePath);
         const size = PrettyUnits_1.prettyBytes(bundle.byteLength);
-        exports.Shout.timed(chalk.blue(info.base), chalk.magenta(size), chalk.grey('in ' + info.dir + '/'));
+        exports.Shout.timed(chalk.blueBright(info.base), chalk.magentaBright(size), chalk.grey('in ' + info.dir + '/'));
         return fse.outputFile(filePath, bundle);
     }
 };

@@ -22,7 +22,7 @@ class CopyBuildTool {
             const count = await this.build();
             let message = `Copy Assets job: Successfully copied ${count} files`;
             if (this.variables.copyOverwrite) {
-                message += chalk.yellow(' (overwrites: on)');
+                message += chalk.yellowBright(' (overwrites: on)');
             }
             else {
                 message += chalk.grey(' (overwrites: off)');
@@ -35,7 +35,7 @@ class CopyBuildTool {
         }
         finally {
             const time = PrettyUnits_1.prettyHrTime(process.hrtime(start));
-            Shout_1.Shout.timed('Finished Copy Assets job after', chalk.green(time));
+            Shout_1.Shout.timed('Finished Copy Assets job after', chalk.greenBright(time));
         }
     }
     async tryCopyFile(from, to) {
@@ -103,7 +103,7 @@ class CopyBuildTool {
             const absoluteFilePath = upath.join(libraryPath, file);
             const relativeFilePath = upath.relative(libraryPath, absoluteFilePath);
             if (relativeFilePath.startsWith('../')) {
-                Shout_1.Shout.warning(`Copy skip: ${chalk.cyan(file)} is outside library ${chalk.cyan(job.library)} folder!`);
+                Shout_1.Shout.warning(`Copy skip: ${chalk.cyanBright(file)} is outside library ${chalk.cyanBright(job.library)} folder!`);
                 continue;
             }
             try {
@@ -158,7 +158,7 @@ class CopyBuildTool {
                 copyTasks.push(this.tryCopy(job));
             }
             else {
-                Shout_1.Shout.error(`Copy skip: Project package.json has no ${chalk.cyan(job.library)} dependency!`);
+                Shout_1.Shout.error(`Copy skip: Project package.json has no ${chalk.cyanBright(job.library)} dependency!`);
             }
         }
         const success = await Promise.all(copyTasks);

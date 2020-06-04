@@ -348,8 +348,8 @@ class TypeScriptBuildEngine {
             this.port = await portfinder.getPortPromise({
                 port: this.port
             });
-            const host = `${this.variables.https ? 'https' : 'http'}://localhost:${chalk.green(this.port)}`;
-            Shout_1.Shout.timed(chalk.yellow('Hot Reload'), `server running on ${host}`);
+            const host = `${this.variables.https ? 'https' : 'http'}://localhost:${chalk.greenBright(this.port)}`;
+            Shout_1.Shout.timed(chalk.yellowBright('Hot Reload'), `server running on ${host}`);
         }
         if (this.variables.https) {
             const certFileAsync = fse.readFile(UserSettingsPath_1.UserSettingsPath.certFile);

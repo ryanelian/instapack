@@ -492,8 +492,8 @@ export class TypeScriptBuildEngine {
             this.port = await portfinder.getPortPromise({
                 port: this.port
             });
-            const host = `${this.variables.https ? 'https' : 'http'}://localhost:${chalk.green(this.port)}`;
-            Shout.timed(chalk.yellow('Hot Reload'), `server running on ${host}`);
+            const host = `${this.variables.https ? 'https' : 'http'}://localhost:${chalk.greenBright(this.port)}`;
+            Shout.timed(chalk.yellowBright('Hot Reload'), `server running on ${host}`);
         }
 
         if (this.variables.https) {

@@ -29,9 +29,9 @@ function concatenateTokens(tokens: unknown[]): string {
     for (const token of tokens) {
         if (token instanceof Error) {
             if (token.stack) {
-                message += '\n' + chalk.red(token.stack);
+                message += '\n' + chalk.redBright(token.stack);
             } else {
-                message += '\n' + chalk.red(token.toString());
+                message += '\n' + chalk.redBright(token.toString());
             }
         } else {
             message += ' ' + token;
@@ -42,39 +42,39 @@ function concatenateTokens(tokens: unknown[]): string {
 
 export const Shout = {
 
-    timed: function (...tokens): void {
+    timed: function (...tokens: unknown[]): void {
         const message = concatenateTokens(tokens);
         const output = `[${chalk.grey(nowFormatted())}]` + message;
         console.log(output);
     },
 
-    error: function (...tokens): void {
+    error: function (...tokens: unknown[]): void {
         const message = concatenateTokens(tokens);
-        const output = '\n' + chalk.red('ERROR') + message + '\n';
+        const output = '\n' + chalk.redBright('ERROR') + message + '\n';
         console.error(output);
     },
 
-    fatal: function (...tokens): void {
+    fatal: function (...tokens: unknown[]): void {
         const message = concatenateTokens(tokens);
-        const output = '\n' + chalk.red('FATAL ERROR') + message + '\n';
+        const output = '\n' + chalk.redBright('FATAL ERROR') + message + '\n';
         console.error(output);
     },
 
-    warning: function (...tokens): void {
+    warning: function (...tokens: unknown[]): void {
         const message = concatenateTokens(tokens);
-        const output = chalk.yellow('WARNING') + message;
+        const output = chalk.yellowBright('WARNING') + message;
         console.warn(output);
     },
 
-    typescript: function (...tokens): void {
+    typescript: function (...tokens: unknown[]): void {
         const message = concatenateTokens(tokens);
-        const output = chalk.blue('TypeScript') + message;
+        const output = chalk.blueBright('TypeScript') + message;
         console.log(output);
     },
 
-    sass: function (...tokens): void {
+    sass: function (...tokens: unknown[]): void {
         const message = concatenateTokens(tokens);
-        const output = chalk.magenta('Sass') + message;
+        const output = chalk.magentaBright('Sass') + message;
         console.log(output);
     },
 
@@ -88,7 +88,7 @@ export const Shout = {
         const info = upath.parse(filePath);
         const size = prettyBytes(bundle.byteLength);
 
-        Shout.timed(chalk.blue(info.base), chalk.magenta(size), chalk.grey('in ' + info.dir + '/'));
+        Shout.timed(chalk.blueBright(info.base), chalk.magentaBright(size), chalk.grey('in ' + info.dir + '/'));
         return fse.outputFile(filePath, bundle);
     }
 };

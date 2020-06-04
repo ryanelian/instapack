@@ -15,7 +15,7 @@ function echo(command, subCommand) {
     if (!subCommand) {
         subCommand = '';
     }
-    console.log(chalk.yellow(manifest.name) + ' ' + chalk.green(manifest.version) + ' ' + command + ' ' + subCommand);
+    console.log(chalk.yellowBright(manifest.name) + ' ' + chalk.greenBright(manifest.version) + ' ' + command + ' ' + subCommand);
     console.log();
 }
 program.command({

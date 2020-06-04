@@ -19,9 +19,9 @@ declare module "eslint" {
     }
 
     export class ESLint {
-        constructor(options: ESLintOptions);
+        constructor(options: ESLintOptions): ESLint;
         lintText(code: string, options: LintTextOptions): Promise<LintResult[]>;
-        calculateConfigForFile(filePath): Promise<unknown>;
+        calculateConfigForFile(filePath: string): Promise<unknown>;
         static version: string;
     }
 }

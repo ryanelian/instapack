@@ -827,13 +827,6 @@ Windows Defender or other anti-virus software apparently slow down package resto
 
 - Use very short root folder name for projects, such as `D:\VS`, to avoid potential problems with Windows system paths over 260 characters long. Then exclude the folder from the anti-virus.
 
-### Your PowerShell is cute. How to?
+### The screenshot, what is THAT?
 
-```powershell
-Set-ExecutionPolicy RemoteSigned -scope CurrentUser
-iex (new-object net.webclient).downloadstring('https://get.scoop.sh')
-scoop install concfg
-concfg import https://raw.githubusercontent.com/ryanelian/instapack/master/concfg/firefly.json
-```
-
-For more information, visit http://scoop.sh/ and https://github.com/lukesampson/concfg
+The new [Windows Terminal](https://github.com/microsoft/terminal) with [Powershell Core](https://github.com/PowerShell/Powershell).

@@ -86,7 +86,7 @@
     "vue-loader": "15.9.3",
     "vue-style-loader": "4.1.2",
     "vue-template-compiler": "2.6.11",
-    "webpack": "5.0.0-beta.20",
+    "webpack": "5.0.0-beta.28",
     "webpack-plugin-serve": "1.0.1",
     "which": "2.0.2",
     "yargs": "15.4.0"

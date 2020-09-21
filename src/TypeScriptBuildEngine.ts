@@ -165,6 +165,7 @@ export class TypeScriptBuildEngine {
             ident: 'vue-css-module',
             options: {
                 // enable CSS Modules
+                esModule: false,
                 modules: {
                     localIdentName: '[local]_[contenthash:8]'
                 },
@@ -175,6 +176,7 @@ export class TypeScriptBuildEngine {
             loader: LoaderPaths.css,
             ident: 'vue-css',
             options: {
+                esModule: false,
                 url: false
             }
         };

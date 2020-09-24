@@ -25,15 +25,15 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "reactstrap": "^8.6.0",
-    "sweetalert2": "^10.3.0",
+    "sweetalert2": "^10.3.3",
     "ts-polyfill": "^3.8.2",
     "tslib": "^2.0.1"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "4.1.1",
-    "@typescript-eslint/parser": "4.1.1",
+    "@typescript-eslint/eslint-plugin": "4.2.0",
+    "@typescript-eslint/parser": "4.2.0",
     "eslint": "7.9.0",
-    "eslint-plugin-react": "^7.20.6",
+    "eslint-plugin-react": "^7.21.1",
     "jquery": "^3.5.1",
     "typescript": "^4.0.3"
   }

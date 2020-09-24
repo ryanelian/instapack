@@ -360,7 +360,6 @@ export class TypeScriptBuildEngine {
                 path: path.normalize(this.finder.jsOutputFolder),
                 publicPath: 'js/',
                 library: this.variables.namespace,
-                ecmaVersion: this.getECMAScriptVersion(),
                 libraryTarget: (this.variables.umdLibraryProject ? 'umd' : undefined)
             },
             externals: this.variables.externals,
@@ -372,7 +371,7 @@ export class TypeScriptBuildEngine {
             mode: (this.variables.production ? 'production' : 'development'),
             devtool: this.webpackConfigurationDevTool,
             optimization: {
-                noEmitOnErrors: true
+                emitOnErrors: false,
             },
             performance: { // https://webpack.js.org/configuration/performance
                 hints: false

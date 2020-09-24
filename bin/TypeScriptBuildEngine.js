@@ -106,6 +106,7 @@ class TypeScriptBuildEngine {
             loader: LoaderPaths_1.LoaderPaths.css,
             ident: 'vue-css-module',
             options: {
+                esModule: false,
                 modules: {
                     localIdentName: '[local]_[contenthash:8]'
                 },
@@ -116,6 +117,7 @@ class TypeScriptBuildEngine {
             loader: LoaderPaths_1.LoaderPaths.css,
             ident: 'vue-css',
             options: {
+                esModule: false,
                 url: false
             }
         };
@@ -245,7 +247,6 @@ class TypeScriptBuildEngine {
                 path: path.normalize(this.finder.jsOutputFolder),
                 publicPath: 'js/',
                 library: this.variables.namespace,
-                ecmaVersion: this.getECMAScriptVersion(),
                 libraryTarget: (this.variables.umdLibraryProject ? 'umd' : undefined)
             },
             externals: this.variables.externals,
@@ -257,7 +258,7 @@ class TypeScriptBuildEngine {
             mode: (this.variables.production ? 'production' : 'development'),
             devtool: this.webpackConfigurationDevTool,
             optimization: {
-                noEmitOnErrors: true
+                emitOnErrors: false,
             },
             performance: {
                 hints: false

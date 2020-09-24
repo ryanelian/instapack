@@ -11,13 +11,13 @@
     "axios": "^0.20.0",
     "linq": "^3.2.3",
     "luxon": "^1.25.0",
-    "sweetalert2": "^10.3.0",
+    "sweetalert2": "^10.3.3",
     "ts-polyfill": "^3.8.2",
     "tslib": "^2.0.1"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "4.1.1",
-    "@typescript-eslint/parser": "4.1.1",
+    "@typescript-eslint/eslint-plugin": "4.2.0",
+    "@typescript-eslint/parser": "4.2.0",
     "eslint": "7.9.0",
     "typescript": "^4.0.3"
   }

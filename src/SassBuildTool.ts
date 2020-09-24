@@ -132,9 +132,8 @@ export class SassBuildTool {
             };
         }
 
-        const postcssResult = await postcss([
-            autoprefixer()
-        ]).process(sassResult.css, postcssOptions);
+        const postcssResult = await postcss([autoprefixer])
+            .process(sassResult.css, postcssOptions);
 
         const result: CssBuildResult = {
             css: postcssResult.css

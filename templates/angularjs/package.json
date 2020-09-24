@@ -58,7 +58,7 @@
     "jquery-validation": "^1.19.2",
     "jquery-validation-unobtrusive": "^3.2.11",
     "linq": "^3.2.3",
-    "sweetalert2": "^10.3.0",
+    "sweetalert2": "^10.3.3",
     "ts-polyfill": "^3.8.2",
     "tslib": "^2.0.1"
   }

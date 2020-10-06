@@ -56,7 +56,7 @@
     "@babel/core": "7.11.6",
     "@babel/plugin-syntax-dynamic-import": "7.8.3",
     "@webhotelier/webpack-fast-refresh": "5.0.4",
-    "acorn": "8.0.1",
+    "acorn": "8.0.4",
     "ajv": "6.12.5",
     "autoprefixer": "9.8.6",
     "babel-loader": "8.1.0",

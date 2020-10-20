@@ -99,7 +99,7 @@
     "@types/progress": "^2.0.3",
     "@types/sass": "^1.16.0",
     "@types/yargs": "^15.0.7",
-    "@typescript-eslint/eslint-plugin": "4.2.0",
+    "@typescript-eslint/eslint-plugin": "4.5.0",
     "@typescript-eslint/parser": "4.2.0",
     "ava": "3.12.1",
     "eslint": "7.9.0",

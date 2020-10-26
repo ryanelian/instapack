@@ -27,7 +27,8 @@ test('Project Settings: Not Found', async t => {
         namespace: undefined,
         umdLibraryProject: false,
         copy: [],
-        port1: 0
+        port1: 0,
+        vue: undefined
     };
 
     t.deepEqual(settings, result);
@@ -73,7 +74,8 @@ test('Project Settings: Valid', async t => {
         namespace: 'instapack',
         umdLibraryProject: true,
         copy: [],
-        port1: 32101
+        port1: 32101,
+        vue: undefined
     };
 
     t.deepEqual(settings, result);

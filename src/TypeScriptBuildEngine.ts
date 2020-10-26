@@ -3,7 +3,6 @@ import * as fse from 'fs-extra';
 import chalk = require('chalk');
 import portfinder = require('portfinder');
 import * as TypeScript from 'typescript';
-import { VueLoaderPlugin } from 'vue-loader';
 
 import webpack = require('webpack');
 import { CleanWebpackPlugin } from 'clean-webpack-plugin';
@@ -15,7 +14,7 @@ const reactRefreshWebpackRuntimeJS = require.resolve('@webhotelier/webpack-fast-
 const reactRefreshBabelPluginJS = require.resolve('react-refresh/babel');
 const babelPluginDynamicImportJS = require.resolve('@babel/plugin-syntax-dynamic-import');
 
-import { resolveVue2TemplateCompiler } from './CompilerResolver';
+import { tryGetProjectModulePath } from './PackageFinder';
 import { Shout } from './Shout';
 import { BuildVariables } from './variables-factory/BuildVariables';
 import { PathFinder } from './variables-factory/PathFinder';
@@ -38,7 +37,9 @@ export class TypeScriptBuildEngine {
 
     private useBabel = false;
 
-    private vueTemplateCompiler: unknown;
+    private vueLoaderPath: string | undefined;
+
+    private vueLoader: VueLoader | undefined;
 
     private port = 28080;
 
@@ -126,10 +127,9 @@ export class TypeScriptBuildEngine {
             test: /\.vue$/,
             exclude: /node_modules/,
             use: [{
-                loader: LoaderPaths.vue,
+                loader: this.vueLoaderPath,
                 ident: 'vue',
                 options: {
-                    compiler: this.vueTemplateCompiler,
                     transformAssetUrls: {},     // remove <img> src and SVG <image> xlink:href resolution
                     appendExtension: true
                 }
@@ -253,8 +253,9 @@ export class TypeScriptBuildEngine {
         const typescriptTarget = this.typescriptCompilerOptions.target ?? TypeScript.ScriptTarget.ES3;
         plugins.push(new InstapackBuildPlugin(this.variables, typescriptTarget));
 
-        // webpack 5 declaration is not compatible with webpack 4 declarations!
-        plugins.push(new VueLoaderPlugin() as webpack.WebpackPluginInstance);
+        if (this.vueLoader) {
+            plugins.push(new this.vueLoader.VueLoaderPlugin());
+        }
 
         if (Object.keys(this.variables.env).length > 0) {
             plugins.push(new webpack.EnvironmentPlugin(this.variables.env));
@@ -287,12 +288,17 @@ export class TypeScriptBuildEngine {
      * Gets webpack rules array using input TypeScript configuration and Babel flag.
      */
     get webpackRules(): webpack.RuleSetRule[] {
-        const rules = [
+        const rules: webpack.RuleSetRule[] = [
             this.typescriptWebpackRules,
-            this.vueCssWebpackRules,
-            this.vueWebpackRules,
-            this.htmlWebpackRules,  // Vue Loader Error if HTML Loader is defined before it!
         ];
+
+        if (this.vueLoaderPath) {
+            rules.push(this.vueCssWebpackRules);
+            rules.push(this.vueWebpackRules);
+        }
+
+        // Vue Loader Error if HTML Loader is defined before it!
+        rules.push(this.htmlWebpackRules);
 
         if (this.useBabel) {
             rules.push(this.jsBabelWebpackRules);
@@ -487,7 +493,14 @@ export class TypeScriptBuildEngine {
      */
     async build(): Promise<void> {
         this.useBabel = await fse.pathExists(this.finder.babelConfiguration);
-        this.vueTemplateCompiler = await resolveVue2TemplateCompiler(this.finder.root);
+
+        if (this.variables.vue) {
+            const vueLoaderPath = await tryGetProjectModulePath(this.variables.root, 'vue-loader');
+            if (vueLoaderPath) {
+                this.vueLoaderPath = vueLoaderPath;
+                this.vueLoader = await import(vueLoaderPath);
+            }
+        }
 
         if (this.variables.serve) {
             this.port = await portfinder.getPortPromise({
@@ -517,5 +530,11 @@ export class TypeScriptBuildEngine {
                 await fse.outputJson(this.finder.statsJsonFilePath, stats.toJson());
             }
         }
+    }
+}
+
+interface VueLoader {
+    VueLoaderPlugin: {
+        new(): webpack.WebpackPluginInstance
     }
 }

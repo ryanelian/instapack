@@ -13,7 +13,7 @@ const PathFinder_1 = require("./variables-factory/PathFinder");
 const TypescriptConfigParser_1 = require("./TypescriptConfigParser");
 const TypeScriptSourceStore_1 = require("./TypeScriptSourceStore");
 const VoiceAssistant_1 = require("./VoiceAssistant");
-const CompilerResolver_1 = require("./CompilerResolver");
+const PackageFinder_1 = require("./PackageFinder");
 class TypeScriptCheckerTool {
     constructor(variables, sourceStore, compilerOptions, silent, eslint) {
         this.variables = variables;
@@ -48,7 +48,7 @@ class TypeScriptCheckerTool {
         }
         const sourceStore = new TypeScriptSourceStore_1.TypeScriptSourceStore(target);
         const loadSourceTask = sourceStore.loadFolder(finder.jsInputFolder);
-        const eslint = await CompilerResolver_1.tryGetProjectESLint(variables.root, finder.jsEntry);
+        const eslint = await PackageFinder_1.tryGetProjectESLint(variables.root, finder.jsEntry);
         let versionAnnounce = `Using TypeScript ${chalk.greenBright(TypeScript.version)} `;
         if (eslint) {
             versionAnnounce += `+ ESLint ${chalk.greenBright(eslint.version)}`;

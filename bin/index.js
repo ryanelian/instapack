@@ -52,7 +52,7 @@ module.exports = class InstapackProgram {
         const typescriptConfigurationAsync = TypescriptConfigParser_1.tryReadTypeScriptConfigJson(this.projectFolder);
         const variables = BuildVariables_1.uniteBuildVariables(flags, await projectSettingsAsync, await userSettingsAsync, await dotEnvAsync, await typescriptConfigurationAsync);
         try {
-            await ProcessInvoke_1.restorePackages(variables.packageManager, variables.root);
+            await ProcessInvoke_1.restorePackages(variables.packageManager, variables.root, variables.vue);
         }
         catch (error) {
             Shout_1.Shout.error('when restoring package:', error);

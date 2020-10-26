@@ -90,7 +90,7 @@ export = class InstapackProgram {
         );
 
         try {
-            await restorePackages(variables.packageManager, variables.root);
+            await restorePackages(variables.packageManager, variables.root, variables.vue);
         } catch (error) {
             Shout.error('when restoring package:', error);
         }

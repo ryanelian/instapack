@@ -55,6 +55,17 @@ export interface ProjectSettings {
      * Gets the library manager asset copy build options.
      */
     copy: CopyOption[];
+
+    /**
+     * Gets the Vue.js version installed in the project. 
+     */
+    vue: VuePackageVersions | undefined;
+}
+
+export interface VuePackageVersions {
+    vue: string | undefined;
+    loader: string | undefined;
+    compilerService: string | undefined;
 }
 
 export interface CopyOption {

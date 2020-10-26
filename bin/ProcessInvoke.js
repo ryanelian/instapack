@@ -23,17 +23,75 @@ async function isCommandExist(command) {
         return false;
     }
 }
-async function usePackageManagerWithFallback(packageManager) {
-    const exists = await isCommandExist(packageManager);
-    if (!exists) {
-        packageManager = 'npm';
+async function detectLockfile(root) {
+    const lockFiles = ['pnpm-lock.yaml', 'package-lock.json', 'yarn.lock'];
+    const lockFilesPackageManager = ['pnpm', 'npm', 'yarn'];
+    for (let i = 0; i < lockFiles.length; i++) {
+        const lockFilePath = upath.join(root, lockFiles[i]);
+        const lockFileExists = await fse.pathExists(lockFilePath);
+        if (lockFileExists) {
+            return lockFilesPackageManager[i];
+        }
     }
-    return packageManager;
+    return undefined;
 }
-async function restorePackages(packageManager, root) {
-    if (!packageManager) {
-        packageManager = 'npm';
+async function selectPackageManager(preference, root) {
+    if (!preference) {
+        preference = 'npm';
     }
+    const lockfile = await detectLockfile(root);
+    if (lockfile) {
+        return lockfile;
+    }
+    let exists = true;
+    if (preference !== 'npm') {
+        exists = await isCommandExist(preference);
+    }
+    if (exists) {
+        return preference;
+    }
+    return 'npm';
+}
+function addVueCompilerServices(packageManager, versions) {
+    var _a, _b;
+    let packages = '';
+    if ((_a = versions.vue) === null || _a === void 0 ? void 0 : _a.startsWith('2')) {
+        const loaderVersion = '15.9.3';
+        packages = `vue-loader@${loaderVersion} vue-template-compiler@${versions.vue}`;
+        if (versions.loader === loaderVersion && versions.compilerService === versions.vue) {
+            return;
+        }
+    }
+    else if ((_b = versions.vue) === null || _b === void 0 ? void 0 : _b.startsWith('3')) {
+        const loaderVersion = '16.0.0-beta.8';
+        packages = `vue-loader@${loaderVersion} @vue/compiler-sfc@${versions.vue}`;
+        if (versions.loader === loaderVersion && versions.compilerService === versions.vue) {
+            return;
+        }
+    }
+    else {
+        throw new Error(`Unknown vue version: ${versions.vue}`);
+    }
+    console.log('Detected Vue.js project. Ensuring correct development dependencies are installed...');
+    switch (packageManager) {
+        case 'yarn': {
+            execWithConsoleOutput(`yarn add ${packages} -D -E`);
+            break;
+        }
+        case 'npm': {
+            execWithConsoleOutput(`npm install ${packages} -D -E --loglevel error`);
+            break;
+        }
+        case 'pnpm': {
+            execWithConsoleOutput(`pnpm install ${packages} -D -E`);
+            break;
+        }
+        default: {
+            throw new Error('Unknown package manager.');
+        }
+    }
+}
+async function restorePackages(packageManager, root, vue) {
     if (packageManager === 'disabled') {
         return;
     }
@@ -43,22 +101,8 @@ async function restorePackages(packageManager, root) {
         console.log('package.json does not exists in project root folder, skipping package restore.');
         return;
     }
-    let lock = false;
-    const lockFiles = ['pnpm-lock.yaml', 'package-lock.json', 'yarn.lock'];
-    const lockFilesPackageManager = ['pnpm', 'npm', 'yarn'];
-    for (let i = 0; i < lockFiles.length; i++) {
-        const lockFilePath = upath.join(root, lockFiles[i]);
-        const lockFileExists = await fse.pathExists(lockFilePath);
-        if (lockFileExists) {
-            lock = true;
-            packageManager = lockFilesPackageManager[i];
-            console.log(`Project lock file exists: ${lockFilePath}\nRestoring packages using ${packageManager}...`);
-        }
-    }
-    if (!lock) {
-        packageManager = await usePackageManagerWithFallback(packageManager);
-    }
-    switch (packageManager) {
+    const pm = await selectPackageManager(packageManager, root);
+    switch (pm) {
         case 'yarn': {
             execWithConsoleOutput('yarn');
             break;
@@ -74,6 +118,9 @@ async function restorePackages(packageManager, root) {
         default: {
             throw new Error('Unknown package manager.');
         }
+    }
+    if (vue) {
+        addVueCompilerServices(pm, vue);
     }
 }
 exports.restorePackages = restorePackages;

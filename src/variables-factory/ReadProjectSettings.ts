@@ -5,17 +5,45 @@ import Ajv = require('ajv');
 import { Shout } from '../Shout';
 const settingsJsonSchemaPath = require.resolve('../../schemas/settings.json');
 
-async function tryReadPackageJsonInstapackSettings(path: string): Promise<unknown> {
+interface PackageJson {
+    version: string;
+    instapack: unknown;
+}
+
+async function tryReadPackageJson(path: string): Promise<PackageJson | undefined> {
     try {
         const packageJson = await fse.readJson(path);
-        const x = packageJson.instapack;
-        if (!x) {
-            return {};
+        if (!packageJson) {
+            return undefined;
         }
 
-        return x;
-    } catch (ex) {
-        return {};
+        return packageJson as PackageJson;
+    } catch (error) {
+        return undefined;
+    }
+}
+
+async function readPackageVersion(
+    packageName: string,
+    root: string
+): Promise<string | undefined> {
+    try {
+        const packageJsonPath = upath.toUnix(
+            require.resolve(packageName + "/package.json", {
+                paths: [root]
+            })
+        );
+
+        // do not go out from root folder!
+        // console.log(packageJsonPath);
+        if (packageJsonPath.startsWith(root) === false) {
+            return undefined;
+        }
+
+        const packageJson = await fse.readJson(packageJsonPath);
+        return packageJson.version;
+    } catch (err) {
+        return undefined;
     }
 }
 
@@ -32,29 +60,50 @@ export async function readProjectSettingsFrom(folder: string): Promise<ProjectSe
         copy: [],
         namespace: undefined,
         umdLibraryProject: false,
+        vue: undefined,
         port1: 0
     };
-
-    const ajv = new Ajv();
-    const settingsJsonSchema = await fse.readJson(settingsJsonSchemaPath);
-    const validate = ajv.compile(settingsJsonSchema);
 
     const packageJsonPath = upath.join(folder, 'package.json');
     // console.log('Loading settings ' + chalk.cyanBright(json));
 
-    const x = await tryReadPackageJsonInstapackSettings(packageJsonPath);
-    // console.log(x);
-
-    const valid = validate(x);
-    if (valid === false) {
-        Shout.fatal('Abort Build: Invalid instapack project settings in ' + packageJsonPath);
-        console.error(validate.errors);
-        throw new Error('Invalid instapack project settings!');
+    const packageJson = await tryReadPackageJson(packageJsonPath);
+    if (!packageJson) {
+        return settings;
     }
 
-    Object.assign(settings, x);
-    settings.cssOut = upath.addExt(settings.cssOut, '.css');
-    settings.jsOut = upath.addExt(settings.jsOut, '.js');
+    const ajv = new Ajv();
+    const settingsJsonSchema = await fse.readJson(settingsJsonSchemaPath);
+    const validate = ajv.compile(settingsJsonSchema);
+    if (packageJson.instapack) {
+        if (validate(packageJson.instapack) === false) {
+            Shout.fatal('Abort Build: Invalid instapack project settings in ' + packageJsonPath);
+            console.error(validate.errors);
+            throw new Error('Invalid instapack project settings!');
+        }
+
+        // Object.assign mutates the target object properties
+        Object.assign(settings, packageJson.instapack);
+        settings.cssOut = upath.addExt(settings.cssOut, '.css');
+        settings.jsOut = upath.addExt(settings.jsOut, '.js');
+    }
+
+    const vue = await readPackageVersion('vue', folder);
+    if (vue) {
+        settings.vue = {
+            vue: vue,
+            loader: await readPackageVersion('vue-loader', folder),
+            compilerService: undefined
+        }
+
+        if (vue.startsWith('2')) {
+            settings.vue.compilerService = await readPackageVersion('vue-template-compiler', folder);
+        } else if (vue.startsWith('3')) {
+            settings.vue.compilerService = await readPackageVersion('@vue/compiler-sfc', folder);
+        } else {
+            throw new Error(`Unknown Vue version: ${vue}`)
+        }
+    }
 
     // console.log(settings);
     return settings;

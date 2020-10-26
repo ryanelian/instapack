@@ -13,7 +13,7 @@ import { PathFinder } from './variables-factory/PathFinder';
 import { parseTypescriptConfig } from './TypescriptConfigParser';
 import { TypeScriptSourceStore } from './TypeScriptSourceStore';
 import { VoiceAssistant } from './VoiceAssistant';
-import { tryGetProjectESLint } from './CompilerResolver';
+import { tryGetProjectESLint } from './PackageFinder';
 
 /**
  * Contains methods for static-checking TypeScript projects. 

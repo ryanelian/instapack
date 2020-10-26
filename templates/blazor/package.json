@@ -20,23 +20,23 @@
     ]
   },
   "dependencies": {
-    "@fortawesome/fontawesome-free": "^5.14.0",
-    "@types/jquery": "^3.5.1",
+    "@fortawesome/fontawesome-free": "^5.15.1",
+    "@types/jquery": "^3.5.3",
     "@types/luxon": "^1.25.0",
     "@types/requirejs": "^2.1.32",
-    "bootstrap": "^4.5.2",
+    "bootstrap": "^4.5.3",
     "jquery": "^3.5.1",
     "linq": "^3.2.3",
     "luxon": "^1.25.0",
     "popper.js": "^1.16.1",
-    "sweetalert2": "^10.3.3",
+    "sweetalert2": "^10.8.1",
     "ts-polyfill": "^3.8.2",
-    "tslib": "^2.0.1"
+    "tslib": "^2.0.3"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "4.2.0",
-    "@typescript-eslint/parser": "4.2.0",
-    "eslint": "7.9.0",
+    "@typescript-eslint/eslint-plugin": "4.6.0",
+    "@typescript-eslint/parser": "4.6.0",
+    "eslint": "7.12.0",
     "typescript": "^4.0.3"
   }
 }

@@ -6,7 +6,6 @@ const fse = require("fs-extra");
 const chalk = require("chalk");
 const portfinder = require("portfinder");
 const TypeScript = require("typescript");
-const vue_loader_1 = require("vue-loader");
 const webpack = require("webpack");
 const clean_webpack_plugin_1 = require("clean-webpack-plugin");
 const webpack_plugin_serve_1 = require("webpack-plugin-serve");
@@ -16,7 +15,7 @@ const reactRefreshWebpackLoaderJS = require.resolve('@webhotelier/webpack-fast-r
 const reactRefreshWebpackRuntimeJS = require.resolve('@webhotelier/webpack-fast-refresh/runtime.js');
 const reactRefreshBabelPluginJS = require.resolve('react-refresh/babel');
 const babelPluginDynamicImportJS = require.resolve('@babel/plugin-syntax-dynamic-import');
-const CompilerResolver_1 = require("./CompilerResolver");
+const PackageFinder_1 = require("./PackageFinder");
 const Shout_1 = require("./Shout");
 const PathFinder_1 = require("./variables-factory/PathFinder");
 const LoaderPaths_1 = require("./loaders/LoaderPaths");
@@ -77,10 +76,9 @@ class TypeScriptBuildEngine {
             test: /\.vue$/,
             exclude: /node_modules/,
             use: [{
-                    loader: LoaderPaths_1.LoaderPaths.vue,
+                    loader: this.vueLoaderPath,
                     ident: 'vue',
                     options: {
-                        compiler: this.vueTemplateCompiler,
                         transformAssetUrls: {},
                         appendExtension: true
                     }
@@ -174,7 +172,9 @@ class TypeScriptBuildEngine {
         const plugins = [];
         const typescriptTarget = (_a = this.typescriptCompilerOptions.target) !== null && _a !== void 0 ? _a : TypeScript.ScriptTarget.ES3;
         plugins.push(new InstapackBuildPlugin_1.InstapackBuildPlugin(this.variables, typescriptTarget));
-        plugins.push(new vue_loader_1.VueLoaderPlugin());
+        if (this.vueLoader) {
+            plugins.push(new this.vueLoader.VueLoaderPlugin());
+        }
         if (Object.keys(this.variables.env).length > 0) {
             plugins.push(new webpack.EnvironmentPlugin(this.variables.env));
         }
@@ -200,10 +200,12 @@ class TypeScriptBuildEngine {
     get webpackRules() {
         const rules = [
             this.typescriptWebpackRules,
-            this.vueCssWebpackRules,
-            this.vueWebpackRules,
-            this.htmlWebpackRules,
         ];
+        if (this.vueLoaderPath) {
+            rules.push(this.vueCssWebpackRules);
+            rules.push(this.vueWebpackRules);
+        }
+        rules.push(this.htmlWebpackRules);
         if (this.useBabel) {
             rules.push(this.jsBabelWebpackRules);
         }
@@ -344,7 +346,13 @@ class TypeScriptBuildEngine {
     }
     async build() {
         this.useBabel = await fse.pathExists(this.finder.babelConfiguration);
-        this.vueTemplateCompiler = await CompilerResolver_1.resolveVue2TemplateCompiler(this.finder.root);
+        if (this.variables.vue) {
+            const vueLoaderPath = await PackageFinder_1.tryGetProjectModulePath(this.variables.root, 'vue-loader');
+            if (vueLoaderPath) {
+                this.vueLoaderPath = vueLoaderPath;
+                this.vueLoader = await Promise.resolve().then(() => require(vueLoaderPath));
+            }
+        }
         if (this.variables.serve) {
             this.port = await portfinder.getPortPromise({
                 port: this.port

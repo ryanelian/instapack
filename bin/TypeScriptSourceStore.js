@@ -50,7 +50,7 @@ class TypeScriptSourceStore {
         return this.parseThenStoreSource(filePath, raw);
     }
     calculateFileVersion(content) {
-        const hash = crypto_1.createHash('256');
+        const hash = crypto_1.createHash('sha256');
         hash.update(content);
         return hash.digest('hex');
     }

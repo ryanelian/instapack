@@ -109,7 +109,7 @@ export class TypeScriptSourceStore {
      * @param content 
      */
     private calculateFileVersion(content: string): string {
-        const hash = createHash('256');
+        const hash = createHash('sha256');
         hash.update(content);
         return hash.digest('hex');
     }

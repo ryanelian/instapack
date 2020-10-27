@@ -1,9 +1,6 @@
 <template>
     <div class="alert alert-success">
-        <fa-icon
-            icon="check"
-            class="mr-3"
-        ></fa-icon>
+        <FontAwesomeIcon icon="check" class="mr-3"></FontAwesomeIcon>
         Hello from instapack and Vue!
     </div>
 </template>

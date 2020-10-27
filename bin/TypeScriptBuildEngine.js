@@ -9,10 +9,8 @@ const TypeScript = require("typescript");
 const webpack = require("webpack");
 const clean_webpack_plugin_1 = require("clean-webpack-plugin");
 const webpack_plugin_serve_1 = require("webpack-plugin-serve");
-const ReactRefreshWebpackPlugin = require("@webhotelier/webpack-fast-refresh");
+const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
 const webpackPluginServeClientJS = require.resolve('webpack-plugin-serve/client');
-const reactRefreshWebpackLoaderJS = require.resolve('@webhotelier/webpack-fast-refresh/loader.js');
-const reactRefreshWebpackRuntimeJS = require.resolve('@webhotelier/webpack-fast-refresh/runtime.js');
 const reactRefreshBabelPluginJS = require.resolve('react-refresh/babel');
 const babelPluginDynamicImportJS = require.resolve('@babel/plugin-syntax-dynamic-import');
 const PackageFinder_1 = require("./PackageFinder");
@@ -27,7 +25,7 @@ class TypeScriptBuildEngine {
     constructor(variables) {
         this.useBabel = false;
         this.port = 28080;
-        this.certificates = undefined;
+        this.certificates = null;
         this.variables = variables;
         this.finder = new PathFinder_1.PathFinder(variables);
         this.typescriptCompilerOptions = TypescriptConfigParser_1.parseTypescriptConfig(variables.root, variables.typescriptConfiguration).options;
@@ -134,24 +132,19 @@ class TypeScriptBuildEngine {
         };
     }
     get reactRefreshWebpackRules() {
-        const loader1 = {
-            loader: reactRefreshWebpackLoaderJS,
-            ident: 'react-fast-refresh'
-        };
-        const loader2 = {
-            loader: LoaderPaths_1.LoaderPaths.babel,
-            ident: 'react-fast-refresh-babel',
-            options: {
-                plugins: [
-                    babelPluginDynamicImportJS,
-                    reactRefreshBabelPluginJS,
-                ]
-            }
-        };
         return {
             test: /\.[jt]sx?$/,
             exclude: /node_modules/,
-            use: [loader2, loader1]
+            use: [{
+                    loader: LoaderPaths_1.LoaderPaths.babel,
+                    ident: 'react-fast-refresh-babel',
+                    options: {
+                        plugins: [
+                            babelPluginDynamicImportJS,
+                            reactRefreshBabelPluginJS,
+                        ]
+                    }
+                }]
         };
     }
     get transpileLibrariesWebpackRules() {
@@ -230,6 +223,7 @@ class TypeScriptBuildEngine {
         return 'eval-source-map';
     }
     createWebpackConfiguration() {
+        var _a;
         const entry = {
             main: {
                 filename: this.finder.jsOutputFileName,
@@ -238,9 +232,6 @@ class TypeScriptBuildEngine {
         };
         if (this.variables.serve) {
             entry.main.import.push(webpackPluginServeClientJS);
-            if (this.variables.reactRefresh) {
-                entry.main.import.unshift(reactRefreshWebpackRuntimeJS);
-            }
         }
         const config = {
             entry: entry,
@@ -266,10 +257,12 @@ class TypeScriptBuildEngine {
                 hints: false
             }
         };
+        const tsTarget = (_a = this.typescriptCompilerOptions.target) !== null && _a !== void 0 ? _a : TypeScript.ScriptTarget.ES5;
+        if (tsTarget < TypeScript.ScriptTarget.ES2015) {
+            config.target = ['web', 'es5'];
+        }
         if (!this.variables.umdLibraryProject && config.optimization) {
             config.optimization.splitChunks = {
-                minSize: 1,
-                maxAsyncRequests: Infinity,
                 cacheGroups: {
                     vendors: {
                         name: 'dll',
@@ -286,6 +279,9 @@ class TypeScriptBuildEngine {
     get webpackResolveOptions() {
         const alias = TypeScriptPathsTranslator_1.mergeTypeScriptPathAlias(this.typescriptCompilerOptions, this.finder.root, this.variables.alias);
         const wildcards = TypeScriptPathsTranslator_1.getWildcardModules(this.typescriptCompilerOptions, this.finder.root);
+        if (this.variables.reactRefresh) {
+            alias['react-refresh'] = [path.resolve(__dirname, '../node_modules/react-refresh')];
+        }
         const config = {
             extensions: ['.ts', '.tsx', '.js', '.jsx', '.vue', '.json'],
             alias: alias
@@ -297,28 +293,6 @@ class TypeScriptBuildEngine {
             config.symlinks = false;
         }
         return config;
-    }
-    getECMAScriptVersion() {
-        switch (this.typescriptCompilerOptions.target) {
-            case TypeScript.ScriptTarget.ES5:
-                return 5;
-            case TypeScript.ScriptTarget.ES2015:
-                return 2015;
-            case TypeScript.ScriptTarget.ES2016:
-                return 2016;
-            case TypeScript.ScriptTarget.ES2017:
-                return 2017;
-            case TypeScript.ScriptTarget.ES2018:
-                return 2018;
-            case TypeScript.ScriptTarget.ES2019:
-                return 2019;
-            case TypeScript.ScriptTarget.ES2020:
-                return 2020;
-            case TypeScript.ScriptTarget.ESNext:
-                return 2020;
-            default:
-                return 5;
-        }
     }
     buildOnce(webpackConfiguration) {
         return new Promise((ok, reject) => {
@@ -350,7 +324,7 @@ class TypeScriptBuildEngine {
             const vueLoaderPath = await PackageFinder_1.tryGetProjectModulePath(this.variables.root, 'vue-loader');
             if (vueLoaderPath) {
                 this.vueLoaderPath = vueLoaderPath;
-                this.vueLoader = await Promise.resolve().then(() => require(vueLoaderPath));
+                this.vueLoader = require(vueLoaderPath);
             }
         }
         if (this.variables.serve) {

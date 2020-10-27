@@ -58,7 +58,7 @@ export interface ProjectSettings {
 }
 
 export interface VuePackageVersions {
-    vue: string | undefined;
+    vue: string;
     loader: string | undefined;
     compilerService: string | undefined;
 }

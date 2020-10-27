@@ -4,10 +4,10 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 // register child components usable inside Top-Level Components:
 // https://vuejs.org/v2/guide/components-registration.html#Global-Registration
 // https://vuejs.org/v2/guide/components-registration.html#Local-Registration
-Vue.component('fa-icon', FontAwesomeIcon);
+Vue.component('FontAwesomeIcon', FontAwesomeIcon);
 // https://vuejs.org/v2/guide/components-dynamic-async.html#Async-Components
-Vue.component('validation-provider', () => import('vee-validate').then(esm => esm.ValidationProvider));
-Vue.component('validation-observer', () => import('vee-validate').then(esm => esm.ValidationObserver));
+Vue.component('ValidationProvider', () => import('vee-validate').then(esm => esm.ValidationProvider));
+Vue.component('ValidationObserver', () => import('vee-validate').then(esm => esm.ValidationObserver));
 
 /**
  * A factory function returning a Promise of Vue Single-File Component.

@@ -1,8 +1,9 @@
-import test from "ava";
-import { parseTypeScriptInVueFile } from "./TypeScriptVueParser";
-
-test('Parse TypeScript in Vue: Common', t => {
-    const result = parseTypeScriptInVueFile(`<template>
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const ava_1 = require("ava");
+const VueTypeScriptParser_1 = require("./VueTypeScriptParser");
+ava_1.default('Parse TypeScript in Vue: Common', t => {
+    const result = VueTypeScriptParser_1.parseTypeScriptInVueFile(`<template>
 <h1>Hello from {{ compiler }} and {{ framework }}!</h1>
 </template>
 
@@ -18,7 +19,6 @@ export default class Hello extends Vue {
     compiler: string;
 }
 </script>`);
-
     t.is(result, `//
 //
 //
@@ -36,9 +36,8 @@ export default class Hello extends Vue {
 }
 `);
 });
-
-test('Parse TypeScript in Vue: No lang', t => {
-    const result = parseTypeScriptInVueFile(`<template>
+ava_1.default('Parse TypeScript in Vue: No lang', t => {
+    const result = VueTypeScriptParser_1.parseTypeScriptInVueFile(`<template>
 <h1>Hello from {{ compiler }} and {{ framework }}!</h1>
 </template>
 
@@ -54,12 +53,10 @@ export default class Hello extends Vue {
     compiler: string;
 }
 </script>`);
-
     t.is(result, ``);
 });
-
-test('Parse TypeScript in Vue: lang="coffee"', t => {
-    const result = parseTypeScriptInVueFile(`<template>
+ava_1.default('Parse TypeScript in Vue: lang="coffee"', t => {
+    const result = VueTypeScriptParser_1.parseTypeScriptInVueFile(`<template>
 <h1>Hello from {{ compiler }} and {{ framework }}!</h1>
 </template>
 
@@ -75,27 +72,20 @@ export default class Hello extends Vue {
     compiler: string;
 }
 </script>`);
-
     t.is(result, ``);
 });
-
-test('Parse TypeScript in Vue: No Script', t => {
-    const result = parseTypeScriptInVueFile(`<template>
+ava_1.default('Parse TypeScript in Vue: No Script', t => {
+    const result = VueTypeScriptParser_1.parseTypeScriptInVueFile(`<template>
 <h1>Hello from {{ compiler }} and {{ framework }}!</h1>
 </template>`);
-
     t.is(result, ``);
 });
-
-test('Parse TypeScript in Vue: Empty', t => {
-    const result = parseTypeScriptInVueFile(``);
-
+ava_1.default('Parse TypeScript in Vue: Empty', t => {
+    const result = VueTypeScriptParser_1.parseTypeScriptInVueFile(``);
     t.is(result, ``);
 });
-
-test('Parse TypeScript in Vue: Malformed', t => {
-    const result = parseTypeScriptInVueFile(`<template
+ava_1.default('Parse TypeScript in Vue: Malformed', t => {
+    const result = VueTypeScriptParser_1.parseTypeScriptInVueFile(`<template
     <script`);
-
     t.is(result, ``);
 });

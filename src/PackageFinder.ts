@@ -25,8 +25,7 @@ export async function tryGetProjectModule<T>(projectFolder: string, packageName:
         if (!path) {
             return undefined;
         }
-        const module = await import(path);
-        return module;
+        return require(path);
     } catch (error) {
         return undefined;
     }

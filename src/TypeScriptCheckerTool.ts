@@ -14,6 +14,7 @@ import { parseTypescriptConfig } from './TypescriptConfigParser';
 import { TypeScriptSourceStore } from './TypeScriptSourceStore';
 import { VoiceAssistant } from './VoiceAssistant';
 import { tryGetProjectESLint } from './PackageFinder';
+import { VueTypeScriptParser } from './VueTypeScriptParser';
 
 /**
  * Contains methods for static-checking TypeScript projects. 
@@ -109,7 +110,11 @@ export class TypeScriptCheckerTool {
             target = tsconfig.options.target;
         }
 
-        const sourceStore = new TypeScriptSourceStore(target);
+        let tsVueParser: VueTypeScriptParser | undefined;
+        if (variables.vue) {
+            tsVueParser = await VueTypeScriptParser.createUsingProjectCompilerService(variables.vue.vue, variables.root)
+        }
+        const sourceStore = new TypeScriptSourceStore(target, tsVueParser);
         const loadSourceTask = sourceStore.loadFolder(finder.jsInputFolder);
         const eslint = await tryGetProjectESLint(variables.root, finder.jsEntry);
 

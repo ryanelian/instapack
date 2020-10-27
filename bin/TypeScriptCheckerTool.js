@@ -14,6 +14,7 @@ const TypescriptConfigParser_1 = require("./TypescriptConfigParser");
 const TypeScriptSourceStore_1 = require("./TypeScriptSourceStore");
 const VoiceAssistant_1 = require("./VoiceAssistant");
 const PackageFinder_1 = require("./PackageFinder");
+const VueTypeScriptParser_1 = require("./VueTypeScriptParser");
 class TypeScriptCheckerTool {
     constructor(variables, sourceStore, compilerOptions, silent, eslint) {
         this.variables = variables;
@@ -46,7 +47,11 @@ class TypeScriptCheckerTool {
         if (tsconfig.options.target) {
             target = tsconfig.options.target;
         }
-        const sourceStore = new TypeScriptSourceStore_1.TypeScriptSourceStore(target);
+        let tsVueParser;
+        if (variables.vue) {
+            tsVueParser = await VueTypeScriptParser_1.VueTypeScriptParser.createUsingProjectCompilerService(variables.vue.vue, variables.root);
+        }
+        const sourceStore = new TypeScriptSourceStore_1.TypeScriptSourceStore(target, tsVueParser);
         const loadSourceTask = sourceStore.loadFolder(finder.jsInputFolder);
         const eslint = await PackageFinder_1.tryGetProjectESLint(variables.root, finder.jsEntry);
         let versionAnnounce = `Using TypeScript ${chalk.greenBright(TypeScript.version)} `;

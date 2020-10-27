@@ -3,7 +3,8 @@ import * as fse from 'fs-extra';
 import { createHash } from 'crypto';
 import * as TypeScript from 'typescript';
 import glob = require('fast-glob');
-import { parseTypeScriptInVueFile } from './TypeScriptVueParser';
+import { VueTypeScriptParser } from './VueTypeScriptParser';
+import { Shout } from './Shout';
 
 // Term Definitions:
 // Source Path = Virtual File Path, always ends in .ts or .tsx
@@ -35,8 +36,14 @@ export class TypeScriptSourceStore {
      */
     target: TypeScript.ScriptTarget;
 
-    constructor(target: TypeScript.ScriptTarget) {
+    /**
+     * Gets the Vue SFC TypeScript parser.
+     */
+    tsVueParser: VueTypeScriptParser | undefined;
+
+    constructor(target: TypeScript.ScriptTarget, tsVueParser: VueTypeScriptParser | undefined) {
         this.target = target;
+        this.tsVueParser = tsVueParser;
     }
 
     get sourcePaths(): string[] {
@@ -98,11 +105,11 @@ export class TypeScriptSourceStore {
     }
 
     /**
-     * Versions a text-based file content using fast SHA-512 algorithm.
+     * Versions a text-based file content using fast SHA-256 algorithm.
      * @param content 
      */
     private calculateFileVersion(content: string): string {
-        const hash = createHash('sha512');
+        const hash = createHash('256');
         hash.update(content);
         return hash.digest('hex');
     }
@@ -111,18 +118,22 @@ export class TypeScriptSourceStore {
      * Cache the source file then returns TRUE if the source file was changed.
      * If source file is not standard TypeScript, will be tracked as virtual TypeScript source path.
      * @param filePath 
-     * @param raw 
+     * @param sourceCode 
      */
-    private parseThenStoreSource(filePath: string, raw: string): boolean {
+    private parseThenStoreSource(filePath: string, sourceCode: string): boolean {
         filePath = upath.toUnix(filePath);
         let sourcePath = filePath;
 
         if (filePath.endsWith('.vue')) {
             sourcePath = upath.addExt(filePath, '.ts');
-            raw = parseTypeScriptInVueFile(raw);
+            if (this.tsVueParser) {
+                sourceCode = this.tsVueParser.parse(sourceCode);
+            } else {
+                Shout.warning('Vue-TypeScript parser is not loaded!');
+            }
         }
 
-        const version = this.calculateFileVersion(raw);
+        const version = this.calculateFileVersion(sourceCode);
 
         const previousSource = this.sources.get(sourcePath);
         if (previousSource && previousSource.version === version) {
@@ -133,7 +144,7 @@ export class TypeScriptSourceStore {
         // https://github.com/Microsoft/TypeScript/blob/master/src/compiler/program.ts
         this.sources.set(sourcePath, {
             filePath: filePath,
-            source: TypeScript.createSourceFile(sourcePath, raw, this.target),
+            source: TypeScript.createSourceFile(sourcePath, sourceCode, this.target),
             version: version
         });
         return true;

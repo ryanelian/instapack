@@ -6,12 +6,13 @@ const fse = require("fs-extra");
 const crypto_1 = require("crypto");
 const TypeScript = require("typescript");
 const glob = require("fast-glob");
-const TypeScriptVueParser_1 = require("./TypeScriptVueParser");
+const Shout_1 = require("./Shout");
 class TypeScriptSourceStore {
-    constructor(target) {
+    constructor(target, tsVueParser) {
         this.sources = new Map();
         this._typeCheckGlobs = [];
         this.target = target;
+        this.tsVueParser = tsVueParser;
     }
     get sourcePaths() {
         return Array.from(this.sources.keys());
@@ -49,25 +50,30 @@ class TypeScriptSourceStore {
         return this.parseThenStoreSource(filePath, raw);
     }
     calculateFileVersion(content) {
-        const hash = crypto_1.createHash('sha512');
+        const hash = crypto_1.createHash('256');
         hash.update(content);
         return hash.digest('hex');
     }
-    parseThenStoreSource(filePath, raw) {
+    parseThenStoreSource(filePath, sourceCode) {
         filePath = upath.toUnix(filePath);
         let sourcePath = filePath;
         if (filePath.endsWith('.vue')) {
             sourcePath = upath.addExt(filePath, '.ts');
-            raw = TypeScriptVueParser_1.parseTypeScriptInVueFile(raw);
+            if (this.tsVueParser) {
+                sourceCode = this.tsVueParser.parse(sourceCode);
+            }
+            else {
+                Shout_1.Shout.warning('Vue-TypeScript parser is not loaded!');
+            }
         }
-        const version = this.calculateFileVersion(raw);
+        const version = this.calculateFileVersion(sourceCode);
         const previousSource = this.sources.get(sourcePath);
         if (previousSource && previousSource.version === version) {
             return false;
         }
         this.sources.set(sourcePath, {
             filePath: filePath,
-            source: TypeScript.createSourceFile(sourcePath, raw, this.target),
+            source: TypeScript.createSourceFile(sourcePath, sourceCode, this.target),
             version: version
         });
         return true;

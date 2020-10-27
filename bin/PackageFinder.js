@@ -25,8 +25,7 @@ async function tryGetProjectModule(projectFolder, packageName) {
         if (!path) {
             return undefined;
         }
-        const module = await Promise.resolve().then(() => require(path));
-        return module;
+        return require(path);
     }
     catch (error) {
         return undefined;

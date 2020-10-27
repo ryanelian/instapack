@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.setupHttps = exports.downloadMkcert = exports.askUserDownloadMkcert = exports.restorePackages = exports.execWithConsoleOutput = void 0;
+exports.setupHttps = exports.downloadMkcert = exports.askUserDownloadMkcert = exports.restorePackages = exports.addVueCompilerServices = exports.selectPackageManager = exports.execWithConsoleOutput = void 0;
 const ChildProcess = require("child_process");
 const which = require("which");
 const readline = require("readline");
@@ -9,6 +9,7 @@ const follow_redirects_1 = require("follow-redirects");
 const fse = require("fs-extra");
 const upath = require("upath");
 const UserSettingsPath_1 = require("./user-settings/UserSettingsPath");
+const chalk = require("chalk");
 function execWithConsoleOutput(command) {
     return ChildProcess.execSync(command, {
         stdio: [0, 1, 2]
@@ -52,27 +53,35 @@ async function selectPackageManager(preference, root) {
     }
     return 'npm';
 }
-function addVueCompilerServices(packageManager, versions) {
+exports.selectPackageManager = selectPackageManager;
+function getVueCompilerServicePackageVersions(versions) {
     var _a, _b;
-    let packages = '';
     if ((_a = versions.vue) === null || _a === void 0 ? void 0 : _a.startsWith('2')) {
         const loaderVersion = '15.9.3';
-        packages = `vue-loader@${loaderVersion} vue-template-compiler@${versions.vue}`;
         if (versions.loader === loaderVersion && versions.compilerService === versions.vue) {
-            return;
+            return undefined;
+        }
+        else {
+            return `vue-loader@${loaderVersion} vue-template-compiler@${versions.vue}`;
         }
     }
-    else if ((_b = versions.vue) === null || _b === void 0 ? void 0 : _b.startsWith('3')) {
+    if ((_b = versions.vue) === null || _b === void 0 ? void 0 : _b.startsWith('3')) {
         const loaderVersion = '16.0.0-beta.8';
-        packages = `vue-loader@${loaderVersion} @vue/compiler-sfc@${versions.vue}`;
         if (versions.loader === loaderVersion && versions.compilerService === versions.vue) {
-            return;
+            return undefined;
+        }
+        else {
+            return `vue-loader@${loaderVersion} @vue/compiler-sfc@${versions.vue}`;
         }
     }
-    else {
-        throw new Error(`Unknown vue version: ${versions.vue}`);
+    throw new Error(`Unknown vue version: ${versions.vue}`);
+}
+function addVueCompilerServices(packageManager, versions) {
+    const packages = getVueCompilerServicePackageVersions(versions);
+    if (!packages) {
+        return;
     }
-    console.log('Detected Vue.js project. Ensuring correct development dependencies are installed...');
+    console.log(chalk.greenBright('Vue.js') + ' project detected! Ensuring correct development dependencies are installed...');
     switch (packageManager) {
         case 'yarn': {
             execWithConsoleOutput(`yarn add ${packages} -D -E`);
@@ -91,7 +100,8 @@ function addVueCompilerServices(packageManager, versions) {
         }
     }
 }
-async function restorePackages(packageManager, root, vue) {
+exports.addVueCompilerServices = addVueCompilerServices;
+async function restorePackages(packageManager, root) {
     if (packageManager === 'disabled') {
         return;
     }
@@ -101,8 +111,7 @@ async function restorePackages(packageManager, root, vue) {
         console.log('package.json does not exists in project root folder, skipping package restore.');
         return;
     }
-    const pm = await selectPackageManager(packageManager, root);
-    switch (pm) {
+    switch (packageManager) {
         case 'yarn': {
             execWithConsoleOutput('yarn');
             break;
@@ -118,9 +127,6 @@ async function restorePackages(packageManager, root, vue) {
         default: {
             throw new Error('Unknown package manager.');
         }
-    }
-    if (vue) {
-        addVueCompilerServices(pm, vue);
     }
 }
 exports.restorePackages = restorePackages;

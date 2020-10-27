@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.readProjectSettingsFrom = void 0;
+exports.readVuePackageVersionsFrom = exports.readProjectSettingsFrom = void 0;
 const fse = require("fs-extra");
 const upath = require("upath");
 const Ajv = require("ajv");
@@ -45,7 +45,6 @@ async function readProjectSettingsFrom(folder) {
         copy: [],
         namespace: undefined,
         umdLibraryProject: false,
-        vue: undefined,
         port1: 0
     };
     const packageJsonPath = upath.join(folder, 'package.json');
@@ -66,23 +65,28 @@ async function readProjectSettingsFrom(folder) {
         settings.cssOut = upath.addExt(settings.cssOut, '.css');
         settings.jsOut = upath.addExt(settings.jsOut, '.js');
     }
-    const vue = await readPackageVersion('vue', folder);
-    if (vue) {
-        settings.vue = {
-            vue: vue,
-            loader: await readPackageVersion('vue-loader', folder),
-            compilerService: undefined
-        };
-        if (vue.startsWith('2')) {
-            settings.vue.compilerService = await readPackageVersion('vue-template-compiler', folder);
-        }
-        else if (vue.startsWith('3')) {
-            settings.vue.compilerService = await readPackageVersion('@vue/compiler-sfc', folder);
-        }
-        else {
-            throw new Error(`Unknown Vue version: ${vue}`);
-        }
-    }
     return settings;
 }
 exports.readProjectSettingsFrom = readProjectSettingsFrom;
+async function readVuePackageVersionsFrom(folder) {
+    const vue = await readPackageVersion('vue', folder);
+    if (!vue) {
+        return undefined;
+    }
+    const versions = {
+        vue: vue,
+        loader: await readPackageVersion('vue-loader', folder),
+        compilerService: undefined
+    };
+    if (vue.startsWith('2')) {
+        versions.compilerService = await readPackageVersion('vue-template-compiler', folder);
+    }
+    else if (vue.startsWith('3')) {
+        versions.compilerService = await readPackageVersion('@vue/compiler-sfc', folder);
+    }
+    else {
+        throw new Error(`Unknown Vue version: ${vue}`);
+    }
+    return versions;
+}
+exports.readVuePackageVersionsFrom = readVuePackageVersionsFrom;

@@ -2,9 +2,9 @@ import * as fse from 'fs-extra';
 import * as upath from 'upath';
 import chalk = require('chalk');
 
-import { readProjectSettingsFrom } from './variables-factory/ReadProjectSettings';
+import { readProjectSettingsFrom, readVuePackageVersionsFrom } from './variables-factory/ReadProjectSettings';
 import { readDotEnvFrom } from './variables-factory/EnvParser';
-import { restorePackages, setupHttps } from './ProcessInvoke';
+import { addVueCompilerServices, restorePackages, selectPackageManager, setupHttps } from './ProcessInvoke';
 import { Shout } from './Shout';
 import { BuildRunner } from './BuildRunner';
 import { tryReadTypeScriptConfigJson } from './TypescriptConfigParser';
@@ -90,7 +90,14 @@ export = class InstapackProgram {
         );
 
         try {
-            await restorePackages(variables.packageManager, variables.root, variables.vue);
+            const packageManager = await selectPackageManager(variables.packageManager, variables.root);
+            await restorePackages(packageManager, variables.root);
+
+            const vueVersions = await readVuePackageVersionsFrom(this.projectFolder);
+            if (vueVersions) {
+                variables.vue = vueVersions;
+                addVueCompilerServices(packageManager, vueVersions);
+            }
         } catch (error) {
             Shout.error('when restoring package:', error);
         }

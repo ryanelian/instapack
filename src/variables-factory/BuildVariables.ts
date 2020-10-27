@@ -55,11 +55,6 @@ export interface ProjectSettings {
      * Gets the library manager asset copy build options.
      */
     copy: CopyOption[];
-
-    /**
-     * Gets the Vue.js version installed in the project. 
-     */
-    vue: VuePackageVersions | undefined;
 }
 
 export interface VuePackageVersions {
@@ -144,6 +139,11 @@ export interface BuildVariables extends UserSettings, ProjectSettings, CommandLi
      * Gets the TypeScript configuration JSON file.
      */
     typescriptConfiguration: unknown;
+
+    /**
+     * Gets the Vue.js version installed in the project. 
+     */
+    vue: VuePackageVersions | undefined;
 }
 
 export function uniteBuildVariables(
@@ -156,6 +156,7 @@ export function uniteBuildVariables(
 
     const a = Object.assign({
         typescriptConfiguration: typescriptConfiguration,
+        vue: undefined
     }, userSettings);
     const b = Object.assign(a, projectSettings);
     const variables: BuildVariables = Object.assign(b, commandLineFlags);

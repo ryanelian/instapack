@@ -7,6 +7,7 @@ import * as fse from 'fs-extra';
 import * as upath from 'upath';
 import { UserSettingsPath } from './user-settings/UserSettingsPath';
 import { VuePackageVersions } from './variables-factory/BuildVariables';
+import chalk = require('chalk');
 
 /**
  * Runs a child process that displays outputs to current command line output.
@@ -42,7 +43,7 @@ async function detectLockfile(root: string): Promise<string | undefined> {
     return undefined;
 }
 
-async function selectPackageManager(preference: string | undefined, root: string): Promise<string> {
+export async function selectPackageManager(preference: string | undefined, root: string): Promise<string> {
     if (!preference) {
         preference = 'npm';
     }
@@ -64,27 +65,35 @@ async function selectPackageManager(preference: string | undefined, root: string
     return 'npm';
 }
 
-function addVueCompilerServices(packageManager: string, versions: VuePackageVersions) {
-    let packages = '';
+function getVueCompilerServicePackageVersions(versions: VuePackageVersions): string | undefined {
     if (versions.vue?.startsWith('2')) {
         const loaderVersion = '15.9.3';
-        packages = `vue-loader@${loaderVersion} vue-template-compiler@${versions.vue}`;
         if (versions.loader === loaderVersion && versions.compilerService === versions.vue) {
-            return;
+            return undefined;
+        } else {
+            return `vue-loader@${loaderVersion} vue-template-compiler@${versions.vue}`;
         }
-    }
-    else if (versions.vue?.startsWith('3')) {
-        const loaderVersion = '16.0.0-beta.8';
-        packages = `vue-loader@${loaderVersion} @vue/compiler-sfc@${versions.vue}`;
-        if (versions.loader === loaderVersion && versions.compilerService === versions.vue) {
-            return;
-        }
-    }
-    else {
-        throw new Error(`Unknown vue version: ${versions.vue}`);
     }
 
-    console.log('Detected Vue.js project. Ensuring correct development dependencies are installed...');
+    if (versions.vue?.startsWith('3')) {
+        const loaderVersion = '16.0.0-beta.8';
+        if (versions.loader === loaderVersion && versions.compilerService === versions.vue) {
+            return undefined;
+        } else {
+            return `vue-loader@${loaderVersion} @vue/compiler-sfc@${versions.vue}`;
+        }
+    }
+
+    throw new Error(`Unknown vue version: ${versions.vue}`);
+}
+
+export function addVueCompilerServices(packageManager: string, versions: VuePackageVersions): void {
+    const packages = getVueCompilerServicePackageVersions(versions);
+    if (!packages) {
+        return;
+    }
+
+    console.log(chalk.greenBright('Vue.js') + ' project detected! Ensuring correct development dependencies are installed...');
     switch (packageManager) {
         case 'yarn': {
             execWithConsoleOutput(`yarn add ${packages} -D -E`);
@@ -111,7 +120,7 @@ function addVueCompilerServices(packageManager: string, versions: VuePackageVers
  * Throws if the tool is unknown.
  * @param packageManager
  */
-export async function restorePackages(packageManager: string, root: string, vue: VuePackageVersions | undefined): Promise<void> {
+export async function restorePackages(packageManager: string, root: string): Promise<void> {
     if (packageManager === 'disabled') {
         return;
     }
@@ -123,8 +132,7 @@ export async function restorePackages(packageManager: string, root: string, vue:
         return;
     }
 
-    const pm = await selectPackageManager(packageManager, root);
-    switch (pm) {
+    switch (packageManager) {
         case 'yarn': {
             execWithConsoleOutput('yarn');
             break;
@@ -140,10 +148,6 @@ export async function restorePackages(packageManager: string, root: string, vue:
         default: {
             throw new Error('Unknown package manager.');
         }
-    }
-
-    if (vue) {
-        addVueCompilerServices(pm, vue);
     }
 }
 

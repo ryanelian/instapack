@@ -7,7 +7,6 @@ import { VoiceAssistant } from "../VoiceAssistant";
 import { prettyBytes, prettyMilliseconds } from "../PrettyUnits";
 import { BuildVariables } from "../variables-factory/BuildVariables";
 import { PathFinder } from "../variables-factory/PathFinder";
-import type { WebpackError, InstapackStats } from '../WebpackStats';
 
 export class InstapackBuildPlugin {
     variables: BuildVariables;

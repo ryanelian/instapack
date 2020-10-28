@@ -1,14 +1,15 @@
 import * as upath from 'upath';
 
-export async function resolveFrom(projectFolder: string, packageName: string): Promise<string | undefined> {
+export async function resolveFrom(packageName: string, dir: string): Promise<string | undefined> {
     try {
-        let modulePath = require.resolve(packageName, {
-            paths: [projectFolder]
-        });
+        const modulePath = upath.toUnix(
+            require.resolve(packageName, {
+                paths: [dir]
+            })
+        );
 
-        modulePath = upath.toUnix(modulePath);
-        if (modulePath.startsWith(projectFolder) === false) {
-            // explicitly prevent resolution in parent folder...
+        if (modulePath.startsWith(dir) === false) {
+            // prevent resolution outside dir
             return undefined;
         }
 

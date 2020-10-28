@@ -20,15 +20,15 @@ export class VueTypeScriptParser {
 
     static async createFrom(
         version: string,
-        projectFolder: string
+        dir: string
     ): Promise<VueTypeScriptParser> {
         const v2 = version.startsWith('2');
         const v3 = version.startsWith('3');
 
         return new VueTypeScriptParser(
             v2 ? 2 : (v3 ? 3 : 0),
-            v2 ? await tryImportFrom<Vue2Compiler>(projectFolder, 'vue-template-compiler') : undefined,
-            v3 ? await tryImportFrom<Vue3Compiler>(projectFolder, '@vue/compiler-sfc') : undefined
+            v2 ? await tryImportFrom<Vue2Compiler>('vue-template-compiler', dir) : undefined,
+            v3 ? await tryImportFrom<Vue3Compiler>('@vue/compiler-sfc', dir) : undefined
         );
     }
 

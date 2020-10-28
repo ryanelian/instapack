@@ -3,12 +3,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.readPackageVersion = void 0;
 const fse = require("fs-extra");
 const upath = require("upath");
-async function readPackageVersion(packageName, root) {
+async function readPackageVersion(packageName, dir) {
     try {
         const packageJsonPath = upath.toUnix(require.resolve(packageName + "/package.json", {
-            paths: [root]
+            paths: [dir]
         }));
-        if (packageJsonPath.startsWith(root) === false) {
+        if (packageJsonPath.startsWith(dir) === false) {
             return undefined;
         }
         const packageJson = await fse.readJson(packageJsonPath);

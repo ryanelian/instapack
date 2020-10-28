@@ -1,17 +1,16 @@
 import * as fse from 'fs-extra';
 import * as upath from 'upath';
 
-export async function readPackageVersion(packageName: string, root: string): Promise<string | undefined> {
+export async function readPackageVersion(packageName: string, dir: string): Promise<string | undefined> {
     try {
         const packageJsonPath = upath.toUnix(
             require.resolve(packageName + "/package.json", {
-                paths: [root]
+                paths: [dir]
             })
         );
 
-        // do not go out from root folder!
-        // console.log(packageJsonPath);
-        if (packageJsonPath.startsWith(root) === false) {
+        if (packageJsonPath.startsWith(dir) === false) {
+            // prevent resolution outside dir
             return undefined;
         }
 

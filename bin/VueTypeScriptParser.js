@@ -9,10 +9,10 @@ class VueTypeScriptParser {
         this.vue2Compiler = vue2Compiler;
         this.vue3Compiler = vue3Compiler;
     }
-    static async createFrom(version, projectFolder) {
+    static async createFrom(version, dir) {
         const v2 = version.startsWith('2');
         const v3 = version.startsWith('3');
-        return new VueTypeScriptParser(v2 ? 2 : (v3 ? 3 : 0), v2 ? await tryImportFrom_1.tryImportFrom(projectFolder, 'vue-template-compiler') : undefined, v3 ? await tryImportFrom_1.tryImportFrom(projectFolder, '@vue/compiler-sfc') : undefined);
+        return new VueTypeScriptParser(v2 ? 2 : (v3 ? 3 : 0), v2 ? await tryImportFrom_1.tryImportFrom('vue-template-compiler', dir) : undefined, v3 ? await tryImportFrom_1.tryImportFrom('@vue/compiler-sfc', dir) : undefined);
     }
     parse(sourceCode) {
         if (this.version === 2) {

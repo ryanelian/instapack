@@ -2,15 +2,15 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.importESLintFrom = void 0;
 const tryImportFrom_1 = require("./tryImportFrom");
-async function importESLintFrom(projectFolder, indexTsPath) {
+async function importESLintFrom(dir, indexTsPath) {
     try {
-        const eslintModule = await tryImportFrom_1.tryImportFrom(projectFolder, 'eslint');
+        const eslintModule = await tryImportFrom_1.tryImportFrom('eslint', dir);
         if (!eslintModule) {
             return undefined;
         }
         const ESLint = eslintModule.ESLint;
         const linter = new ESLint({
-            cwd: projectFolder
+            cwd: dir
         });
         await linter.calculateConfigForFile(indexTsPath);
         return {

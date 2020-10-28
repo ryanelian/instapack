@@ -7,16 +7,16 @@ export interface ProjectESLint {
     version: string;
 }
 
-export async function importESLintFrom(projectFolder: string, indexTsPath: string): Promise<ProjectESLint | undefined> {
+export async function importESLintFrom(dir: string, indexTsPath: string): Promise<ProjectESLint | undefined> {
     try {
-        const eslintModule = await tryImportFrom<ESLintModuleType>(projectFolder, 'eslint');
+        const eslintModule = await tryImportFrom<ESLintModuleType>('eslint', dir);
         if (!eslintModule) {
             return undefined;
         }
 
         const ESLint = eslintModule.ESLint;
         const linter = new ESLint({
-            cwd: projectFolder
+            cwd: dir
         });
 
         // const config =

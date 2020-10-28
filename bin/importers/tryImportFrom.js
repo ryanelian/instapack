@@ -2,9 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.tryImportFrom = void 0;
 const resolveFrom_1 = require("./resolveFrom");
-async function tryImportFrom(projectFolder, packageName) {
+async function tryImportFrom(packageName, dir) {
     try {
-        const path = await resolveFrom_1.resolveFrom(projectFolder, packageName);
+        const path = await resolveFrom_1.resolveFrom(packageName, dir);
         if (!path) {
             return undefined;
         }

@@ -10,6 +10,7 @@ const fse = require("fs-extra");
 const upath = require("upath");
 const UserSettingsPath_1 = require("./user-settings/UserSettingsPath");
 const chalk = require("chalk");
+const Shout_1 = require("./Shout");
 function execWithConsoleOutput(command) {
     return ChildProcess.execSync(command, {
         stdio: [0, 1, 2]
@@ -93,6 +94,11 @@ function addVueCompilerServices(packageManager, versions) {
         }
         case 'pnpm': {
             execWithConsoleOutput(`pnpm install ${packages} -D -E`);
+            break;
+        }
+        case 'disabled': {
+            Shout_1.Shout.error('Your Vue.js project requires additional packages to compile but instapack package manager is disabled!');
+            Shout_1.Shout.error('Please install these packages manually: ' + packages);
             break;
         }
         default: {

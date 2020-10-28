@@ -8,6 +8,7 @@ import * as upath from 'upath';
 import { UserSettingsPath } from './user-settings/UserSettingsPath';
 import { VuePackageVersions } from './variables-factory/BuildVariables';
 import chalk = require('chalk');
+import { Shout } from './Shout';
 
 /**
  * Runs a child process that displays outputs to current command line output.
@@ -105,6 +106,11 @@ export function addVueCompilerServices(packageManager: string, versions: VuePack
         }
         case 'pnpm': {
             execWithConsoleOutput(`pnpm install ${packages} -D -E`);
+            break;
+        }
+        case 'disabled': {
+            Shout.error('Your Vue.js project requires additional packages to compile but instapack package manager is disabled!');
+            Shout.error('Please install these packages manually: ' + packages)
             break;
         }
         default: {

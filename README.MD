@@ -124,7 +124,9 @@ Scaffolds a new instapack project into current working directory. **All template
 
 - `empty` for a minimal clean slate.
 
-- `vue` for developing a web app using [Vue.js](https://vuejs.org/v2/guide/) and [Bootstrap 4](https://getbootstrap.com/).
+- `vue` for developing a web app using [Vue.js 2](https://vuejs.org/v2/guide/) and [Bootstrap 4](https://getbootstrap.com/).
+
+- `vue3` for developing a web app using the brand new [Vue.js 3](https://v3.vuejs.org/guide/introduction.html) and Bootstrap 4!
 
 - `blazor` for developing a web app using the [ASP.NET Core Blazor](https://dotnet.microsoft.com/apps/aspnet/web-apps/blazor) framework, which allows SPA-like experience using C# programming language instead of JS.
 

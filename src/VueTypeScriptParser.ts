@@ -62,16 +62,20 @@ export class VueTypeScriptParser {
 
         const start = sfc.script.start;
         const newlinesCount = sourceCode.substr(0, start).match(/\r\n|\n|\r/g)?.length;
-        let code: string = sfc.script.content;
+        let result = sfc.script.content;
 
         if (newlinesCount) {
             for (let x = 0; x < newlinesCount; x++) {
-                code = '//\n' + code;
+                result = '//\n' + result;
             }
         }
 
-        // console.log(code);
-        return code;
+        // console.log(newlinesCount);
+        // console.log('//////////////////');
+        // console.log(sourceCode);
+        // console.log('//////////////////');
+        // console.log(result);
+        return result;
     }
 
     parseVue3SingleFileComponent(sourceCode: string): string {
@@ -89,11 +93,16 @@ export class VueTypeScriptParser {
         }
 
         const start = sfc.descriptor.script.loc.start.line;
-        let code = sfc.descriptor.script.content;
-        for (let line = 0; line < start; line++) {
-            code = '//\n' + code;
+        let result = sfc.descriptor.script.content;
+        for (let line = 0; line < start - 1; line++) {
+            result = '//\n' + result;
         }
 
-        return code;
+        // console.log(start);
+        // console.log('//////////////////');
+        // console.log(sourceCode);
+        // console.log('//////////////////');
+        // console.log(result);
+        return result;
     }
 }

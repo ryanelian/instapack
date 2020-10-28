@@ -37,13 +37,13 @@ class VueTypeScriptParser {
         }
         const start = sfc.script.start;
         const newlinesCount = (_a = sourceCode.substr(0, start).match(/\r\n|\n|\r/g)) === null || _a === void 0 ? void 0 : _a.length;
-        let code = sfc.script.content;
+        let result = sfc.script.content;
         if (newlinesCount) {
             for (let x = 0; x < newlinesCount; x++) {
-                code = '//\n' + code;
+                result = '//\n' + result;
             }
         }
-        return code;
+        return result;
     }
     parseVue3SingleFileComponent(sourceCode) {
         if (!this.vue3Compiler) {
@@ -57,11 +57,11 @@ class VueTypeScriptParser {
             return '';
         }
         const start = sfc.descriptor.script.loc.start.line;
-        let code = sfc.descriptor.script.content;
-        for (let line = 0; line < start; line++) {
-            code = '//\n' + code;
+        let result = sfc.descriptor.script.content;
+        for (let line = 0; line < start - 1; line++) {
+            result = '//\n' + result;
         }
-        return code;
+        return result;
     }
 }
 exports.VueTypeScriptParser = VueTypeScriptParser;

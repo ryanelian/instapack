@@ -2,6 +2,12 @@
 
 Here are the list of breaking changes when upgrading between instapack major (or minor) versions.
 
+## 8.0.0
+
+- instapack now add the required versions of `vue-loader`, `vue-template-compiler` and `@vue/compiler-sfc` packages to the project when detected the presence of `vue` package in the project.
+
+- TypeScript is now version 4!
+
 ## 8.0.0-beta.12
 
 - instapack now supports ESLint 7 + TypeScript-ESLint 3!

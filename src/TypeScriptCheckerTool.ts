@@ -2,7 +2,7 @@ import * as TypeScript from 'typescript';
 import chalk = require('chalk');
 import * as fse from 'fs-extra';
 import { watch } from 'chokidar';
-import type { ESLint, LintMessage } from 'eslint';
+import type { ESLint } from 'eslint';
 import allSettled = require('promise.allsettled');
 allSettled.shim(); // will be a no-op if not needed
 

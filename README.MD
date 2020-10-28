@@ -483,7 +483,7 @@ const settingsCJS = require('./settings.json');
 
 > ESM syntax requires `resolveJsonModule` compiler option in `tsconfig.json` to be set to `true`
 
-### Vue Single-File Components
+### Vue 2: Single-File Components
 
 ```ts
 import Hello from './Hello.vue';
@@ -522,6 +522,55 @@ declare module "*.vue" {
 - Basic CSS in `<style>` (or `<style scoped>` or `<style module>`) code blocks should work, but Sass CANNOT be used and the resulting CSS will NOT be auto-prefixed and minified. **You are advised to write CSS using the instapack Sass project instead!**
 
 > When using Visual Studio Code, install [Vetur](https://marketplace.visualstudio.com/items?itemName=octref.vetur) extension to get syntax highlighting and TypeScript intellisense.
+
+### Vue 3: Single-File Components
+
+instapack 8.0.0 can compile Vue 3 components too! Below example showcases a Vue 3 component written using the brand new [Composition API](https://v3.vuejs.org/guide/composition-api-introduction.html#basics-of-composition-api).
+
+```ts
+import Hello from './Hello.vue';
+```
+
+```vue
+<template>
+    <div>
+        <button type="button" @click="onClick">{{count}}</button>
+    </div>
+</template>
+
+<script lang="ts">
+import { defineComponent, ref } from 'vue';
+
+export default defineComponent({
+    props: {},
+
+    /**
+     * https://v3.vuejs.org/guide/composition-api-introduction.html#basics-of-composition-api
+     */
+    setup(props) {
+        const count = ref(0);
+        const onClick = () => {
+            count.value++;
+        };
+        
+        return {
+            count,
+            onClick
+        };
+    }
+})
+</script>
+```
+
+A different global TypeScript definition file for `*.vue` module is required for importing Vue components from TypeScript:
+
+```ts
+declare module '*.vue' {
+    import { Component } from 'vue';
+    const component: Component;
+    export default component;
+}
+```
 
 ### Sass CSS Module System
 

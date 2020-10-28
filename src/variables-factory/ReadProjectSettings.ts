@@ -1,6 +1,6 @@
 import * as fse from 'fs-extra';
 import * as upath from 'upath';
-import { ProjectSettings, VuePackageVersions } from './BuildVariables';
+import { ProjectSettings } from './BuildVariables';
 import Ajv = require('ajv');
 import { Shout } from '../Shout';
 const settingsJsonSchemaPath = require.resolve('../../schemas/settings.json');
@@ -19,30 +19,6 @@ async function tryReadPackageJson(path: string): Promise<PackageJson | undefined
 
         return packageJson as PackageJson;
     } catch (error) {
-        return undefined;
-    }
-}
-
-async function readPackageVersion(
-    packageName: string,
-    root: string
-): Promise<string | undefined> {
-    try {
-        const packageJsonPath = upath.toUnix(
-            require.resolve(packageName + "/package.json", {
-                paths: [root]
-            })
-        );
-
-        // do not go out from root folder!
-        // console.log(packageJsonPath);
-        if (packageJsonPath.startsWith(root) === false) {
-            return undefined;
-        }
-
-        const packageJson = await fse.readJson(packageJsonPath);
-        return packageJson.version;
-    } catch (err) {
         return undefined;
     }
 }
@@ -89,26 +65,4 @@ export async function readProjectSettingsFrom(folder: string): Promise<ProjectSe
 
     // console.log(settings);
     return settings;
-}
-
-export async function readVuePackageVersionsFrom(folder: string): Promise<VuePackageVersions | undefined> {
-    const vue = await readPackageVersion('vue', folder);
-    if (!vue) {
-        return undefined;
-    }
-
-    const versions: VuePackageVersions = {
-        vue: vue,
-        loader: await readPackageVersion('vue-loader', folder),
-        compilerService: undefined
-    }
-
-    if (vue.startsWith('2')) {
-        versions.compilerService = await readPackageVersion('vue-template-compiler', folder);
-    } else if (vue.startsWith('3')) {
-        versions.compilerService = await readPackageVersion('@vue/compiler-sfc', folder);
-    } else {
-        throw new Error(`Unknown Vue version: ${vue}`)
-    }
-    return versions;
 }

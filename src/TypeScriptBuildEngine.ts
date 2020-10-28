@@ -12,7 +12,7 @@ const webpackPluginServeClientJS = require.resolve('webpack-plugin-serve/client'
 const reactRefreshBabelPluginJS = require.resolve('react-refresh/babel');
 const babelPluginDynamicImportJS = require.resolve('@babel/plugin-syntax-dynamic-import');
 
-import { tryGetProjectModulePath } from './PackageFinder';
+import { resolveFrom } from "./importers/resolveFrom";
 import { Shout } from './Shout';
 import { BuildVariables } from './variables-factory/BuildVariables';
 import { PathFinder } from './variables-factory/PathFinder';
@@ -470,7 +470,7 @@ export class TypeScriptBuildEngine {
         this.useBabel = await fse.pathExists(this.finder.babelConfiguration);
 
         if (this.variables.vue) {
-            const vueLoaderPath = await tryGetProjectModulePath(this.variables.root, 'vue-loader');
+            const vueLoaderPath = await resolveFrom(this.variables.root, 'vue-loader');
             if (vueLoaderPath) {
                 this.vueLoaderPath = vueLoaderPath;
                 this.vueLoader = require(vueLoaderPath);

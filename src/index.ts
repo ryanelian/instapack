@@ -2,7 +2,8 @@ import * as fse from 'fs-extra';
 import * as upath from 'upath';
 import chalk = require('chalk');
 
-import { readProjectSettingsFrom, readVuePackageVersionsFrom } from './variables-factory/ReadProjectSettings';
+import { readProjectSettingsFrom } from './variables-factory/ReadProjectSettings';
+import { readVuePackageVersionsFrom } from "./importers/readVuePackageVersionsFrom";
 import { readDotEnvFrom } from './variables-factory/EnvParser';
 import { addVueCompilerServices, restorePackages, selectPackageManager, setupHttps } from './ProcessInvoke';
 import { Shout } from './Shout';

@@ -1,4 +1,4 @@
-import { tryGetProjectModule } from './PackageFinder';
+import { tryImportFrom } from './importers/tryImportFrom';
 
 declare type Vue2Compiler = typeof import('vue-template-compiler');
 declare type Vue3Compiler = typeof import('@vue/compiler-sfc');
@@ -18,7 +18,7 @@ export class VueTypeScriptParser {
     private vue2Compiler: Vue2Compiler | undefined;
     private vue3Compiler: Vue3Compiler | undefined;
 
-    static async createUsingProjectCompilerService(
+    static async createFrom(
         version: string,
         projectFolder: string
     ): Promise<VueTypeScriptParser> {
@@ -27,8 +27,8 @@ export class VueTypeScriptParser {
 
         return new VueTypeScriptParser(
             v2 ? 2 : (v3 ? 3 : 0),
-            v2 ? await tryGetProjectModule<Vue2Compiler>(projectFolder, 'vue-template-compiler') : undefined,
-            v3 ? await tryGetProjectModule<Vue3Compiler>(projectFolder, '@vue/compiler-sfc') : undefined
+            v2 ? await tryImportFrom<Vue2Compiler>(projectFolder, 'vue-template-compiler') : undefined,
+            v3 ? await tryImportFrom<Vue3Compiler>(projectFolder, '@vue/compiler-sfc') : undefined
         );
     }
 

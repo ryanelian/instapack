@@ -3,6 +3,7 @@ const fse = require("fs-extra");
 const upath = require("upath");
 const chalk = require("chalk");
 const ReadProjectSettings_1 = require("./variables-factory/ReadProjectSettings");
+const readVuePackageVersionsFrom_1 = require("./importers/readVuePackageVersionsFrom");
 const EnvParser_1 = require("./variables-factory/EnvParser");
 const ProcessInvoke_1 = require("./ProcessInvoke");
 const Shout_1 = require("./Shout");
@@ -54,7 +55,7 @@ module.exports = class InstapackProgram {
         try {
             const packageManager = await ProcessInvoke_1.selectPackageManager(variables.packageManager, variables.root);
             await ProcessInvoke_1.restorePackages(packageManager, variables.root);
-            const vueVersions = await ReadProjectSettings_1.readVuePackageVersionsFrom(this.projectFolder);
+            const vueVersions = await readVuePackageVersionsFrom_1.readVuePackageVersionsFrom(this.projectFolder);
             if (vueVersions) {
                 variables.vue = vueVersions;
                 ProcessInvoke_1.addVueCompilerServices(packageManager, vueVersions);

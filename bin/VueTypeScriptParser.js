@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.VueTypeScriptParser = void 0;
-const PackageFinder_1 = require("./PackageFinder");
+const tryImportFrom_1 = require("./importers/tryImportFrom");
 class VueTypeScriptParser {
     constructor(version, vue2Compiler, vue3Compiler) {
         this.version = 0;
@@ -9,10 +9,10 @@ class VueTypeScriptParser {
         this.vue2Compiler = vue2Compiler;
         this.vue3Compiler = vue3Compiler;
     }
-    static async createUsingProjectCompilerService(version, projectFolder) {
+    static async createFrom(version, projectFolder) {
         const v2 = version.startsWith('2');
         const v3 = version.startsWith('3');
-        return new VueTypeScriptParser(v2 ? 2 : (v3 ? 3 : 0), v2 ? await PackageFinder_1.tryGetProjectModule(projectFolder, 'vue-template-compiler') : undefined, v3 ? await PackageFinder_1.tryGetProjectModule(projectFolder, '@vue/compiler-sfc') : undefined);
+        return new VueTypeScriptParser(v2 ? 2 : (v3 ? 3 : 0), v2 ? await tryImportFrom_1.tryImportFrom(projectFolder, 'vue-template-compiler') : undefined, v3 ? await tryImportFrom_1.tryImportFrom(projectFolder, '@vue/compiler-sfc') : undefined);
     }
     parse(sourceCode) {
         if (this.version === 2) {

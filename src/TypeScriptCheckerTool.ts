@@ -13,7 +13,7 @@ import { PathFinder } from './variables-factory/PathFinder';
 import { parseTypescriptConfig } from './TypescriptConfigParser';
 import { TypeScriptSourceStore } from './TypeScriptSourceStore';
 import { VoiceAssistant } from './VoiceAssistant';
-import { tryGetProjectESLint } from './PackageFinder';
+import { importESLintFrom } from "./importers/importESLintFrom";
 import { VueTypeScriptParser } from './VueTypeScriptParser';
 
 /**
@@ -112,11 +112,11 @@ export class TypeScriptCheckerTool {
 
         let tsVueParser: VueTypeScriptParser | undefined;
         if (variables.vue) {
-            tsVueParser = await VueTypeScriptParser.createUsingProjectCompilerService(variables.vue.vue, variables.root)
+            tsVueParser = await VueTypeScriptParser.createFrom(variables.vue.vue, variables.root)
         }
         const sourceStore = new TypeScriptSourceStore(target, tsVueParser);
         const loadSourceTask = sourceStore.loadFolder(finder.jsInputFolder);
-        const eslint = await tryGetProjectESLint(variables.root, finder.jsEntry);
+        const eslint = await importESLintFrom(variables.root, finder.jsEntry);
 
         let versionAnnounce = `Using TypeScript ${chalk.greenBright(TypeScript.version)} `;
         if (eslint) {

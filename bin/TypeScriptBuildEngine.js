@@ -13,7 +13,7 @@ const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin"
 const webpackPluginServeClientJS = require.resolve('webpack-plugin-serve/client');
 const reactRefreshBabelPluginJS = require.resolve('react-refresh/babel');
 const babelPluginDynamicImportJS = require.resolve('@babel/plugin-syntax-dynamic-import');
-const PackageFinder_1 = require("./PackageFinder");
+const resolveFrom_1 = require("./importers/resolveFrom");
 const Shout_1 = require("./Shout");
 const PathFinder_1 = require("./variables-factory/PathFinder");
 const LoaderPaths_1 = require("./loaders/LoaderPaths");
@@ -321,7 +321,7 @@ class TypeScriptBuildEngine {
     async build() {
         this.useBabel = await fse.pathExists(this.finder.babelConfiguration);
         if (this.variables.vue) {
-            const vueLoaderPath = await PackageFinder_1.tryGetProjectModulePath(this.variables.root, 'vue-loader');
+            const vueLoaderPath = await resolveFrom_1.resolveFrom(this.variables.root, 'vue-loader');
             if (vueLoaderPath) {
                 this.vueLoaderPath = vueLoaderPath;
                 this.vueLoader = require(vueLoaderPath);

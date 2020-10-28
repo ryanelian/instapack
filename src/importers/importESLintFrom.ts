@@ -1,0 +1,33 @@
+import { tryImportFrom } from './tryImportFrom';
+import type { ESLint } from 'eslint';
+type ESLintModuleType = typeof import('eslint');
+
+export interface ProjectESLint {
+    linter: ESLint;
+    version: string;
+}
+
+export async function importESLintFrom(projectFolder: string, indexTsPath: string): Promise<ProjectESLint | undefined> {
+    try {
+        const eslintModule = await tryImportFrom<ESLintModuleType>(projectFolder, 'eslint');
+        if (!eslintModule) {
+            return undefined;
+        }
+
+        const ESLint = eslintModule.ESLint;
+        const linter = new ESLint({
+            cwd: projectFolder
+        });
+
+        // const config =
+        await linter.calculateConfigForFile(indexTsPath);
+        // console.log(config);
+        return {
+            linter: linter,
+            version: ESLint.version
+        };
+    } catch (error) {
+        // console.log(error);
+        return undefined;
+    }
+}

@@ -9,16 +9,23 @@
     "@types/luxon": "^1.25.0",
     "@types/requirejs": "^2.1.32",
     "axios": "^0.21.0",
+    "bootstrap": "^4.5.3",
+    "jquery": "^3.5.1",
     "linq": "^3.2.3",
     "luxon": "^1.25.0",
+    "popper.js": "^1.16.1",
     "sweetalert2": "^10.8.1",
     "ts-polyfill": "^3.8.2",
-    "tslib": "^2.0.3"
+    "tslib": "^2.0.3",
+    "vue": "^3.0.2"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "4.6.0",
     "@typescript-eslint/parser": "4.6.0",
     "eslint": "7.12.1",
-    "typescript": "^4.0.5"
+    "eslint-config-prettier": "^6.15.0",
+    "eslint-plugin-vue": "^7.1.0",
+    "typescript": "^4.0.5",
+    "vue-eslint-parser": "^7.1.1"
   }
 }

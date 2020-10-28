@@ -58,7 +58,7 @@ exports.selectPackageManager = selectPackageManager;
 function getVueCompilerServicePackageVersions(versions) {
     var _a, _b;
     if ((_a = versions.vue) === null || _a === void 0 ? void 0 : _a.startsWith('2')) {
-        const loaderVersion = '15.9.3';
+        const loaderVersion = '15.9.4';
         if (versions.loader === loaderVersion && versions.compilerService === versions.vue) {
             return undefined;
         }
@@ -67,7 +67,7 @@ function getVueCompilerServicePackageVersions(versions) {
         }
     }
     if ((_b = versions.vue) === null || _b === void 0 ? void 0 : _b.startsWith('3')) {
-        const loaderVersion = '16.0.0-beta.8';
+        const loaderVersion = '16.0.0-beta.9';
         if (versions.loader === loaderVersion && versions.compilerService === versions.vue) {
             return undefined;
         }

@@ -35,6 +35,14 @@ jobs:
         ipack new vue
         ipack -d --no-sourcemaps
         ipack 
+    - name: instapack full-cycle test - Vue 3
+      run: |
+        rimraf ./demo
+        mkdir demo
+        cd demo
+        ipack new vue3
+        ipack -d --no-sourcemaps
+        ipack 
     - name: instapack full-cycle test - React
       run: |
         rimraf ./demo

@@ -11,7 +11,7 @@
     "@fortawesome/free-solid-svg-icons": "^5.15.1",
     "@fortawesome/react-fontawesome": "^0.1.12",
     "@types/luxon": "^1.25.0",
-    "@types/react": "^16.9.54",
+    "@types/react": "^16.9.55",
     "@types/react-dom": "^16.9.9",
     "@types/reactstrap": "^8.5.2",
     "@types/requirejs": "^2.1.32",

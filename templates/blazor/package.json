@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.15.1",
-    "@types/jquery": "^3.5.3",
+    "@types/jquery": "^3.5.4",
     "@types/luxon": "^1.25.0",
     "@types/requirejs": "^2.1.32",
     "bootstrap": "^4.5.3",

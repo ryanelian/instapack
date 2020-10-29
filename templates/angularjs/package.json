@@ -46,7 +46,7 @@
     ]
   },
   "dependencies": {
-    "@types/angular": "^1.7.3",
+    "@types/angular": "^1.7.4",
     "@types/requirejs": "^2.1.32",
     "angular": "^1.8.2",
     "angular-animate": "^1.8.2",

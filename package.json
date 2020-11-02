@@ -99,7 +99,7 @@
     "@types/sass": "^1.16.0",
     "@types/yargs": "^15.0.9",
     "@typescript-eslint/eslint-plugin": "4.6.0",
-    "@typescript-eslint/parser": "4.6.0",
+    "@typescript-eslint/parser": "4.6.1",
     "@vue/compiler-sfc": "3.0.2",
     "ava": "3.13.0",
     "eslint": "7.12.1",

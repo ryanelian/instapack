@@ -2,6 +2,14 @@
 
 Here are the list of breaking changes when upgrading between instapack major (or minor) versions.
 
+## 8.1.0
+
+- CSS compiler services major semver bump:
+
+  - Updated PostCSS to version 8.1.7
+
+  - Updated Autoprefixer to version 10.0.2
+
 ## 8.0.0
 
 - instapack now add the required versions of `vue-loader`, `vue-template-compiler` and `@vue/compiler-sfc` packages to the project when detected the presence of `vue` package in the project.

@@ -68,7 +68,7 @@ export async function selectPackageManager(preference: string | undefined, root:
 
 function getVueCompilerServicePackageVersions(versions: VuePackageVersions): string | undefined {
     if (versions.vue?.startsWith('2')) {
-        const loaderVersion = '15.9.4';
+        const loaderVersion = '15.9.5';
         if (versions.loader === loaderVersion && versions.compilerService === versions.vue) {
             return undefined;
         } else {
@@ -77,7 +77,7 @@ function getVueCompilerServicePackageVersions(versions: VuePackageVersions): str
     }
 
     if (versions.vue?.startsWith('3')) {
-        const loaderVersion = '16.0.0-beta.9';
+        const loaderVersion = '16.0.0-rc.1';
         if (versions.loader === loaderVersion && versions.compilerService === versions.vue) {
             return undefined;
         } else {

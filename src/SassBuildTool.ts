@@ -3,7 +3,7 @@ import * as upath from 'upath';
 import chalk = require('chalk');
 import sass = require('sass');
 import { watch } from 'chokidar';
-import postcss = require('postcss');
+import postcss, { ProcessOptions } from 'postcss';
 import autoprefixer = require('autoprefixer');
 import CleanCSS = require('clean-css');
 import { RawSourceMap } from 'source-map';
@@ -120,7 +120,7 @@ export class SassBuildTool {
      * @param sassResult 
      */
     async runPostCSS(virtualSassOutputPath: string, virtualPostcssOutputPath: string, sassResult: CssBuildResult): Promise<CssBuildResult> {
-        const postcssOptions: postcss.ProcessOptions = {
+        const postcssOptions: ProcessOptions = {
             from: virtualSassOutputPath,
             to: virtualPostcssOutputPath
         };

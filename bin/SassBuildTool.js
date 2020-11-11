@@ -6,7 +6,7 @@ const upath = require("upath");
 const chalk = require("chalk");
 const sass = require("sass");
 const chokidar_1 = require("chokidar");
-const postcss = require("postcss");
+const postcss_1 = require("postcss");
 const autoprefixer = require("autoprefixer");
 const CleanCSS = require("clean-css");
 const mergeSourceMap = require("merge-source-map");
@@ -70,7 +70,7 @@ class SassBuildTool {
                 prev: false
             };
         }
-        const postcssResult = await postcss([autoprefixer])
+        const postcssResult = await postcss_1.default([autoprefixer])
             .process(sassResult.css, postcssOptions);
         const result = {
             css: postcssResult.css

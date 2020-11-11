@@ -14,20 +14,20 @@
     "linq": "^3.2.3",
     "luxon": "^1.25.0",
     "popper.js": "^1.16.1",
-    "sweetalert2": "^10.8.1",
+    "sweetalert2": "^10.9.1",
     "ts-polyfill": "^3.8.2",
     "tslib": "^2.0.3",
     "vue": "^3.0.2"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "4.6.0",
-    "@typescript-eslint/parser": "4.6.0",
-    "@vue/compiler-sfc": "^3.0.2",
-    "eslint": "7.12.1",
+    "@typescript-eslint/eslint-plugin": "4.7.0",
+    "@typescript-eslint/parser": "4.7.0",
+    "@vue/compiler-sfc": "3.0.2",
+    "eslint": "7.13.0",
     "eslint-config-prettier": "^6.15.0",
     "eslint-plugin-vue": "^7.1.0",
     "typescript": "^4.0.5",
     "vue-eslint-parser": "^7.1.1",
-    "vue-loader": "^16.0.0-beta.9"
+    "vue-loader": "16.0.0-rc.1"
   }
 }

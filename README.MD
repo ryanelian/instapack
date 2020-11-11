@@ -134,13 +134,13 @@ Scaffolds a new instapack project into current working directory. **All template
 
 - `react` for developing a web app using [React](https://reactjs.org/) and [MobX 5](https://github.com/mobxjs/mobx) and Bootstrap 4.
 
-- `angularjs` for developing a legacy web app targeting ES5 browsers (Internet Explorer 10+) using [AngularJS 1.7](https://angularjs.org/) and [Bootstrap 3](http://getbootstrap.com/docs/3.3/).
+- `angularjs` for developing a legacy web app targeting ES5 browsers (Internet Explorer 10+) using [AngularJS 1.7](https://angularjs.org/) and [Bootstrap 3](http://getbootstrap.com/docs/3.3/). Also includes [jquery-validation-unobtrusive](https://github.com/aspnet/jquery-validation-unobtrusive) for ASP.NET MVC client-side validation.
 
-  - This template is a museum and should NOT be used for developing new projects. If ES5 support is actually needed, Vue 2 + `"target": "ES5"` (in `tsconfig.json`) is highly recommended.
-
-  - Includes [jquery-validation-unobtrusive](https://github.com/aspnet/jquery-validation-unobtrusive) for ASP.NET MVC client-side validation.
+  - This template is a museum and should NOT be used for developing new projects.
 
 If no template parameter is provided, `vue` will be chosen. :vulcan_salute:
+
+If ES5 support is actually needed, Vue.js 2 + `"target": "ES5"` (in `tsconfig.json`) is highly recommended.
 
 ### build [project]
 

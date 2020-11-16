@@ -87,7 +87,7 @@
     "webpack": "5.4.0",
     "webpack-plugin-serve": "1.2.0",
     "which": "2.0.2",
-    "yargs": "16.1.0"
+    "yargs": "16.1.1"
   },
   "devDependencies": {
     "@types/acorn": "^4.0.5",

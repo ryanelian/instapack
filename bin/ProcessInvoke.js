@@ -11,6 +11,7 @@ const upath = require("upath");
 const UserSettingsPath_1 = require("./user-settings/UserSettingsPath");
 const chalk = require("chalk");
 const Shout_1 = require("./Shout");
+const VueLoaderVersions_1 = require("./VueLoaderVersions");
 function execWithConsoleOutput(command) {
     return ChildProcess.execSync(command, {
         stdio: [0, 1, 2]
@@ -58,21 +59,19 @@ exports.selectPackageManager = selectPackageManager;
 function getVueCompilerServicePackageVersions(versions) {
     var _a, _b;
     if ((_a = versions.vue) === null || _a === void 0 ? void 0 : _a.startsWith('2')) {
-        const loaderVersion = '15.9.5';
-        if (versions.loader === loaderVersion && versions.compilerService === versions.vue) {
+        if (versions.loader === VueLoaderVersions_1.VueLoaderVersions.Vue2Loader && versions.compilerService === versions.vue) {
             return undefined;
         }
         else {
-            return `vue-loader@${loaderVersion} vue-template-compiler@${versions.vue}`;
+            return `vue-loader@${VueLoaderVersions_1.VueLoaderVersions.Vue2Loader} vue-template-compiler@${versions.vue}`;
         }
     }
     if ((_b = versions.vue) === null || _b === void 0 ? void 0 : _b.startsWith('3')) {
-        const loaderVersion = '16.0.0-rc.1';
-        if (versions.loader === loaderVersion && versions.compilerService === versions.vue) {
+        if (versions.loader === VueLoaderVersions_1.VueLoaderVersions.Vue3Loader && versions.compilerService === versions.vue) {
             return undefined;
         }
         else {
-            return `vue-loader@${loaderVersion} @vue/compiler-sfc@${versions.vue}`;
+            return `vue-loader@${VueLoaderVersions_1.VueLoaderVersions.Vue3Loader} @vue/compiler-sfc@${versions.vue}`;
         }
     }
     throw new Error(`Unknown vue version: ${versions.vue}`);

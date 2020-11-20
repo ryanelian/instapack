@@ -41,6 +41,10 @@ async function compileAsync(entry) {
 ava_1.default('HTML Loader', async (t) => {
     const entry = path.join(fixtures, 'index.ts');
     const stats = await compileAsync(entry);
+    if (!stats) {
+        t.fail('webpack stats is undefined!');
+        return;
+    }
     const o = stats.toJson({
         source: true,
         modules: true

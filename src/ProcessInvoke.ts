@@ -9,6 +9,7 @@ import { UserSettingsPath } from './user-settings/UserSettingsPath';
 import { VuePackageVersions } from './variables-factory/BuildVariables';
 import chalk = require('chalk');
 import { Shout } from './Shout';
+import { VueLoaderVersions } from './VueLoaderVersions';
 
 /**
  * Runs a child process that displays outputs to current command line output.
@@ -68,20 +69,18 @@ export async function selectPackageManager(preference: string | undefined, root:
 
 function getVueCompilerServicePackageVersions(versions: VuePackageVersions): string | undefined {
     if (versions.vue?.startsWith('2')) {
-        const loaderVersion = '15.9.5';
-        if (versions.loader === loaderVersion && versions.compilerService === versions.vue) {
+        if (versions.loader === VueLoaderVersions.Vue2Loader && versions.compilerService === versions.vue) {
             return undefined;
         } else {
-            return `vue-loader@${loaderVersion} vue-template-compiler@${versions.vue}`;
+            return `vue-loader@${VueLoaderVersions.Vue2Loader} vue-template-compiler@${versions.vue}`;
         }
     }
 
     if (versions.vue?.startsWith('3')) {
-        const loaderVersion = '16.0.0-rc.1';
-        if (versions.loader === loaderVersion && versions.compilerService === versions.vue) {
+        if (versions.loader === VueLoaderVersions.Vue3Loader && versions.compilerService === versions.vue) {
             return undefined;
         } else {
-            return `vue-loader@${loaderVersion} @vue/compiler-sfc@${versions.vue}`;
+            return `vue-loader@${VueLoaderVersions.Vue3Loader} @vue/compiler-sfc@${versions.vue}`;
         }
     }
 

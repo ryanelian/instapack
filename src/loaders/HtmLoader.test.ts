@@ -7,7 +7,7 @@ import { LoaderPaths } from './LoaderPaths';
 const root = process.cwd();
 const fixtures = path.join(root, 'fixtures', 'HtmLoader');
 
-async function compileAsync(entry: string): Promise<webpack.Stats> {
+async function compileAsync(entry: string): Promise<webpack.Stats | undefined> {
     const compiler = webpack({
         context: fixtures,
         entry: [entry],
@@ -31,7 +31,7 @@ async function compileAsync(entry: string): Promise<webpack.Stats> {
 
     compiler.outputFileSystem = new memoryFS();
 
-    return await new Promise<webpack.Stats>((ok, reject) => {
+    return await new Promise<webpack.Stats | undefined>((ok, reject) => {
         compiler.run((err, stats) => {
             if (err) {
                 reject(err);
@@ -45,6 +45,11 @@ async function compileAsync(entry: string): Promise<webpack.Stats> {
 test('HTML Loader', async t => {
     const entry = path.join(fixtures, 'index.ts');
     const stats = await compileAsync(entry);
+
+    if (!stats){
+        t.fail('webpack stats is undefined!');
+        return;
+    }
 
     const o = stats.toJson({
         source: true,

@@ -348,7 +348,7 @@ class TypeScriptBuildEngine {
         }
         else {
             const stats = await this.buildOnce(webpackConfiguration);
-            if (this.variables.stats) {
+            if (this.variables.stats && stats) {
                 await fse.outputJson(this.finder.statsJsonFilePath, stats.toJson());
             }
         }

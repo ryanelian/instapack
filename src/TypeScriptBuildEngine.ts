@@ -432,10 +432,10 @@ export class TypeScriptBuildEngine {
         return config;
     }
 
-    buildOnce(webpackConfiguration: webpack.Configuration): Promise<webpack.Stats> {
+    buildOnce(webpackConfiguration: webpack.Configuration): Promise<webpack.Stats | undefined> {
         // https://github.com/webpack/changelog-v5/blob/master/README.md#compiler-idle-and-close
         // The webpack() facade automatically calls close when being passed a callback.
-        return new Promise<webpack.Stats>((ok, reject) => {
+        return new Promise<webpack.Stats | undefined>((ok, reject) => {
             webpack(webpackConfiguration, (err, stats) => {
                 if (err) {
                     reject(err);
@@ -500,7 +500,7 @@ export class TypeScriptBuildEngine {
             await this.watch(webpackConfiguration);
         } else {
             const stats = await this.buildOnce(webpackConfiguration);
-            if (this.variables.stats) {
+            if (this.variables.stats && stats) {
                 await fse.outputJson(this.finder.statsJsonFilePath, stats.toJson());
             }
         }

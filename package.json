@@ -53,7 +53,7 @@
     "test:watch": "ava --watch"
   },
   "dependencies": {
-    "@babel/core": "7.12.3",
+    "@babel/core": "7.12.7",
     "@babel/plugin-syntax-dynamic-import": "7.8.3",
     "@pmmmwh/react-refresh-webpack-plugin": "0.4.3",
     "acorn": "8.0.4",

@@ -29,14 +29,14 @@
     "linq": "^3.2.3",
     "luxon": "^1.25.0",
     "popper.js": "^1.16.1",
-    "sweetalert2": "^10.9.1",
+    "sweetalert2": "^10.10.1",
     "ts-polyfill": "^3.8.2",
     "tslib": "^2.0.3"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "4.7.0",
-    "@typescript-eslint/parser": "4.7.0",
+    "@typescript-eslint/eslint-plugin": "4.8.1",
+    "@typescript-eslint/parser": "4.8.1",
     "eslint": "7.13.0",
-    "typescript": "^4.0.5"
+    "typescript": "^4.1.2"
   }
 }

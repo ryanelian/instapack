@@ -725,19 +725,21 @@ This is a sample Dockerfile build recipe for building ASP.NET Core + instapack p
 
 ```Dockerfile
 FROM node:12-slim AS instapack
-RUN npm install -g instapack
+# using pnpm is faster (optional)
+RUN npm install -g pnpm
+RUN pnpm install -g instapack
 COPY . /src
 WORKDIR /src/MyApp
 RUN ipack
 
-FROM mcr.microsoft.com/dotnet/core/sdk:3.1 as build
+FROM mcr.microsoft.com/dotnet/sdk:5.0 as build
 COPY --from=instapack /src /src
 WORKDIR /src/MyApp
 RUN dotnet restore
 RUN dotnet publish -c Release
 
-FROM mcr.microsoft.com/dotnet/core/aspnet:3.1 as runtime
-COPY --from=build /src/MyApp/bin/Release/netcoreapp3.1/publish /app
+FROM mcr.microsoft.com/dotnet/aspnet:5.0 as runtime
+COPY --from=build /src/MyApp/bin/Release/net5.0/publish /app
 WORKDIR /app
 ENTRYPOINT ["dotnet", "MyApp.dll"]
 ```
@@ -759,11 +761,6 @@ services:
 
 stages:
 - build
-- release
-
-variables:
-  TEST_IMAGE: registry.gitlab.com/$CI_PROJECT_PATH:$CI_COMMIT_REF_NAME
-  RELEASE_IMAGE: registry.gitlab.com/$CI_PROJECT_PATH:latest
 
 before_script:
   - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN registry.gitlab.com
@@ -771,17 +768,8 @@ before_script:
 build:
   stage: build
   script:
-    - docker build --pull -t $TEST_IMAGE .
-    - docker push $TEST_IMAGE
-
-release:
-  stage: release
-  script:
-    - docker pull $TEST_IMAGE
-    - docker tag $TEST_IMAGE $RELEASE_IMAGE
-    - docker push $RELEASE_IMAGE
-  only:
-    - master
+    - docker build --pull -t $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME .
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
 ```
 
 ### How to debug using Visual Studio Code?

@@ -2,19 +2,27 @@
 
 Here are the list of breaking changes when upgrading between instapack major (or minor) versions.
 
+## 8.2.0
+
+- TypeScript updated to 4.1.2!
+
+  - Read breaking changes here: https://devblogs.microsoft.com/typescript/announcing-typescript-4-1/#breaking-changes
+
 ## 8.1.0
 
 - CSS compiler services major semver bump:
 
-  - Updated PostCSS to version 8.1.7
+  - Updated PostCSS to version [8.1.7](https://github.com/postcss/postcss/blob/master/CHANGELOG.md#817)
 
-  - Updated Autoprefixer to version 10.0.2
+  - Updated Autoprefixer to version [10.0.2](https://github.com/postcss/autoprefixer/blob/master/CHANGELOG.md#1002)
 
 ## 8.0.0
 
 - instapack now add the required versions of `vue-loader`, `vue-template-compiler` and `@vue/compiler-sfc` packages to the project when detected the presence of `vue` package in the project.
 
 - TypeScript is now version 4!
+
+  - Read breaking changes here: https://devblogs.microsoft.com/typescript/announcing-typescript-4-0/#breaking-changes
 
 ## 8.0.0-beta.12
 

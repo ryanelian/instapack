@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.readProjectSettingsFrom = void 0;
 const fse = require("fs-extra");
 const upath = require("upath");
-const Ajv = require("ajv");
+const ajv_1 = require("ajv");
 const Shout_1 = require("../Shout");
 const settingsJsonSchemaPath = require.resolve('../../schemas/settings.json');
 async function tryReadPackageJson(path) {
@@ -37,7 +37,7 @@ async function readProjectSettingsFrom(folder) {
     if (!packageJson) {
         return settings;
     }
-    const ajv = new Ajv();
+    const ajv = new ajv_1.default();
     const settingsJsonSchema = await fse.readJson(settingsJsonSchemaPath);
     const validate = ajv.compile(settingsJsonSchema);
     if (packageJson.instapack) {

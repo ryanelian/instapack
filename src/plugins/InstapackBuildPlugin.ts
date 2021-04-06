@@ -58,7 +58,7 @@ export class InstapackBuildPlugin {
     /**
      * Get stat objects required for instapack build logs.
      */
-    get statsSerializeEssentialOption(): unknown {
+    get statsSerializeEssentialOption(): WebpackStatsOptions {
         return {
             assets: true,
             cached: false,
@@ -87,7 +87,7 @@ export class InstapackBuildPlugin {
         };
     }
 
-    formatError(error: string | WebpackError): string {
+    formatError(error: string | webpack.StatsError): string {
         // webpack 5 have changed error / warning stats data to array of objects
         // instead of array of strings https://github.com/webpack/webpack/issues/9802#issuecomment-569966784
         if (typeof error === 'object' && error.stack) {
@@ -101,8 +101,8 @@ export class InstapackBuildPlugin {
      * Interact with user via CLI output when TypeScript build is finished.
      * @param stats 
      */
-    displayBuildResults(stats: InstapackStats): void {
-        if (stats.errors.length) {
+    displayBuildResults(stats: webpack.StatsCompilation): void {
+        if (stats?.errors?.length) {
             const errorMessage = stats.errors.map(Q => this.formatError(Q)).join('\n\n') + '\n';
             Shout.error('during JS build:');
             console.error(chalk.redBright(errorMessage));
@@ -111,7 +111,7 @@ export class InstapackBuildPlugin {
             this.va.rewind();
         }
 
-        if (stats.warnings.length) {
+        if (stats?.warnings?.length) {
             const warningMessage = stats.warnings.map(Q => this.formatError(Q)).join('\n\n') + '\n';
             Shout.warning('during JS build:');
             console.warn(chalk.yellowBright(warningMessage));

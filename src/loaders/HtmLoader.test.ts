@@ -58,7 +58,7 @@ test('HTML Loader', async t => {
     // console.log(JSON.stringify(o, null, 4));
     if (o.modules) {
         let result = o.modules.filter(Q => Q.name === './test.html')[0].source;
-        if (result) {
+        if (result && typeof result === 'string') {
             result = result.replace(/\r/g, '');
         }
         t.is(result, 'module.exports = "<span> Hello World! </span>"');

@@ -1,7 +1,7 @@
 import * as fse from 'fs-extra';
 import * as upath from 'upath';
 import { ProjectSettings } from './BuildVariables';
-import Ajv = require('ajv');
+import Ajv from 'ajv';
 import { Shout } from '../Shout';
 const settingsJsonSchemaPath = require.resolve('../../schemas/settings.json');
 

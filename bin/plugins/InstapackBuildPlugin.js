@@ -75,7 +75,8 @@ class InstapackBuildPlugin {
         }
     }
     displayBuildResults(stats) {
-        if (stats.errors.length) {
+        var _a, _b;
+        if ((_a = stats === null || stats === void 0 ? void 0 : stats.errors) === null || _a === void 0 ? void 0 : _a.length) {
             const errorMessage = stats.errors.map(Q => this.formatError(Q)).join('\n\n') + '\n';
             Shout_1.Shout.error('during JS build:');
             console.error(chalk.redBright(errorMessage));
@@ -84,7 +85,7 @@ class InstapackBuildPlugin {
         else {
             this.va.rewind();
         }
-        if (stats.warnings.length) {
+        if ((_b = stats === null || stats === void 0 ? void 0 : stats.warnings) === null || _b === void 0 ? void 0 : _b.length) {
             const warningMessage = stats.warnings.map(Q => this.formatError(Q)).join('\n\n') + '\n';
             Shout_1.Shout.warning('during JS build:');
             console.warn(chalk.yellowBright(warningMessage));

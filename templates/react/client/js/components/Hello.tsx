@@ -1,25 +1,26 @@
 import React from 'react';
-import { Alert } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
-import { observable } from 'mobx';
-import { observer } from 'mobx-react';
+import PropTypes from 'prop-types';
 
-@observer
-export class Hello extends React.Component {
-    @observable isVisible = true;
+export const Hello: React.FunctionComponent<{
+    language: string;
+    sdk: string;
+}> = function (props) {
+    return (
+        // if using state is required, use state hook:
+        // https://reactjs.org/docs/hooks-state.html
 
-    // This syntax ensures `this` is bound within onDismiss.
-    onDismiss = (): void => {
-        this.isVisible = false;
-    }
-
-    render(): JSX.Element {
-        return <Alert color="success" toggle={this.onDismiss} isOpen={this.isVisible}>
-            <FontAwesomeIcon className="mr-3" icon={faCheckCircle}></FontAwesomeIcon>
-            Hello from instapack and react!
-        </Alert>
-    }
+        <div className="alert alert-success alert-dismissible fade show" role="alert">
+            <FontAwesomeIcon className="me-3" icon={faCheckCircle}></FontAwesomeIcon>
+            Hello from {props.sdk} and {props.language}!
+        </div>
+    );
 }
+
+Hello.propTypes = {
+    language: PropTypes.string.isRequired,
+    sdk: PropTypes.string.isRequired
+};
 
 export default Hello;

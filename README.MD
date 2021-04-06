@@ -124,23 +124,21 @@ Scaffolds a new instapack project into current working directory. **All template
 
 - `empty` for a minimal clean slate.
 
-- `vue` for developing a web app using [Vue.js 2](https://vuejs.org/v2/guide/) and [Bootstrap 4](https://getbootstrap.com/).
+- `react` for developing a web app using [React](https://reactjs.org/) and [Bootstrap 5](https://getbootstrap.com/).
 
-- `vue3` for developing a web app using the brand new [Vue.js 3](https://v3.vuejs.org/guide/introduction.html) and Bootstrap 4!
+- `vue` for developing a web app using [Vue.js 2](https://vuejs.org/v2/guide/) and Bootstrap 5.
+
+- `vue3` for developing a web app using the brand new [Vue.js 3](https://v3.vuejs.org/guide/introduction.html) and Bootstrap 5!
 
 - `blazor` for developing a web app using the [ASP.NET Core Blazor](https://dotnet.microsoft.com/apps/aspnet/web-apps/blazor) framework, which allows SPA-like experience using C# programming language instead of JS.
 
   - [This template allows calling instapack-built TypeScript code from C#](https://docs.microsoft.com/en-us/aspnet/core/blazor/javascript-interop?view=aspnetcore-3.0) when a third-party JS library (from npm) is required. [Read more about `namespace` configuration ↓](https://github.com/ryanelian/instapack#configurations)
 
-- `react` for developing a web app using [React](https://reactjs.org/) and [MobX 5](https://github.com/mobxjs/mobx) and Bootstrap 4.
-
 - `angularjs` for developing a legacy web app targeting ES5 browsers (Internet Explorer 10+) using [AngularJS 1.7](https://angularjs.org/) and [Bootstrap 3](http://getbootstrap.com/docs/3.3/). Also includes [jquery-validation-unobtrusive](https://github.com/aspnet/jquery-validation-unobtrusive) for ASP.NET MVC client-side validation.
 
   - This template is a museum and should NOT be used for developing new projects.
 
-If no template parameter is provided, `vue` will be chosen. :vulcan_salute:
-
-If ES5 support is actually needed, Vue.js 2 + `"target": "ES5"` (in `tsconfig.json`) is highly recommended.
+If no template parameter is provided, `react` will be chosen. :atom_symbol:
 
 ### build [project]
 

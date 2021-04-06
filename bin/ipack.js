@@ -75,7 +75,7 @@ program.command({
         return yargs.choices('template', ipack.availableTemplates);
     },
     handler: (argv) => {
-        let subCommand = 'vue';
+        let subCommand = 'react';
         if (typeof argv.template === 'string') {
             subCommand = argv.template;
         }

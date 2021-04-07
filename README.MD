@@ -40,10 +40,18 @@ A local installation in the project is usually more desirable for pinning and sy
 {
   "scripts": {
     "init": "ipack new react",
-    "prod": "ipack",
-    "dev": "ipack -R"
+    "dev": "ipack -R",
+    "build": "ipack",
   }
 }
+```
+
+To develop using instapack, simply run the commands:
+
+```bash
+npm run init
+npm run dev
+npm run build
 ```
 
 ## Quick Start Guide

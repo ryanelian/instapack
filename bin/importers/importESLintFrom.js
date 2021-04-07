@@ -19,6 +19,7 @@ async function importESLintFrom(dir, indexTsPath) {
         };
     }
     catch (error) {
+        console.log(error);
         return undefined;
     }
 }

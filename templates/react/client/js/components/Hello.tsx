@@ -14,6 +14,7 @@ export const Hello: React.FunctionComponent<{
         <div className="alert alert-success alert-dismissible fade show" role="alert">
             <FontAwesomeIcon className="me-3" icon={faCheckCircle}></FontAwesomeIcon>
             Hello from {props.sdk} and {props.language}!
+            <button type="button" className="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     );
 }

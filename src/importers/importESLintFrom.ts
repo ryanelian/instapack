@@ -27,7 +27,7 @@ export async function importESLintFrom(dir: string, indexTsPath: string): Promis
             version: ESLint.version
         };
     } catch (error) {
-        // console.log(error);
+        console.log(error);
         return undefined;
     }
 }

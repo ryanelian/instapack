@@ -1,4 +1,4 @@
-import Vue from 'vue';
+import * as Vue from 'vue';
 
 type VueAsync = () => Promise<typeof import('*.vue')>;
 

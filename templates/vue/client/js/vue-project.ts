@@ -1,4 +1,4 @@
-import Vue from 'vue';
+import * as Vue from 'vue';
 import { renderAsyncComponent } from './vue-renderer';
 
 import { defineRule, Form, Field } from 'vee-validate';
@@ -18,9 +18,9 @@ Object.keys(AllRules).forEach(rule => {
  */
 function configure(app: Vue.App) {
     // https://v3.vuejs.org/style-guide/#component-name-casing-in-templates-strongly-recommended
-    app.component('fa-icon', FontAwesomeIcon);
-    app.component('vv-form', Form);
-    app.component('vv-field', Field);
+    app.component('FontAwesomeIcon', FontAwesomeIcon);
+    app.component('Form', Form);
+    app.component('Field', Field);
 }
 
 // use this file to render top-level components asynchronously. 

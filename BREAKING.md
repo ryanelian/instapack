@@ -2,6 +2,22 @@
 
 Here are the list of breaking changes when upgrading between instapack major (or minor) versions.
 
+## 8.3.0
+
+- Language services update:
+
+  - TypeScript updated to 4.2.3
+
+  - Sass updated to 1.32.8
+
+- New default template shall be `react`
+
+  - Vue 3 template is now set as `vue`
+
+  - The older Vue 2 template is now set as `vue2`
+
+  - Templates are now shipping with Bootstrap 5 beta!
+
 ## 8.2.0
 
 - TypeScript updated to 4.1.2!

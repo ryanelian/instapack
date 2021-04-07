@@ -39,7 +39,7 @@ function convertElementAttributesToPropsMap(el: Element): Record<string, string>
  * @param factory 
  * @param configure 
  */
-export function renderAsyncComponent(tag: string, factory: VueAsync, configure?: ConfigureVueApp) {
+export function renderAsyncComponent(tag: string, factory: VueAsync, configure?: ConfigureVueApp): void {
     const ac = Vue.defineAsyncComponent(factory);
     const elements = document.getElementsByTagName(tag);
 

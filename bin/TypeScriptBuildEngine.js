@@ -77,8 +77,7 @@ class TypeScriptBuildEngine {
                     loader: this.vueLoaderPath,
                     ident: 'vue',
                     options: {
-                        transformAssetUrls: {},
-                        appendExtension: true
+                        transformAssetUrls: {}
                     }
                 }]
         };

@@ -128,8 +128,7 @@ export class TypeScriptBuildEngine {
                 loader: this.vueLoaderPath,
                 ident: 'vue',
                 options: {
-                    transformAssetUrls: {},     // remove <img> src and SVG <image> xlink:href resolution
-                    appendExtension: true
+                    transformAssetUrls: {}     // remove <img> src and SVG <image> xlink:href resolution
                 }
             }]
         };

@@ -80,7 +80,7 @@ Out of the box, these files will be used as the program entry points:
 
 ## System Requirements
 
-Currently supported Node.js is [the latest version 10, 12, or 14 (LTS)](https://nodejs.org/en/download/).
+Currently supported Node.js is [the latest version 14 or 12 (LTS)](https://nodejs.org/en/download/).
 
 When using [Visual Studio 2017 or 2019](https://www.visualstudio.com/downloads/), install [the latest TypeScript SDK](https://marketplace.visualstudio.com/search?term=typescript&target=VS&category=Tools&cost=free&vsVersion=&subCategory=Programming%20Languages&sortBy=UpdatedDate).
 

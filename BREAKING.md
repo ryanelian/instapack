@@ -18,6 +18,8 @@ Here are the list of breaking changes when upgrading between instapack major (or
 
   - Templates are now shipping with Bootstrap 5 beta!
 
+- Drop Node.js 10 support. (Should still work regardless)
+
 ## 8.2.0
 
 - TypeScript updated to 4.1.2!

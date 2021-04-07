@@ -20,23 +20,21 @@
 
 ## Install
 
-### Option A: Machine-Wide (simpler and convenient)
+### Option A: Globally Machine-Wide
 
 `npm install -g instapack`
 
-### Option B: Per-Project (consistent build)
+> `pnpm` can also be used but not `yarn`. **Yarn 2 is incompatible with instapack due to [Plug'n'Play](https://yarnpkg.com/features/pnp) [NOT SUPPORTED by TypeScript](https://github.com/microsoft/TypeScript/issues/28289) (and Visual Studio)!**
 
-When requiring a specific instapack version to build a project, a local installation may be desirable over global installation. (For example: synchronizing instapack version used by the CI and the development team)
+### Option B: Locally per Project
 
-First, ensure `package.json` exists in the project folder. (If not, run `npm init -y`)
+A local installation in the project is usually more desirable for pinning and synchronizing the instapack version used by the CI and the development team.
 
-Then, open command prompt in that folder to install instapack locally: `npm install instapack -D -E`
+1. Ensure `package.json` exists in the project folder. (If not, run `npm init -y`)
 
-The local instapack can then be invoked using `npx instapack` command.
+2. Open command prompt in that folder to install instapack locally: `npm install instapack -D -E`
 
-----
-
-Alternatively, setup [npm run scripts](https://docs.npmjs.com/cli/run-script) in `package.json` to enable `npm run prod` or `npm run dev`:
+3. Add [npm run scripts](https://docs.npmjs.com/cli/run-script) in `package.json` to enable `npm run prod` or `npm run dev`:
 
 ```json
 {
@@ -46,8 +44,6 @@ Alternatively, setup [npm run scripts](https://docs.npmjs.com/cli/run-script) in
   }
 }
 ```
-
-> All the above `npm` commands can be replaced by [`pnpm`](https://pnpm.js.org/) to allow downloading instapack once (per exact version in the same drive letter) across multiple projects!
 
 ## Quick Start Guide
 
@@ -168,7 +164,7 @@ In addition, build flags are available:
 
 - `package-manager` allows setting default package manager to be used for restoring and integrity-checking `node_modules` prior build. Possible values: `npm`, `pnpm`, `yarn`, `disabled` (default: `npm`)
 
-> **Yarn 2 is incompatible with instapack due to [Plug'n'Play](https://yarnpkg.com/features/pnp) [NOT SUPPORTED by TypeScript](https://github.com/microsoft/TypeScript/issues/28289) (and Visual Studio)!** Thus, the `yarn` setting refers to the legacy Yarn 1.
+> The `yarn` setting refers to the legacy Yarn 1.
 
 - `mute` disables voice assistant on build fails during watch mode when set to `true`. Possible values: `true` and `false` (default: `false`)
 

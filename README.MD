@@ -36,15 +36,46 @@ A local installation in the project is usually more desirable for pinning and sy
 
 3. Add [npm run scripts](https://docs.npmjs.com/cli/run-script) in `package.json`:
 
-```json
+
+<table>
+<thead>
+<tr>
+<th align="center">React</th>
+<th align="center">Vue 3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+
+```jsonc
 {
   "scripts": {
     "init": "ipack new react",
     "dev": "ipack -R",
-    "build": "ipack",
+    "build": "ipack"
   }
 }
 ```
+
+</td>
+<td>
+      
+```jsonc
+{
+  "scripts": {
+    "init": "ipack new vue",
+    "dev": "ipack -s",
+    "build": "ipack"
+  }
+}
+```
+      
+</td>
+</tr>
+</tbody>
+</table>
+
 
 To develop using instapack, simply run the commands:
 

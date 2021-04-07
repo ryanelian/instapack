@@ -6,7 +6,7 @@ jobs:
   build:
     strategy:
       matrix:
-        node-version: [10.x, 12.x, 14.x]
+        node-version: [12.x, 14.x]
         platform: [ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.platform }}
     steps:
@@ -27,12 +27,12 @@ jobs:
         npm install -g rimraf
         rimraf node_modules
         npm install --production --loglevel error
-    - name: instapack full-cycle test - Vue
+    - name: instapack full-cycle test - Vue 2
       run: |
         rimraf ./demo
         mkdir demo
         cd demo
-        ipack new vue
+        ipack new vue2
         ipack -d --no-sourcemaps
         ipack 
     - name: instapack full-cycle test - Vue 3
@@ -40,7 +40,7 @@ jobs:
         rimraf ./demo
         mkdir demo
         cd demo
-        ipack new vue3
+        ipack new vue
         ipack -d --no-sourcemaps
         ipack 
     - name: instapack full-cycle test - React

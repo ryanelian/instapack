@@ -1,28 +1,29 @@
-import * as Vue from 'vue';
+import Vue from 'vue';
+import { renderAsyncComponent } from './vue-renderer';
 
-type VueAsync = () => Promise<typeof import('*.vue')>;
+import { defineRule, Form, Field } from 'vee-validate';
+import AllRules from '@vee-validate/rules';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
-function renderAsyncComponent(tag: string, factory: VueAsync) {
-    const ac = Vue.defineAsyncComponent(factory);
-    const elements = document.getElementsByTagName(tag);
-    
-    for (const e of elements) {
-        const props: Record<string, unknown> = {};
-        // enable passing HTML attributes as component props
-        if (e.hasAttributes()) {
-            for (const attr of e.attributes) {
-                if (attr.name.startsWith(':')) {
-                    props[attr.name.substr(1)] = JSON.parse(attr.value);
-                } else {
-                    // simple string
-                    props[attr.name] = attr.value;
-                }
-            }
-        }
+// define validation rules
+Object.keys(AllRules).forEach(rule => {
+    defineRule(rule, AllRules[rule]);
+});
 
-        const app = Vue.createApp(ac, props);
-        app.mount(e);
-    }
+/**
+ * allows declaring components that can be used in all components.
+ * usually these components are third-party libraries 
+ * or any first-party reusable components such as a custom submit button.
+ * @param app 
+ */
+function configure(app: Vue.App) {
+    // https://v3.vuejs.org/style-guide/#component-name-casing-in-templates-strongly-recommended
+    app.component('fa-icon', FontAwesomeIcon);
+    app.component('vv-form', Form);
+    app.component('vv-field', Field);
 }
 
-renderAsyncComponent('Hello', () => import('./components/Hello.vue'));
+// use this file to render top-level components asynchronously. 
+
+// for example: allows calling <Hello sdk="instapack" language="vue"></Hello> in HTML!
+renderAsyncComponent('Hello', () => import('./components/Hello.vue'), configure);

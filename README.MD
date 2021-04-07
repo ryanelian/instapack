@@ -126,9 +126,9 @@ Scaffolds a new instapack project into current working directory. **All template
 
 - `react` for developing a web app using [React](https://reactjs.org/) and [Bootstrap 5](https://getbootstrap.com/).
 
-- `vue` for developing a web app using [Vue.js 2](https://vuejs.org/v2/guide/) and Bootstrap 5.
+- `vue` for developing a web app using the brand new [Vue.js 3](https://v3.vuejs.org/guide/introduction.html) and Bootstrap 5!
 
-- `vue3` for developing a web app using the brand new [Vue.js 3](https://v3.vuejs.org/guide/introduction.html) and Bootstrap 5!
+- `vue2` for developing a web app using [Vue.js 2](https://vuejs.org/v2/guide/) and Bootstrap 5.
 
 - `blazor` for developing a web app using the [ASP.NET Core Blazor](https://dotnet.microsoft.com/apps/aspnet/web-apps/blazor) framework, which allows SPA-like experience using C# programming language instead of JS.
 
@@ -561,6 +561,8 @@ export default defineComponent({
 })
 </script>
 ```
+
+> When using Visual Studio Code, install [Volar](https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.volar) extension to get syntax highlighting and TypeScript intellisense.
 
 A different global TypeScript definition file for `*.vue` module is required for importing Vue components from TypeScript:
 

@@ -41,7 +41,7 @@ function convertElementAttributesToPropsMap(el: Element): Record<string, string>
             name = 'className';
         }
         name = hyphenToCamelCase(name);
-        result[attribute.name] = attribute.value;
+        result[name] = attribute.value;
     }
 
     return result;
@@ -49,7 +49,8 @@ function convertElementAttributesToPropsMap(el: Element): Record<string, string>
 
 /**
  * For each matching HTML Elements, render and mount a React Component asynchronously.
- * Passes Element attributes as string to props.
+ * Passes Element attributes as string to props. Kebab-case attributes will be converted to camel-case.
+ * The attributes "for" will be converted to "htmlFor" and "class" to "className"
  * @param selector HTML Element selector query
  * @param lazyComponent React Async Component Class Factory function
  */

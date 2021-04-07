@@ -34,13 +34,14 @@ A local installation in the project is usually more desirable for pinning and sy
 
 2. Open command prompt in that folder to install instapack locally: `npm install instapack -D -E`
 
-3. Add [npm run scripts](https://docs.npmjs.com/cli/run-script) in `package.json` to enable `npm run prod` or `npm run dev`:
+3. Add [npm run scripts](https://docs.npmjs.com/cli/run-script) in `package.json`:
 
 ```json
 {
   "scripts": {
+    "init": "ipack new react",
     "prod": "ipack",
-    "dev": "ipack -dw"
+    "dev": "ipack -R"
   }
 }
 ```

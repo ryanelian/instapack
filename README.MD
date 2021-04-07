@@ -30,7 +30,7 @@ When requiring a specific instapack version to build a project, a local installa
 
 First, ensure `package.json` exists in the project folder. (If not, run `npm init -y`)
 
-Then, open command prompt in that folder to install instapack locally: `npm install instapack@[WRITE_VERSION_HERE] -D -E`
+Then, open command prompt in that folder to install instapack locally: `npm install instapack -D -E`
 
 The local instapack can then be invoked using `npx instapack` command.
 
@@ -108,7 +108,7 @@ If using [the latest Visual Studio Code](https://code.visualstudio.com/), it sho
 
 ## But... Why?
 
-**instapack is a first-class end-to-end TypeScript and Sass build tool. :tophat:** Meaning, it comes with an assurance to compile projects written using standard TypeScript or Sass successfully regardless of frameworks used. :statue_of_liberty: This mindset is the differentiating factor between instapack and other CLI tools, which tend to be designed framework-first but TypeScript-second!
+**instapack is a first-class end-to-end TypeScript and Sass build tool. :tophat:** Meaning, it comes with an assurance to compile projects written using standard TypeScript or Sass successfully regardless of frameworks used. :rainbow: This mindset is the differentiating factor between instapack and other CLI tools, which tend to be designed framework-first but TypeScript-second!
 
 instapack is battle-tested :hocho: and is designed to cover most normal use cases when developing a modern web app. Powered by [webpack](https://webpack.js.org), instapack readily consumes modern JS modules (ES, CommonJS, UMD) and more (plain HTML templates, Vue SFC, TypeScript JSX).
 
@@ -126,7 +126,7 @@ Scaffolds a new instapack project into current working directory. **All template
 
 - `react` for developing a web app using [React](https://reactjs.org/) and [Bootstrap 5](https://getbootstrap.com/).
 
-- `vue` for developing a web app using the brand new [Vue.js 3](https://v3.vuejs.org/guide/introduction.html) and Bootstrap 5!
+- `vue` for developing a web app using the new [Vue.js 3](https://v3.vuejs.org/guide/introduction.html) and Bootstrap 5!
 
 - `vue2` for developing a web app using [Vue.js 2](https://vuejs.org/v2/guide/) and Bootstrap 5.
 
@@ -134,9 +134,7 @@ Scaffolds a new instapack project into current working directory. **All template
 
   - [This template allows calling instapack-built TypeScript code from C#](https://docs.microsoft.com/en-us/aspnet/core/blazor/javascript-interop?view=aspnetcore-3.0) when a third-party JS library (from npm) is required. [Read more about `namespace` configuration ↓](https://github.com/ryanelian/instapack#configurations)
 
-- `angularjs` for developing a legacy web app targeting ES5 browsers (Internet Explorer 10+) using [AngularJS 1.7](https://angularjs.org/) and [Bootstrap 3](http://getbootstrap.com/docs/3.3/). Also includes [jquery-validation-unobtrusive](https://github.com/aspnet/jquery-validation-unobtrusive) for ASP.NET MVC client-side validation.
-
-  - This template is a museum and should NOT be used for developing new projects.
+- `angularjs` for developing a legacy web app targeting ES5 browsers (Internet Explorer 10+) using [AngularJS 1.7](https://angularjs.org/) and [Bootstrap 3](http://getbootstrap.com/docs/3.3/). Also includes [jquery-validation-unobtrusive](https://github.com/aspnet/jquery-validation-unobtrusive) for ASP.NET MVC client-side validation. **DO NOT USE THIS TEMPLATE!**
 
 If no template parameter is provided, `react` will be chosen. :atom_symbol:
 

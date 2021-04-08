@@ -553,8 +553,6 @@ declare module "*.vue" {
 }
 ```
 
-- Basic CSS in `<style>` (or `<style scoped>` or `<style module>`) code blocks should work, but Sass CANNOT be used and the resulting CSS will NOT be auto-prefixed and minified. **You are advised to write CSS using the instapack Sass project instead!**
-
 > When using Visual Studio Code, install [Vetur](https://marketplace.visualstudio.com/items?itemName=octref.vetur) extension to get syntax highlighting and TypeScript intellisense.
 
 ### Vue 3: Single-File Components
@@ -607,6 +605,16 @@ declare module '*.vue' {
     export default component;
 }
 ```
+
+### Importing CSS from JS
+
+**Is not recommended.**
+
+```js
+import './my.css';
+```
+
+Yes it works, but the resulting CSS is not auto-prefixed and minified for production build and Sass cannot be used. **Opt to develop the stylesheet in the Sass project instead.**
 
 ### Sass CSS Module System
 

@@ -9,6 +9,7 @@ const TypeScript = require("typescript");
 const webpack = require("webpack");
 const clean_webpack_plugin_1 = require("clean-webpack-plugin");
 const webpack_plugin_serve_1 = require("webpack-plugin-serve");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
 const webpackPluginServeClientJS = require.resolve('webpack-plugin-serve/client');
 const reactRefreshBabelPluginJS = require.resolve('react-refresh/babel');
@@ -93,10 +94,6 @@ class TypeScriptBuildEngine {
         };
     }
     get vueCssWebpackRules() {
-        const vueStyleLoader = {
-            loader: LoaderPaths_1.LoaderPaths.vueStyle,
-            ident: 'vue-style'
-        };
         const cssModulesLoader = {
             loader: LoaderPaths_1.LoaderPaths.css,
             ident: 'vue-css-module',
@@ -118,14 +115,13 @@ class TypeScriptBuildEngine {
         };
         return {
             test: /\.css$/,
-            resourceQuery: /\?vue/,
             oneOf: [
                 {
                     resourceQuery: /module=true/,
-                    use: [vueStyleLoader, cssModulesLoader]
+                    use: [MiniCssExtractPlugin.loader, cssModulesLoader]
                 },
                 {
-                    use: [vueStyleLoader, cssLoader]
+                    use: [MiniCssExtractPlugin.loader, cssLoader]
                 }
             ]
         };
@@ -187,6 +183,10 @@ class TypeScriptBuildEngine {
         if (this.variables.production) {
             plugins.push(new clean_webpack_plugin_1.CleanWebpackPlugin());
         }
+        plugins.push(new MiniCssExtractPlugin({
+            filename: 'ipack.jss.css',
+            chunkFilename: 'ipack.[id].js.css'
+        }));
         return plugins;
     }
     get webpackRules() {

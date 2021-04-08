@@ -7,6 +7,7 @@ import * as TypeScript from 'typescript';
 import webpack = require('webpack');
 import { CleanWebpackPlugin } from 'clean-webpack-plugin';
 import { WebpackPluginServe } from 'webpack-plugin-serve';
+import MiniCssExtractPlugin = require('mini-css-extract-plugin');
 import ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 const webpackPluginServeClientJS = require.resolve('webpack-plugin-serve/client');
 const reactRefreshBabelPluginJS = require.resolve('react-refresh/babel');
@@ -152,10 +153,6 @@ export class TypeScriptBuildEngine {
      * Gets CSS rules for webpack to prevent explosion during vue compile.
      */
     get vueCssWebpackRules(): webpack.RuleSetRule {
-        const vueStyleLoader = {
-            loader: LoaderPaths.vueStyle,
-            ident: 'vue-style'
-        };
         // https://vue-loader.vuejs.org/guide/css-modules.html#usage
         const cssModulesLoader = {
             loader: LoaderPaths.css,
@@ -179,18 +176,17 @@ export class TypeScriptBuildEngine {
 
         return {
             test: /\.css$/,
-            resourceQuery: /\?vue/,
             oneOf: [
                 {
                     // this matches <style module>
                     // ./HelloWorld.vue?vue&type=style&index=0&module=true&lang=css&
                     resourceQuery: /module=true/,
-                    use: [vueStyleLoader, cssModulesLoader]
+                    use: [MiniCssExtractPlugin.loader, cssModulesLoader]
                 },
                 {
                     // this matches plain <style> or <style scoped>
                     // HelloWorld.vue?vue&type=style&index=0&lang=css&
-                    use: [vueStyleLoader, cssLoader]
+                    use: [MiniCssExtractPlugin.loader, cssLoader]
                 }
             ]
         };
@@ -271,6 +267,10 @@ export class TypeScriptBuildEngine {
             plugins.push(new CleanWebpackPlugin());
         }
 
+        plugins.push(new MiniCssExtractPlugin({
+            filename: 'ipack.jss.css',
+            chunkFilename: 'ipack.[id].js.css'
+        }));
         return plugins;
     }
 

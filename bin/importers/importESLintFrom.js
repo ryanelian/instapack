@@ -18,8 +18,10 @@ async function importESLintFrom(dir, indexTsPath) {
             version: ESLint.version
         };
     }
-    catch (error) {
-        console.log(error);
+    catch (err) {
+        if (err instanceof Error) {
+            console.log(err.message);
+        }
         return undefined;
     }
 }

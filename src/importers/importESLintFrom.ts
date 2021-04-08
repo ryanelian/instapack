@@ -26,8 +26,10 @@ export async function importESLintFrom(dir: string, indexTsPath: string): Promis
             linter: linter,
             version: ESLint.version
         };
-    } catch (error) {
-        console.log(error);
+    } catch (err) {
+        if (err instanceof Error) {
+            console.log(err.message);
+        }
         return undefined;
     }
 }

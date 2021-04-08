@@ -3,16 +3,19 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.VueTypeScriptParser = void 0;
 const tryImportFrom_1 = require("./importers/tryImportFrom");
 class VueTypeScriptParser {
-    constructor(version, vue2Compiler, vue3Compiler) {
+    constructor(version, dir) {
         this.version = 0;
-        this.version = version;
-        this.vue2Compiler = vue2Compiler;
-        this.vue3Compiler = vue3Compiler;
-    }
-    static async createFrom(version, dir) {
-        const v2 = version.startsWith('2');
-        const v3 = version.startsWith('3');
-        return new VueTypeScriptParser(v2 ? 2 : (v3 ? 3 : 0), v2 ? await tryImportFrom_1.tryImportFrom('vue-template-compiler', dir) : undefined, v3 ? await tryImportFrom_1.tryImportFrom('@vue/compiler-sfc', dir) : undefined);
+        if (version.startsWith('2')) {
+            this.version = 2;
+            this.vue2Compiler = tryImportFrom_1.tryImportFrom('vue-template-compiler', dir);
+        }
+        else if (version.startsWith('3')) {
+            this.version = 3;
+            this.vue3Compiler = tryImportFrom_1.tryImportFrom('@vue/compiler-sfc', dir);
+        }
+        else {
+            throw new Error('Unknown Vue.js version: ' + this.version);
+        }
     }
     parse(sourceCode) {
         if (this.version === 2) {

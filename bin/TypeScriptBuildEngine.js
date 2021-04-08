@@ -320,7 +320,7 @@ class TypeScriptBuildEngine {
     async build() {
         this.useBabel = await fse.pathExists(this.finder.babelConfiguration);
         if (this.variables.vue) {
-            const vueLoaderPath = await resolveFrom_1.resolveFrom('vue-loader', this.variables.root);
+            const vueLoaderPath = resolveFrom_1.resolveFrom('vue-loader', this.variables.root);
             if (vueLoaderPath) {
                 this.vueLoaderPath = vueLoaderPath;
                 this.vueLoader = require(vueLoaderPath);

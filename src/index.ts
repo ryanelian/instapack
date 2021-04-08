@@ -96,6 +96,7 @@ export = class InstapackProgram {
 
             const vueVersions = await readVuePackageVersionsFrom(this.projectFolder);
             if (vueVersions) {
+                console.log(`${chalk.greenBright(`Vue.js ${vueVersions.vue}`)} project detected!`);
                 variables.vue = vueVersions;
                 addVueCompilerServices(packageManager, vueVersions);
             }

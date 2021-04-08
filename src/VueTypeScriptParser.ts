@@ -4,33 +4,21 @@ declare type Vue2Compiler = typeof import('vue-template-compiler');
 declare type Vue3Compiler = typeof import('@vue/compiler-sfc');
 
 export class VueTypeScriptParser {
-    constructor(
-        version: number,
-        vue2Compiler: Vue2Compiler | undefined,
-        vue3Compiler: Vue3Compiler | undefined
-    ) {
-        this.version = version;
-        this.vue2Compiler = vue2Compiler;
-        this.vue3Compiler = vue3Compiler;
+    constructor(version: string, dir: string) {
+        if (version.startsWith('2')) {
+            this.version = 2;
+            this.vue2Compiler = tryImportFrom<Vue2Compiler>('vue-template-compiler', dir);
+        } else if (version.startsWith('3')) {
+            this.version = 3;
+            this.vue3Compiler = tryImportFrom<Vue3Compiler>('@vue/compiler-sfc', dir);
+        } else {
+            throw new Error('Unknown Vue.js version: ' + this.version);
+        }
     }
 
     private version = 0;
     private vue2Compiler: Vue2Compiler | undefined;
     private vue3Compiler: Vue3Compiler | undefined;
-
-    static async createFrom(
-        version: string,
-        dir: string
-    ): Promise<VueTypeScriptParser> {
-        const v2 = version.startsWith('2');
-        const v3 = version.startsWith('3');
-
-        return new VueTypeScriptParser(
-            v2 ? 2 : (v3 ? 3 : 0),
-            v2 ? await tryImportFrom<Vue2Compiler>('vue-template-compiler', dir) : undefined,
-            v3 ? await tryImportFrom<Vue3Compiler>('@vue/compiler-sfc', dir) : undefined
-        );
-    }
 
     parse(sourceCode: string): string {
         if (this.version === 2) {

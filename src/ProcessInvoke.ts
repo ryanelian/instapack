@@ -93,7 +93,7 @@ export function addVueCompilerServices(packageManager: string, versions: VuePack
         return;
     }
 
-    console.log(chalk.greenBright('Vue.js') + ' project detected! Ensuring correct development dependencies are installed...');
+    console.log('Ensuring correct development dependencies are installed...');
     switch (packageManager) {
         case 'yarn': {
             execWithConsoleOutput(`yarn add ${packages} -D -E`);

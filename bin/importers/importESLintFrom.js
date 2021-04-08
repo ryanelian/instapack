@@ -4,7 +4,7 @@ exports.importESLintFrom = void 0;
 const tryImportFrom_1 = require("./tryImportFrom");
 async function importESLintFrom(dir, indexTsPath) {
     try {
-        const eslintModule = await tryImportFrom_1.tryImportFrom('eslint', dir);
+        const eslintModule = tryImportFrom_1.tryImportFrom('eslint', dir);
         if (!eslintModule) {
             return undefined;
         }

@@ -9,7 +9,7 @@ export interface ProjectESLint {
 
 export async function importESLintFrom(dir: string, indexTsPath: string): Promise<ProjectESLint | undefined> {
     try {
-        const eslintModule = await tryImportFrom<ESLintModuleType>('eslint', dir);
+        const eslintModule = tryImportFrom<ESLintModuleType>('eslint', dir);
         if (!eslintModule) {
             return undefined;
         }

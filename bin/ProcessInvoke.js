@@ -9,7 +9,6 @@ const follow_redirects_1 = require("follow-redirects");
 const fse = require("fs-extra");
 const upath = require("upath");
 const UserSettingsPath_1 = require("./user-settings/UserSettingsPath");
-const chalk = require("chalk");
 const Shout_1 = require("./Shout");
 const VueLoaderVersions_1 = require("./VueLoaderVersions");
 function execWithConsoleOutput(command) {
@@ -81,7 +80,7 @@ function addVueCompilerServices(packageManager, versions) {
     if (!packages) {
         return;
     }
-    console.log(chalk.greenBright('Vue.js') + ' project detected! Ensuring correct development dependencies are installed...');
+    console.log('Ensuring correct development dependencies are installed...');
     switch (packageManager) {
         case 'yarn': {
             execWithConsoleOutput(`yarn add ${packages} -D -E`);

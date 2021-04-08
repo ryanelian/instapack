@@ -1,6 +1,6 @@
 import * as upath from 'upath';
 
-export async function resolveFrom(packageName: string, dir: string): Promise<string | undefined> {
+export function resolveFrom(packageName: string, dir: string): string | undefined {
     try {
         const modulePath = upath.toUnix(
             require.resolve(packageName, {

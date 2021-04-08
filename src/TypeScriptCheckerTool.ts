@@ -112,7 +112,7 @@ export class TypeScriptCheckerTool {
 
         let tsVueParser: VueTypeScriptParser | undefined;
         if (variables.vue) {
-            tsVueParser = await VueTypeScriptParser.createFrom(variables.vue.vue, variables.root)
+            tsVueParser = new VueTypeScriptParser(variables.vue.vue, variables.root)
         }
         const sourceStore = new TypeScriptSourceStore(target, tsVueParser);
         const loadSourceTask = sourceStore.loadFolder(finder.jsInputFolder);
@@ -153,21 +153,37 @@ export class TypeScriptCheckerTool {
                 return tsErrors;
             }
 
-            const lintErrors: string[] = [];
-            if (this.eslint) {
-                const lintResults = await this.eslint.lintText(source.getFullText(), {
-                    filePath: source.fileName
-                });
-
-                for (const lintResult of lintResults) {
-                    for (const lintMessage of lintResult.messages) {
-                        const renderLintErrorMessage = this.renderLintErrorMessage(source.fileName, lintMessage);
-                        lintErrors.push(renderLintErrorMessage);
-                    }
-                }
-            }
-            return lintErrors;
+            return this.lint(source);
         });
+    }
+
+    /**
+     * Attempts to run ESLint on a TypeScript source file and get the error messages.
+     * @param source 
+     * @returns 
+     */
+    async lint(source: TypeScript.SourceFile): Promise<string[]> {
+        if (!this.eslint) {
+            return [];
+        }
+
+        const lintResults = await this.eslint.lintText(source.getFullText(), {
+            filePath: source.fileName
+        });
+
+        const lintErrors: string[] = [];
+        for (const lintResult of lintResults) {
+            for (const lintMessage of lintResult.messages) {
+                const renderedMessage = chalk.redBright('ESLint') + ' '
+                    + chalk.redBright(source.fileName) + ' '
+                    + chalk.yellowBright(`(${lintMessage.line},${lintMessage.column})`) + ': '
+                    + chalk.grey(lintMessage.ruleId) + '\n'
+                    + lintMessage.message;
+
+                lintErrors.push(renderedMessage);
+            }
+        }
+        return lintErrors;
     }
 
     /**
@@ -224,21 +240,6 @@ export class TypeScriptCheckerTool {
             error += TypeScript.flattenDiagnosticMessageText(diagnostic.messageText, "\n");
             return error;
         });
-    }
-
-    /**
-     * Converts ESLint error object to instapack-formatted error message. 
-     * @param fileName 
-     * @param lintError 
-     */
-    renderLintErrorMessage(fileName: string, lintError: LintMessage): string {
-        const lintErrorMessage = chalk.redBright('ESLint') + ' '
-            + chalk.redBright(fileName) + ' '
-            + chalk.yellowBright(`(${lintError.line},${lintError.column})`) + ': '
-            + chalk.grey(lintError.ruleId) + '\n'
-            + lintError.message;
-
-        return lintErrorMessage;
     }
 
     /**

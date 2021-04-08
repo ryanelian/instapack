@@ -1,8 +1,8 @@
 import { resolveFrom } from './resolveFrom';
 
-export async function tryImportFrom<T>(packageName: string, dir: string): Promise<T | undefined> {
+export function tryImportFrom<T>(packageName: string, dir: string): T | undefined {
     try {
-        const path = await resolveFrom(packageName, dir);
+        const path = resolveFrom(packageName, dir);
         if (!path) {
             return undefined;
         }

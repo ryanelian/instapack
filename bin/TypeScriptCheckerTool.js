@@ -49,7 +49,7 @@ class TypeScriptCheckerTool {
         }
         let tsVueParser;
         if (variables.vue) {
-            tsVueParser = await VueTypeScriptParser_1.VueTypeScriptParser.createFrom(variables.vue.vue, variables.root);
+            tsVueParser = new VueTypeScriptParser_1.VueTypeScriptParser(variables.vue.vue, variables.root);
         }
         const sourceStore = new TypeScriptSourceStore_1.TypeScriptSourceStore(target, tsVueParser);
         const loadSourceTask = sourceStore.loadFolder(finder.jsInputFolder);
@@ -78,20 +78,28 @@ class TypeScriptCheckerTool {
             if (tsErrors.length) {
                 return tsErrors;
             }
-            const lintErrors = [];
-            if (this.eslint) {
-                const lintResults = await this.eslint.lintText(source.getFullText(), {
-                    filePath: source.fileName
-                });
-                for (const lintResult of lintResults) {
-                    for (const lintMessage of lintResult.messages) {
-                        const renderLintErrorMessage = this.renderLintErrorMessage(source.fileName, lintMessage);
-                        lintErrors.push(renderLintErrorMessage);
-                    }
-                }
-            }
-            return lintErrors;
+            return this.lint(source);
         });
+    }
+    async lint(source) {
+        if (!this.eslint) {
+            return [];
+        }
+        const lintResults = await this.eslint.lintText(source.getFullText(), {
+            filePath: source.fileName
+        });
+        const lintErrors = [];
+        for (const lintResult of lintResults) {
+            for (const lintMessage of lintResult.messages) {
+                const renderedMessage = chalk.redBright('ESLint') + ' '
+                    + chalk.redBright(source.fileName) + ' '
+                    + chalk.yellowBright(`(${lintMessage.line},${lintMessage.column})`) + ': '
+                    + chalk.grey(lintMessage.ruleId) + '\n'
+                    + lintMessage.message;
+                lintErrors.push(renderedMessage);
+            }
+        }
+        return lintErrors;
     }
     async typeCheck() {
         Shout_1.Shout.timed('Type-checking start...');
@@ -135,14 +143,6 @@ class TypeScriptCheckerTool {
             error += TypeScript.flattenDiagnosticMessageText(diagnostic.messageText, "\n");
             return error;
         });
-    }
-    renderLintErrorMessage(fileName, lintError) {
-        const lintErrorMessage = chalk.redBright('ESLint') + ' '
-            + chalk.redBright(fileName) + ' '
-            + chalk.yellowBright(`(${lintError.line},${lintError.column})`) + ': '
-            + chalk.grey(lintError.ruleId) + '\n'
-            + lintError.message;
-        return lintErrorMessage;
     }
     watch() {
         let debounced;

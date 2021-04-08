@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.resolveFrom = void 0;
 const upath = require("upath");
-async function resolveFrom(packageName, dir) {
+function resolveFrom(packageName, dir) {
     try {
         const modulePath = upath.toUnix(require.resolve(packageName, {
             paths: [dir]

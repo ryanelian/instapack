@@ -468,7 +468,7 @@ export class TypeScriptBuildEngine {
         this.useBabel = await fse.pathExists(this.finder.babelConfiguration);
 
         if (this.variables.vue) {
-            const vueLoaderPath = await resolveFrom('vue-loader', this.variables.root);
+            const vueLoaderPath = resolveFrom('vue-loader', this.variables.root);
             if (vueLoaderPath) {
                 this.vueLoaderPath = vueLoaderPath;
                 this.vueLoader = require(vueLoaderPath);

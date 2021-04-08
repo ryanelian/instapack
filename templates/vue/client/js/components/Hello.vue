@@ -17,7 +17,7 @@ export default defineComponent({
             type: String,
             required: true
         },
-        compiler: {
+        language: {
             type: String,
             required: true
         },
@@ -36,7 +36,7 @@ export default defineComponent({
         };
 
         // https://v3.vuejs.org/guide/composition-api-introduction.html#standalone-computed-properties
-        const message = computed(() => `Hello from ${props.sdk} and ${props.compiler}!`);
+        const message = computed(() => `Hello from ${props.sdk} and ${props.language}!`);
 
         // Everything that are returned will be exposed to the component template!
         return {
